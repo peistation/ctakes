@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lookupSpecification>
+	<!--  Defines what dictionaries will be used in terms of implementation specifics and metaField configuration. -->
+	<dictionaries>
+		<dictionary id="GAZ_CSV_PAD_TERM" externalResourceKey="PAD_Terms_File" caseSensitive="false">
+			<implementation>
+				<csvImpl delimiter="|" indexedFieldNames="0,1"/>
+			</implementation>
+			<lookupField fieldName="0"/>
+			<metaFields>
+				<metaField fieldName="1"/>
+			</metaFields>
+		</dictionary>
+		<dictionary id="GAZ_CSV_PAD_LOC" externalResourceKey="PAD_Location_File" caseSensitive="false">
+			<implementation>
+				<csvImpl delimiter="|" indexedFieldNames="0"/>
+			</implementation>
+			<lookupField fieldName="0"/>
+			<!-- metaField represents the "cols" in the result of the dictionary lookup-->
+			<metaFields>
+				<metaField fieldName="1"/>
+				<metaField fieldName="2"/>
+			</metaFields>
+		</dictionary>
+	</dictionaries>
+	<!-- Binds together the components necessary to perform the complete lookup logic start to end. -->
+	<lookupBindings>
+		<lookupBinding>
+			<dictionaryRef idRef="GAZ_CSV_PAD_TERM"/>
+			<!-- NOTE: Only use if windowAnnotations have small # of tokens, sentences are not a good idea! -->
+			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+				<properties>
+					<property key="textMetaFields" value="1"/>
+					<property key="maxPermutationLevel" value="7"/>
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.Sentence"/>
+				</properties>
+			</lookupInitializer>
+			<lookupConsumer className="edu.mayo.bmi.uima.pad.impl.PADTermConsumerImpl">
+				<properties>
+					<!-- property key="stopWordsExtFileResrcKey" value="StopWordsFile"/ -->
+				</properties>
+			</lookupConsumer>
+		</lookupBinding>
+		<lookupBinding>
+			<dictionaryRef idRef="GAZ_CSV_PAD_LOC"/>
+			<!-- NOTE: Only use if windowAnnotations have small # of tokens, sentences are not a good idea! -->
+			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+				<properties>
+					<property key="textMetaFields" value="1"/>
+					<property key="maxPermutationLevel" value="7"/>
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.Sentence"/>
+				</properties>
+			</lookupInitializer>
+			<lookupConsumer className="edu.mayo.bmi.uima.pad.impl.PADLocationConsumerImpl">
+				<properties>
+					<!-- property key="stopWordsExtFileResrcKey" value="StopWordsFile"/ -->
+				</properties>
+			</lookupConsumer>
+		</lookupBinding>
+	</lookupBindings>
+</lookupSpecification>
