@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -84,14 +85,14 @@ public class CreateLuceneIndexFromDelimitedFile {
 	 * @param Tokenizer Used to tokenize the dictionary entries
 	 */
 	public CreateLuceneIndexFromDelimitedFile(Tokenizer tokenizer) throws Exception {
-		Analyzer analyzer = new StandardAnalyzer();
+		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		String defaultLoc = new File(directoryOfDelimitedFiles).getAbsolutePath();
 		boolean error = false;
 		long numEntries = 0;
 		try {
-			Directory directory = FSDirectory.getDirectory(new File(defaultLoc).getParent() + "/drug_index", true);
+			Directory directory = FSDirectory.open(new File(new File(defaultLoc).getParent() + "/drug_index"));
 
-			iwriter = new IndexWriter(directory, analyzer, true);
+			iwriter = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 			//      Process multiple files in directory
 
 			File file = new File(defaultLoc);
@@ -330,12 +331,16 @@ public class CreateLuceneIndexFromDelimitedFile {
 			if (idCount % 10000 == 0)
 				System.out.println(" " + idCount
 						+ " processed so far out of total");
-			doc.add(Field.Keyword(ID, Integer.toString(idCount)));
+			doc.add(new Field(ID, Integer.toString(idCount), Field.Store.YES,
+					Field.Index.NO));//Field.Keyword(ID, Integer.toString(idCount)));
 
-			doc.add(Field.Keyword(Code, cui));
-			doc.add(Field.Text(CodeToken, cui));
+			doc.add(new Field(Code, cui, Field.Store.YES,
+					Field.Index.NO));//Field.Keyword(Code, cui));
+			doc.add(new Field(CodeToken, cui, Field.Store.YES,
+					Field.Index.ANALYZED));//Field.Text(CodeToken, cui));
 
-			doc.add(Field.Text(rxNormCode, codeInSource));
+			doc.add(new Field(rxNormCode, codeInSource, Field.Store.YES,
+					Field.Index.ANALYZED));//Field.Text(rxNormCode, codeInSource));
 
 			List list = tokenizer.tokenize(desc);
 			Collections.sort(list, new OffsetComparator());
@@ -359,18 +364,22 @@ public class CreateLuceneIndexFromDelimitedFile {
 				
 			}
 
-			doc.add(Field.Text(FirstWord, firstTokenText));
+			doc.add(new Field(FirstWord, firstTokenText, Field.Store.YES,
+					Field.Index.ANALYZED));//Field.Text(FirstWord, firstTokenText));
 
 			if (termStatus != null)
 				if (termStatus.compareToIgnoreCase("P") == 0) {
-					doc.add(Field.Text(PreferDesig, tokenizedDesc));
+					doc.add(new Field(PreferDesig, tokenizedDesc, Field.Store.YES,
+							Field.Index.ANALYZED));//Field.Text(PreferDesig, tokenizedDesc));
 
 				} else {
-					doc.add(Field.Text(OtherDesig, tokenizedDesc));
+					doc.add(new Field(OtherDesig, tokenizedDesc, Field.Store.YES,
+							Field.Index.ANALYZED));//Field.Text(OtherDesig, tokenizedDesc));
 				}
 
 			else {
-				doc.add(Field.Text(OtherDesig, tokenizedDesc));
+				doc.add(new Field(OtherDesig, tokenizedDesc, Field.Store.YES,
+						Field.Index.ANALYZED));//Field.Text(OtherDesig, tokenizedDesc));
 			}
 
 			iwriter.addDocument(doc);

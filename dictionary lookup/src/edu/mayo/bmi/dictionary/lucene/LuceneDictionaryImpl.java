@@ -24,16 +24,18 @@
 package edu.mayo.bmi.dictionary.lucene;
 
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 import edu.mayo.bmi.dictionary.BaseDictionaryImpl;
 import edu.mayo.bmi.dictionary.Dictionary;
@@ -48,7 +50,7 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
 {
     private Searcher iv_searcher;
     private String iv_lookupFieldName;
-
+	private int maxHits = 100;
     /**
      * 
      * Constructor
@@ -64,31 +66,26 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
 
     public Collection getEntries(String str) throws DictionaryException
     {
-        Set metaDataHitSet = new HashSet();
-        try
-        {
-            Query q = new TermQuery(new Term(iv_lookupFieldName, str));
-            Hits hits = iv_searcher.search(q);
+    	Set metaDataHitSet = new HashSet();
 
-            if (hits != null)
-            {
-                for (int i = 0; i < hits.length(); i++)
-                {
-                    if (hits.score(i) > .99) 
-                    {
-                        Document luceneDoc = hits.doc(i);
-                        MetaDataHit mdh = new LuceneDocumentMetaDataHitImpl(luceneDoc);
+    	try
+    	{
+    		Query q = new TermQuery(new Term(iv_lookupFieldName, str));
+    		TopDocs topDoc = iv_searcher.search(q, maxHits);
+    		ScoreDoc[] hits = topDoc.scoreDocs;
+    		for (int i = 0; i < hits.length; i++) {
+    			int docId = hits[i].doc;
+    			Document luceneDoc = iv_searcher.doc(docId);
+    			MetaDataHit mdh = new LuceneDocumentMetaDataHitImpl(luceneDoc);
+    			metaDataHitSet.add(mdh);
+    		}
 
-                        metaDataHitSet.add(mdh);
-                    }
-                }
-            }
-            return metaDataHitSet;
-        }
-        catch (IOException ioe)
-        {
-            throw new DictionaryException(ioe);
-        }
+    		return metaDataHitSet;
+    	}
+    	catch (IOException ioe)
+    	{
+    		throw new DictionaryException(ioe);
+    	}
     }
 
     public boolean contains(String str) throws DictionaryException
@@ -96,9 +93,10 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
         try
         {
             Query q = new TermQuery(new Term(iv_lookupFieldName, str));
-            Hits hits = iv_searcher.search(q);
 
-            if ((hits != null) && (hits.length() > 0))
+            TopDocs topDoc = iv_searcher.search(q, maxHits);
+            ScoreDoc[] hits = topDoc.scoreDocs;
+            if ((hits != null) && (hits.length > 0))
             {
                 return true;
             }
@@ -111,5 +109,6 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
         {
             throw new DictionaryException(ioe);
         }
+
     }
 }

@@ -28,6 +28,7 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 
 import org.apache.uima.resource.DataResource;
@@ -36,6 +37,7 @@ import org.apache.uima.resource.SharedResourceObject;
 import org.apache.uima.resource.metadata.ConfigurationParameterSettings;
 
 /**
+ * Oct 2010 - convert to lucene 3.0.2
  * @author Mayo Clinic
  */
 public class LuceneIndexReaderResourceImpl
@@ -67,13 +69,14 @@ public class LuceneIndexReaderResourceImpl
             if (useMemoryIndex.booleanValue()) {
 
                 iv_logger.info("Loading Lucene Index into memory: " + indexDir);
-                Directory d = new RAMDirectory(indexDir);
-                	iv_indexReader = IndexReader.open(d);
+                FSDirectory fsd = FSDirectory.open(indexDir);
+                Directory d = new RAMDirectory(fsd);
+                iv_indexReader = IndexReader.open(d);
             }
             else {
-
-                iv_logger.info("Loading Lucene Index from filesystem: " + indexDir);
-                iv_indexReader = IndexReader.open(indexDir);
+                iv_logger.info("Loading Lucene Index: " + indexDir);
+                FSDirectory fsd = FSDirectory.open(indexDir);
+                iv_indexReader = IndexReader.open(fsd);
             }
             iv_logger.info("Loaded Lucene Index, # docs=" + iv_indexReader.numDocs());
         }
