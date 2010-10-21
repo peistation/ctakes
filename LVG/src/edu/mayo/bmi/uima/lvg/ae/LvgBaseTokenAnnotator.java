@@ -31,7 +31,7 @@ import gov.nih.nlm.nls.lvg.Lib.LexItem;
 
 import edu.mayo.bmi.uima.core.type.Lemma;
 import edu.mayo.bmi.uima.core.type.Segment;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.util.ListFactory;
 
 import java.io.BufferedReader;
@@ -64,8 +64,8 @@ import org.apache.uima.jcas.cas.FSList;
 
 /**
  * UIMA annotator that uses the UMLS LVG package to find the canonical form of
- * WordTokens. The package is also used to find one or more lemmas for a given
- * WordToken along with its associated part of speech.
+ * BaseTokens. The package is also used to find one or more lemmas for a given
+ * BaseToken along with its associated part of speech.
  * 
  * @author Mayo Clinic
  * 
@@ -73,7 +73,7 @@ import org.apache.uima.jcas.cas.FSList;
  * automatically normalize a word from the cache, this may be bad if it is misspelled in the case where 
  * the misspelling is a word in the lexicon.
  */
-public class LvgAnnotator extends JTextAnnotator_ImplBase
+public class LvgBaseTokenAnnotator extends JTextAnnotator_ImplBase
 {
 	/**
 	 * Value is "PostLemmas".  This parameter determines whether the feature lemmaEntries will be populated for word annotations.  
@@ -298,52 +298,44 @@ public class LvgAnnotator extends JTextAnnotator_ImplBase
             ResultSpecification resultSpec) throws AnnotatorContextException
     {
     	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-        Iterator wordItr = indexes.getAnnotationIndex(WordToken.type).iterator();
-        while (wordItr.hasNext())
+        Iterator tokenItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
+        while (tokenItr.hasNext())
         {
-        	WordToken wordAnnotation = (WordToken) wordItr.next();
-        	if(wordAnnotation.getBegin() >= rangeBegin &&
-        			wordAnnotation.getEnd() <= rangeEnd)
+        	BaseToken tokenAnnotation = (BaseToken) tokenItr.next();
+        	if(tokenAnnotation.getBegin() >= rangeBegin &&
+        			tokenAnnotation.getEnd() <= rangeEnd)
         	{
-                String word = text.substring(wordAnnotation.getBegin(), wordAnnotation.getEnd());
-
-                // if the original word was misspelled, use the spell correction
-                String suggestion = wordAnnotation.getSuggestion();
-                
-                if ((suggestion != null) && (suggestion.length() > 0))
-                {
-                    word = suggestion;
-                }
+                String token = text.substring(tokenAnnotation.getBegin(), tokenAnnotation.getEnd());
 
                 // skip past words that are part of the exclusion set
-                if (exclusionSet.contains(word)) continue;
+                if (exclusionSet.contains(token)) continue;
                     
-                setCanonicalForm(wordAnnotation, word);
+                setNormalizedForm(tokenAnnotation, token);
                 if(postLemmas)
-                	setLemma(wordAnnotation, word, jcas);
+                	setLemma(tokenAnnotation, token, jcas);
             }
         }
     }
 
-    private void setCanonicalForm(WordToken wordAnnotation, String word) throws AnnotatorContextException
+    private void setNormalizedForm(BaseToken tokenAnnotation, String token) throws AnnotatorContextException
     {
         // apply LVG processing to get canonical form
-        String canonicalForm = null;
+        String normalizedForm = null;
         if (useCmdCache)
         {
-            canonicalForm = (String) normCacheMap.get(word);
-            if (canonicalForm == null)
+            normalizedForm = (String) normCacheMap.get(token);
+            if (normalizedForm == null)
             {
             	// logger.info("["+ word+ "] was not found in LVG norm cache.");
             }
         }
 
         // only apply LVG processing if not found in cache first
-        if (canonicalForm == null)
+        if (normalizedForm == null)
         {
             try
             {
-                String out = lvgCmd.MutateToString(word);
+                String out = lvgCmd.MutateToString(token);
 
                 String[] output = out.split("\\|");
 
@@ -351,7 +343,7 @@ public class LvgAnnotator extends JTextAnnotator_ImplBase
                         && (output.length >= 2)
                         && (!output[1].matches("No Output")))
                 {
-                    canonicalForm = output[1];
+                    normalizedForm = output[1];
                 }
             }
             catch (Exception e)
@@ -361,14 +353,14 @@ public class LvgAnnotator extends JTextAnnotator_ImplBase
 
         }
 
-        if (canonicalForm != null)
+        if (normalizedForm != null)
         {
-            wordAnnotation.setCanonicalForm(canonicalForm);
+            tokenAnnotation.setNormalizedForm(normalizedForm);
         }
     }
 
     
-    private void setLemma(WordToken wordAnnotation, String word, JCas jcas) throws AnnotatorContextException
+    private void setLemma(BaseToken wordAnnotation, String word, JCas jcas) throws AnnotatorContextException
     {
         // apply LVG processing to get lemmas
         // key = lemma string, value = Set of POS tags
