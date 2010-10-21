@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>ConllDependencyNode</name>
+  <description>A node for dependency parsing in approximately the CONLL-x data format.</description>
+  <version>1.0</version>
+  <vendor/>
+  <imports>
+    <import name="edu.mayo.bmi.nlp.parser.type.BaseDependencyNode"/>
+  </imports>
+  <types>
+    <typeDescription>
+      <name>edu.mayo.bmi.nlp.parser.type.ConllDependencyNode</name>
+      <description/>
+      <supertypeName>edu.mayo.bmi.nlp.parser.type.BaseDependencyNode</supertypeName>
+      <features>
+        <featureDescription>
+          <name>ID</name>
+          <description>Intra-sentential index of the token.  Root begins at 0.</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>DEPREL</name>
+          <description>Label/type/relation for dependency edges.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>CPOSTAG</name>
+          <description>A coarser POS tag.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>FEATS</name>
+          <description>Unordered features delimited by the pipe `|' symbol.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>PHEAD</name>
+          <description>Projective head -- following these edges enforces projectivity, but may not always be present.</description>
+          <rangeTypeName>edu.mayo.bmi.nlp.parser.type.ConllDependencyNode</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>PDEPREL</name>
+          <description>Dependency label for projective-only edges.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>LEMMA</name>
+          <description>Normalized version of the lexeme FORM.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>HEAD</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.nlp.parser.type.ConllDependencyNode</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>
