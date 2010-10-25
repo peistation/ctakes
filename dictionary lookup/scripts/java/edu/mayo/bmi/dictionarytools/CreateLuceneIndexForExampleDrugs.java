@@ -26,7 +26,11 @@ package edu.mayo.bmi.dictionarytools;
 /**
  * See http://www.onjava.com/pub/a/onjava/2003/01/15/lucene.html?page=1
  */
+import java.io.File;
+
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -51,11 +55,11 @@ public class CreateLuceneIndexForExampleDrugs {
 	public static void main(String args[]) throws Exception {
 
 		// Name of the lucene index directory to be created 
-		String indexDir = "C:/temp/lucene/" + "drug-index";
-		Analyzer analyzer = new StandardAnalyzer();
+		File indexDir = new File("C:/general_workspace/dictionary lookup/resources/lookup/drug_index");//C:/temp/lucene/" + "drug-index";
+		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		boolean createFlag = true;
 
-		IndexWriter writer = new IndexWriter(indexDir, analyzer, createFlag);
+		IndexWriter writer = new IndexWriter(FSDirectory.open(indexDir), analyzer, createFlag, IndexWriter.MaxFieldLength.LIMITED);
 
 		String [][] strings = {
 				// rowID      code        (ignored)    first_word       preferred_designation
@@ -64,6 +68,7 @@ public class CreateLuceneIndexForExampleDrugs {
 				{"7777777",  "C7777777",  "C7777777", "Ibuprofen",     "Ibuprofen"}, 
 				{"8888888",  "C8888888",  "C8888888", "Ibuprofen",     "Ibuprofen 200 mg"}, 
 				{"99999999", "C99999999", "C99999999", "Ibuprofen",    "Ibuprofen 300 mg"}, 
+				{"44444444", "C44444444", "C44444444", "Celexa",    "Celexa"}, 
 				};
 		
 		int tcount = 0; 
@@ -74,11 +79,16 @@ public class CreateLuceneIndexForExampleDrugs {
 				System.out.println("s= " + s);			
 			}
 			Document document = new Document();
-			document.add(Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i])); i++;
-			document.add(Field.Keyword("code", t[i])); i++;
-			document.add(Field.Text("codeTokenized", t[i])); i++;
-			document.add(Field.Text("first_word", t[i])); i++;
-			document.add(Field.Text("preferred_designation", t[i])); i++;
+			document.add(new Field("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i], Field.Store.YES,
+					Field.Index.NO));i++;//Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i])); i++;
+			document.add(new Field("code", t[i], Field.Store.YES,
+					Field.Index.NO));i++;//Field.Keyword("code", t[i])); i++;
+			document.add(new Field("codeTokenized", t[i], Field.Store.YES,
+					Field.Index.ANALYZED));i++;//Field.Text("codeTokenized", t[i])); i++;
+			document.add(new Field("first_word", t[i], Field.Store.YES,
+					Field.Index.ANALYZED));i++;//Field.Text("first_word", t[i])); i++;
+			document.add(new Field("preferred_designation", t[i], Field.Store.YES,
+					Field.Index.ANALYZED));i++;//Field.Text("preferred_designation", t[i])); i++;
 			tcount++;
 			writer.addDocument(document);
 		}
