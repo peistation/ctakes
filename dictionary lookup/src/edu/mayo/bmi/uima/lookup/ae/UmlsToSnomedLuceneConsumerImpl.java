@@ -34,7 +34,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
@@ -88,7 +87,7 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 			File indexDir = FileLocator.locateFile(indexPath); // TODO parameterize this
 			indexDirAbsPath = indexDir.getAbsolutePath();
 			
-			indexReader = IndexReader.open(FSDirectory.open(indexDir)); 
+			indexReader = IndexReader.open(indexDirAbsPath); 
 
 			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 			String lookupFieldName = props.getProperty(CUI_MAPPING_PRP_KEY);
