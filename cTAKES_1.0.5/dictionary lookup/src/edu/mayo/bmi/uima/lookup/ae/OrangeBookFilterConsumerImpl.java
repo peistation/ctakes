@@ -30,12 +30,11 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 
 import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
@@ -70,8 +69,6 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 	private Properties iv_props;
 
 	private Searcher iv_searcher;
-	
-	private int maxHits = 100;
 
 	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props)
 			throws Exception
@@ -169,29 +166,19 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		try
 		{
 			Query q = new TermQuery(new Term(fieldName, str));
-//			Hits hits = iv_searcher.search(q);
-//
-//			if (hits != null)
-//			{
-//				for (int i = 0; i < hits.length(); i++)
-//				{
-//					if (hits.score(i) == 1)
-//					{
-//						return true;
-//					}
-//				}
-//			}
-//			return false;
-            TopDocs topDoc = iv_searcher.search(q, maxHits);
-            ScoreDoc[] hits = topDoc.scoreDocs;
-            if ((hits != null) && (hits.length > 0))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+			Hits hits = iv_searcher.search(q);
+
+			if (hits != null)
+			{
+				for (int i = 0; i < hits.length(); i++)
+				{
+					if (hits.score(i) == 1)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 		catch (Exception e)
 		{

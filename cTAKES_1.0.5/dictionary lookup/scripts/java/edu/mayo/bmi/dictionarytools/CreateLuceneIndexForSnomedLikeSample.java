@@ -26,13 +26,10 @@ package edu.mayo.bmi.dictionarytools;
 /**
  * See http://www.onjava.com/pub/a/onjava/2003/01/15/lucene.html?page=1
  */
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -67,14 +64,14 @@ public class CreateLuceneIndexForSnomedLikeSample {
 	 */
 	public static void main(String args[]) throws Exception {
 
-		File indexDir = new File("C:/temp/lucene/" + "snomed-like_sample"); // lookup by first_word, results contain UMLS CUIs
-		File indexDir2 = new File("C:/temp/lucene/" + "snomed-like_codes_sample"); // for getting snomed codes for a CUI
+		String indexDir = "C:/temp/lucene/" + "snomed-like_sample"; // lookup by first_word, results contain UMLS CUIs
+		String indexDir2 = "C:/temp/lucene/" + "snomed-like_codes_sample"; // for getting snomed codes for a CUI
 		
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-		Analyzer analyzer2 = new StandardAnalyzer(Version.LUCENE_30);
+		Analyzer analyzer = new StandardAnalyzer();
+		Analyzer analyzer2 = new StandardAnalyzer();
 		boolean createFlag = true;
 
-		IndexWriter writer = new IndexWriter(FSDirectory.open(indexDir), analyzer, createFlag, IndexWriter.MaxFieldLength.LIMITED);
+		IndexWriter writer = new IndexWriter(indexDir, analyzer, createFlag);
 
 		ArrayList strings = new ArrayList();
 
@@ -92,29 +89,21 @@ public class CreateLuceneIndexForSnomedLikeSample {
 				System.out.println("s= " + s);
 			}
 			Document document = new Document();
-			document.add(new Field("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i], Field.Store.YES,
-					Field.Index.NO));//Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i]));
+			document.add(Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i]));
 			i++;
-			document.add(new Field("cui", t[i], Field.Store.YES,
-					Field.Index.NO));//Field.Keyword("cui", t[i]));
+			document.add(Field.Keyword("cui", t[i]));
 			i++;
-			document.add(new Field("first_word", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("first_word", t[i]));
+			document.add(Field.Text("first_word", t[i]));
 			i++;
-			document.add(new Field("text", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("text", t[i]));
+			document.add(Field.Text("text", t[i]));
 			i++;
-			document.add(new Field("oid", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("oid", t[i]));
+			document.add(Field.Text("oid", t[i]));
 			i++;
-			document.add(new Field("oui", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("oui", t[i]));
+			document.add(Field.Text("oui", t[i]));
 			i++;
-			document.add(new Field("termStatus", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("termStatus", t[i]));
+			document.add(Field.Text("termStatus", t[i]));
 			i++;
-			document.add(new Field("tui", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("tui", t[i]));
+			document.add(Field.Text("tui", t[i]));
 			i++;
 
 			tcount++;
@@ -125,7 +114,7 @@ public class CreateLuceneIndexForSnomedLikeSample {
 
 		
 		
-		IndexWriter writer2 = new IndexWriter(FSDirectory.open(indexDir2), analyzer2, createFlag,  IndexWriter.MaxFieldLength.LIMITED);
+		IndexWriter writer2 = new IndexWriter(indexDir2, analyzer2, createFlag);
 
 		strings  = getSnomedCodes(); // Get the strings for the snomed-like_codes_sample lucene index
 
@@ -141,17 +130,13 @@ public class CreateLuceneIndexForSnomedLikeSample {
 				System.out.println("s= " + s);
 			}
 			Document document = new Document();
-			document.add(new Field("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i], Field.Store.YES,
-					Field.Index.NO));//Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i]));
+			document.add(Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i]));
 			i++;
-			document.add(new Field("cui", t[i], Field.Store.YES,
-					Field.Index.NO));//Field.Keyword("cui", t[i]));
+			document.add(Field.Keyword("cui", t[i]));
 			i++;
-			document.add(new Field("code", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("code", t[i]));
+			document.add(Field.Text("code", t[i]));
 			i++;
-			document.add(new Field("termStatus", t[i], Field.Store.YES,
-					Field.Index.ANALYZED));//Field.Text("termStatus", t[i]));
+			document.add(Field.Text("termStatus", t[i]));
 			i++;
 
 			tcount++;
