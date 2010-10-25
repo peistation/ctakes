@@ -27,10 +27,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 
 import edu.mayo.bmi.dictionary.BaseMetaDataHitImpl;
 import edu.mayo.bmi.dictionary.MetaDataHit;
@@ -50,10 +53,12 @@ public class LuceneDocumentMetaDataHitImpl extends BaseMetaDataHitImpl
     {
         iv_doc = luceneDoc;
 
-        Enumeration fieldEnum = iv_doc.fields();
-        while (fieldEnum.hasMoreElements())
+        List<Fieldable> fieldEnumList = iv_doc.getFields();
+        
+        ListIterator<Fieldable> fieldEnum = fieldEnumList.listIterator();
+        while (fieldEnum.hasNext())
         {
-            Field f = (Field) fieldEnum.nextElement();
+            Field f = (Field) fieldEnum.next();
 
             iv_nameSet.add(f.name());
             iv_valCol.add(f.stringValue());
