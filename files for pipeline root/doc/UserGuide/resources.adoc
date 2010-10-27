@@ -1,0 +1,23 @@
+[[boost_performance]]
+Boosting Performance
+--------------------
+Due to the size of the LVG dictionary, we do not redistribute it in
+{osp-short}. You can download it from link:{lvg-home}[] and
+swap out the sample dictionary. We have successfully tested the 2008
+release in our organization, but NLM may have a newer release when you
+read this. To use the 2008 release:
+
+. Download either the full version or the lite version from
+  http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/lvg/2008/
+. Replace the directory
+  +{inst-root-dir}/LVG/resources/lvg/data/HSqlDb+ with +data/HSqlDb+
+  from your extracted download.
+
+Models included in {osp-short} may not represent your data
+distribution well, if you want to build your own models, please read
+<<component_description>>, particularly on:
+
+- <<train_sentdetect_model, training a sentence detector model>>
+- <<build_postag_model, building a POS tagger model>>
+- <<build_postag_dict, building a POS tag dictionary>>
+- <<build_chunker_model, building a chunker model>>

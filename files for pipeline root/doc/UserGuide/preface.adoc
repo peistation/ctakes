@@ -1,0 +1,20 @@
+Preface
+-------
+
+Introduction
+~~~~~~~~~~~~
+{osp-full} ({osp-short}) is a pipeline which processes clinical notes
+and identifies types of clinical named entities -- drugs,
+diseases/disorders, signs/symptoms, anatomical sites and
+procedures. Each named entity has attributes for the text span, the
+ontology mapping code, context (family history of, current, unrelated
+to patient), and negated/not negated.
+
+include::conventions.adoc[]
+
+/////////////////////////////////////////////////////////////////////
+EDITING NOTE:
+DO NOT INSERT ANY TEXT BEFORE THE 'PREFACE' LINE, EVEN INCLUDE MACROS
+WILL MAKE THE DOCBOOK BUILD FAIL, BECAUSE A2X WILL GENERATE TWO
+PREFACE CHAPTERS IN DOCBOOK XML. Blank lines seem OK.
+/////////////////////////////////////////////////////////////////////

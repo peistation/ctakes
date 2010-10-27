@@ -1,0 +1,40 @@
+// Global attributes
+// EDITING NOTE: NO BLANK LINES BETWEEN DECLARATIONS
+
+:rev:                  1.0, March 2009
+:osp-full:             Clinical Text Analysis and Knowledge Extraction System
+:osp-short:            cTAKES
+:osp-cp:               <pipeline-classpath>
+:osp-download:         https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/OHNLP_Documentation_and_Downloads
+:osp-repo:             https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES/
+:org-name:             Mayo Clinic
+:osp-contact:          clinicalnlp@mayo.edu
+:jre-download:         http://java.com/getjava/
+:jdk-download:         http://java.sun.com/javase/downloads/index.jsp
+:uima-download:        http://incubator.apache.org/uima/downloads.cgi
+:ant-download:         http://ant.apache.org/bindownload.cgi
+:lvg-home:             http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/lvg/current/index.html
+:genia-home:           http://www-tsujii.is.s.u-tokyo.ac.jp/GENIA/
+:ptb-home:             http://www.cis.upenn.edu/~treebank/
+:opennlp-home:         http://opennlp.sourceforge.net/
+:ilk-home:             http://ilk.uvt.nl/
+:hl7-home:             http://www.hl7.org/
+:fda-home:             http://www.fda.gov/
+:orangebook-home:      http://www.fda.gov/cder/orange/
+:nlm-home:             http://www.nlm.nih.gov/
+:rxnorm-home:          http://www.nlm.nih.gov/research/umls/rxnorm/
+:ihtsdo-home:          http://www.ihtsdo.org/
+:snomed-home:          http://www.ihtsdo.org/snomed-ct/
+:snomed-umls:          http://www.nlm.nih.gov/research/umls/Snomed/snomed_main.html
+:cap-home:             http://www.cap.org/
+:umls-home:            http://www.nlm.nih.gov/research/umls/
+:uima-doc-book1:       UIMA Overview &amp; SDK Setup
+:uima-doc-book3:       UIMA Tools Guide and Reference
+:uima-install:         3.1.4 Install the UIMA SDK
+:uima-eclipse:         Chapter 3. Setting up the Eclipse IDE to work with UIMA
+:uima-pear-install:    Chapter 8. PEAR Installer User's Guide
+:inst-root-dir:        <pipeline-root>
+:sample-ae:            {inst-root-dir}/clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml
+:cvd-eclipse:          UIMA_CVD\--clinical_documents_pipeline
+:eclipse-only:         This section only applies to Eclipse users.
+:model-disclaimer:     "The model derives from a combination of GENIA, Penn Treebank (Wall Street Journal) and anonymized clinical data per Safe Harbor HIPAA guidelines. Prior to model building the clinical data was deidentified for patient names to preserve patient confidentiality. Any person name in the model will originate from non-patient data sources."

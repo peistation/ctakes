@@ -1,0 +1,33 @@
+/////
+We provide two versions of source packages: one with UIMA PEAR files,
+and one without. If you use the version without PEAR files, simply
+extract the package to one directory, which we will call
++{inst-root-dir}+, and continue to the end of this section to install
+required packages. Otherwise, please read the next paragraph.
+/////
+
+Download all the PEAR packages you need. If you downloaded the
+all-inclusive package, extract all the PEAR files into a temporary
+directory. Then follow ``{uima-pear-install}'' of the UIMA
+documentation Book 3 ``{uima-doc-book3}'' to install all the PEAR
+files. When you install, make sure you use the same folder in the
+Installation Directory box of the UIMA Pear Installer for all the PEAR
+files. We'll refer to this folder as +{inst-root-dir}+ later.
+
+.Installation order
+[IMPORTANT]
+=======================
+Please install in the following order, otherwise you may experience
+dependency errors.
+
+. core
+. document preprocessor
+. POS tagger
+. chunker
+. context dependent tokenizer
+. dictionary lookup
+. LVG
+. NE contexts
+. clinical documents pipeline
+=======================
+
