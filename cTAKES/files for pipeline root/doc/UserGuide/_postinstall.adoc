@@ -1,0 +1,127 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+Next steps
+~~~~~~~~~~
+
+- In addition to CVD, UIMA provides a ((Collection Processing Engine))
+(CPE) to process multiple documents in one batch. To run the CPE:
+indexterm:[CPE,Collection Processing Engine]
++
+--
+. Run from +{inst-root-dir}+:
++
+--
+____________________________________________________________
+on Windows
+*`java -cp \^
+"%UIMA_HOME%/lib/uima-core.jar;\^
+%UIMA_HOME%/lib/uima-cpe.jar;\^
+%UIMA_HOME%/lib/uima-tools.jar;\^
+%UIMA_HOME%/lib/uima-document-annotations.jar;\^
+chunker/bin;\^
+clinical documents pipeline/bin;\^
+context dependent tokenizer/bin;\^
+core/bin;\^
+dictionary lookup/bin;\^
+document preprocessor/bin;\^
+LVG/bin;\^
+NE contexts/bin;\^
+POS tagger/bin;\^
+core/lib/log4j-1.2.8.jar;\^
+core/lib/jdom.jar;\^
+core/lib/lucene-1.4-final.jar;\^
+core/lib/opennlp-tools-1.4.0.jar;\^
+core/lib/maxent-2.5.0.jar;\^
+core/lib/OpenAI_FSM.jar;\^
+core/lib/trove.jar;\^
+LVG/lib/lvg2008dist.jar;\^
+document preprocessor/lib/xercesImpl.jar;\^
+document preprocessor/lib/xml-apis.jar;\^
+document preprocessor/lib/xmlParserAPIs.jar;\^
+chunker/resources;\^
+clinical documents pipeline/resources;\^
+context dependent tokenizer/resources;\^
+core/resources;\^
+dictionary lookup/resources;\^
+document preprocessor/resources;\^
+LVG/resources;\^
+NE contexts/resources;\^
+POS tagger/resources" org.apache.uima.tools.cpm.CpmFrame`*
+
+on Linux
+*`java -cp \
+$UIMA_HOME/lib/uima-core.jar:\
+$UIMA_HOME/lib/uima-cpe.jar:\
+$UIMA_HOME/lib/uima-tools.jar:\
+$UIMA_HOME/lib/uima-document-annotations.jar:\
+chunker/bin:\
+clinical\ documents\ pipeline/bin:\
+context\ dependent\ tokenizer/bin:\
+core/bin:\
+dictionary\ lookup/bin:\
+document\ preprocessor/bin:\
+LVG/bin:\
+NE\ contexts/bin:\
+POS\ tagger/bin:\
+core/lib/log4j-1.2.8.jar:\
+core/lib/jdom.jar:\
+core/lib/lucene-1.4-final.jar:\
+core/lib/opennlp-tools-1.4.0.jar:\
+core/lib/maxent-2.5.0.jar:\
+core/lib/OpenAI_FSM.jar:\
+core/lib/trove.jar:\
+LVG/lib/lvg2008dist.jar:\
+document\ preprocessor/lib/xercesImpl.jar:\
+document\ preprocessor/lib/xml-apis.jar:\
+document\ preprocessor/lib/xmlParserAPIs.jar \
+chunker/resources:\
+clinical\ documents\ pipeline/resources:\
+context\ dependent\ tokenizer/resources:\
+core/resources:\
+dictionary\ lookup/resources:\
+document\ preprocessor/resources:\
+LVG/resources:\
+NE\ contexts/resources:\
+POS\ tagger/resources \
+org.apache.uima.tools.cpm.CpmFrame`*
+____________________________________________________________
+
+NOTE: The carets(^) in the Windows command escape the new line
+characters, hence breaking a long command into multiple lines.
+--
++
+. Go to File -> Open CPE Descriptor
+. Open `{inst-root-dir}/clinical documents pipeline/desc/collection_processing_engine/test1.xml`
+. Click the ``Run collection processing'' button (a triangle)
+
+TIP: This command includes all possible classes {osp-short} may make
+use of, thus you can use them to run any CPE shipped in the
+package. You can also take the classpath and run CVD, etc. We will
+refer to this classpath as +{osp-cp}+.
+
+TIP: Eclipse users may use
+``UIMA_CPE_GUI\--clinical_documents_pipeline'' launch. Users who
+compiled from source can use the ant target ``testcpe''.
+--
++
+- To verify your {osp-short} pipeline functions properly, run
++
+--
+____________________________________________________________________
+*`java -cp <classpath> edu.mayo.bmi.uima.xcas_comparison.Compare \`*
+*`                     <XCAS1> \`* <1>
+*`                     <XCAS2> \`* <2>
+*`                     <diff-html>`* <3>
+____________________________________________________________________
+
+<1> first file to compare.
+<2> second file to compare, the order is not important.
+<3> an HTML file that the comparison results will be written into.
+--
++
+- Some of the dictionaries in the release are small samples. To
+replace them with full versions, please read <<boost_performance>>.
+- To read more on the {osp-short} architecture, go to
+<<component_description>> for details on individual components.
+
