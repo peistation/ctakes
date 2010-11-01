@@ -21,7 +21,29 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License. 
  */
-package edu.mayo.bmi.nlp.parser.ae;import java.io.File;import java.io.FileNotFoundException;import java.util.ArrayList;import java.util.Arrays;import java.util.List;import org.apache.log4j.Logger;import org.apache.uima.UimaContext;import org.apache.uima.analysis_engine.AnalysisEngineProcessException;import org.apache.uima.jcas.JCas;import org.apache.uima.resource.ResourceInitializationException;import edu.mayo.bmi.uima.core.resource.FileLocator;import edu.mayo.bmi.uima.core.type.BaseToken;import edu.mayo.bmi.uima.core.type.Sentence;import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;import org.apache.uima.cas.FSIterator;import org.apache.uima.cas.text.AnnotationIndex;//import org.cleartk.type.Sentence;//import org.cleartk.type.Token;//import org.cleartk.util.AnnotationRetrieval;//import org.uimafit.component.JCasAnnotator_ImplBase;//import org.uimafit.descriptor.ConfigurationParameter;//import org.uimafit.factory.ConfigurationParameterFactory;import clear.dep.DepLib;import clear.dep.DepNode;import clear.dep.DepParser;import clear.dep.DepTree;import clear.model.AbstractModel;import clear.model.LiblinearModel;import clear.morph.MorphEnAnalyzer;import clear.util.ClearDependencyUtility;public class ClearParserAE extends JCasAnnotator_ImplBase{	// LOG4J logger based on class name	public Logger logger = Logger.getLogger(getClass().getName());	/**	 * "ParserModelFile" is a required, single, string parameter that contains the	 * file name of the parser's grammar model.	 */	public static final String DEPENDENCY_MODEL_FILE_PARAM = "DependencyModelFile";	//public static final String PARAM_GRAMMAR_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(BerkeleyParserAE.class, "grammarFileName");	//private String grammarFileName;	public static final String LEXICON_DIR_PARAM = "LexiconDirectory";		public static final String FEATURE_TEMPLATE_PARAM = "FeatureTemplateFile";    	public static final String MORPH_DICT_PARAM = "MorphDictionaryDirectory";
+package edu.mayo.bmi.nlp.parser.ae;import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.text.AnnotationIndex;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
+
+import clear.dep.DepLib;
+import clear.dep.DepNode;
+import clear.dep.DepParser;
+import clear.dep.DepTree;
+import clear.morph.MorphEnAnalyzer;
+import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.Sentence;
+public class ClearParserAE extends JCasAnnotator_ImplBase{	// LOG4J logger based on class name	public Logger logger = Logger.getLogger(getClass().getName());	/**	 * "ParserModelFile" is a required, single, string parameter that contains the	 * file name of the parser's grammar model.	 */	public static final String DEPENDENCY_MODEL_FILE_PARAM = "DependencyModelFile";	//public static final String PARAM_GRAMMAR_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(BerkeleyParserAE.class, "grammarFileName");	//private String grammarFileName;	public static final String LEXICON_DIR_PARAM = "LexiconDirectory";		public static final String FEATURE_TEMPLATE_PARAM = "FeatureTemplateFile";    	public static final String MORPH_DICT_PARAM = "MorphDictionaryDirectory";
 		protected DepParser parser;		protected MorphEnAnalyzer morph;
 
 	private boolean useMorphy = false;
@@ -38,4 +60,5 @@ package edu.mayo.bmi.nlp.parser.ae;import java.io.File;import java.io.FileNot
 			for (int i = 0; i < tokens.size(); i++) {
 				words[i] = (tokens.get(i).getCoveredText());				tags[i] = (tokens.get(i).getPartOfSpeech());			    if ( useMorphy ) 
 			    	lemmas[i] = (tokens.get(i).getNormalizedForm());                conlltokens[i] = (i+1)+"\t"+words[i]+"\t_\t"+tags[i]+"\t"+tags[i]+"\t"+"_";			}						DepTree tree = new DepTree();                        for (int i=0; i<words.length; i++)            {                int    id    = i + 1;                String form  = words[i];                String pos   = tags[i];                String lemma = useMorphy ? morph.getLemma(form, pos) : lemmas[i];                                DepNode node = new DepNode();                node.id = id;                node.form = form;
-                node.lemma = (lemma==null) ? form.toLowerCase() : lemma;                node.pos = (pos==null) ? "_" : pos;                                tree.add(node);            }//            System.out.println("going to parse:\n"+tree.toString());            parser.parse(tree);            ClearDependencyUtility.convert(jCas, tree, sentence, tokens);		}	}		@Override	public void collectionProcessComplete() throws AnalysisEngineProcessException {		System.out.println("total number of sentences that were not parsed was: "+parseFailureCount+" out of "+sentenceCount);	}}
+                node.lemma = (lemma==null) ? form.toLowerCase() : lemma;                node.pos = (pos==null) ? "_" : pos;                                tree.add(node);            }//            System.out.println("going to parse:\n"+tree.toString());            parser.parse(tree);            ArrayList<ConllDependencyNode> nodes = ClearDependencyUtility.convert(jCas, tree, sentence, tokens);
+            ClearDependencyUtility.addToIndexes(jCas, nodes);		}	}		@Override	public void collectionProcessComplete() throws AnalysisEngineProcessException {		System.out.println("total number of sentences that were not parsed was: "+parseFailureCount+" out of "+sentenceCount);	}}
