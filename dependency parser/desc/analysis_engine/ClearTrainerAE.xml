@@ -126,7 +126,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="TypeSystem.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities>

@@ -3,28 +3,28 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="DependencyFileCollectionReader.xml"/>
+                <import location="../collection_reader/DependencyFileCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>/Users/m081914/work/ctakes/clearparser/data/mayo-trn.dep</string>
+                        <string>data/clinques-train.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>DEP</string>
+                        <string>MPOS</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearTrainerPosAggregate">
+        <casProcessor deployment="integrated" name="ClearTrainerLemAggregate">
             <descriptor>
-                <import location="ClearTrainerPosAggregate.xml"/>
+                <import location="../analysis_engine/ClearTrainerLemAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -37,20 +37,20 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/mayo-ourpos.mod</string>
+                        <string>resources/clinques-lvglem.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexicon4</string>
+                        <string>lexiconLvgLem</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </casProcessor>
         <casProcessor deployment="integrated" name="Write CAS to XML file">
             <descriptor>
-                <import location="../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/output</string>
+                        <string>data/outputLvgLem</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
