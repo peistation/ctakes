@@ -3,28 +3,28 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="DependencyFileCollectionReader.xml"/>
+                <import location="../collection_reader/DependencyFileCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/clinques-train.dep</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>TOK</string>
+                        <string>DEP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearParserTokenizedAggregate">
+        <casProcessor deployment="integrated" name="ClearTrainerPosAggregate">
             <descriptor>
-                <import location="ClearParserTokenizedAggregate.xml"/>
+                <import location="../analysis_engine/ClearTrainerPosAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -37,46 +37,20 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/clinques-openpos.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
-                    </value>
-                </nameValuePair>
-            </configurationParameterSettings>
-        </casProcessor>
-        <casProcessor deployment="integrated" name="DependencyNodeWriter">
-            <descriptor>
-                <import location="DependencyNodeWriter.xml"/>
-            </descriptor>
-            <deploymentParameters/>
-            <errorHandling>
-                <errorRateThreshold action="terminate" value="0/1000"/>
-                <maxConsecutiveRestarts action="terminate" value="30"/>
-                <timeout max="100000" default="-1"/>
-            </errorHandling>
-            <checkpoint batch="10000" time="1000ms"/>
-            <configurationParameterSettings>
-                <nameValuePair>
-                    <name>outputDir</name>
-                    <value>
-                        <string>data/outputClinQues</string>
-                    </value>
-                </nameValuePair>
-                <nameValuePair>
-                    <name>outputFormat</name>
-                    <value>
-                        <string>dep</string>
+                        <string>lexiconOpenPos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </casProcessor>
         <casProcessor deployment="integrated" name="Write CAS to XML file">
             <descriptor>
-                <import location="../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -89,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputOpenPos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

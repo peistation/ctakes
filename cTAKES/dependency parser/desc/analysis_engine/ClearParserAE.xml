@@ -66,7 +66,7 @@ If no valid directory is given, this AE will default to using lemmas provided by
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="TypeSystem.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities>
@@ -79,8 +79,17 @@ If no valid directory is given, this AE will default to using lemmas provided by
     <fsIndexCollection/>
     <capabilities>
       <capability>
-        <inputs/>
-        <outputs/>
+        <inputs>
+          <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+          <feature>edu.mayo.bmi.uima.core.type.BaseToken:partOfSpeech</feature>
+          <feature>edu.mayo.bmi.uima.core.type.BaseToken:normalizedForm</feature>
+          <feature>edu.mayo.bmi.uima.core.type.BaseToken:tokenNumber</feature>
+          <feature>edu.mayo.bmi.uima.core.type.BaseToken:end</feature>
+          <feature>edu.mayo.bmi.uima.core.type.BaseToken:begin</feature>
+        </inputs>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.nlp.parser.type.ConllDependencyNode</type>
+        </outputs>
         <languagesSupported/>
       </capability>
     </capabilities>

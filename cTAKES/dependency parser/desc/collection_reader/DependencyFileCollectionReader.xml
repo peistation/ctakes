@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.nlp.parser.DependencyNodeWriter</implementationName>
+  <implementationName>edu.mayo.bmi.nlp.parser.DependencyFileCollectionReader</implementationName>
   <processingResourceMetaData>
-    <name>DependencyNodeWriter</name>
-    <description>Write Dependency Nodes from CAS to tab-delimited file</description>
+    <name>DependencyCollectionReader</name>
+    <description>For training dependency parsers.
+
+Reads dependency nodes (lines) from a file and creates DependencyNode annotations.  Optionally assigns all CONLL attributes.</description>
     <version>1.0</version>
-    <vendor>Mayo Clinic</vendor>
+    <vendor/>
     <configurationParameters>
       <configurationParameter>
-        <name>outputDir</name>
-        <description>Where the xml (xcas) files will be written to</description>
+        <name>DependencyFile</name>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>outputFormat</name>
-        <description>Output format for the file writer:
-The default is CONLL-x tab-delimited format, with underscores for empty fields.  Options (case insensitive):
+        <name>InputFormat</name>
+        <description>The default is CONLL-x tab-delimited format, with underscores for empty fields.  Options (case insensitive):
  MIN - 4 fields (ID, FORM, HEAD, DEPREL)
  MPOS - 5 fields (add POSTAG)
  MLEM - 5 fields (with LEMMA instead of POSTAG)
@@ -31,42 +31,37 @@ The default is CONLL-x tab-delimited format, with underscores for empty fields. 
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>outputDir</name>
+        <name>DependencyFile</name>
         <value>
-          <string>data/output</string>
+          <string>data/clinques-train.dep</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>outputFormat</name>
+        <name>InputFormat</name>
         <value>
-          <string>DEP</string>
+          <string>dep</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="TypeSystem.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
-        <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.DocumentID</type>
-        </inputs>
+        <inputs/>
         <outputs/>
-        <inputSofas>
-          <sofaName>plaintext</sofaName>
-        </inputSofas>
         <languagesSupported/>
       </capability>
     </capabilities>
     <operationalProperties>
-      <modifiesCas>false</modifiesCas>
+      <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
-      <outputsNewCASes>false</outputsNewCASes>
+      <outputsNewCASes>true</outputsNewCASes>
     </operationalProperties>
   </processingResourceMetaData>
   <resourceManagerConfiguration/>
-</casConsumerDescription>
+</collectionReaderDescription>

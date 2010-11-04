@@ -2,9 +2,9 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.nlp.parser.PosAssigner</annotatorImplementationName>
+  <annotatorImplementationName>edu.mayo.bmi.nlp.parser.LemAssigner</annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>PosAssigner</name>
+    <name>LemAssigner</name>
     <description/>
     <version>1.0</version>
     <vendor/>
@@ -12,8 +12,7 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="../../POS tagger/desc/TypeSystem.xml"/>
-        <import location="TypeSystem.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

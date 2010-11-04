@@ -4,7 +4,7 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
-      <import location="../../LVG/desc/analysis_engine/LvgBaseTokenAnnotator.xml"/>
+      <import location="LvgBaseTokenAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LemAssigner">
       <import location="LemAssigner.xml"/>
@@ -16,10 +16,10 @@
       <import location="PosAssigner.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
-      <import location="../../POS tagger/desc/POSTagger.xml"/>
+      <import location="../../../POS tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
