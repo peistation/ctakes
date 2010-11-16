@@ -66,6 +66,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	 */
 	public static final String INPUT_FORMAT_PARAM = "InputFormat";
 
+	public static final String TRAINING_MODE_PARAM = "TrainingMode";
+
 //	private static IntIntOpenHashMap formatMap = new IntIntOpenHashMap();
 	
 	BufferedReader input;
@@ -73,6 +75,7 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	private int docCtr = 0;
 
 	String inputFormat;
+	boolean trainingMode = false;
 
 	@Override
 	public void initialize() throws ResourceInitializationException {
@@ -81,6 +84,7 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 			input = new BufferedReader(new FileReader(DependencyFile));
 			String paramValue = (String) getConfigParameterValue(INPUT_FORMAT_PARAM);
 			inputFormat = paramValue.toLowerCase();
+			trainingMode = (Boolean) getConfigParameterValue(TRAINING_MODE_PARAM);
 
 //			if (inputFormat.contains("choi")) {
 //			    formatMap = DataLib.
@@ -164,7 +168,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                    for (String aline : lines) {                    
 	                        String[] tokens = aline.split("\t");
 	                        wordEnd = wordStart + tokens[1].length();
-	                        depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
+	                        if (trainingMode)
+	                        	depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
 	                        BaseToken btoken = new BaseToken(jCas,wordStart,wordEnd);
 	                        btoken.setTokenNumber(wordNumber++);
 	                        btoken.addToIndexes();
@@ -175,7 +180,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                    for (String aline : lines) {                    
 	                        String[] tokens = aline.split("\t");
 	                        wordEnd = wordStart + tokens[1].length();
-	                        depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
+	                        if (trainingMode)
+	                        	depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
 	                        BaseToken btoken = new BaseToken(jCas,wordStart,wordEnd);
 	                        btoken.setTokenNumber(wordNumber++);
 	                        btoken.setPartOfSpeech(tokens[2]);
@@ -187,7 +193,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                    for (String aline : lines) {                    
 	                        String[] tokens = aline.split("\t");
 	                        wordEnd = wordStart + tokens[1].length();
-	                        depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
+	                        if (trainingMode)
+	                        	depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
 	                        BaseToken btoken = new BaseToken(jCas,wordStart,wordEnd);
 	                        btoken.setTokenNumber(wordNumber++);
 	                        btoken.setNormalizedForm(tokens[2]);
@@ -199,7 +206,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                    for (String aline : lines) {                    
 	                        String[] tokens = aline.split("\t");
 	                        wordEnd = wordStart + tokens[1].length();
-	                        depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
+	                        if (trainingMode)
+	                        	depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
 	                        BaseToken btoken = new BaseToken(jCas,wordStart,wordEnd);
 	                        btoken.setTokenNumber(wordNumber++);
 	                        btoken.setNormalizedForm(tokens[2]);
@@ -213,7 +221,8 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                    for (String aline : lines) {                    
 	                        String[] tokens = aline.split("\t");
 	                        wordEnd = wordStart + tokens[1].length();
-	                        depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
+	                        if (trainingMode)
+	                        	depNodes.add( new ConllDependencyNode(jCas,wordStart,wordEnd) );
 	                        BaseToken btoken = new BaseToken(jCas,wordStart,wordEnd);
 	                        btoken.setTokenNumber(wordNumber++);
 	                        btoken.setNormalizedForm(tokens[2]);
@@ -229,7 +238,7 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                sentence.setSentenceNumber(sentNumber);
 	                sentence.addToIndexes();
 	                
-	                if (!inputFormat.contains("tok")) 
+	                if (!inputFormat.contains("tok") && trainingMode) 
 	                    setDependencyNodesFromTabbedText(jCas, lines, documentText, depNodes);
 
 	                if (line==null) {

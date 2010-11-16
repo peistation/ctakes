@@ -84,28 +84,32 @@ public class PosAssigner extends JCasAnnotator_ImplBase{
             ListIterator<ConllDependencyNode> itn = nodes.listIterator();
             BaseToken           bt = null;
             ConllDependencyNode dn = null;
-            if (itt.hasNext()) bt                  = itt.next();
-            if (itn.hasNext()) dn                  = itn.next();
-            if (dn.getID()==0 && itn.hasNext()) dn = itn.next();
-            while (itt.hasNext() || itn.hasNext()) {
-                if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
-                    dn.setPOSTAG( bt.getPartOfSpeech() );
-                    dn.setCPOSTAG( bt.getPartOfSpeech() );  
-                    dn.addToIndexes();
-                    if (itt.hasNext()) bt = itt.next();
-                    if (itn.hasNext()) dn = itn.next();
-                } else if ( bt.getBegin()<dn.getBegin() ) {
-                    if (itt.hasNext()) bt = itt.next(); else break;
-                } else if ( bt.getBegin()>dn.getBegin() ) {
-                    if (itn.hasNext()) dn = itn.next(); else break;
-                }
+            if (tokens.size()>0 && nodes.size()>0) {
+                // iterate through the parallel sorted lists
+            	if (itt.hasNext()) bt                  = itt.next();
+            	if (itn.hasNext()) dn                  = itn.next();
+            	if (dn != null) 
+            		if (dn.getID()==0 && itn.hasNext()) 
+            			dn = itn.next();
+            	while (itt.hasNext() || itn.hasNext()) {
+            		if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
+            			dn.setPOSTAG( bt.getPartOfSpeech() );
+            			dn.setCPOSTAG( bt.getPartOfSpeech() );  
+            			dn.addToIndexes();
+            			if (itt.hasNext()) bt = itt.next();
+            			if (itn.hasNext()) dn = itn.next();
+            		} else if ( bt.getBegin()<dn.getBegin() ) {
+            			if (itt.hasNext()) bt = itt.next(); else break;
+            		} else if ( bt.getBegin()>dn.getBegin() ) {
+            			if (itn.hasNext()) dn = itn.next(); else break;
+            		}
+            	}
+            	if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
+            		dn.setPOSTAG( bt.getPartOfSpeech() );
+            		dn.setCPOSTAG( bt.getPartOfSpeech() );  
+            		dn.addToIndexes();
+            	}
             }
-            if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
-                dn.setPOSTAG( bt.getPartOfSpeech() );
-                dn.setCPOSTAG( bt.getPartOfSpeech() );  
-                dn.addToIndexes();
-            }
-            
 	            
 		}
         
