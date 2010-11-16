@@ -2,10 +2,8 @@ package edu.mayo.bmi.nlp.parser.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -13,32 +11,10 @@ import clear.dep.DepNode;
 import clear.dep.DepTree;
 import clear.dep.UimaDepNode;
 import clear.dep.UimaDepTree;
-
-
-import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
 
-/**
- * @author m081914
- *
- */
-/**
- * @author m081914
- *
- */
-/**
- * @author m081914
- *
- */
-/**
- * @author m081914
- *
- */
-/**
- * @author m081914
- *
- */
 /**
  * @author m081914
  *
@@ -118,29 +94,7 @@ public class ClearDependencyUtility extends DependencyUtility {
         
         return uimaNodes;//uimaNodes.get(0); //return the root node
     }
-    
-//	/** Conversion to a ConllDependencyNode.  This is a shallow
-//	 * conversion, in that the getHEAD() method will not return another
-//	 * fully-functional node -- it will only have the head node's index.
-//	 * @param clearNode
-//	 * @return
-//	 */
-//    public ConllDependencyNode convert( UimaDepNode clearNode ) {
-//    	ConllDependencyNode uimaNode;
-//        ConllDependencyNode uimaHead;
-//        uimaHead.set
-//        uimaNode.setID(clearNode.id);
-//        uimaNode.setFORM(clearNode.form);
-//        uimaNode.setLEMMA(clearNode.lemma);
-//        uimaNode.setCPOSTAG(clearNode.pos);
-//        uimaNode.setPOSTAG(clearNode.pos);
-//        uimaNode.setFEATS("_");
-//        uimaNode.setHEAD(uimaNodes.get(clearNode.headId));
-//        uimaNode.setDEPREL(clearNode.deprel);
-//        uimaNode.setPHEAD(null);
-//        uimaNode.setPDEPREL("_");
-//    }
-	
+    	
 	
 	/** Equality expressions to aid in converting between DepNodes and CAS objects */
 	public static boolean equalCoverage(Annotation annot1,Annotation annot2) {
@@ -163,59 +117,5 @@ public class ClearDependencyUtility extends DependencyUtility {
 			udNode2.end==udNode.end && 
 			udNode2.form==udNode.form;
 	}
-
-//	/** Find path between two nodes */
-//	public static ClearDependencyPath getPath(UimaDepNode node1, UimaDepNode node2, UimaDepTree tree) {
-//		ClearDependencyPath pathUp1 = new ClearDependencyPath();
-//		ClearDependencyPath pathUp2 = new ClearDependencyPath();
-//		ClearDependencyPath pathLtoR = new ClearDependencyPath();
-//		ClearDependencyPath pathRtoL = new ClearDependencyPath();
-//		
-//		if (node1==null || node2==null) {
-//			System.err.println(" WARNING: looking for path between null nodes.");
-//			return null;
-//		}
-//		
-//		pathUp1.add(node1);
-//		while (node1.hasHead) {
-//			node1 = tree.get(node1.headId);
-//			pathUp1.add(node1);
-//		}
-//		pathUp2.add(node2);
-//		while (node2.hasHead) {
-//			node2 = tree.get(node2.headId);
-//			pathUp2.add(node2);
-//		}
-//		
-//		pathLtoR.clear();
-//		boolean foundMatch = false;
-//		for (int i=0; i<pathUp1.size(); i++ ) {
-//			UimaDepNode nodeUp1 = pathUp1.get(i);
-//			pathLtoR.add(nodeUp1);
-//			
-//			pathRtoL.clear();
-//			for (int j=0; j<pathUp2.size(); j++ ) {
-//				UimaDepNode nodeUp2 = pathUp2.get(j);				
-//				if (ClearDependencyUtility.equalCoverage(nodeUp1, nodeUp2)) {
-//					// word-rel<word-rel<commonparent>rel-word>rel-word
-//					pathLtoR.setCommonNode(nodeUp1);
-//					pathLtoR.addAll(pathRtoL);
-//					foundMatch = true;
-//					break;
-//				} else {
-//					pathRtoL.push(nodeUp2);
-//				}
-//			}
-//
-//			if (foundMatch) break;
-//		}
-//		
-//		return pathLtoR;
-//	}
-//
-//	public static DependencyPath getPath(ConllDependencyNode node1, ConllDependencyNode node2, List<ConllDependencyNode> nodes) {
-//		
-//		return DependencyUtility.getPath(node1,node2,nodes);
-//	}
 	
 }

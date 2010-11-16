@@ -73,7 +73,6 @@ public class DependencyNodeWriter extends CasConsumer_ImplBase
      * Write a tab-delimited file containing data from the view.
      * The file name will come from the DocumentID annotation,
      * which is associated with a view.
-     * We append .conll to the DocumentID/filename 
      */
     private void processView(JCas jCas) throws Exception {
         // String docText = view.getDocumentText();
@@ -111,10 +110,10 @@ public class DependencyNodeWriter extends CasConsumer_ImplBase
                 ConllDependencyNode node = null;
                 FSIterator nodeIterator = nodeIndex.subiterator(sentence);
                 while (nodeIterator.hasNext()) {
-                    ConllDependencyNode pnode = node;
+//                    int pID = (node==null)? 0 : node.getID();
                     node = (ConllDependencyNode) nodeIterator.next();
-
-                    if (node.getID()!=0 && !node.equals(pnode)) {
+                    
+                    if (node.getID()!=0 ) { // && node.getID() !=pID) {
 
                         if (iv_outputFormat.toLowerCase().contains("min")) {
                             bw.write(node.getID()+"\t");
