@@ -117,7 +117,7 @@
         <pathelement path="${_core.dir}/${src.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/lucene-1.4-final.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
@@ -129,7 +129,7 @@
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/lucene-1.4-final.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
     <path id="_document_preprocessor.cp">
@@ -192,7 +192,7 @@
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/lucene-1.4-final.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
