@@ -28,6 +28,13 @@ Reads dependency nodes (lines) from a file and creates DependencyNode annotation
         <multiValued>false</multiValued>
         <mandatory>false</mandatory>
       </configurationParameter>
+      <configurationParameter>
+        <name>TrainingMode</name>
+        <description>If TrainingMode is true, a ConllDependencyNode will be posted to the CAS corresponding to the input.  If not, this is assumed to be a test mode, with only BaseTokens being posted to the CAS.</description>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
@@ -40,6 +47,12 @@ Reads dependency nodes (lines) from a file and creates DependencyNode annotation
         <name>InputFormat</name>
         <value>
           <string>dep</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>TrainingMode</name>
+        <value>
+          <boolean>false</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

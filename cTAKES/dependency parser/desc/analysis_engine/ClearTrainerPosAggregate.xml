@@ -6,17 +6,17 @@
     <delegateAnalysisEngine key="ClearTrainerAE">
       <import location="ClearTrainerAE.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="PosAssigner">
       <import location="PosAssigner.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="POSTagger">
-      <import location="../../../POS tagger/desc/POSTagger.xml"/>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="POSTagger">
+      <import location="../../../POS tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -64,6 +64,45 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
           <parameter>ClearTrainerAE/TrainerPath</parameter>
         </overrides>
       </configurationParameter>
+      <configurationParameter>
+        <name>PostLemmas</name>
+        <description>This parameter determines whether the feature lemmaEntries will be populated for word annotations.</description>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>LvgAnnotator/PostLemmas</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>PosModelFile</name>
+        <description>The file that contains the MaxEnt model used by the part of speech (POS) tagger</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>POSTagger/PosModelFile</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>TagDictionary</name>
+        <description>The file contains a list of words, and for each word, the set of part of speech tags to be considered for that word. For words in the tag dictionary, only the corresponding tags in the tag dictionary are considered when tagging the word with a part of speech.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>POSTagger/TagDictionary</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>CaseSensitive</name>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>POSTagger/CaseSensitive</parameter>
+        </overrides>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
@@ -88,6 +127,30 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
         <name>TrainerPath</name>
         <value>
           <string>../../liblinear-1.7/train</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>PostLemmas</name>
+        <value>
+          <boolean>false</boolean>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>PosModelFile</name>
+        <value>
+          <string>CHANGEME</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>TagDictionary</name>
+        <value>
+          <string>CHANGEME</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>CaseSensitive</name>
+        <value>
+          <boolean>true</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
