@@ -9,8 +9,6 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import clear.dep.DepNode;
 import clear.dep.DepTree;
-import clear.dep.UimaDepNode;
-import clear.dep.UimaDepTree;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
@@ -26,34 +24,34 @@ public class ClearDependencyUtility extends DependencyUtility {
 	// LOG4J logger based on class name
 	public Logger logger = Logger.getLogger(getClass().getName());
 	
-	public static UimaDepTree getDepTreeFromArray(ArrayList<ConllDependencyNode> nodes) {
-	    UimaDepTree tree = new UimaDepTree();
-	    
-	    for (ConllDependencyNode cNode : nodes)
-	    {
-	        UimaDepNode node = new UimaDepNode();
-	        node.id     = cNode.getID();
-	        node.form   = cNode.getFORM();
-	        node.lemma  = cNode.getLEMMA();
-	        node.pos    = cNode.getPOSTAG();
-	        node.headId = cNode.getHEAD().getID();
-	        node.deprel = cNode.getDEPREL();
-	        node.begin  = cNode.getBegin();
-	        node.end    = cNode.getEnd();
-	        node.hasHead= (cNode.getHEAD()!=null);
-	        
-	        tree.add(node);
-	    }
-	    
-	    return tree;
-	}
+//	public static UimaDepTree getDepTreeFromArray(ArrayList<ConllDependencyNode> nodes) {
+//	    UimaDepTree tree = new UimaDepTree();
+//	    
+//	    for (ConllDependencyNode cNode : nodes)
+//	    {
+//	        UimaDepNode node = new UimaDepNode();
+//	        node.id     = cNode.getID();
+//	        node.form   = cNode.getFORM();
+//	        node.lemma  = cNode.getLEMMA();
+//	        node.pos    = cNode.getPOSTAG();
+//	        node.headId = cNode.getHEAD().getID();
+//	        node.deprel = cNode.getDEPREL();
+//	        node.begin  = cNode.getBegin();
+//	        node.end    = cNode.getEnd();
+//	        node.hasHead= (cNode.getHEAD()!=null);
+//	        
+//	        tree.add(node);
+//	    }
+//	    
+//	    return tree;
+//	}
 
 
-	public static UimaDepTree getDepTreeFromCas(JCas jCas, Sentence sentence) {    
-		return getDepTreeFromArray( getConllNodesFromCas(jCas,sentence) );
-	}
-
-
+//	public static UimaDepTree getDepTreeFromCas(JCas jCas, Sentence sentence) {    
+//		return getDepTreeFromArray( getConllNodesFromCas(jCas,sentence) );
+//	}
+//
+//
 	public static ArrayList<ConllDependencyNode> convert(JCas jcas, DepTree clearTree, Sentence sentence, List<BaseToken> tokens)  {
         
         ArrayList<ConllDependencyNode> uimaNodes = new ArrayList<ConllDependencyNode>(tokens.size()+1);
@@ -102,20 +100,20 @@ public class ClearDependencyUtility extends DependencyUtility {
 			annot1.getEnd()==annot2.getEnd() && 
 			annot1.getCoveredText()==annot2.getCoveredText();
 	}
-	public static boolean equalCoverage(Annotation annot,UimaDepNode udNode) {
-		return annot.getBegin()==udNode.begin && 
-			annot.getEnd()==udNode.end && 
-			annot.getCoveredText()==udNode.form;
-	}
-	public static boolean equalCoverage(UimaDepNode udNode, Annotation annot) {
-		return annot.getBegin()==udNode.begin && 
-			annot.getEnd()==udNode.end && 
-			annot.getCoveredText()==udNode.form;
-	}
-	public static boolean equalCoverage(UimaDepNode udNode, UimaDepNode udNode2) {
-		return udNode2.begin==udNode.begin && 
-			udNode2.end==udNode.end && 
-			udNode2.form==udNode.form;
-	}
+//	public static boolean equalCoverage(Annotation annot,UimaDepNode udNode) {
+//		return annot.getBegin()==udNode.begin && 
+//			annot.getEnd()==udNode.end && 
+//			annot.getCoveredText()==udNode.form;
+//	}
+//	public static boolean equalCoverage(UimaDepNode udNode, Annotation annot) {
+//		return annot.getBegin()==udNode.begin && 
+//			annot.getEnd()==udNode.end && 
+//			annot.getCoveredText()==udNode.form;
+//	}
+//	public static boolean equalCoverage(UimaDepNode udNode, UimaDepNode udNode2) {
+//		return udNode2.begin==udNode.begin && 
+//			udNode2.end==udNode.end && 
+//			udNode2.form==udNode.form;
+//	}
 	
 }

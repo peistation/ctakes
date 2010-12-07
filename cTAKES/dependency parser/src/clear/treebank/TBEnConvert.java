@@ -76,6 +76,40 @@ public class TBEnConvert
 			dTree.add(node);
 		}
 	}
+	
+/*	private void initDepTree(MorphEnAnalyzer morph, DepTree dTree, TBNode curr, String bio)
+	{
+		if (curr.isPhrase())
+		{
+			if      (curr.isTag(TBEnLib.TAG_LOC))		bio = TBEnLib.TAG_LOC;
+			else if (curr.isTag(TBEnLib.TAG_TMP))		bio = TBEnLib.TAG_TMP;
+			else if (curr.isPos(TBEnLib.POS_SBAR+".*"))	bio = null;
+			
+			for (TBNode child : curr.getChildren())
+				initDepTree(morph, dTree, child, bio);
+			
+			bio = null;
+		}
+		else
+		{
+			DepNode node = new DepNode();
+
+			node.id    = curr.terminalId + 1;
+			node.form  = curr.form;
+			node.pos   = curr.pos;
+			node.lemma = (morph != null) ? morph.getLemma(curr.form, curr.pos) : node.form.toLowerCase();
+			
+			if (bio != null)
+			{
+				if (dTree.getLastNode().bio.charAt(0) == 'O')
+					node.bio = "B-"+bio;
+				else
+					node.bio = "I-"+bio;
+			}
+			
+			dTree.add(node);
+		}
+	}*/
 
 	/** Finds heads for all phrases. */
 	private void setDepHeads(TBTree pTree, DepTree dTree, TBNode curr, TBHeadRules headrules)
@@ -406,6 +440,8 @@ public class TBEnConvert
 			return DepLib.DEPREL_INTJ;
 		if (child.isPos(TBEnLib.POS_EDITED))
 			return DepLib.DEPREL_EDIT;
+		if (child.isPos(TBEnLib.POS_CIT))
+			return DepLib.DEPREL_CIT;
 		if (child.isPos(TBEnLib.POS_ADVP) || c.isPos(TBEnLib.POS_RB))
 			return DepLib.DEPREL_ADV;
 		if (TBEnLib.isNounLike(parent.pos))
