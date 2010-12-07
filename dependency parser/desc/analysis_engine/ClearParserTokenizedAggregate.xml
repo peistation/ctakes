@@ -72,6 +72,26 @@ If no valid directory is given, this AE will default to using lemmas provided by
           <parameter>ClearParserAE/MorphDictionaryDirectory</parameter>
         </overrides>
       </configurationParameter>
+      <configurationParameter>
+        <name>PosModelFile</name>
+        <description>The file that contains the MaxEnt model used by the part of speech (POS) tagger</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>POSTagger/PosModelFile</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>TagDictionary</name>
+        <description>The file contains a list of words, and for each word, the set of part of speech tags to be considered for that word. For words in the tag dictionary, only the corresponding tags in the tag dictionary are considered when tagging the word with a part of speech.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>POSTagger/TagDictionary</parameter>
+        </overrides>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
@@ -102,6 +122,18 @@ If no valid directory is given, this AE will default to using lemmas provided by
         <name>MorphDictionaryDirectory</name>
         <value>
           <string>resources/en_dict</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>PosModelFile</name>
+        <value>
+          <string>models/postagger.model.bin.gz</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>TagDictionary</name>
+        <value>
+          <string>models/tag.dictionary.txt</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

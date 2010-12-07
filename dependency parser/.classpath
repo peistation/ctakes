@@ -11,5 +11,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/chunker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/context dependent tokenizer"/>
 	<classpathentry kind="lib" path="lib/liblinear-1.51.jar"/>
+	<classpathentry kind="lib" path="/POS tagger/resources"/>
+	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

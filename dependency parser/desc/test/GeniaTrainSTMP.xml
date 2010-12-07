@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <collectionReader>
+        <collectionIterator>
+            <descriptor>
+                <import location="../collection_reader/DependencyFileCollectionReader.xml"/>
+            </descriptor>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>DependencyFile</name>
+                    <value>
+                        <string>data/genia1-400.dep</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TrainingMode</name>
+                    <value>
+                        <boolean>true</boolean>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </collectionIterator>
+    </collectionReader>
+    <casProcessors casPoolSize="3" processingUnitThreadCount="1">
+        <casProcessor deployment="integrated" name="ClearTrainerAE">
+            <descriptor>
+                <import location="../analysis_engine/ClearTrainerAE.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>DependencyModelFile</name>
+                    <value>
+                        <string>resources/genia1-400.mod</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>LexiconDirectory</name>
+                    <value>
+                        <string>lexiconGenia</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+    </casProcessors>
+    <cpeConfig>
+        <numToProcess>-1</numToProcess>
+        <deployAs>immediate</deployAs>
+        <checkpoint batch="0" time="300000ms"/>
+        <timerImpl/>
+    </cpeConfig>
+</cpeDescription>
