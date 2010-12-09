@@ -1,13 +1,23 @@
 #!/usr/bin/python
 # written by Jinho D. Choi
+# run from root of project
+#  arg0: gold standard .dep
+#  arg1: sys generated .dep
 import sys
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-f", "--file", dest="filename",
+                  help="set of dependency labels to use: deprel.txt = FILE", metavar="FILE",
+                  default = "lexiconClinQues/deprel.txt")
+(options, args) = parser.parse_args()
 
 uas   = 0
 las   = 0
 lcs   = 0
 total = 0
 
-fin = open('../lexiconClinQues/deprel.txt')
+fin = open(options.filename)
 deprel = list()
 for line in fin:
     deprel.append(line.strip())
@@ -17,8 +27,8 @@ for item in deprel:
     deprel_c.append(0)
     deprel_t.append(0)
 
-fin1 = open(sys.argv[1])  # gold
-fin2 = open(sys.argv[2])  # parse
+fin1 = open(args[0])  # gold
+fin2 = open(args[1])  # parse
 
 for line1 in fin1:
     line2 = fin2.readline()

@@ -9,13 +9,13 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/wsj23-24.tok</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>TOK</string>
+                        <string>tok</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -37,13 +37,31 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/wsj02-21-STM.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>lexiconWsjSTM</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>MorphDictionaryDirectory</name>
+                    <value>
+                        <string>resources/en_dict</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>PosModelFile</name>
+                    <value>
+                        <string>models/wsj.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/wsj-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +81,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTMSTM</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +107,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTMSTM</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

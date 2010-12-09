@@ -46,6 +46,12 @@
                         <string>resources/clinques-STP.mod</string>
                     </value>
                 </nameValuePair>
+                <nameValuePair>
+                    <name>LexiconDirectory</name>
+                    <value>
+                        <string>lexiconClinQuesSTP</string>
+                    </value>
+                </nameValuePair>
             </configurationParameterSettings>
         </casProcessor>
     </casProcessors>

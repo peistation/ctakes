@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/genia401-500.tok</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,19 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/genia1-400-ST.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
-                    <name>LexiconDirectory</name>
+                    <name>PosModelFile</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>models/genia.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/genia-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +69,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputGeniaSTST</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +95,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputGeniaSTST</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

@@ -2,15 +2,15 @@
 	<common>
 		<language>en</language>
 		<format>dep</format>
-		<lexicon_dir>../lexiconOpenPos/</lexicon_dir>
-		<model_file>../resources/clinques-openpos.mod</model_file>
-		<feature_xml>../resources/feature.xml</feature_xml>
+		<lexicon_dir>lexiconClinQuesSTMP/</lexicon_dir>
+		<model_file>resources/clinques-STMP.mod</model_file>
+		<feature_xml>resources/feature.xml</feature_xml>
 	</common>
 	<liblinear s="3" c="0.1" e="0.1" B="-1">
 		<trainer>/Users/m081914/work/liblinear-1.7/train</trainer>
 	</liblinear>
 	<predict>
-		<pos_model_file>../lib/stanford-postagger-full-2010-05-26/models/bidirectional-distsim-wsj-0-18.tagger</pos_model_file>
-		<morph_dict_dir>../resources/dict_en/</morph_dict_dir>
+		<pos_model_file>lib/stanford-postagger-full-2010-05-26/models/bidirectional-distsim-wsj-0-18.tagger</pos_model_file>
+		<morph_dict_dir>resources/dict_en/</morph_dict_dir>
 	</predict>
 </configuration>

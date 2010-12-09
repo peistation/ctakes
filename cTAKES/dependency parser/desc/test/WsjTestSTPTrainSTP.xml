@@ -9,13 +9,13 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/wsj23-24.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>TOK</string>
+                        <string>mpos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -37,19 +37,7 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/dependency parser/resources/clinques-STMP.mod</string>
-                    </value>
-                </nameValuePair>
-                <nameValuePair>
-                    <name>PosModelFile</name>
-                    <value>
-                        <string>models/clinques.bin.gz</string>
-                    </value>
-                </nameValuePair>
-                <nameValuePair>
-                    <name>TagDictionary</name>
-                    <value>
-                        <string>models/clinques-tagdict.bin.gz</string>
+                        <string>resources/wsj02-21-STP.mod</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -69,7 +57,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTPSTP</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -95,7 +83,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTPSTP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

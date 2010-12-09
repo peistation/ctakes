@@ -9,22 +9,22 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/clinques-test.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>TOK</string>
+                        <string>mpos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearParserTokenizedInfPosAggregate">
+        <casProcessor deployment="integrated" name="ClearParserTokenizedAggregate">
             <descriptor>
-                <import location="../analysis_engine/ClearParserTokenizedInfPosAggregate.xml"/>
+                <import location="../analysis_engine/ClearParserTokenizedAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -37,13 +37,13 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/clinques-STP.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>lexiconClinQuesSTP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTPSTP</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +89,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTPSTP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

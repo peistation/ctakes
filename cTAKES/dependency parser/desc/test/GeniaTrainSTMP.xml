@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconGenia</string>
+                        <string>lexiconGeniaSTMP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
