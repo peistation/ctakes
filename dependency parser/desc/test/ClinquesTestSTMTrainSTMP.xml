@@ -15,7 +15,7 @@
                 <nameValuePair>
                     <name>InputFormat</name>
                     <value>
-                        <string>TOK</string>
+                        <string>tok</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -37,13 +37,31 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/clinques-STMP.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>lexiconClinQuesSTMP</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>MorphDictionaryDirectory</name>
+                    <value>
+                        <string>resources/en_dict</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>PosModelFile</name>
+                    <value>
+                        <string>models/clinques.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/clinques-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +81,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTMPSTM</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +107,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTMPSTM</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

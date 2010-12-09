@@ -37,7 +37,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>lexiconClinQuesSTMP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

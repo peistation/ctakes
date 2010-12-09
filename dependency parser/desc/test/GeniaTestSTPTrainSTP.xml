@@ -9,22 +9,22 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/genia1-400.dep</string>
+                        <string>data/genia401-500.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
-                    <name>TrainingMode</name>
+                    <name>InputFormat</name>
                     <value>
-                        <boolean>true</boolean>
+                        <string>mpos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearTrainerPosLemAggregate">
+        <casProcessor deployment="integrated" name="ClearParserTokenizedAggregate">
             <descriptor>
-                <import location="../analysis_engine/ClearTrainerPosLemAggregate.xml"/>
+                <import location="../analysis_engine/ClearParserTokenizedAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -37,25 +37,53 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/genia1-400-ST.mod</string>
+                        <string>resources/genia1-400-STP.mod</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+        <casProcessor deployment="integrated" name="DependencyNodeWriter">
+            <descriptor>
+                <import location="../cas_consumer/DependencyNodeWriter.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>outputDir</name>
+                    <value>
+                        <string>data/outputGeniaSTPSTP</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
-                    <name>LexiconDirectory</name>
+                    <name>outputFormat</name>
                     <value>
-                        <string>lexiconGeniaST</string>
+                        <string>dep</string>
                     </value>
                 </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+        <casProcessor deployment="integrated" name="Write CAS to XML file">
+            <descriptor>
+                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
                 <nameValuePair>
-                    <name>PosModelFile</name>
+                    <name>outputDir</name>
                     <value>
-                        <string>models/genia.bin.gz</string>
-                    </value>
-                </nameValuePair>
-                <nameValuePair>
-                    <name>TagDictionary</name>
-                    <value>
-                        <string>models/genia-tagdict.bin.gz</string>
+                        <string>data/outputGeniaSTPSTP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

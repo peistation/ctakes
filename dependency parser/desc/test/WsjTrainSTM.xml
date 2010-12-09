@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconWSJ</string>
+                        <string>lexiconWsjSTM</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>

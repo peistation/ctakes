@@ -47,6 +47,12 @@
                     </value>
                 </nameValuePair>
                 <nameValuePair>
+                    <name>LexiconDirectory</name>
+                    <value>
+                        <string>lexiconClinQuesST</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
                         <string>/Users/m081914/work/cTAKES/POS tagger/resources/models/clinques.bin.gz</string>

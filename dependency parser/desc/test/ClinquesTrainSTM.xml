@@ -47,6 +47,12 @@
                     </value>
                 </nameValuePair>
                 <nameValuePair>
+                    <name>LexiconDirectory</name>
+                    <value>
+                        <string>lexiconClinQuesSTM</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
                         <string>../POS tagger/resources/models/clinques.bin.gz</string>

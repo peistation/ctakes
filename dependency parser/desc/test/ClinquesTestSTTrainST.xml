@@ -37,13 +37,25 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/clinques-ST.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>lexiconClinQuesST</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>PosModelFile</name>
+                    <value>
+                        <string>models/clinques.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/clinques-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +75,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTST</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +101,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputClinQuesSTST</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

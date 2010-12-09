@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/wsj23-24.tok</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -22,9 +22,9 @@
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearParserTokenizedAggregate">
+        <casProcessor deployment="integrated" name="ClearParserTokenizedInfPosAggregate">
             <descriptor>
-                <import location="../analysis_engine/ClearParserTokenizedAggregate.xml"/>
+                <import location="../analysis_engine/ClearParserTokenizedInfPosAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -37,19 +37,19 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/dependency parser/resources/clinques-STM.mod</string>
+                        <string>resources/wsj02-21-ST.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>models/clinques.bin.gz</string>
+                        <string>models/wsj.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>models/clinques-tagdict.bin.gz</string>
+                        <string>models/wsj-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -69,7 +69,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTST</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -95,7 +95,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTST</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

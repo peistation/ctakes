@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconWSJ</string>
+                        <string>lexiconWsjSTP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

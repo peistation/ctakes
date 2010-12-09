@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-test.tok</string>
+                        <string>data/wsj23-24.tok</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,19 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques.mod</string>
+                        <string>resources/wsj02-21-STMP.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
-                    <name>LexiconDirectory</name>
+                    <name>PosModelFile</name>
                     <value>
-                        <string>lexiconClinQues</string>
+                        <string>models/wsj.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/wsj-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +69,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTMPST</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +95,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputClinQues</string>
+                        <string>data/outputWsjSTMPST</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
