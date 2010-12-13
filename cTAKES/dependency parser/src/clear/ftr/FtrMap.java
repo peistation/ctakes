@@ -144,7 +144,7 @@ public class FtrMap
          */
         public FtrMap(String lexiconDir)
         {
-                load(lexiconDir);
+        	load(lexiconDir);
         }
 
         /**

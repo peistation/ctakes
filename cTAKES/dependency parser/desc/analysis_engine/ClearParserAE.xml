@@ -42,7 +42,7 @@ If no valid directory is given, this AE will default to using lemmas provided by
       <nameValuePair>
         <name>DependencyModelFile</name>
         <value>
-          <string>rescoures/clinques.mod</string>
+          <string>clinques.mod</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -54,13 +54,13 @@ If no valid directory is given, this AE will default to using lemmas provided by
       <nameValuePair>
         <name>FeatureTemplateFile</name>
         <value>
-          <string>resources/feature.xml</string>
+          <string>feature.xml</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>MorphDictionaryDirectory</name>
         <value>
-          <string>resources/en_dict</string>
+          <string>en_dict</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

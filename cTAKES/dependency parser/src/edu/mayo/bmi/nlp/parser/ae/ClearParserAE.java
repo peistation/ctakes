@@ -1,4 +1,5 @@
 /*
+			File posModelFile = FileLocator.locateFile(posModelPath);
  * Copyright: (c) 2010   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
@@ -41,20 +42,34 @@ import clear.dep.DepTree;
 import clear.morph.MorphEnAnalyzer;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
 import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
+import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
 public class ClearParserAE extends JCasAnnotator_ImplBase{	// LOG4J logger based on class name	public Logger logger = Logger.getLogger(getClass().getName());	/**	 * "ParserModelFile" is a required, single, string parameter that contains the	 * file name of the parser's grammar model.	 */	public static final String DEPENDENCY_MODEL_FILE_PARAM = "DependencyModelFile";	//public static final String PARAM_GRAMMAR_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(BerkeleyParserAE.class, "grammarFileName");	//private String grammarFileName;	public static final String LEXICON_DIR_PARAM = "LexiconDirectory";		public static final String FEATURE_TEMPLATE_PARAM = "FeatureTemplateFile";    	public static final String MORPH_DICT_PARAM = "MorphDictionaryDirectory";
 		protected DepParser parser;		protected MorphEnAnalyzer morph;
 
 	private boolean useMorphy = false;
-	private String morphDictionaryPath;		private int parseFailureCount = 0;	private int sentenceCount = 0;		@Override	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {		super.initialize(uimaContext);		String parserModelPath = null;		String lexiconDirectoryPath = null;		String featureTemplateFile = null;		try {		    		    		    morphDictionaryPath = (String) uimaContext.getConfigParameterValue(MORPH_DICT_PARAM);
-		    useMorphy = (new File(morphDictionaryPath)).exists() ? (new File(morphDictionaryPath)).isDirectory() : false;
-		    if (useMorphy) 
-		    	morph = new MorphEnAnalyzer( morphDictionaryPath );
+		private int parseFailureCount = 0;	private int sentenceCount = 0;		@Override	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {		super.initialize(uimaContext);		String absMorphDictionaryPath;
+
+		String absParserModelPath = null;		String absLexiconDirectoryPath = null;		String absFeatureTemplateFile = null;		try {		    		    		    String morphDictionaryPath = (String) uimaContext.getConfigParameterValue(MORPH_DICT_PARAM);
+			File morphDictionaryFile = FileLocator.locateFile(morphDictionaryPath);
+			if (morphDictionaryFile.exists()) {
+				absMorphDictionaryPath = morphDictionaryFile.getAbsolutePath();
+				useMorphy = (new File(absMorphDictionaryPath)).isDirectory();
+		    	morph = new MorphEnAnalyzer( absMorphDictionaryPath );
+			} else {
+				useMorphy = false;
+			}
 		    logger.info("using Morphy analysis? "+useMorphy);
 		    
-		    parserModelPath = (String) uimaContext.getConfigParameterValue(DEPENDENCY_MODEL_FILE_PARAM);			logger.info("parser model file: " + parserModelPath);            lexiconDirectoryPath = (String) uimaContext.getConfigParameterValue(LEXICON_DIR_PARAM);            logger.info("lexicon directory: " + lexiconDirectoryPath);            featureTemplateFile = (String) uimaContext.getConfigParameterValue(FEATURE_TEMPLATE_PARAM);		    logger.info("feature template file: " + featureTemplateFile);            								    parser = new DepParser(lexiconDirectoryPath,parserModelPath,featureTemplateFile, DepLib.FLAG_PREDICT);		    logger.info("done.");
-		} catch (Exception e) {			logger.info("Error initializing parser model: " + parserModelPath); 			throw new ResourceInitializationException(e);		}	    	}	@Override	public void process(JCas jCas) throws AnalysisEngineProcessException {		logger.info(" process(JCas)");		List<BaseToken> tokens = new ArrayList<BaseToken>();		AnnotationIndex baseTokenIndex = jCas.getAnnotationIndex(BaseToken.type);		FSIterator sentences = jCas.getAnnotationIndex(Sentence.type).iterator();		while (sentences.hasNext()) {			Sentence sentence = (Sentence) sentences.next();			if ( sentence.getBegin()==sentence.getEnd()) continue;
+		    String parserModelPath = (String) uimaContext.getConfigParameterValue(DEPENDENCY_MODEL_FILE_PARAM);			File parserModelFile = FileLocator.locateFile(parserModelPath);
+			absParserModelPath = parserModelFile.getAbsolutePath();
+			logger.info("parser model file: " + absParserModelPath);            String lexiconDirectoryPath = (String) uimaContext.getConfigParameterValue(LEXICON_DIR_PARAM);			File lexiconDirectoryFile = FileLocator.locateFile(lexiconDirectoryPath);
+			absLexiconDirectoryPath = lexiconDirectoryFile.getAbsolutePath();
+            logger.info("lexicon directory: " + absLexiconDirectoryPath);            String featureTemplatePath = (String) uimaContext.getConfigParameterValue(FEATURE_TEMPLATE_PARAM);			File featureTemplateFile = FileLocator.locateFile(featureTemplatePath);
+			absFeatureTemplateFile = featureTemplateFile.getAbsolutePath();
+		    logger.info("feature template file: " + absFeatureTemplateFile);            								    parser = new DepParser(absLexiconDirectoryPath,absParserModelPath,absFeatureTemplateFile, DepLib.FLAG_PREDICT);		    logger.info("done.");
+		} catch (Exception e) {			logger.info("Error initializing parser model: " + absParserModelPath); 			throw new ResourceInitializationException(e);		}	    	}	@Override	public void process(JCas jCas) throws AnalysisEngineProcessException {		logger.info(" process(JCas)");		List<BaseToken> tokens = new ArrayList<BaseToken>();		AnnotationIndex baseTokenIndex = jCas.getAnnotationIndex(BaseToken.type);		FSIterator sentences = jCas.getAnnotationIndex(Sentence.type).iterator();		while (sentences.hasNext()) {			Sentence sentence = (Sentence) sentences.next();			if ( sentence.getBegin()==sentence.getEnd()) continue;
 						tokens.clear();
 			FSIterator tokenIterator = baseTokenIndex.subiterator(sentence);			while (tokenIterator.hasNext()) {				BaseToken token = (BaseToken) tokenIterator.next();				tokens.add(token);			}						String[] words = new String[tokens.size()];			String[] tags  = new String[tokens.size()];            String[] lemmas = new String[tokens.size()];			String[] conlltokens = new String[tokens.size()];
 			for (int i = 0; i < tokens.size(); i++) {

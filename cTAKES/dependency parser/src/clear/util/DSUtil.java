@@ -23,7 +23,7 @@
 */
 package clear.util;
 
-import gnu.trove.TIntArrayList;
+//import gnu.trove.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,15 +39,15 @@ import com.carrotsearch.hppc.ObjectIntOpenHashMap;
 public class DSUtil
 {
         /** @return List of integers converted from <code>strArr</code> */
-        static public TIntArrayList toTIntArrayList(String[] strArr)
-        {
-                TIntArrayList list = new TIntArrayList(strArr.length);
-                
-                for (String str : strArr)
-                        list.add(Integer.parseInt(str));
-                
-                return list;
-        }
+//        static public TIntArrayList toTIntArrayList(String[] strArr)
+//        {
+//                TIntArrayList list = new TIntArrayList(strArr.length);
+//                
+//                for (String str : strArr)
+//                        list.add(Integer.parseInt(str));
+//                
+//                return list;
+//        }
                
         /** @return HashSet contains strings from <code>strArr</code> */
         static public HashSet<String> toHashSet(String[] strArr)

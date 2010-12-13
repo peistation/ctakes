@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/dependency parser/data/clinques-train.mlem</string>
+                        <string>data/clinques-train.mlem</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -49,7 +49,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQuesSTM</string>
+                        <string>resources/lexiconClinQuesSTM</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>

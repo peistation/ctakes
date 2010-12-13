@@ -1,3 +1,4 @@
+package edu.mayo.bmi.uima.core.test;
 /*
  * Copyright: (c) 2009   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the

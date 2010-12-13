@@ -3,11 +3,11 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="ClearParserAE">
-      <import location="ClearParserAE.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TokenizerAnnotator">
       <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ClearParserAE">
+      <import location="ClearParserAE.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
       <import location="LvgBaseTokenAnnotator.xml"/>

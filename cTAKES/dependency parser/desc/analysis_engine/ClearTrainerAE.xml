@@ -46,8 +46,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
   4 -- multi-class support vector classification by Crammer and Singer
   5 -- L1-regularized L2-loss support vector classification
   6 -- L1-regularized logistic regression
-  7 -- L2-regularized logistic regression (dual)
-</description>
+  7 -- L2-regularized logistic regression (dual)</description>
         <type>Integer</type>
         <multiValued>false</multiValued>
         <mandatory>false</mandatory>
@@ -90,7 +89,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>LexiconDirectory</name>
         <value>
-          <string>lexicon</string>
+          <string>resources/lexiconClinQues</string>
         </value>
       </nameValuePair>
       <nameValuePair>

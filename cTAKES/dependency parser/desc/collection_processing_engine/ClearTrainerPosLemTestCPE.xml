@@ -49,19 +49,19 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconWSJ</string>
+                        <string>resources/lexiconWSJ</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/POS tagger/resources/models/wsj.bin.gz</string>
+                        <string>models/wsj.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/POS tagger/resources/models/wsj-tagdict.bin.gz</string>
+                        <string>models/wsj-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

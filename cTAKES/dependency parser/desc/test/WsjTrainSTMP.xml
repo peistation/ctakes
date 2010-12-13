@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconWsjSTMP</string>
+                        <string>resources/lexiconWsjSTMP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/dependency parser/data/clinques-train.min</string>
+                        <string>data/clinques-train.min</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -49,19 +49,19 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconClinQuesST</string>
+                        <string>resources/lexiconClinQuesST</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/POS tagger/resources/models/clinques.bin.gz</string>
+                        <string>models/clinques.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>/Users/m081914/work/cTAKES/POS tagger/resources/models/clinques-tagdict.bin.gz</string>
+                        <string>models/clinques-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

@@ -17,5 +17,6 @@
     <import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>
     <import location="../src/edu/mayo/bmi/nlp/parser/type/ConllDependencyNode.xml"/>
     <import location="../../core/src/edu/mayo/bmi/uima/core/type/Lemma.xml"/>
+    <import location="../src/edu/mayo/bmi/nlp/parser/type/BaseDependencyNode.xml"/>
   </imports>
 </typeSystemDescription>
