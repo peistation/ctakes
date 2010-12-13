@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconOpenPos</string>
+                        <string>resources/lexiconOpenPos</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

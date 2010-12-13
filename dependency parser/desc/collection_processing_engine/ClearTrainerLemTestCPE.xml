@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>lexiconLvgLem</string>
+                        <string>resources/lexiconLvgLem</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

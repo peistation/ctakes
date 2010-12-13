@@ -82,7 +82,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>LexiconDirectory</name>
         <value>
-          <string>lexiconClinQues</string>
+          <string>resources/lexiconClinQues</string>
         </value>
       </nameValuePair>
       <nameValuePair>
