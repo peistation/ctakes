@@ -7,7 +7,7 @@ Install the Binary Release
 We provide an all-inclusive package for new users, and separate PEAR
 packages for users to upgrade select components of the
 {osp-short}. They can be found at {osp-download}. The source code can
-also be downloaded following the link from the same site.
+also be downloaded following the link to {osp-site}.
 // In addition, we provide all the source code in the same web site.
 
 This chapter guides you through installing the binary release and
@@ -54,5 +54,11 @@ include::_testrun.adoc[]
 
 NOTE: If UIMA's `bin` directory is not in your path, you'll need to
 give the full path to `cvd.bat` or `cvd.sh`.
+
+NOTE: We will discuss optional packages in <<sec_test_opt_bin>>.
+
+include::_testcollection.adoc[]
+
+include::_optionalcomponents.adoc[]
 
 include::_postinstall.adoc[]

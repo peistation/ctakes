@@ -1,11 +1,13 @@
 // Global attributes
 // EDITING NOTE: NO BLANK LINES BETWEEN DECLARATIONS
 
-:rev:                  1.0, March 2009
+:rev:                  1.1, December 2010
+:rev-short:            1.1
 :osp-full:             Clinical Text Analysis and Knowledge Extraction System
 :osp-short:            cTAKES
 :osp-cp:               <pipeline-classpath>
 :osp-download:         https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/OHNLP_Documentation_and_Downloads
+:osp-site:             http://sourceforge.net/projects/ohnlp/
 :osp-repo:             https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES/
 :org-name:             Mayo Clinic
 :osp-contact:          clinicalnlp@mayo.edu

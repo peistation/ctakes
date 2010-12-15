@@ -7,8 +7,9 @@ required packages. Otherwise, please read the next paragraph.
 /////
 
 
-Download the main {osp-short} PEAR packages, and any optional components, from {osp-site}
-(anything with +pear-bin+ or +pear-src-bin+ in the name).
+Download the main {osp-short} PEAR packages with source code, 
+and any optional components, from {osp-site}
+(anything with +pear-src-bin+ in the name).
 Extract all the PEAR files into a temporary
 directory. Then follow ``{uima-pear-install}'' of the UIMA
 documentation Book 3 ``{uima-doc-book3}'' to install all the PEAR

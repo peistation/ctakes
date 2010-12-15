@@ -5,7 +5,7 @@ include::_globattr.adoc[]
 {osp-full} User Guide
 =====================
 Mayo Clinic
-v1.0, March 2009
+v{rev}
 
 include::preface.adoc[]
 
@@ -16,10 +16,6 @@ include::compile.adoc[]
 include::resources.adoc[]
 
 include::compdesc.adoc[]
-
-// include::commprob.adoc[]
-
-// include::faq.adoc[]
 
 include::glossary.adoc[]
 
