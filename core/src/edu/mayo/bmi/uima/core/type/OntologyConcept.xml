@@ -5,7 +5,7 @@
   <version>1.0</version>
   <vendor/>
   <types>
-      <typeDescription>
+    <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.OntologyConcept</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
@@ -23,6 +23,12 @@
         <featureDescription>
           <name>oid</name>
           <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>oui</name>
+          <description>holds the rxnorm unique identifier for a given drug mention.
+TODO: change this attribute because of name clash (UMLS/SNOMED)</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
