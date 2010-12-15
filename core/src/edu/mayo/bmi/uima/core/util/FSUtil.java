@@ -23,6 +23,10 @@
  */
 package edu.mayo.bmi.uima.core.util;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.uima.cas.ConstraintFactory;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIntConstraint;
@@ -31,8 +35,12 @@ import org.apache.uima.cas.FSMatchConstraint;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeaturePath;
 import org.apache.uima.cas.Type;
-import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.tcas.Annotation;
+
+import edu.mayo.bmi.uima.core.type.NamedEntity;
 
 public class FSUtil {
 	
@@ -45,7 +53,6 @@ public class FSUtil {
 	    windowConstraint.lt(endSpan);
 	    
 	    Type annotType = jcas.getCasType(type);
-//	     = typeSystem.getType("edu.mayo.bmi.uima.core.types.BaseTokenAnnotation");
 	    Feature beginSpanFeature = annotType.getFeatureByBaseName("begin");
 	    Feature endSpanFeature = annotType.getFeatureByBaseName("end");
 	    
@@ -60,9 +67,95 @@ public class FSUtil {
 	    FSMatchConstraint spanConstraint = constraintFactory.and(beginSpanConstraint, endSpanConstraint);
 	    
 	    JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-    	FSIndex annotIndex = indexes.getAnnotationIndex(type);
+	    FSIndex annotIndex = indexes.getAnnotationIndex(type);
 	    FSIterator annotsInSpanItr = jcas.createFilteredIterator(annotIndex.iterator(), spanConstraint);
 	    return annotsInSpanItr;
 	}
+	
+	public static FSIterator getAnnotationsIteratorInSpan(JCas jcas, int type, int beginSpan, int endSpan)
+	{
+	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);
+	    ann.addToIndexes();
+	    AnnotationIndex annIdx = (AnnotationIndex)jcas.getAnnotationIndex(type);
+	    FSIterator itr = annIdx.subiterator(ann);
+	    ann.removeFromIndexes();
+	    return itr;
+	}
 
+	/**
+	 * Does not use {@link #getAnnotationsInSpan(JCas, int, int, int, int[])} so we don't create a collection
+	 * unnecessarily.
+	 * @param jcas
+	 * @param type
+	 * @param beginSpan
+	 * @param endSpan
+	 * @param validNeTypes
+	 * @return
+	 */
+	public static int countAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan, int[] validNeTypes)
+	{
+	    int count=0;
+	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
+	    while(itr.hasNext())
+	    {
+		NamedEntity ne = (NamedEntity)itr.next();
+		if(isValidNE(ne.getTypeID(), validNeTypes))
+		    count++;
+	    }
+	    return count;
+	}
+	
+	private static boolean isValidNE(int currNeType, int[] neTypes)
+	{
+	    for(int i=0; i<neTypes.length; i++)
+		if(currNeType == neTypes[i])
+		    return true;
+	    
+	    return false;
+	}
+	
+	public static List getAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan, int[] validNeTypes)
+	{
+	    List list = new ArrayList();
+	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
+	    while(itr.hasNext())
+	    {
+		NamedEntity ne = (NamedEntity)itr.next();
+		if(isValidNE(ne.getTypeID(), validNeTypes))
+		    list.add(ne);
+	    }
+	    return list;
+	}
+
+	
+	
+	/**
+	 * returns the number of annotations of specified type in the 
+	 * @param jcas
+	 * @param type
+	 * @param beginSpan
+	 * @param endSpan
+	 * @return
+	 */
+	public static int countAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan)
+	{
+	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);
+	    ann.addToIndexes();
+	    AnnotationIndex annIdx = (AnnotationIndex)jcas.getAnnotationIndex(type);
+	    ann.removeFromIndexes();
+	    return annIdx.size();
+	}
+
+	/**
+	 * returns a true if the annotation type is present in the span 
+	 * @param jcas
+	 * @param type
+	 * @param beginSpan
+	 * @param endSpan
+	 * @return
+	 */
+	public static boolean isAnnotationPresentInSpan(JCas jcas, int type, int beginSpan, int endSpan)
+	{
+	    return (countAnnotationsInSpan(jcas, type, beginSpan, endSpan)>0);
+	}	
 }
