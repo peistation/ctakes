@@ -1,0 +1,9 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+[[sec_test_opt_bin]]
+Test optional components
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The dependency parser can be added to the clinical documents pipeline, but... FINISH THIS
+

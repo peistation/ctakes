@@ -68,6 +68,7 @@
     <property name="_LVG.dir" value="LVG" />
     <property name="_NE_contexts.dir" value="NE contexts" />
     <property name="_POS_tagger.dir" value="POS tagger" />
+    <property name="_dependency_parser.dir" value="dependency parser" />
     <property name="docs.dir" value="docs" />
 
     <!-- - - - - - - - - - - -->
@@ -104,6 +105,7 @@
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
@@ -166,6 +168,20 @@
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
+    <path id="_dependency_parser.cp">
+        <pathelement path="${_dependency_parser.dir}/{$src.dir}" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement path="${_LVG.dir}/${bin.dir}" />
+        <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_chunker.dir}/${bin.dir}" />
+        <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
+        <pathelement location="${_dependency_parser.dir}/${lib.dir}/hppc-0.3.1.jar" />
+        <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" />
+        <pathelement location="${_dependency_parser.dir}/${lib.dir}/args4j-2.0.12.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement path="${_junit.lib}" />
+        <pathelement path="${_uima.lib}" />
+    </path>
 
     <!-- - - - - - - - - - -->
     <!-- Runtime classpath -->
@@ -181,6 +197,7 @@
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_chunker.dir}/${res.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${res.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${res.dir}" />
@@ -190,6 +207,8 @@
         <pathelement path="${_LVG.dir}/${res.dir}" />
         <pathelement path="${_NE_contexts.dir}/${res.dir}" />
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${res.dir}" />
+        <pathelement path="${_dependency_parser.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
@@ -201,6 +220,9 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
         <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
+        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/hppc-0.3.1.jar" />
+        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/liblinear-1.51.jar" />
+        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/args4j-2.0.12.jar" />
     </path>
 
 
@@ -221,6 +243,7 @@
         <delete dir="${_LVG.dir}/${bin.dir}" />
         <delete dir="${_NE_contexts.dir}/${bin.dir}" />
         <delete dir="${_POS_tagger.dir}/${bin.dir}" />
+        <delete dir="${_dependency_parser.dir}/${bin.dir}" />
         <delete>
             <fileset dir="${_chunker.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/type/*.java" />
@@ -231,6 +254,7 @@
             <fileset dir="${_LVG.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_NE_contexts.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_POS_tagger.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_dependency_parser.dir}/${src.dir}" includes="**/type/*.java" />
         </delete>
         <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/drug_index" />
         <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/OrangeBook" />
@@ -246,7 +270,7 @@
     <!-- - - - - - - - - - - - - - - - -->
     <!-- DEFAULT: build all projects.  -->
     <!-- - - - - - - - - - - - - - - - -->
-    <target name="all" depends="_types.generate,_dictionaries.expand,_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,comparexcas.build,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
+    <target name="all" depends="_types.generate,_dictionaries.expand,_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,_dependency_parser.build,comparexcas.build,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
 
     <!-- - - - - - - - - - - - - - - - - -->
     <!-- Run CVD in a separate process.  -->
@@ -278,7 +302,7 @@
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="_types.generate" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="_types.generate" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type,_dependency_parser.type" unless="-types.ready" description="JCasGen type systems files for every project.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
@@ -372,6 +396,16 @@
         </exec>
     </target>
 
+    <target name="_dependency_parser.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_dependency_parser.dir}/${desc.dir}/TypeSystem.xml" />
+            <arg value="${_dependency_parser.dir}/${src.dir}" />
+        </exec>
+    </target>
+
     <!-- - - - - - -->
     <!-- Compilers -->
     <!-- - - - - - -->
@@ -455,6 +489,14 @@
         </javac>
     </target>
 
+    <target name="_dependency_parser.build" depends="_types.generate,_core.build,_LVG.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build">
+        <mkdir dir="${_dependency_parser.dir}/${bin.dir}" />
+        <javac destdir="${_dependency_parser.dir}/${bin.dir}">
+            <src path="${_dependency_parser.dir}/${src.dir}" />
+            <classpath refid="_dependency_parser.cp" />
+        </javac>
+    </target>
+
     <!-- - - - - - - - - - - -->
     <!-- Javadoc generators  -->
     <!-- - - - - - - - - - - -->
@@ -472,6 +514,7 @@
             <packageset dir="${_LVG.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_NE_contexts.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_POS_tagger.dir}/${src.dir}/java" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_dependency_parser.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
         </javadoc>
     </target>
 

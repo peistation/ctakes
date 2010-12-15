@@ -17,14 +17,15 @@ Download sources
 The source code of the stable release of the {osp-short} can be
 downloaded from link:{osp-download}[].
 
-include::_extractpear.adoc[]
+include::_extractpearsrc.adoc[]
 
 TIP: Instead of using the PEAR Installer GUI, you can also unzip all
 the PEAR files into a same parent folder, as PEAR files are
 self-contained ZIP archives.
 
 ///////////////////////////
-Binaries no longer included.
+Binaries no longer inclu
+ded.
 NOTE: The included binaries are compiled using Java version
 1.5. Therefore, it may not work with other versions of Java.
 ///////////////////////////
@@ -71,11 +72,17 @@ NOTE: Although creating a new workspace is not required, we recommend
 you create one to separate {osp-short} projects from your existing
 Eclipse projects.
 
+[[sec_import_and_build]]
 Import and build projects
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Before going to the Eclipse window, extract the files in
 +eclipse_specific.tar.gz+ to +{inst-root-dir}+, preserving the
-directory structure. Then, in the Eclipse window,
+directory structure. 
+
+NOTE: If you are on a Mac, extract to a temporary directory and then 
+use +cp -R+, since name collisions are deleted by default.
+
+Then, in the Eclipse window,
 
 . Go to File -> Import...;
 . Click the triangle to the left of ``General'' to expand it;
@@ -102,12 +109,19 @@ To generate type system from Eclipse:
 
 . Open the file in Component Descriptor Editor (right click on the
 file -> Open with -> Component Descriptor Editor);
-. Click UIMA -> Run JCasGen 
+. Click the tab Type System -> run JCasGen (the button in the center) 
 --
 +
 . Click Project -> Build All to build all the projects. If you enabled
 ``Build automatically'' under the ``Project'' menu, your projects are
 already built.
+
+NOTE: Later versions of Eclipse may require you to remove an automatic
+version of JUnit and add the JUnit that is included with {osp-short}.
+For any package with JUnit compile errors, right click the package name and go to Build Path
+-> Libraries -> Configure Build Path -> Libraries to find Eclipse's
+JUnit and remove it; then select "Add JARs..." and navigate to
++core/lib/junit.jar+.
 
 
 Process a sample clinical note
@@ -125,6 +139,8 @@ Compile from command line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 If you happen to use Eclipse, you may be interested in
 <<compile_in_eclipse>> instead.
+Even if you are not using Eclipse's GUI, it is recommended that you have a viable 
+Eclipse installation on hand.  This section mostly assumes that case.
 
 Prepare the compiling environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -208,6 +224,10 @@ _______
 from `{inst-root-dir}`. If everything goes smoothly, you'll get a
 fully-functioning pipeline in a few minutes.
 
+NOTE: If you are running without Eclipse installed, you will have to
+manually run +UIMA_HOME/bin/jcasgen.sh+ on the Type System files of
+<<sec_import_and_build>>.
+
 
 Process a sample clinical note
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -224,5 +244,9 @@ from `{inst-root-dir}` to set the Java runtime classpath and bring up
 the UIMA CAS Visual Debugger (CVD).
 +
 include::_testrun.adoc[]
+
+include::_testcollection.adoc[]
+
+include::_optionalcomponents.adoc[]
 
 include::_postinstall.adoc[]
