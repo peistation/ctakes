@@ -512,9 +512,9 @@ public class ContextAnnotatorTests {
 		ContextAnnotator ca = new ContextAnnotator();
 		ca.parseScopeOrder(new String[] { "MIDDLE", "LEFT", "RIGHT", "ALL" });
 		assertEquals(4, ca.scopes.size());
-		assertEquals(ContextAnnotator.MIDDLE_SCOPE, ca.scopes.get(0));
-		assertEquals(ContextAnnotator.LEFT_SCOPE, ca.scopes.get(1));
-		assertEquals(ContextAnnotator.RIGHT_SCOPE, ca.scopes.get(2));
-		assertEquals(ContextAnnotator.ALL_SCOPE, ca.scopes.get(3));
+		assertEquals(ContextAnnotator.MIDDLE_SCOPE, (int)ca.scopes.get(0));
+		assertEquals(ContextAnnotator.LEFT_SCOPE, (int)ca.scopes.get(1));
+		assertEquals(ContextAnnotator.RIGHT_SCOPE, (int)ca.scopes.get(2));
+		assertEquals(ContextAnnotator.ALL_SCOPE, (int)ca.scopes.get(3));
 	}
 }
