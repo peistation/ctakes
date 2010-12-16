@@ -59,6 +59,6 @@ NOTE: We will discuss optional packages in <<sec_test_opt_bin>>.
 
 include::_testcollection.adoc[]
 
-include::_optionalcomponents.adoc[]
+// include::_optionalcomponents.adoc[]
 
 include::_postinstall.adoc[]

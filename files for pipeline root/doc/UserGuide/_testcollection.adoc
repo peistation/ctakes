@@ -1,6 +1,7 @@
 // Define some global attributes
 include::_globattr.adoc[]
 
+[[sec_test_collection]]
 Process a collection of documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -121,8 +122,5 @@ ____________________________________________________________________
 <3> an HTML file that the comparison results will be written into.
 --
 +
-* Some of the dictionaries in the release are small samples. To
-replace them with full versions, please read <<boost_performance>>.
-* To read more on the {osp-short} architecture, go to
-<<component_description>> for details on individual components.
+
 

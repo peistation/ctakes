@@ -12,6 +12,19 @@ to patient), and negated/not negated.
 
 include::conventions.adoc[]
 
+How to use this guide
+~~~~~~~~~~~~~~~~~~~~~
+If you want to:
+
+* Get {osp-short} running quickly, and quickly apply it to clinical documents 
+   -> 'Follow Chapter 1, skip Chapter 2'
+
+* Run {osp-short}, make use of optional parts, and perhaps develop components
+   -> 'Skip Chapter 1 and follow Chapter 2, skipping Section 2.3'
+
+* Run {osp-short} on a server without a GUI
+   -> 'Skip Chapter 1 and follow Chapter 2, skipping Section 2.2'  
+
 /////////////////////////////////////////////////////////////////////
 EDITING NOTE:
 DO NOT INSERT ANY TEXT BEFORE THE 'PREFACE' LINE, EVEN INCLUDE MACROS
