@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-train.mpos</string>
+                        <string>data/sample.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,13 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques-lvglem.mod</string>
+                        <string>resources/sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>resources/lexiconLvgLem</string>
+                        <string>resources/lexiconSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

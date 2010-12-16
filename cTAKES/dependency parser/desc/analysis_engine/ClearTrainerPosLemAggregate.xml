@@ -3,20 +3,20 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
-      <import location="LvgBaseTokenAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LemAssigner">
       <import location="LemAssigner.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
+      <import location="LvgBaseTokenAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ClearTrainerAE">
       <import location="ClearTrainerAE.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="PosAssigner">
-      <import location="PosAssigner.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="PosAssigner">
+      <import location="PosAssigner.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../POS tagger/desc/POSTagger.xml"/>
@@ -111,7 +111,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>DependencyModelFile</name>
         <value>
-          <string>resources/clinques.mod</string>
+          <string>clinques.mod</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -123,7 +123,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>FeatureTemplateFile</name>
         <value>
-          <string>resources/feature.xml</string>
+          <string>feature.xml</string>
         </value>
       </nameValuePair>
       <nameValuePair>

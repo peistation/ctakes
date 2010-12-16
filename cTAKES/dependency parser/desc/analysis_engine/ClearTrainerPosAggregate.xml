@@ -6,17 +6,17 @@
     <delegateAnalysisEngine key="ClearTrainerAE">
       <import location="ClearTrainerAE.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="PosAssigner">
-      <import location="PosAssigner.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+    <delegateAnalysisEngine key="PosAssigner">
+      <import location="PosAssigner.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../POS tagger/desc/POSTagger.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LvgAnnotator">
+      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -108,19 +108,19 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>DependencyModelFile</name>
         <value>
-          <string>resources/clinques.mod</string>
+          <string>clinques.mod</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>LexiconDirectory</name>
         <value>
-          <string>lexiconClinQues</string>
+          <string>resources/lexiconClinQues</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>FeatureTemplateFile</name>
         <value>
-          <string>resources/feature.xml</string>
+          <string>feature.xml</string>
         </value>
       </nameValuePair>
       <nameValuePair>
