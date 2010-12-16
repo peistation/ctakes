@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>data/clinques-train.dep</string>
+                        <string>data/sample.dep</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,13 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/clinques-openpos.mod</string>
+                        <string>resources/sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>resources/lexiconOpenPos</string>
+                        <string>resources/lexiconSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

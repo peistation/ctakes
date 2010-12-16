@@ -3,11 +3,11 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ClearParserAE">
       <import location="ClearParserAE.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="TokenizerAnnotator">
+      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
       <import location="LvgBaseTokenAnnotator.xml"/>
@@ -71,7 +71,7 @@
       <nameValuePair>
         <name>DependencyModelFile</name>
         <value>
-          <string>resources/clinques.mod</string>
+          <string>clinques.mod</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -83,7 +83,7 @@
       <nameValuePair>
         <name>FeatureTemplateFile</name>
         <value>
-          <string>resources/feature.xml</string>
+          <string>feature.xml</string>
         </value>
       </nameValuePair>
       <nameValuePair>
