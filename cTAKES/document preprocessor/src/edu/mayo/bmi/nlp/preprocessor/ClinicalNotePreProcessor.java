@@ -94,6 +94,9 @@ public class ClinicalNotePreProcessor extends DefaultHandler
     public static final String MD_KEY_SIGNATURE_DATE = "SIGNATURE_DATE";
     public static final String MD_KEY_TRANSCRIBER_ID = "TRANSCRIBER_ID";
     public static final String MD_KEY_TRANSCRIPTION_DATE = "TRANSCRIPTION_DATE";
+    
+    public static final String MD_KEY_CUSTOMER_ID = "CLINICAL_NUMBER"; 
+    
 
 
     private DocumentMetaData iv_docMetaData;
@@ -101,7 +104,8 @@ public class ClinicalNotePreProcessor extends DefaultHandler
     private boolean iv_insideHeader = false;
     private boolean iv_insideAdminData = false;
     private boolean iv_insideTranscriptionist = false;
-    private boolean iv_insidePatient = false;    
+    private boolean iv_insidePatient = false;
+    private boolean iv_insideKnownBy = false;
     private boolean iv_insidePatientEncounter = false;
     private boolean iv_insideLegalAuth = false;
     private boolean iv_insideProvider = false;
@@ -197,6 +201,10 @@ public class ClinicalNotePreProcessor extends DefaultHandler
         if (!iv_insideHeader && localName.equals("clinical_document_header"))
         {
             iv_insideHeader = true;
+        }
+        else if (localName.equals("is_known_by"))
+        {
+    	    iv_insideKnownBy = true;
         }
         else if (iv_insideHeader && localName.equals("origination_dttm"))
         {
@@ -518,7 +526,14 @@ public class ClinicalNotePreProcessor extends DefaultHandler
                     iv_logger.warn(MD_KEY_PT_BIRTH_DATE+" invalid:"+birthDttm);
                   }
               }
-              
+              else if (iv_insideKnownBy)
+              {
+              	if (localName.equals("id") && (iv_previousElement.compareTo("is_known_by") == 0)){
+                  // SPM add clinical id retrieval
+              		String clinicalNumber = attributes.getValue("EX");
+              		iv_docMetaData.addMetaData(MD_KEY_CUSTOMER_ID, clinicalNumber.replaceAll("-", ""));
+              	}
+              }              
             }
             else if (iv_insideLegalAuth)
             {
