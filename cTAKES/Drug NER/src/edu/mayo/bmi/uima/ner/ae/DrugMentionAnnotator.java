@@ -422,7 +422,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       else if (DecimalStrengthAnnotation.type == type)
         ann = new DecimalStrengthAnnotation(jcas, oldAnn.getStartOffset(), oldAnn.getEndOffset());
       else if (DrugChangeStatusAnnotation.type == type)
+      {
         ann = new DrugChangeStatusAnnotation(jcas, oldAnn.getStartOffset(), oldAnn.getEndOffset());
+        ((DrugChangeStatusAnnotation)ann).setChangeStatus(((DrugChangeStatusToken)oldAnn).getDrugChangeStatus());
+      }
       else if (RangeStrengthAnnotation.type == type)
         ann = new RangeStrengthAnnotation(jcas, oldAnn.getStartOffset(), oldAnn.getEndOffset());
 
@@ -459,7 +462,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
       Set statusTokenSet = iv_statusFSM.execute(baseTokenList);
 
-      addAnnotations(jcas, decimalTokenSet, DrugChangeStatusAnnotation.type);    
+      addAnnotations(jcas, statusTokenSet, DrugChangeStatusAnnotation.type);    
       //statusConfidence = true;
 
       Set rangeTokenSet = iv_rangeFSM.execute(baseTokenList);
