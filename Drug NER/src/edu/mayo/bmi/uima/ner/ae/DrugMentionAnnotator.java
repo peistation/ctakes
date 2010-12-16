@@ -1465,8 +1465,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
           holdFrequencyUnitEndOffset = fua.getEnd();
         }
         
-//TODO: moved this code to alignDrugMentionAttributes
-        
+       
         if (recurseNER != null && recurseNER.getDrugChangeStatus() != null
             && relatedStatus != null  && dm.changeStatus == null)
           drugTokenAnt.setDrugChangeStatus(relatedStatus);
@@ -1496,7 +1495,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
             drugTokenAnt.setDrugChangeStatus(dm.getDrugChangeStatusElement());
           else
             drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-        } else if (drugTokenAnt.getDrugChangeStatus() == null
+        } else if (relatedStatus != null) {
+			drugTokenAnt.setDrugChangeStatus(relatedStatus);
+		}else if (drugTokenAnt.getDrugChangeStatus() == null
             || drugTokenAnt.getDrugChangeStatus().compareTo("") == 0)
           drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
 
@@ -1687,7 +1688,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 		
       handledRanges = false;
       boolean deferRight = false;
-      while (orderedStatusChanges.hasNext() && !handledRanges)
+      if (orderedStatusChanges.hasNext() && !handledRanges)
       {
         // Iterator nextStatusChanges =
         // sortStatusMentionsItr(holdStatusChanges.toArray()).iterator();
@@ -1817,10 +1818,11 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     } else if (drugChangeStatus.getChangeStatus().compareTo(
         DrugChangeStatusToken.DECREASEFROM) == 0)
     {
-      generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginSpan,
-          drugChangeStatus.getBegin(), tokenDrugNER,
-          DrugChangeStatusToken.DECREASE, count, globalNER);
-      tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+		generateDrugMentionsAndAnnotations(jcas,
+				buildNewNER, drugChangeStatus.getEnd(), endChunk,
+				tokenDrugNER, DrugChangeStatusToken.DECREASE, count, globalNER);
+		tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+		
     } else if (drugChangeStatus.getChangeStatus().compareTo(
         DrugChangeStatusToken.INCREASE) == 0)
     {
@@ -1832,9 +1834,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     } else if (drugChangeStatus.getChangeStatus().compareTo(
         DrugChangeStatusToken.INCREASEFROM) == 0)
     {
-      generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginSpan,
-          drugChangeStatus.getBegin(), tokenDrugNER,
-          DrugChangeStatusToken.INCREASE, count, globalNER);
+      generateDrugMentionsAndAnnotations(jcas, buildNewNER, drugChangeStatus.getEnd(), 
+    		  endChunk, tokenDrugNER,
+				DrugChangeStatusToken.INCREASE, count, globalNER);
       tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
     } else if (drugChangeStatus.getChangeStatus().compareTo(
         DrugChangeStatusToken.STOP) == 0)
