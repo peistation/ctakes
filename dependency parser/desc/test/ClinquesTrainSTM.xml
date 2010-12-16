@@ -55,13 +55,13 @@
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>../POS tagger/resources/models/clinques.bin.gz</string>
+                        <string>models/clinques.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>../POS tagger/resources/models/clinques-tagdict.bin.gz</string>
+                        <string>models/clinques-tagdict.bin.gz</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

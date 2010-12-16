@@ -3,13 +3,16 @@
 # run from root of project
 #  arg0: gold standard .dep
 #  arg1: sys generated .dep
+#
+# options:
+#  -f    set of dependency relations, default: resources/lexicon/deprel.txt
 import sys
 from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("-f", "--file", dest="filename",
                   help="set of dependency labels to use: deprel.txt = FILE", metavar="FILE",
-                  default = "lexiconClinQues/deprel.txt")
+                  default = "resources/lexicon/deprel.txt")
 (options, args) = parser.parse_args()
 
 uas   = 0
