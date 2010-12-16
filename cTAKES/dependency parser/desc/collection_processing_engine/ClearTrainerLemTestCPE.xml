@@ -37,7 +37,7 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/sample.mod</string>
+                        <string>sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputLvgLem</string>
+                        <string>data/outputSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

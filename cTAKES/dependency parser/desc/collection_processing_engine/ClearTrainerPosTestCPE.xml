@@ -37,13 +37,25 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/sample.mod</string>
+                        <string>sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
                         <string>resources/lexiconSample</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>PosModelFile</name>
+                    <value>
+                        <string>models/postagger.model.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/tag.dictionary.txt</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +75,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>data/outputOpenPos</string>
+                        <string>data/outputSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
