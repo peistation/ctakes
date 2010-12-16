@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/sample.mod</string>
+                        <string>sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>

@@ -48,6 +48,7 @@ import clear.dep.DepNode;
 import clear.dep.DepParser;
 import clear.dep.DepTree;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.Sentence;
 
 public class ClearTrainerAE extends JCasAnnotator_ImplBase{
@@ -79,10 +80,10 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 	private int parseFailureCount = 0;
 	private int sentenceCount = 0;
 	
-	private String parserModelPath      = null;
-	private String lexiconDirectoryPath = null;
-	private String featureTemplateFile  = null;
-	private String featureDataFile      = null;
+	private String absParserModelPath      = null;
+	private String absLexiconDirectoryPath = null;
+	private String absFeatureTemplateFile  = null;
+	private String absFeatureDataFile      = null;
 
 	private String trainerPath    = null;
     private int    trainerSolver  = 3;
@@ -99,14 +100,20 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 		
 		try {
 		    		    
-			parserModelPath = (String) uimaContext.getConfigParameterValue(DEPENDENCY_MODEL_FILE_PARAM);
-			logger.info("parser model file: " + parserModelPath);
-			featureDataFile = parserModelPath+".ftr";
-            lexiconDirectoryPath = (String) uimaContext.getConfigParameterValue(LEXICON_DIR_PARAM);
-            logger.info("lexicon directory: " + lexiconDirectoryPath);
-            featureTemplateFile = (String) uimaContext.getConfigParameterValue(FEATURE_TEMPLATE_PARAM);
-		    logger.info("feature template file: " + featureTemplateFile);
- 
+		    String parserModelPath = (String) uimaContext.getConfigParameterValue(DEPENDENCY_MODEL_FILE_PARAM);
+			File parserModelFile = FileLocator.locateFile(parserModelPath);
+			absParserModelPath = parserModelFile.getAbsolutePath();
+			logger.info("parser model file: " + absParserModelPath);
+			absFeatureDataFile = absParserModelPath+".ftr";
+            String lexiconDirectoryPath = (String) uimaContext.getConfigParameterValue(LEXICON_DIR_PARAM);
+			File lexiconDirectoryFile = FileLocator.locateFile(lexiconDirectoryPath);
+			absLexiconDirectoryPath = lexiconDirectoryFile.getAbsolutePath();
+            logger.info("lexicon directory: " + absLexiconDirectoryPath);
+            String featureTemplatePath = (String) uimaContext.getConfigParameterValue(FEATURE_TEMPLATE_PARAM);
+			File featureTemplateFile = FileLocator.locateFile(featureTemplatePath);
+			absFeatureTemplateFile = featureTemplateFile.getAbsolutePath();
+		    logger.info("feature template file: " + absFeatureTemplateFile);
+
 		    if (uimaContext.getConfigParameterValue(LIBLINEAR_PATH_PARAM)!=null)
 		        trainerPath    = (String)  uimaContext.getConfigParameterValue(LIBLINEAR_PATH_PARAM);    // "~/work/liblinear-1.7/train";
             if (uimaContext.getConfigParameterValue(LIBLINEAR_SOLVER_PARAM)!=null)
@@ -123,7 +130,7 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 		    System.out.println("done.");
 
 		} catch (Exception e) {
-			logger.info("Error initializing parser model: " + parserModelPath); 
+			logger.info("Error initializing parser model: " + absParserModelPath); 
 			throw new ResourceInitializationException(e);
 		}
 	    
@@ -141,9 +148,9 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 	        FSIterator sentences = jCas.getAnnotationIndex(Sentence.type).iterator();
 
 		    if (i == 0)
-		        parser = new DepParser(lexiconDirectoryPath,featureDataFile,featureTemplateFile, DepLib.FLAG_PRINT_LEXICON);
+		        parser = new DepParser(absLexiconDirectoryPath,absFeatureDataFile,absFeatureTemplateFile, DepLib.FLAG_PRINT_LEXICON);
 		    else
-		        parser = new DepParser(lexiconDirectoryPath,featureDataFile,featureTemplateFile, DepLib.FLAG_PRINT_INSTANCE);
+		        parser = new DepParser(absLexiconDirectoryPath,absFeatureDataFile,absFeatureTemplateFile, DepLib.FLAG_PRINT_INSTANCE);
 		    
 		    while (sentences.hasNext()) {
 	            Sentence sentence = (Sentence) sentences.next();
@@ -177,7 +184,7 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 
 	        }
 		    
-		    if (i == 0)   parser.saveTags(lexiconDirectoryPath);
+		    if (i == 0)   parser.saveTags(absLexiconDirectoryPath);
 		}
                 
 		/** Use C version of liblinear */
@@ -187,8 +194,8 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
             liblinearCommand.append(" -c "+trainerCost);
             liblinearCommand.append(" -e "+trainerEpsilon);
             liblinearCommand.append(" -B "+trainerBias);
-            liblinearCommand.append(" "+featureDataFile);
-            liblinearCommand.append(" "+parserModelPath);
+            liblinearCommand.append(" "+absFeatureDataFile);
+            liblinearCommand.append(" "+absParserModelPath);
             
             String cmd = liblinearCommand.toString();
             System.out.println("- Command : "+cmd);
@@ -210,10 +217,10 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 		    System.out.println("- Training with Java liblinear...");
 		    try
 		    {
-		        Problem   prob  = trainer.readProblem(new File(featureDataFile), trainerBias);
+		        Problem   prob  = trainer.readProblem(new File(absFeatureDataFile), trainerBias);
 		        Parameter param = new Parameter(SolverType.values()[trainerSolver], trainerCost, trainerEpsilon);
 		        Model     model = Linear.train(prob, param);
-		        Linear.saveModel(new File(parserModelPath), model);
+		        Linear.saveModel(new File(absParserModelPath), model);
 		    }
 		    catch (Exception e) {e.printStackTrace();}
 		}
