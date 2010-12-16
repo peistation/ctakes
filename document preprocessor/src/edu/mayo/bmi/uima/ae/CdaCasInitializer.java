@@ -30,11 +30,12 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.nlp.preprocessor.ClinicalNotePreProcessor;
 import edu.mayo.bmi.nlp.preprocessor.DocumentMetaData;
@@ -44,6 +45,7 @@ import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
 import edu.mayo.bmi.uima.core.ci.TextModification;
 import edu.mayo.bmi.uima.core.ci.TextModifier;
 import edu.mayo.bmi.uima.core.resource.FileResource;
+import edu.mayo.bmi.uima.core.type.DocumentID;
 import edu.mayo.bmi.uima.core.type.Properties;
 import edu.mayo.bmi.uima.core.type.Property;
 import edu.mayo.bmi.uima.core.type.Segment;
@@ -148,9 +150,17 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
 	    DocumentMetaData dmd;
 
         try {
+            
         	JCas originalView = jcas.getView("_InitialView");
         	originalText = originalView.getSofaDataString();
 
+                //used later to copy to plaintextView 
+                Iterator docItr = originalView.getAnnotationIndex(DocumentID.type).iterator();
+                DocumentID docID = null;
+                
+                if(docItr.hasNext())
+            	docID = (DocumentID)docItr.next();
+        	
             PreProcessor pp = new ClinicalNotePreProcessor(
                     dtdFile,
                     includeSectionMarkers.booleanValue());
@@ -168,7 +178,8 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
             
             // Add section (segment) annotations
             Iterator<String> segmentItr = (Iterator<String>)dmd.getSegmentIdentifiers().iterator();
-            while (segmentItr.hasNext()) {
+            while (segmentItr.hasNext()) 
+            {
                 String segmentID = (String) segmentItr.next();
                 SegmentMetaData smd = dmd.getSegment(segmentID);
 
@@ -179,6 +190,17 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
 
                 sa.addToIndexes();
             }
+            
+            //copy the documentId from the default sofa to plaintext
+            if(docID != null)
+            {
+        	DocumentID newDocId = new DocumentID(plaintextView);
+        	newDocId.setBegin(docID.getBegin());
+        	newDocId.setEnd(docID.getEnd());
+        	newDocId.setDocumentID(docID.getDocumentID());
+        	newDocId.addToIndexes();
+            }
+            
 
             // Store meta data about the document
             Properties propAnnot = new Properties(plaintextView); 
