@@ -54,9 +54,7 @@
         <name>sectionOverrideSet</name>
         <value>
           <array>
-            <string>20104</string>
-            <string>20133</string>
-            <string>20147</string>
+            <string>SIMPLE_SEGMENT</string>
           </array>
         </value>
       </nameValuePair>

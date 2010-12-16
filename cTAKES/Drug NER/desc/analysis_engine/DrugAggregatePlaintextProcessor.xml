@@ -3,6 +3,9 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="DrugMentionAnnotator">
+      <import location="DrugMentionAnnotator.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="Chunker">
       <import location="../../../chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
@@ -12,29 +15,29 @@
     <delegateAnalysisEngine key="ContextDependentTokenizerAnnotator">
       <import location="../../../context dependent tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="NegationAnnotator">
-      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="StatusAnnotator">
       <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="NegationAnnotator">
+      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
       <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="DrugLookupWindowAnnotator">
-      <import location="DrugLookupWindowAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DictionaryLookupAnnotator">
       <import location="DictionaryLookupAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="DrugLookupWindowAnnotator">
+      <import location="DrugLookupWindowAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="POSTagger">
-      <import location="../../../POS tagger/desc/POSTagger.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="POSTagger">
+      <import location="../../../POS tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -82,6 +85,7 @@
         <node>Chunker</node>
         <node>DrugLookupWindowAnnotator</node>
         <node>DictionaryLookupAnnotator</node>
+        <node>DrugMentionAnnotator</node>
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
       </fixedFlow>
