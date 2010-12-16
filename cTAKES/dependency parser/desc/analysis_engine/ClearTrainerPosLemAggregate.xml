@@ -3,20 +3,20 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="LemAssigner">
-      <import location="LemAssigner.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
       <import location="LvgBaseTokenAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LemAssigner">
+      <import location="LemAssigner.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ClearTrainerAE">
       <import location="ClearTrainerAE.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="PosAssigner">
       <import location="PosAssigner.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../POS tagger/desc/POSTagger.xml"/>
@@ -147,13 +147,13 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>PosModelFile</name>
         <value>
-          <string>CHANGEME</string>
+          <string>models/postagger.model.bin.gz</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>TagDictionary</name>
         <value>
-          <string>CHANGEME</string>
+          <string>models/tag.dictionary.txt</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

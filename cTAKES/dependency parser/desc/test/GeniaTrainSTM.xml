@@ -37,7 +37,7 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>resources/genia-1-400-STM.mod</string>
+                        <string>resources/genia1-400-STM.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
