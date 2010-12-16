@@ -105,7 +105,9 @@
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
-        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
+	<!--
+            <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
+	-->
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
@@ -197,7 +199,6 @@
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
-        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_chunker.dir}/${res.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${res.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${res.dir}" />
@@ -207,8 +208,6 @@
         <pathelement path="${_LVG.dir}/${res.dir}" />
         <pathelement path="${_NE_contexts.dir}/${res.dir}" />
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
-        <pathelement path="${_dependency_parser.dir}/${res.dir}" />
-        <pathelement path="${_dependency_parser.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
@@ -220,9 +219,14 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
         <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
-        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/hppc-0.3.1.jar" />
-        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/liblinear-1.51.jar" />
-        <pathelement location="${_dependency_parser.dir}/{$lib.dir}/args4j-2.0.12.jar" />
+	<!--
+            <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
+            <pathelement path="${_dependency_parser.dir}/${res.dir}" />
+            <pathelement path="${_dependency_parser.dir}" />
+            <pathelement location="${_dependency_parser.dir}/{$lib.dir}/hppc-0.3.1.jar" />
+            <pathelement location="${_dependency_parser.dir}/{$lib.dir}/liblinear-1.51.jar" />
+            <pathelement location="${_dependency_parser.dir}/{$lib.dir}/args4j-2.0.12.jar" />
+	-->
     </path>
 
 

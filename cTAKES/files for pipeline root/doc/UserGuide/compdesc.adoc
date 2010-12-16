@@ -17,9 +17,12 @@ in the CDA variant:
 - context dependent tokenizer
 - POS tagger
 - chunker
+- dependency parser (optional)
 - dictionary lookup
 - NE contexts
 - clinical documents pipeline
+- PAD term spotter (optional)
+- Drug NER (optional)
 
 The plain text variant makes use of the same subprojects in the same
 order except that the first one is not included.
@@ -44,6 +47,8 @@ include::_cd_cdt.adoc[]
 include::_cd_postagger.adoc[]
 
 include::_cd_chunker.adoc[]
+
+//include::_cd_depparser.adoc[]
 
 include::_cd_dictlookup.adoc[]
 
