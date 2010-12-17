@@ -17,6 +17,12 @@ Download sources
 The source code of the stable release of the {osp-short} can be
 downloaded from link:{osp-download}[].
 
+[TIP]
+============
+The latest version (not guaranteed stable) can be found on SVN;;
+	`svn co https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES cTAKES`
+===========
+
 include::_extractpearsrc.adoc[]
 
 TIP: Instead of using the PEAR Installer GUI, you can also unzip all
@@ -24,8 +30,7 @@ the PEAR files into a same parent folder, as PEAR files are
 self-contained ZIP archives.
 
 ///////////////////////////
-Binaries no longer inclu
-ded.
+Binaries no longer included.
 NOTE: The included binaries are compiled using Java version
 1.5. Therefore, it may not work with other versions of Java.
 ///////////////////////////
