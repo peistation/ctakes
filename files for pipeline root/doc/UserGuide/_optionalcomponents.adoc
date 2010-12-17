@@ -41,4 +41,33 @@ deleting the comment marks around all instances of "ClearParserAE"
 
 NOTE: For source code, +build.xml+ will not be present; 
 copy all files from the +files for pipeline root+ project to +{inst-root-dir}+
-   
+
+Drug NER
+^^^^^^^^
+One of the possible mehtods to test the Drug NER project in Eclipse is described here:
+
+* Process PlainText document:
+** Using CVD: Launch "UIMA_CVD--Drug NER", then load
++{inst-root-dir}/Drug NER/desc/analysis_engine/DrugAggregatePlaintextPorcessor.xml+
+** Using CPE: Launch "UIMA_CPE--Drug NER", then open the CPE Descriptor
++{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_PlainText_CPE.xml+,
+and hit the triangle "run" button
+
+* Process CDA document:
+** Using CVD: Launch "UIMA_CVD--Drug NER", then load
++{inst-root-dir}/Drug NER/desc/analysis_engine/DrugAggregateCDAPorcessor.xml+
+** Using CPE: Launch "UIMA_CPE--Drug NER", then open the CPE Descriptor
++{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_CPE.xml+,
+and hit the triangle "run" button
+
+It can also be tested from the command line:
+
+* Using CPE: 
+** Change directory to +{inst-root-dir}/Drug NER+ 
+** Run +scripts/run_CPE_GUI.sh+.  
+This will set up the classpath necessary for the dependency parser,
+and launch the same CPE GUI as before.
+** Open +{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_CPE.xml+,
+and hit the triangle "run" button
+
+NOTE: This release (initial release) of Drug NER will not include +build.xml+; 
