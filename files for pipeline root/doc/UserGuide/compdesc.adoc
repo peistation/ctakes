@@ -56,3 +56,5 @@ include::_cd_necontexts.adoc[]
 
 include::_cd_pipeline.adoc[]
 
+include::_cd_drugner.adoc[]
+
