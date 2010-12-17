@@ -9,7 +9,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>/Volumes/bmi/Dept/projects/Text/NHGRI/April2009/data/testRuns_4_09/clinics_no_bmi/03_31_09_bmi/docs_with_drugs</string>
+<string>/path_to_your_workspace/Drug NER/data</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -43,7 +43,7 @@
 <nameValuePair>
 <name>OutputDirectory</name>
 <value>
-<string>/Volumes/bmi/Dept/projects/Text/NHGRI/April2009/data/testRuns_4_09/clinics_no_bmi/03_31_09_bmi/vinod_output/12_13_2010</string>
+<string>data</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
