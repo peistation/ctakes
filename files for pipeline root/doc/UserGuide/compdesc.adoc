@@ -48,7 +48,7 @@ include::_cd_postagger.adoc[]
 
 include::_cd_chunker.adoc[]
 
-//include::_cd_depparser.adoc[]
+include::_cd_depparser.adoc[]
 
 include::_cd_dictlookup.adoc[]
 
