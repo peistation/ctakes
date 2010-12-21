@@ -10,18 +10,18 @@ Dependency Parser
 ^^^^^^^^^^^^^^^^^
 The dependency parser can be tested in Eclipse:
 
-* Using CVD: Launch "UIMA_CVD--dependency parser", then load
+* Using CVD: Launch ``UIMA_CVD\--dependency parser'', then load
 +{inst-root-dir}/dependency parser/desc/analysis_engine/ClearParserPlaintextAggregate.xml+
-* Using CPE: Launch "UIMA_CPE--dependency parser", then open the CPE Descriptor
+* Using CPE: Launch ``UIMA_CPE\--dependency parser'', then open the CPE Descriptor
 +{inst-root-dir}/dependency parser/desc/collection_processing_engine/ClearParserTestCPE.xml+,
-and hit the triangle "run" button
+and hit the triangle ``run'' button
 * In the clinical documents pipeline: 
 ** Right-click clinical documents pipeline -> Build Path -> Configure Build Path, 
 and add dependency parser to the Projects tab. 
 ** Open +{inst-root-dir}/clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml+
 and +AggregateCdaProcessor.xml+ with the Component Descriptor Editor.
-** Under the "Aggregate" tab, click "Add..." and select
-+{inst-root-dir}/dependency parser/desc/analysis_engine/ClearParserAE.xml
+** Under the ``Aggregate'' tab, click ``Add...'' and select
++{inst-root-dir}/dependency parser/desc/analysis_engine/ClearParserAE.xml+
 ** Re-run the CVD or CPE launch for clinical documents pipeline within Eclipse.
 
 It can also be tested from the command line:
@@ -32,11 +32,11 @@ It can also be tested from the command line:
 This will set up the classpath necessary for the dependency parser,
 and launch the same CPE GUI as before.
 ** Open +{inst-root-dir}/dependency parser/desc/collection_processing_engine/ClearParserTestCPE.xml+,
-and hit the triangle "run" button
+and hit the triangle ``run'' button
 * In the clinical documents pipeline (requires updated source code), viewing with CVD:
 ** Edit +{inst-root-dir}/clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml+,
-deleting the comment marks around all instances of "ClearParserAE"
-** Edit +{inst-root-dir}/build.xml+ to delete comment marks around instances of "dependency parser"
+deleting the comment marks around all instances of ``ClearParserAE''
+** Edit +{inst-root-dir}/build.xml+ to delete comment marks around instances of ``dependency parser''
 ** While in +{inst-root-dir}+, type +ant testrun+ (assumes a working version of +ant+)
 
 NOTE: For source code, +build.xml+ will not be present; 
@@ -44,30 +44,30 @@ copy all files from the +files for pipeline root+ project to +{inst-root-dir}+
 
 Drug NER
 ^^^^^^^^
-One of the possible methods to test the Drug NER project in Eclipse is described here:
+One of the possible mehtods to test the Drug NER project in Eclipse is described here:
 
 * Process PlainText document:
-** Using CVD: Launch "UIMA_CVD--Drug NER", then load
+** Using CVD: Launch ``UIMA_CVD\--Drug NER'', then load
 +{inst-root-dir}/Drug NER/desc/analysis_engine/DrugAggregatePlaintextPorcessor.xml+
-** Using CPE: Launch "UIMA_CPE--Drug NER", then open the CPE Descriptor
+** Using CPE: Launch ``UIMA_CPE\--Drug NER'', then open the CPE Descriptor
 +{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_PlainText_CPE.xml+,
-and hit the triangle "run" button
+and hit the triangle ``run'' button
 
 * Process CDA document:
-** Using CVD: Launch "UIMA_CVD--Drug NER", then load
+** Using CVD: Launch ``UIMA_CVD\--Drug NER'', then load
 +{inst-root-dir}/Drug NER/desc/analysis_engine/DrugAggregateCDAPorcessor.xml+
-** Using CPE: Launch "UIMA_CPE--Drug NER", then open the CPE Descriptor
+** Using CPE: Launch ``UIMA_CPE\--Drug NER'', then open the CPE Descriptor
 +{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_CPE.xml+,
-and hit the triangle "run" button
+and hit the triangle ``run'' button
 
-//It can also be tested from the command line:
+It can also be tested from the command line:
 
-//* Using CPE: 
-//** Change directory to +{inst-root-dir}/Drug NER+ 
-//** Run +scripts/run_CPE_GUI.sh+.  
-//This will set up the classpath necessary for the dependency parser,
-//and launch the same CPE GUI as before.
-//** Open +{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_CPE.xml+,
-//and hit the triangle "run" button
+* Using CPE: 
+** Change directory to +{inst-root-dir}/Drug NER+ 
+** Run +scripts/run_CPE_GUI.sh+.  
+This will set up the classpath necessary for the dependency parser,
+and launch the same CPE GUI as before.
+** Open +{inst-root-dir}/Drug NER/desc/collection_processing_engine/DrugNER_CPE.xml+,
+and hit the triangle ``run'' button
 
 NOTE: This release (initial release) of Drug NER will not include +build.xml+; 

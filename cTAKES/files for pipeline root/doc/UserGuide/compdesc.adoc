@@ -2,11 +2,11 @@
 Component Description
 ---------------------
 {osp-short} provides two variants of the pipeline, one for processing
-plain text notes (`{inst-root-dir}/clinical documents
-pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml`), the
+plain text notes (+{inst-root-dir}/clinical documents
+pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml+), the
 other for Clinical Document Architecture (CDA) formatted notes
-(`{inst-root-dir}/clinical documents
-pipeline/desc/analysis_engine/AggregateCdaProcessor.xml`).
+(+{inst-root-dir}/clinical documents
+pipeline/desc/analysis_engine/AggregateCdaProcessor.xml+).
 
 {osp-short} consists of the following subprojects, in the order used
 in the CDA variant:

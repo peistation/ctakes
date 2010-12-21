@@ -20,7 +20,7 @@ indexterm:[CPE,Collection Processing Engine]
 --
 ____________________________________________________________
 on Windows
-*`java -cp \^
++*java -cp \^
 "%UIMA_HOME%/lib/uima-core.jar;\^
 %UIMA_HOME%/lib/uima-cpe.jar;\^
 %UIMA_HOME%/lib/uima-tools.jar;\^
@@ -52,11 +52,11 @@ core/resources;\^
 dictionary lookup/resources;\^
 document preprocessor/resources;\^
 LVG/resources;\^
-NE contexts/resources;\^
-POS tagger/resources" org.apache.uima.tools.cpm.CpmFrame`*
+NE contexts/resources;^
+POS tagger/resources" org.apache.uima.tools.cpm.CpmFrame*+
 
 on Linux
-*`java -cp \
++*java -cp \
 $UIMA_HOME/lib/uima-core.jar:\
 $UIMA_HOME/lib/uima-cpe.jar:\
 $UIMA_HOME/lib/uima-tools.jar:\
@@ -90,7 +90,7 @@ document\ preprocessor/resources:\
 LVG/resources:\
 NE\ contexts/resources:\
 POS\ tagger/resources \
-org.apache.uima.tools.cpm.CpmFrame`*
+org.apache.uima.tools.cpm.CpmFrame*+
 ____________________________________________________________
 
 NOTE: The carets(^) in the Windows command escape the new line
@@ -98,10 +98,10 @@ characters, hence breaking a long command into multiple lines.
 --
 +
 . Go to File -> Open CPE Descriptor
-. Open `{inst-root-dir}/clinical documents pipeline/desc/collection_processing_engine/test1.xml`
+. Open +{inst-root-dir}/clinical documents pipeline/desc/collection_processing_engine/test1.xml+
 . Click the ``Run collection processing'' button (a triangle)
 
-TIP: This command includes the default cTAKES components {osp-short}, 
+TIP: This command includes the default {osp-short} components,
 and you can use them to run most CPEs shipped in the
 package. You can also take the classpath and run CVD, etc. We will
 refer to this classpath as +{osp-cp}+.
@@ -111,10 +111,10 @@ refer to this classpath as +{osp-cp}+.
 +
 --
 ____________________________________________________________________
-*`java -cp <classpath> edu.mayo.bmi.uima.xcas_comparison.Compare \`*
-*`                     <XCAS1> \`* <1>
-*`                     <XCAS2> \`* <2>
-*`                     <diff-html>`* <3>
++*java -cp <classpath> edu.mayo.bmi.uima.xcas_comparison.Compare \
+                     <XCAS1> \ <1>
+                     <XCAS2> \ <2>
+                     <diff-html>*+ <3>
 ____________________________________________________________________
 
 <1> first file to compare.
