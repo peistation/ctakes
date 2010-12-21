@@ -55,10 +55,10 @@ include::_testrun.adoc[]
 NOTE: If UIMA's `bin` directory is not in your path, you'll need to
 give the full path to `cvd.bat` or `cvd.sh`.
 
-NOTE: We will discuss optional packages in <<sec_test_opt_bin>>.
+NOTE: We will discuss optional packages in <<sec_test_opt_src>>.
 
 include::_testcollection.adoc[]
 
-// include::_optionalcomponents.adoc[]
+include::_optionalcomponents.adoc[]
 
 include::_postinstall.adoc[]
