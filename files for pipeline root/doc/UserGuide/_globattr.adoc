@@ -8,7 +8,7 @@
 :osp-cp:               <pipeline-classpath>
 :osp-download:         https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/OHNLP_Documentation_and_Downloads
 :osp-site:             http://sourceforge.net/projects/ohnlp/
-:osp-repo:             https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES/
+:osp-repo:             https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/{osp-short}/
 :org-name:             Mayo Clinic
 :osp-contact:          clinicalnlp@mayo.edu
 :jre-download:         http://java.com/getjava/

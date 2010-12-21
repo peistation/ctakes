@@ -11,9 +11,9 @@ The following typographical styles are used:
 +
 --
 __________________________________________________
-*`java -cp <classpath> edu.mayo.uima.Class \`* <1>
-*`                     <arg1> \`* <2>
-*`                     <arg2>`* <3>
++*java -cp <classpath> edu.mayo.uima.Class \ <1>
+                     <arg1> \ <2>
+                     <arg2>*+ <3>
 __________________________________________________
 
 <1> a command

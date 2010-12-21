@@ -18,9 +18,11 @@ The source code of the stable release of the {osp-short} can be
 downloaded from link:{osp-download}[].
 
 [TIP]
+.Check out from Subversion
 ============
-The latest version (not guaranteed stable) can be found on SVN;;
-	`svn co https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES cTAKES`
+The latest version (not guaranteed stable) can be found on SVN
+
+`svn co https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/trunk/cTAKES cTAKES`
 ===========
 
 include::_extractpearsrc.adoc[]
@@ -138,7 +140,7 @@ Process a sample clinical note
 . Select ``{cvd-eclipse}'';
 . Click the ``Run'' button.
 . In the CAS Visual Debugger, click Menu -> Run -> Load AE;
-. Open `{inst-root-dir}/clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml`;
+. Open +{inst-root-dir}/clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml+;
 include::_testrun.adoc[]
 
 [[compile_from_cli]]
@@ -153,7 +155,7 @@ Prepare the compiling environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We ship an Apache ant build file in the stable release. Before using
 it, modify the included `build.properties` file (shown below) in
-`{inst-root-dir}` by supplying your machine's configuration. Although
++{inst-root-dir}+ by supplying your machine's configuration. Although
 this file is not required, we recommend you create one, which can ease
 debugging efforts, as environmental variables may be changed without
 your awareness. It also helps insert {osp-short} version number to the
@@ -217,6 +219,7 @@ reads
 # on Linux
 ES="$ECLIPSE_HOME/plugins/org.eclipse.equinox.launcher_VERSION.jar"
 -----------------------------------------
+Another option if you're not running Windows is creating a symbolic link.
 Otherwise, if you don't use Eclipse or you use an earlier version,
 please ignore this.
 ===================================================================
@@ -226,9 +229,9 @@ Compile
 ^^^^^^^
 To compile {osp-short}, simply run
 _______
-*`ant`*
++*ant*+
 _______
-from `{inst-root-dir}`. If everything goes smoothly, you'll get a
+from +{inst-root-dir}+. If everything goes smoothly, you'll get a
 fully-functioning pipeline in a few minutes.
 
 NOTE: If you are running without Eclipse installed, you will have to
@@ -244,10 +247,10 @@ Give the pipeline a try:
 . Run
 +
 _______________
-*`ant testrun`*
++*ant testrun*+
 _______________
 +
-from `{inst-root-dir}` to set the Java runtime classpath and bring up
+from {inst-root-dir}+ to set the Java runtime classpath and bring up
 the UIMA CAS Visual Debugger (CVD).
 +
 include::_testrun.adoc[]

@@ -17,13 +17,13 @@ How to use this guide
 If you want to:
 
 * Get {osp-short} running quickly, and quickly apply it to clinical documents 
-   -> 'Follow Chapter 1, skip Chapter 2'
+   -> 'Follow <<binary_install>>, skipping <<compile_from_source>>'
 
 * Run {osp-short}, make use of optional parts, and perhaps develop components
-   -> 'Skip Chapter 1 and follow Chapter 2, skipping Section 2.3'
+   -> 'Skip <<binary_install>> and follow <<compile_from_source>>, skipping <<compile_from_cli>>'
 
 * Run {osp-short} on a server without a GUI
-   -> 'Skip Chapter 1 and follow Chapter 2, skipping Section 2.2'  
+   -> 'Skip <<binary_install>> and follow <<compile_from_source>>, skipping <<compile_in_eclipse>>'  
 
 /////////////////////////////////////////////////////////////////////
 EDITING NOTE:
