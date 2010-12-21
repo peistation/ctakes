@@ -72,11 +72,11 @@ data.chunk.Chunklink2OpenNLP to convert to OpenNLP format.
 +
 --
 ______________________________________________________________________________
-*`java -cp <classpath> data.chunk.genia.Genia2PTB \`*
-*`                     <genia-trees> \`* <1>
-*`                     <ptb-trees> \`* <2>
-*`                     1 \`*
-*`                     <genia-ptb-name-mapping>`* <3>
++*java -cp <classpath> data.chunk.genia.Genia2PTB \
+                     <genia-trees> \ <1>
+                     <ptb-trees> \ <2>
+                     1 \
+                     <genia-ptb-name-mapping>*+ <3>
 ______________________________________________________________________________
 
 <1> the directory which holds the GENIA corpus files;
@@ -115,8 +115,8 @@ separated by commas.
 +
 --
 ___________________________________________________________________________
-*`perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-trees>/wsj_????.mrg > \`*
-*`     <chunklink-chunks>`* <1>
++*perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-trees>/wsj_????.mrg > \
+     <chunklink-chunks>*+ <1>
 ___________________________________________________________________________
 
 <1> the redirected standard output from chunklink.
@@ -129,9 +129,9 @@ manage to run it in a Cygwin session.
 +
 --
 _______________________________________________________________
-*`java -cp <classpath> data.chunk.Chunklink2OpenNLP \`*
-*`                     <chunklink-chunks> \`* <1>
-*`                     <training-data>`* <2>
++*java -cp <classpath> data.chunk.Chunklink2OpenNLP \
+                     <chunklink-chunks> \ <1>
+                     <training-data>*+ <2>
 _______________________________________________________________
 
 <1> the output of chunklink from the previous step.
@@ -169,8 +169,8 @@ not necessary.
 +
 --
 ____________________________________________________________________________
-*`perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-corpus>/wsj_????.mrg > \`* <1>
-*`     <chunklink-chunks>`* <2>
++*perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-corpus>/wsj_????.mrg > \ <1>
+     <chunklink-chunks>*+ <2>
 ____________________________________________________________________________
 
 <1> +<ptb-corpus>+ is your Penn Treebank corpus directory.
@@ -181,9 +181,9 @@ ____________________________________________________________________________
 +
 --
 ____________________________________________________
-*`java -cp <classpath> data.chunk.Chunklink2OpenNLP \`*
-*`                     <chunklink-chunks> \`* <1>
-*`                     <training-data>`* <2>
++*java -cp <classpath> data.chunk.Chunklink2OpenNLP \
+                     <chunklink-chunks> \ <1>
+                     <training-data>*+ <2>
 ____________________________________________________
 
 <1> the output of chunklink from the previous step.
@@ -203,11 +203,11 @@ Building a chunker model is much easier than preparing the training
 data. After you have obtained training data, run the OpenNLP tool:
 
 __________________________________________________________
-*`java -cp <classpath> opennlp.tools.chunker.ChunkerME \`*
-*`                     <training-data> \`* <1>
-*`                     <model-name> \`* <2>
-*`                     iterations \`* <3>
-*`                     cutoff`* <4>
++*java -cp <classpath> opennlp.tools.chunker.ChunkerME \
+                     <training-data> \ <1>
+                     <model-name> \ <2>
+                     iterations \ <3>
+                     cutoff*+ <4>
 __________________________________________________________
 
 <1> an OpenNLP training data file.
@@ -255,7 +255,7 @@ collection processing engine (CPE). To run it:
 . Start UIMA CPE GUI.
 +
 ___________________________________________________________
-*`java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame`*
++*java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame*+
 ___________________________________________________________
 +
 . Open this file.
