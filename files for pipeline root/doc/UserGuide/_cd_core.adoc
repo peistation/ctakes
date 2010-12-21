@@ -115,11 +115,11 @@ end-of-sentence characters that the
 <<sentdetect_annot,SentenceDetectorAnnotator>> uses:
 
 ___________________________________________________
-*`java -cp <classpath> edu.mayo.bmi.uima.core.ae.SentenceDetector \`*
-*`                     <sents_file> \`* <1>
-*`                     <model> \`* <2>
-*`                     iters \`* <3>
-*`                     cut`* <4>
++*java -cp <classpath> edu.mayo.bmi.uima.core.ae.SentenceDetector \
+                     <sents_file> \ <1>
+                     <model> \ <2>
+                     iters \ <3>
+                     cut*+ <4>
 ___________________________________________________
 
 <1> your sentences training data file, one sentence per line, see an example in <<sents_file_eg>>.
@@ -159,11 +159,11 @@ sentence detector (SentenceDetectorME) with the default set of
 candidate end-of-sentence characters, using
 
 ______________________________________________________
-*`java -cp <classpath> opennlp.tools.sentdetect.SentenceDetectorME \
++*java -cp <classpath> opennlp.tools.sentdetect.SentenceDetectorME \
                      <infile> \
                      <outfile> \
                      iters \
-                     cut`*
+                     cut*+
 _______________________________________________________
 The four parameters have the same meaning as the tool we provided,
 ``infile'' uses the same format as in <<sents_file_eg>>.
@@ -179,7 +179,7 @@ descriptor in this project. To run the CPE:
 . Run
 +
 ___________________________________________________________
-*`java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame`*
++*java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame*+
 ___________________________________________________________
 +
 . Open

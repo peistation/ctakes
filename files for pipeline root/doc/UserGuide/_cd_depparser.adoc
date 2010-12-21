@@ -117,7 +117,7 @@ must first be created separately.
 - *en_dict/*
 +
 A directory used by the Clear Morphological Analyzer to create lemmas.
-This analyzer is an alternative to using LVG output from cTAKES.
+This analyzer is an alternative to using LVG output from {osp-short}.
 Descriptor files in the project are set up to use the
 Clear Morphological Analyzer if this valid location is passed
 as the "Morph Dictionary Directory" parameter to Analysis Engines. 
@@ -195,11 +195,11 @@ and the +.dep+ format.
 
 Run:
 _________________________________________________________________________
-*`java -cp lib/args4j-2.0.12.jar:bin clear.engine.PhraseToDep \
++*java -cp lib/args4j-2.0.12.jar:bin clear.engine.PhraseToDep \
                         -h resources/en_clinques.headrules \
                         -i <input-file> \ <1>
                         -m resources/en_dict \
-                        -o <output-file>`* <2>
+                        -o <output-file>*+ <2>
 _________________________________________________________________________
 
 <1> A file in bracketed tree format, e.g, +data/sample.tree+ 
@@ -214,6 +214,7 @@ _____
 _____ 
 
 In Windows, this operation can be done in spreadsheet applications like Excel by:
+
 - using Data -> Import -> From Text File,
 - selecting the +.dep+ file, 
 - identifying tabs as the delimiter,
@@ -264,19 +265,19 @@ this requires much less memory than the default Java version.
 	. Create a +<your-data>.min+ file from +<your-data>.dep+ 
 	. Use the +UIMA_CPE_GUI--dependency parser+ launch.
 	. Load +desc/collection_processing_engine/ClearTrainerPosLemTestCPE.xml+
-	. Put your filename under "Dependency File"
-	. Make sure "Training Mode" is checked
-	. Rename the "Dependency Model File" and "Lexicon Directory" according to what you want.
-	. Make sure "Trainer Path" is a valid relative path from
+	. Put your filename under ``Dependency File''
+	. Make sure ``Training Mode'' is checked
+	. Rename the ``Dependency Model File'' and ``Lexicon Directory'' according to what you want.
+	. Make sure ``Trainer Path'' is a valid relative path from
 	    +{inst-root-dir}/dependency parser+ to a vaid liblinear binary +train+ file.
 
 - To create a model using gold standard POS tags and Clear Morphological Analyzer lemmas,
 run:
 
 ____________________________________________________________
-*`java -cp lib/hppc-0.3.1.jar:bin:resources clear.engine.DepTrain \`*
-*`                     -t <training_data> \`* <1>
-*`                     -c <configuration_file>`* <2>
++*java -cp lib/hppc-0.3.1.jar:bin:resources clear.engine.DepTrain \
+                     -t <training_data> \ <1>
+                     -c <configuration_file>*+ <2>
 ____________________________________________________________
 
 <1> an OpenNLP training data file.
