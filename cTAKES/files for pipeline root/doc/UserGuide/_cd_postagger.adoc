@@ -95,9 +95,9 @@ line 5:  <import resource="GENIAontology.daml" prefix="G"></import>
 . Run:
 +
 _________________________________________________________________________
-*`java -cp <classpath> data.pos.training.GeniaPosTrainingDataExtractor \
++*java -cp <classpath> data.pos.training.GeniaPosTrainingDataExtractor \
                      GENIAcorpus3.02.pos.xml \
-                     <genia-pos-training-data>`* <1>
+                     <genia-pos-training-data>*+ <1>
 _________________________________________________________________________
 
 <1> a file that the converted training data will be written into.
@@ -139,11 +139,11 @@ Creating a model
 Run:
 
 ____________________________________________________________
-*`java -cp <classpath> opennlp.tools.postag.POSTaggerME \`*
-*`                     <training-data> \`* <1>
-*`                     <model-name> \`* <2>
-*`                     iterations \`* <3>
-*`                     cutoff`* <4>
++*java -cp <classpath> opennlp.tools.postag.POSTaggerME \
+                     <training-data> \ <1>
+                     <model-name> \ <2>
+                     iterations \ <3>
+                     cutoff*+ <4>
 ____________________________________________________________
 
 <1> an OpenNLP training data file.
@@ -175,10 +175,10 @@ We have provided a mechanism for creating a tag dictionary. It can be
 run with the following command:
 
 ____________________________________________________________________________
-*`java -cp <classpath> edu.mayo.bmi.uima.pos_tagger.TagDictionaryCreator \`*
-*`                     <training-data> \`* <1>
-*`                     <tag-dictionary> \`* <2>
-*`                     case-sensitive`* <3>
++*java -cp <classpath> edu.mayo.bmi.uima.pos_tagger.TagDictionaryCreator \
+                     <training-data> \ <1>
+                     <tag-dictionary> \ <2>
+                     case-sensitive*+ <3>
 ____________________________________________________________________________
 
 <1> a file containing pos-of-speech tagged training data;
@@ -242,7 +242,7 @@ collection processing engine (CPE). To run it:
 . Start UIMA CPE GUI.
 +
 ___________________________________________________________
-*`java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame`*
++*java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame*+
 ___________________________________________________________
 +
 . Open this file.
