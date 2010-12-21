@@ -6,13 +6,13 @@ Medication Annotation Functional Verification Test Plan
 -------------------------------------------------------
 Introduction;;
 
-The ‘medication’ annotator (also referred to as drugner) provides functionality that complements well with existing annotators in CTAKES. This annotator processes flat files or CDA (plain text wrapped with Clinical Document Architecture) documents to identify drugs and related attributes such as dosage, strength, route, etc. This annotator extracts data from both lists and narrative text.
+The ‘medication’ annotator (also referred to as drugner) provides functionality that complements well with existing annotators in {osp-short}. This annotator processes flat files or CDA (plain text wrapped with Clinical Document Architecture) documents to identify drugs and related attributes such as dosage, strength, route, etc. This annotator extracts data from both lists and narrative text.
 
 Test Plan Purpose and Objectives
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Purpose
 ^^^^^^^
-The purpose of this test plan is to verify the software component in combination with the latest CTAKES pipeline works as architected. Accuracy of identifying drugs and their attributes is not part of this testing process. This test plan assumes that all the upstream annotators such as POS Tagger, Tokenizer, Sentence annotator in the cTAKES pipeline function as expected.
+The purpose of this test plan is to verify the software component in combination with the latest {osp-short} pipeline works as architected. Accuracy of identifying drugs and their attributes is not part of this testing process. This test plan assumes that all the upstream annotators such as POS Tagger, Tokenizer, Sentence annotator in the {osp-short} pipeline function as expected.
 
 Objectives
 ^^^^^^^^^^
@@ -25,12 +25,12 @@ Verify Drug Annotator generates valid attributes for Drug NE
 ==============================================================================================================================================================
 *Disclaimer*::
 This should be considered a beta release of this annotator. Furthermore, this document was generated as a guideline for the testing process before the release of the annotator.
-	See the 'Clinical Text Analysis and Knowledge Extraction System User Guide' documentation located in the cTAKES *{inst-root-dir}/core/docs/userguide/cTAKES_userguide.htm* for detailed install and setup information pertaining to all the cTAKES components.  For additional, documentation pertaining to this annotator see  *{inst-root-dir}/drugner/doc/drugner.pdf* and *{inst-root-dir}/drugner/README* (for prerequisite and installation steps see *{inst-root-dir}/drugner/README*).
+	See the 'Clinical Text Analysis and Knowledge Extraction System User Guide' documentation located in the {osp-short} *{inst-root-dir}/core/docs/userguide/{osp-short}_userguide.htm* for detailed install and setup information pertaining to all the {osp-short} components.  For additional, documentation pertaining to this annotator see  *{inst-root-dir}/drugner/doc/drugner.pdf* and *{inst-root-dir}/drugner/README* (for prerequisite and installation steps see *{inst-root-dir}/drugner/README*).
 ==============================================================================================================================================================
 
 Reference Documents
 ^^^^^^^^^^^^^^^^^^^
-The cTAKES User Guide and the documentation pertaining to the annotator were used as reference in the prepration of this Test Plan.
+The {osp-short} User Guide and the documentation pertaining to the annotator were used as reference in the prepration of this Test Plan.
 
 Test Environment and Resource Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -48,12 +48,12 @@ Verify that 'Drug Lookup Window' annotation span the text in the sections (refer
 
 * Test Case 1
 ** Select documents with one or more of the aforementioned sections
-** Process the selected documents using the 'cTAKES' pipeline with 'Medication' module
+** Process the selected documents using the '{osp-short}' pipeline with 'Medication' module
 ** Ensure that the aforementioned sections have 'Drug Lookup Window' annotation
 
 * Test Case 2
 ** Select documents with drug mentions in sections other than the ones mentioned above
-** Process the selected documents using the 'cTAKES' pipeline with 'Medication' module
+** Process the selected documents using the '{osp-short}' pipeline with 'Medication' module
 ** Ensure that Drug Lookup Window annotation has been added to the spans containing drug mentions
 
 Drug Annotator
@@ -62,10 +62,10 @@ Verify that the 'Drug Mentions' in the Lookup Window and 'Drug Lookup Window' an
 
 * Test Case 1
 ** Select documents with one ore more 'Drug Mentions' outside the _list sections_ mentioned in the previous test case
-** Process the selected documents using the 'cTAKES' pipeline with 'Medication' module
+** Process the selected documents using the '{osp-short}' pipeline with 'Medication' module
 ** Ensure that Drug Mention annotation has been added to the spans containing drug mentions
 
 * Test Case 2
 ** Select documents with one ore more 'Drug Mentions' outside the _list sections_ mentioned in the previous test case
-** Process the selected documents using the 'cTAKES' pipeline with 'Medication' module
+** Process the selected documents using the '{osp-short}' pipeline with 'Medication' module
 ** Ensure that Drug Mention annotation have appropriate attributes such as 'Dosage', 'Route', 'Frequency' and 'Frequency Unit' has been added as well 
