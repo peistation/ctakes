@@ -11,8 +11,7 @@ The Drug NER (Drug Named Entity Recognition, also referred to as Mediction Annot
 [NOTE]
 ==============================================================================================================================================================
 *Disclaimer*::
-This should be considered a beta release of this annotator.
-        See the 'Clinical Text Analysis and Knowledge Extraction System User Guide' documentation located in the cTAKES *{inst-root-dir}/core/docs/userguide/cTAKES_userguide.htm* for detailed install and setup information pertaining to all the cTAKES components.  For additional, documentation pertaining to this pipeline see  *{inst-root-dir}/drugner/doc/drugner.pdf* and *{inst-root-dir}/drugner/README* (for prerequisite and installation steps see *{inst-root-dir}/drugner/README*).
+See the 'Clinical Text Analysis and Knowledge Extraction System User Guide' documentation located in the cTAKES *{inst-root-dir}/core/docs/userguide/cTAKES_userguide.htm* for detailed install and setup information pertaining to all the cTAKES components.  For additional, documentation pertaining to this pipeline see  *{inst-root-dir}/drugner/doc/drugner.pdf* and *{inst-root-dir}/drugner/README* (for prerequisite and installation steps see *{inst-root-dir}/drugner/README*).
 ==============================================================================================================================================================
 
 Analysis engines (annotator)
