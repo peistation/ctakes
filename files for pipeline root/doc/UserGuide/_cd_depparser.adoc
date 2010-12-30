@@ -74,7 +74,7 @@ The first of these assumes that POS tags have been
 given in an upstream component or directly from data.  
 The second infers POS tags using the {osp-short} POS tagger.
 +
-- *analysis_engine/ClearTrainerAE.xml* and *ClearTrainer\*Aggregate.xml*
+- *analysis_engine/ClearTrainerAE.xml* and *ClearTrainer*Aggregate.xml*
 +
 These analysis engines train models for use in ClearParserAE.  
 See <<sec_depparser_train>> for further details.
@@ -105,7 +105,7 @@ Resources and Models
 The main ClearParser model packaged with {osp-short} v{rev-short}.
 This is trained on a corpus of 1600 clinical questions.
 +
-- *lexicon\*/*
+- *pass:[lexicon*/]*
 +
 A directory of additional files for a ClearParser model.  
 For example, "deprel.txt" contains the set of dependency labels;
@@ -155,38 +155,38 @@ An example snippet from +data/sample.dep+ of dependency data is shown in
 ===================================================================
 ------------------------------------------------------------------
 ID  FORM         LEMMA        POS   HEAD DEPREL
-1	The          the          DT	3	 NMOD
-2	study        study        NN	3	 NMOD
-3	physician    physician    NN	4	 SBJ
-4	called       call         VBD	0	 ROOT
-5	a            a            DT	6	 NMOD
-6	hematologist hematologist NN	4	 OBJ
+1   The          the          DT    3    NMOD
+2   study        study        NN    3    NMOD
+3   physician    physician    NN    4    SBJ
+4   called       call         VBD   0    ROOT
+5   a            a            DT    6    NMOD
+6   hematologist hematologist NN    4    OBJ
 ------------------------------------------------------------------
 ===================================================================
 
-ID;; The word number within a sentence.  There is an implied ROOT word that has and ID of 0.
-FORM;; The word itself.
-LEMMA;; A normalized form of the word, stripping suffixes, etc.
-POS;; The part-of-speech associated with the word.
-HEAD;; The ID of the word that the word on the current line is dependent on.
-DEPREL;; The relationship between the current word and its head.  This may be syntactic or semantic.
+Description of +.dep+ format fields::
+	ID;; The word number within a sentence.  There is an implied ROOT word that has and ID of 0.
+	FORM;; The word itself.
+	LEMMA;; A normalized form of the word, stripping suffixes, etc.
+	POS;; The part-of-speech associated with the word.
+	HEAD;; The ID of the word that the word on the current line is dependent on.
+	DEPREL;; The relationship between the current word and its head.  This may be syntactic or semantic.
 
 The popular CONLL format is also supported for input into {osp-short}; this requires several
 extra columns.  However, not all of those columns will be used for ClearParser parsing.
 
 ===== Derivative Formats =====
 The parser will use formats derived from this +.dep+ format, as well.
-*+.mlem+*:: 
-	ID, FORM, LEMMA, HEAD, DEPREL
-*+.mpos+*:: 
-	ID, FORM, POS, HEAD, DEPREL
-*+.min+*:: 
-	ID, FORM, HEAD, DEPREL
-*+.tok+*:: 
-	ID, FORM
+
+Alternative formats::
+	*+.mlem+*;; ID, FORM, LEMMA, HEAD, DEPREL
+	*+.mpos+*;; ID, FORM, POS, HEAD, DEPREL
+	*+.min+*;; ID, FORM, HEAD, DEPREL
+	*+.tok+*;; ID, FORM
 
 Of these, +.tok+ is typically used for testing the actual parses, and the rest are used for training new models.
 
+[[dep_data_conversion]]
 ===== Conversion between formats =====
 Data from resources such as WSJ or Genia typically come as trees
 that were originally used for deep parsers (as in the example above).
@@ -228,7 +228,7 @@ In Windows, this operation can be done in spreadsheet applications like Excel by
 
 ===== Training data =====
 The packaged model is one trained on Clinical Questions,
-in part because it is small enough to with {osp-short}.
+in part because it is small enough to package with {osp-short}.
 If this is not your domain, you may want to train
 other models.  At the time of {osp-short} release {rev-short},
 however, there are no clinical document Treebanks to train on.
@@ -256,22 +256,23 @@ Training a model in Eclipse
 +++++++++++++++++++++++++++
 There are many types of models that can be trained, based on
 how much you want to rely on {osp-short} components and how much
-you want to rely on other components.  Here are two methods of training.
+you want to rely on other components.
 
-- Download and install the C++ version of liblinear at http://www.csie.ntu.edu.tw/~cjlin/liblinear/; 
+. Download and install the C++ version of liblinear at http://www.csie.ntu.edu.tw/~cjlin/liblinear/; 
 this requires much less memory than the default Java version.
 
-- To create a model using {osp-short} POS tags and lemmas with Eclipse:
-	. Create a +<your-data>.min+ file from +<your-data>.dep+ 
-	. Use the +UIMA_CPE_GUI--dependency parser+ launch.
-	. Load +desc/collection_processing_engine/ClearTrainerPosLemTestCPE.xml+
-	. Put your filename under ``Dependency File''
-	. Make sure ``Training Mode'' is checked
-	. Rename the ``Dependency Model File'' and ``Lexicon Directory'' according to what you want.
-	. Make sure ``Trainer Path'' is a valid relative path from
+. Train a model
+** To create a model using {osp-short} POS tags and lemmas with Eclipse:
+	.. Create a +<your-data>.min+ file from +<your-data>.dep+ (see <<dep_data_conversion>>)
+	.. Use the +UIMA_CPE_GUI--dependency parser+ launch.
+	.. Load +desc/collection_processing_engine/ClearTrainerPosLemTestCPE.xml+
+	.. Put your filename under ``Dependency File''
+	.. Make sure ``Training Mode'' is checked
+	.. Rename the ``Dependency Model File'' and ``Lexicon Directory'' according to what you want.
+	.. Make sure ``Trainer Path'' is a valid relative path from
 	    +{inst-root-dir}/dependency parser+ to a vaid liblinear binary +train+ file.
 
-- To create a model using gold standard POS tags and Clear Morphological Analyzer lemmas,
+** To create a model using gold standard POS tags and Clear Morphological Analyzer lemmas,
 run:
 
 ____________________________________________________________

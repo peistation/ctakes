@@ -1,7 +1,7 @@
 // Global attributes
 // EDITING NOTE: NO BLANK LINES BETWEEN DECLARATIONS
 
-:rev:                  1.1, December 2010
+:rev:                  1.1, December 2010: Added "How to use this Guide," optional component tests, and component descriptions for Dependency Parser and Drug NER.
 :rev-short:            1.1
 :osp-full:             Clinical Text Analysis and Knowledge Extraction System
 :osp-short:            cTAKES

@@ -110,8 +110,8 @@ following files:
 * +document preprocessor/desc/CDAToTextTypeSystem.xml+
 * +NE contexts/desc/TypeSystem.xml+
 * +POS tagger/desc/TypeSystem.xml+
-* +Drug NER/desc/type_system/NERTypeSystem.xml (optional component)
-* +dependency parser/type_system/desc/TypeSystem.xml (optional component)
+* +Drug NER/desc/type_system/NERTypeSystem.xml+ (optional component)
+* +dependency parser/type_system/desc/TypeSystem.xml+ (optional component)
 +
 --
 To generate type system from Eclipse:
