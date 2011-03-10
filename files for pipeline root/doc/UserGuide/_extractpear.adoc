@@ -40,3 +40,9 @@ dependency errors.
 
 =======================
 
+.Reminder - dictionaries
+[NOTE]
+===================================================================
+Some of the dictionaries in the release are small samples. To
+replace them with full versions, please read <<boost_performance>>.
+===================================================================

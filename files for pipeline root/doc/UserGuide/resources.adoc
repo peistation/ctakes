@@ -17,6 +17,11 @@ To update to later versions of LVG:
 . Edit the +{inst-root-dir}/LVG/resources/lvg/data/config/lvg.properties+
   file, replacing "lvg2008" with the name of the new release.
 
+To install complete dictionaries for RxNorm, SNOMED-CT, or others that
+available through the UMLS, see the following posts on the cTAKES forums
+https://cabig-kc.nci.nih.gov/Vocab/forums/viewtopic.php?f=28&t=423
+https://cabig-kc.nci.nih.gov/Vocab/forums/viewtopic.php?f=28&t=80&start=20#p1459
+
 Models included in {osp-short} may not represent your data
 distribution well, if you want to build your own models, please read
 <<component_description>>, particularly on:

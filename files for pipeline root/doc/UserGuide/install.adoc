@@ -16,6 +16,17 @@ processing an example clinical note.
 TIP: If you don't know what 'binary' and 'source' are, you probably
 would need to download the binary release.
 
+.All-inclusive
+[NOTE]
+===================================================================
+In the above, "all-inclusive" package means all the code, plus 
+trained models for sentence detection, part of speech tagging, etc.
+Also included are sample dictionaries and a small subset of the 
+full LVG resource.  This allows you to run a simple 
+example to give you an idea of what cTAKES is capable of. 
+To make real use of cTAKES, you will want to 
+see <<boost_performance>>.
+===================================================================
 
 Prerequisites
 ~~~~~~~~~~~~~

@@ -132,3 +132,5 @@ This is a skeleton of how you could use a dictionary contained in a
 database that can be accessed via a JDBC driver instead of using a
 Lucene index or flat file.
 --
+
+See also <<boost_performance>>
