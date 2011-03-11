@@ -1,0 +1,217 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+[[cd_smokingstatus]]
+smoking status
+~~~~~~~~~~~~~~~~
+Overview;;
+ 
+The "smoking status" pipeline processes flat files or CDA (Clinical Document Architecture) documents to classify patient records into five pre-determined categories - past smoker ('P'), current smoker ('C'), smoker ('S'), nonsmoker ('N'), and unknown ('U'), where a past and current smoker are distinguished based on temporal expressions in the patient's medical records.
+
+
+Analysis engines (annotator)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- *SimulatedProdSmokingTAE.xml*
++
+The file +desc/analysis_engine/SimulatedProdSmokingTAE.xml+ provides a working example of the smoking status pipeline, utilizing the aggregate TAEs. This Aggregate includes Token, Sentence, SentenceAdjuster, ClassifiableEntries (which in turn invokes the ProductionPostSentenceAggregate annotators internally).;;
+-[red]#ExternalBaseAggregateTAE#, ;;
+-[red]#SentenceAdjuster#, ;;
+-[red]#ClassifiableEntriesAnnotator#, ;;
++
+[red]#Red# text indicates shipped with this annotator.
+[NOTE]
+=======================================================================
+SimulatedProdSmokingTAE_CDA.xml is also provided to process CDA documents.  The aggregate flow will contain the annotator version ExternalBaseAggregateTAE_CDA.xml which will process the document as a Clinical Document Architecture (CDA) file. 
+=======================================================================
+- *ProductionPostSentenceAggregate_step1.xml*
++
+The file +desc/analysis_engine/ProductionPostSentenceAggregate_step1.xml+ Aggregate TAE is used to run the first step classification stage via the KuRuleBasedClassifierAnnotator.;;
+
+-TokenizerAnnotator <<tokenizer_annot,(core project)>>, ;;
+-[red]#KuRuleBasedClassifierAnnotator#, ;;
++
+[red]#Red# text indicates shipped with this annotator.
+[NOTE]
+=======================================================================
+This annotator is not contained in the aggregate flow, but introduced via the resource settings of the ClassifiableEntriesAnnotator (see the method initialize() in this class).  UIMAFramework.produceAnalysisEngine(taeSpecifierStep1,  ResMgr, null) instantiates the AE and CasCreationUtils.createCas(taeStep1.getAnalysisEngineMetaData()).getJCas() retrieves the CAS.
+=======================================================================
+
+- *ProductionPostSentenceAggregate_step2_libsvm.xml*
++
+The file +desc/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml+ is the Aggregate TAE used to run the second classification stage via the libSVM training module.;;
+-[red]#PcsClassifierAnnotator_libsvm#, ;;
+-[red]#ArtificialSentenceAnnotator#, ;;
+-[red]#SentenceAdjuster#, ;;
+-[red]#SmokingStatusDictionaryLookupAnnotator#, ;;
+-[red]#NegationAnnotator#, ;;
++
+[red]#Red# text indicates shipped with this annotator.
+[NOTE]
+=======================================================================
+This annotator is not contained in the aggregate flow, but introduced via the resource settings of the ClassifiableEntriesAnnotator (see the method initialize() in this class).  UIMAFramework.produceAnalysisEngine(taeSpecifierStep2, ResMgr, null) instantiates the AE and the ClassifiableEntriesAnnotator process method will process if the smoking status is known.
+=======================================================================
+
+- *ExternalBaseAggregateTAE.xml*
++
+The file +desc/analysis_engine/ExternalBaseAggregateTAE.xml+ provides an aggregate flow for the external annotations, SimpleSegmentAnnotator, TokenizerAnnotator, SentenceDetectorAnnotator, and LvgAnnotator.;;
+
+-[red]#SimpleSegmentAnnotator#, ;;
+-TokenizerAnnotator <<tokenizer_annot,(core project)>>, ;;
+-SentDetectorAnnotator <<sentdetect_annot,(core project)>>, ;;
+-LvgAnnotation <<lvg_annot, (LVG project)>>, ;;
+[NOTE]
+=======================================================================
+ExternalBaseAggregateTAE_CDA.xml is also provided to process CDA documents.  The aggregate flow will contain the specialized class [red]#CdaCasInitializer# (replacing the 'SimpleSegmentAnnotator' used by flat file/non-CDA version) which will process the document as a Clinical Document Architecture (CDA) file. This annotator is contained in the 'SimulatedProdSmokingTAE_CDA' aggregate. [red]#Red# text indicates shipped with this annotator.
+=======================================================================
+- *SentenceAdjuster.xml*
++
+The file +desc/analysis_engine/SentenceAdjuster.xml+ drives the java class edu.mayo.bmi.smoking.ae.SentenceAdjuster.  Annotator that uses some patterns and some rules about those patterns to adjust certain annotations.
+This annotator was extended to handle sentence boundaries for the Smoking status classification: Example: "Tobacco: none"
+has two sentences as detected by the original cTAKES sentence boundary detector. This annotator merges them into one sentence to enable correct negation detection.
+
+*Parameters*::
+  UseSegments <Boolean/Single-valued/Optional>;;  ([brown]#Default Value# = 'false')
+Flag whether to use segments or full doc text.
+  SegmentsToSkip <String/Multi-valued/Optional>;;  ([brown]#Default Value# = 'null')
+Segments to skip.
+  WordsToIgnore <String/Multi-valued/Optional>;;  ([brown]#Default Value# = 'null')
+Set of words that PostModifier should ignore (act as if the word was not there) when looking for a pattern match.
+  WordsInPattern <String/Multi-valued/Required>;;  ([brown]#Default Value# = 'no none never quit smoked ;')
+The list of words ("none", "no", etc) used in the pattern.
+
+- *ClassifiableEntriesAnnotator.xml*
++
+The file +desc/analysis_engine/ClassifiableEntriesAnnotator.xml+ drives the java class edu.mayo.bmi.smoking.ae.ClassifiableEntries.  Converts Sentences to ClassifiableEntries (required by SmokingStatus pipeline) and ultimately to RecordSentence. 
+
+*Parameters*::
+  TruthFile <String/Single-valued/Optional>;;  ([brown]#Default Value# = 'null')
+Delimited Truth file.  Delimiter is expected to be the TAB char.  If not specified, then the classification feature of the RecordSentence object will not be set.
+  AllowedClassifications <String/Multi-valued/Optional>;;  ([brown]#Default Value# = '"SMOKER" "CURRENT_SMOKER" "NON_SMOKER" "PAST_SMOKER UNKNOWN'")
+See edu.mayo.bmi.smoking.Const.java for permitted string values.
+  SectionsToIgnore <String/Multi-valued/Optional>;;  ([brown]#Default Value# = '"20109" "20138"')
+Sections to ignore for ClassifiableEntries - Family History (20109). A given patient's smoking status could be confused by smoking status of others. To avoid this confusion there is an option to exclude certain sections such as family history.
+  ConWordsFile <Boolean/Single-valued/Optional>;;  ([brown]#Default Value# = '$main_root/resources/ss/data/context/negationContradictionWords.txt')
+Contradiction words list. If this word appears in sentence do not negate.
+
+*Resources*::
+  UimaDescriptorStep1;; ([brown]#Default Value# = '$main_root/desc/analysis_engine/ProductionPostSentenceAggregate_step1.xml')  
+Annotator module responsible for the first classification step, namely, KuRuleBasedClassifierAnnotator.
+  UimaDescriptorStep2;;  ([brown]#Default Value# = '$main_root/desc/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml')
+Annotator module responsible for second classification step.
++
+[NOTE]
+=======================================================================
+The 'UimaDescriptorStep1'/'UimaDescriptorStep2' are introduced as resources via the ClassifiableEntriesAnnotator annotator during the initialization step.  This allows the aggregates specified to be instantiated and analysis processing to be handled on a separate asynchronized thread.  This enhances performance overall by ensuring the resources required by the process method will have output of the ProductionPostSentenceAggregates prepared without requiring a synchronized data flow (i.e. explicit aggregate flow via component descriptor aggregate flow). 
+=======================================================================
+- *KuRuleBasedClassifierAnnotator.xml*
++
+The file +desc/analysis_engine/KuRuleBasedClassifierAnnotator.xml+ drives the java class edu.mayo.bmi.smoking.ae.KuRuleBasedClassifierAnnotator. Known vs Unknown classifier using smoking related keywords. 
+
+*Parameters*::
+  CaseSensitive <String/Single-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Specifies if a distinction between lower and upper case text will be considered.
+  classAttribute <String/Single-valued/Required>;;  ([brown]#Default Value# = 'smoking_status') 
+Value used by the NominalAttributeValue via setAttributeName.
+  SmokingWordsFile <String/Single-valued/Required>;;  ([brown]#Default Value# = 'ss/data/KU/keywords.txt') 
+Smoking related keywords to identify "known" class.
+  UnknownWordsFile <String/Single-valued/Required>;;  ([brown]#Default Value# = 'ss/data/KU/unknown_words.txt') 
+If this word/phrase appears, treat the sentence as UNKNOWN.
+
+- *PcsClassifierAnnotator_libsvm.xml*
++
+The file +desc/analysis_engine/PcsClassifierAnnotator.xml+ smoking status classifier using libsvm. This annotator plays the same role as PcsBOWFeatureAnnotator.xml, PcsClassifierAnnotator.xml, and BOWFeatureRemovalAnnotator.xml, which use libsvm.
+
+*Parameters*::
+  CaseSensitive <String/Single-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Specifies if a distinction between lower and upper case text will be considered.
+
+*Resources*::
+  StopWordsFile;; ([brown]#Default Value# = 'file:ss/data/PCS/stopwords_PCS.txt)' 
+Resource file that provides terms used as stop words, e.g. '"a" "an" "the"'.
+  PCSKeyWordFile;; ([brown]#Default Value# = 'file:ss/data/PCS/keywords_PCS.txt)' 
+Resource file that provides terms used as PCS key words, e.g. '"refrain" "discussed" "to_quit" (if bigram it is connected by underscore, i.e. "_")'.
+  PathOfModel;; ([brown]#Default Value# = 'file:ss/data/PCS/pcs_libsvm-2.91.model)' 
+Resource file that provides trained model for smoking status classification.
+
+- *ArtificialSentenceAnnotator.xml*
++
+The file +desc/analysis_engine/ArtificialSentenceAnnotator.xml+ drives the java class edu.mayo.bmi.uima.core.ae.CopyAnnotator.  Artificially creates a new SentenceAnnotation object by treating the entire document as a sentence.  The offset values from the DocumentAnnotation object are transferred over to the new SentenceAnnotation object.
+
+*Parameters*::
+  srcObjClass <String/Single-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Source JCas object class.  This must be an object that already exists in the JCas.
+  destObjClass <String/Single-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Destination JCas object class.  A new JCas object will be created.
+  dataBindMap <String/Multi-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Binds data from source to destination.  Format for each entry is the getter method name of the source to the setter method name of the destination.  e.g. getMyValue|setMyValue
+
+- *SmokingStatusDictionaryLookupAnnotator.xml*
++
+The file +desc/analysis_engine/SmokingStatusDictionaryLookupAnnotator.xml+ drives the java class edu.mayo.bmi.uima.lookup.ae.DictionaryLookupAnnotator.  Performs dictionary lookup and stores the hits as NamedEntityAnnotation objects.
+
+*Resources*::
+  LookupDescriptor;; ([brown]#Default Value# = 'file:ss/data/SmokingStatusLookupConfig.xml)' 
+Defines which dictionaries will be used, the implementation specifics, and metaField configuration.
+  SmokerDictionary;; ([brown]#Default Value# = 'file:ss/data/smoker.dictionary)' 
+Resource file that provides terms used as smoking words, e.g. '"smokes" "tobacco"'.
+  NonSmokerDictionary;; ([brown]#Default Value# = 'file:ss/data/nonsmoker.dictionary)' 
+Resource file that provides terms used as non-smoking words, e.g. '"non-smoker"'.
+
+- *NegationAnnotator.xml*
++
+The file +desc/analysis_engine/NegationAnnotator.xml+ drives the java class edu.mayo.bmi.uima.context.ContextAnnotator. Boundary tokens moved to external resource - ss/data/context/boundaryData.txt. 
+
+*Resources*::
+ BoundaryData;; ([brown]#Default Value# = 'file:ss/data/context/boundaryData.txt)' 
+Resource file that provides terms used as sentence boundaries, e.g. '"nevertheless" "how" ";" "."'.
+
+[NOTE]
+=======================================================================
+The parameters provided act the same way that the core's version of the 'NegationAnnotator', but since the boundary stop words are different for the smoking status pipeline, a separate implementation was necessary. 
+However, current release of 'NegationAnnotator' does not use this resource.
+=======================================================================
+CAS consumers
+^^^^^^^^^^^^^
+- *RecordResolutionCasConsumer.xml*
++
+The CAS consumer provided in +/desc/cas_consumper/RecordResolutionCasConsumer.xml+ drives the java class edu.mayo.bmi.smoking.cc.RecordResolutionCasConsumer. Iterates over all sentences (each CAS equals one sentence) for a record and resolves the final classification value for the record. Output is saved to an delimited file.  Additionally, optionally provides the overall patient level classification based on record level classification.
+
+*Parameters*::
+		OutputFile <String/Single-valued/Required>;;  ([brown]#Default Value# = 'c:\temp\record_resolution.txt') 
+Specifies the location of the detail and summary report.
+		Delimiter <String/Single-valued/Required>;;  ([brown]#Default Value# = '|') 
+Specifies the delimiter for the output file.
+		ProcessingCDADocument <Boolean/Single-valued/Required>;;  ([brown]#Default Value# = 'false') 
+Specifies whether the processed files should be handled as CDA documents.
+		RunPatientLevelClassification <Boolean/Single-valued/Required>;; ([brown]#Default Value# = 'false') 
+Specifies whether the post processing step of generating a summary patient level classification is done.
+		FinalClassificationOutputFile <String/Single-valued/Optional>;; ([brown]#Default Value# = 'null') 
+Specifies name and location of the summary report file which holds the final patient level classifications.
+
+Resources
+^^^^^^^^^
+- *libsvm-2.91.jar*
++
+The support vector machine (SVM) classificiation tool provided at +/lib/libsvm-2.91.jar+ used to train the smoking status model.
+
+How to 
+^^^^^^
+*create your own smoking status classifier model:*
+
+1) Create sentence-level smoking status data with the format of: sentence|class_label (class_label: P, C, S).;;
+Eg);;
+	He quit smoking three years ago.|P::
+	She is smoking currently.|C::
+	The patient has a history of tobacco use.|S::
+
+2) Run the script edu.mayo.bmi.smoking.MLutil.GenerateTrainingData.java on the sentence-level smoking status data to generate the libSVM training data.;; In this script, the variable "dataFile" in main() must point to the sentence-level smoking status data. Set the other variables also if necessary. Users might create their own keywordFile that contains keywords used in 
+smoking status classification (see GenerateTrainingData.java for details.)
+
+3) Create new model on the libSVM training data.;; The command with our options used in the current model is: 
+     java -classpath path_of_libsvm_jar_file svm_train -s 0 -t 1 -g 1 -r 1 -d 1 training_data_file new_model
+Users might use their own customized libSVM options.
+
+4) Save new_model in the resources/ss/data/PCS/.;;
+ 
+5) Change the Resources of "PathOfModel" in PcsClassifierAnnotator_libsvm.xml to "new_model".;;
+
