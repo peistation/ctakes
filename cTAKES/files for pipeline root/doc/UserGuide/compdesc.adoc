@@ -60,3 +60,4 @@ include::_cd_padtermspotter.adoc[]
 
 include::_cd_drugner.adoc[]
 
+include::_cd_smokingstatus.adoc[]
