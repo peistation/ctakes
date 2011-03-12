@@ -7,13 +7,13 @@ include::_globattr.adoc[]
 Dependency parsers provide syntactic information about sentences.
 Unlike deep parsers, they do not explicitly find phrases (e.g., NP or VP);
 rather, they find the dependencies between words.  
-For example, "hormone replacement therapy" would 
+For example, ``hormone replacement therapy'' would 
 have deep structure:
 
 	(NP (NML (NN hormone) (NN replacement)) (NN therapy))
 
-but its dependency structure would show that "hormone" depends on
-"replacement," and "replacement" in turn depends on "therapy"
+but its dependency structure would show that ``hormone'' depends on
+``replacement'' and ``replacement'' in turn depends on ``therapy''
 Below, the first column of numbers indicates the ID of the word, and
 the second number indicates what it is dependent on.
 
@@ -22,7 +22,7 @@ the second number indicates what it is dependent on.
 	25 therapy     therapy     NN 22 PMOD
 
 Dependency parses can be _labeled_ as well, e.g., we could specify
-that "hormone" is in a noun-modifier (i.e., NMOD) relationship with "therapy" in
+that ``hormone'' is in a noun-modifier (i.e., NMOD) relationship with ``therapy'' in
 the example above (the last column).
 
 This project provides a UIMA wrapper and some utilities for
@@ -74,7 +74,7 @@ The first of these assumes that POS tags have been
 given in an upstream component or directly from data.  
 The second infers POS tags using the {osp-short} POS tagger.
 +
-- *analysis_engine/ClearTrainerAE.xml* and *ClearTrainer*Aggregate.xml*
+- *analysis_engine/ClearTrainerAE.xml* and *ClearTrainerAggregate.xml*
 +
 These analysis engines train models for use in ClearParserAE.  
 See <<sec_depparser_train>> for further details.
@@ -108,8 +108,8 @@ This is trained on a corpus of 1600 clinical questions.
 - *pass:[lexicon*/]*
 +
 A directory of additional files for a ClearParser model.  
-For example, "deprel.txt" contains the set of dependency labels;
-"pos.txt" contains the set of POS tags.
+For example, ``deprel.txt'' contains the set of dependency labels;
+``pos.txt'' contains the set of POS tags.
 IMPORTANT: When doing training within this project, 
 the specified lexicon directory
 must first be created separately.
@@ -120,7 +120,7 @@ A directory used by the Clear Morphological Analyzer to create lemmas.
 This analyzer is an alternative to using LVG output from {osp-short}.
 Descriptor files in the project are set up to use the
 Clear Morphological Analyzer if this valid location is passed
-as the "Morph Dictionary Directory" parameter to Analysis Engines. 
+as the ``Morph Dictionary Directory'' parameter to Analysis Engines. 
 +
 - *feature.xml*
 +
