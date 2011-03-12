@@ -229,12 +229,13 @@ How to create your own smoking status classifier model:
 
 1) Create sentence-level smoking status data with the format of: 
 
-sentence|class_label (class_label: P, C, S).;;
+    sentence|class_label (class_label: P, C, S)
 
-Eg;;
-	He quit smoking three years ago.|P::
-	She is smoking currently.|C::
-	The patient has a history of tobacco use.|S::
+For example:
+
+	He quit smoking three years ago.|P
+	She is smoking currently.|C
+	The patient has a history of tobacco use.|S
 
 2) Run the script edu.mayo.bmi.smoking.MLutil.GenerateTrainingData.java on the sentence-level smoking status data to generate the libSVM training data.;; In this script, the variable "dataFile" in main() must point to the sentence-level smoking status data. Set the other variables also if necessary. Users might create their own keywordFile that contains keywords used in 
 smoking status classification (see GenerateTrainingData.java for details.)
