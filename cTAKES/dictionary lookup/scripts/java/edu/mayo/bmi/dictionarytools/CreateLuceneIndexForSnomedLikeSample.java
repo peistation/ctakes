@@ -145,7 +145,7 @@ public class CreateLuceneIndexForSnomedLikeSample {
 					Field.Index.NO));//Field.Keyword("UNIQUE_DOCUMENT_IDENTIFIER_FIELD", t[i]));
 			i++;
 			document.add(new Field("cui", t[i], Field.Store.YES,
-					Field.Index.NO));//Field.Keyword("cui", t[i]));
+					Field.Index.NOT_ANALYZED)); // allow upper case input on search
 			i++;
 			document.add(new Field("code", t[i], Field.Store.YES,
 					Field.Index.ANALYZED));//Field.Text("code", t[i]));
