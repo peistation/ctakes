@@ -70,20 +70,29 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 	private Properties iv_props;
 
 	private Searcher iv_searcher;
-	
-	private int maxHits = 100;
+	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
+	// Added 'MaxListSize'
+	private int iv_maxHits;
 
-	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props)
+	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props, int maxListSize)
 			throws Exception
 	{
 		// TODO property validation could be done here
 		iv_props = props;
-
+		iv_maxHits = maxListSize;
 		String resrcName = iv_props.getProperty(LUCENE_FILTER_RESRC_KEY_PRP_KEY);
 		LuceneIndexReaderResource resrc = (LuceneIndexReaderResource) aCtx.getResourceObject(resrcName);
 		iv_searcher = new IndexSearcher(resrc.getIndexReader());
 	}
-
+	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props)
+	throws Exception
+	{
+		// TODO property validation could be done here
+		iv_props = props;
+		String resrcName = iv_props.getProperty(LUCENE_FILTER_RESRC_KEY_PRP_KEY);
+		LuceneIndexReaderResource resrc = (LuceneIndexReaderResource) aCtx.getResourceObject(resrcName);
+		iv_searcher = new IndexSearcher(resrc.getIndexReader());
+	}
 	public void consumeHits(JCas jcas, Iterator lhItr)
 			throws AnnotatorProcessException
 	{
@@ -169,20 +178,8 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		try
 		{
 			Query q = new TermQuery(new Term(fieldName, str));
-//			Hits hits = iv_searcher.search(q);
-//
-//			if (hits != null)
-//			{
-//				for (int i = 0; i < hits.length(); i++)
-//				{
-//					if (hits.score(i) == 1)
-//					{
-//						return true;
-//					}
-//				}
-//			}
-//			return false;
-            TopDocs topDoc = iv_searcher.search(q, maxHits);
+
+            TopDocs topDoc = iv_searcher.search(q, iv_maxHits);
             ScoreDoc[] hits = topDoc.scoreDocs;
             if ((hits != null) && (hits.length > 0))
             {

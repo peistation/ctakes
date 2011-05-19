@@ -50,13 +50,22 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 	private final String CODING_SCHEME_PRP_KEY = "codingScheme";
 
 	private Properties iv_props;
+	
+	private static int iv_maxSize;
 
+	public NamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props, int maxListSize)
+	{
+		// TODO property validation could be done here
+		iv_props = props;
+		iv_maxSize = maxListSize;
+	}
 	public NamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props)
 	{
 		// TODO property validation could be done here
 		iv_props = props;
 	}
 
+	
 	public void consumeHits(JCas jcas, Iterator lhItr)
 			throws AnnotatorProcessException
 	{
