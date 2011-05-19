@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -50,17 +51,21 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
 {
     private Searcher iv_searcher;
     private String iv_lookupFieldName;
-	private int maxHits = 100;
+	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
+	private int iv_maxHits;
+	// LOG4J logger based on class name
+	private Logger iv_logger = Logger.getLogger(getClass().getName());
     /**
      * 
      * Constructor
      *
      */
-    public LuceneDictionaryImpl(Searcher searcher, String lookupFieldName)
+    public LuceneDictionaryImpl(Searcher searcher, String lookupFieldName, int maxListHits)
     {
         iv_searcher = searcher;
         iv_lookupFieldName = lookupFieldName;
-
+     // Added 'maxListHits'
+        iv_maxHits = maxListHits;
         // TODO Only take perfect matches?
     }
 
@@ -71,8 +76,12 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
     	try
     	{
     		Query q = new TermQuery(new Term(iv_lookupFieldName, str));
-    		TopDocs topDoc = iv_searcher.search(q, maxHits);
+    		TopDocs topDoc = iv_searcher.search(q, iv_maxHits);
     		ScoreDoc[] hits = topDoc.scoreDocs;
+    		if (hits.length == iv_maxHits) {
+    			iv_logger.warn("'iv_maxHits' equals the list length returned by the lucene query (" + hits.length+").");
+    			iv_logger.warn("You may want to consider setting a higher value, since there may be more entries not being returned in the event greater than " +iv_maxHits +" exist.");
+    		}
     		for (int i = 0; i < hits.length; i++) {
     			int docId = hits[i].doc;
     			Document luceneDoc = iv_searcher.doc(docId);
@@ -94,7 +103,7 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
         {
             Query q = new TermQuery(new Term(iv_lookupFieldName, str));
 
-            TopDocs topDoc = iv_searcher.search(q, maxHits);
+            TopDocs topDoc = iv_searcher.search(q, iv_maxHits);
             ScoreDoc[] hits = topDoc.scoreDocs;
             if ((hits != null) && (hits.length > 0))
             {

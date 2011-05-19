@@ -48,14 +48,16 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
 	
 	private final String DB_CONN_RESRC_KEY_PRP_KEY = "dbConnExtResrcKey";
 	private final String MAP_PREP_STMT_PRP_KEY = "mapPrepStmt";
-
+	//ohnlp-Bugs-3296301 fix limited search results to fixed 100 records.
+	// Added 'MaxListSize'
+	private static int iv_maxListSize;
 	private PreparedStatement mapPrepStmt;
 
-	public UmlsToSnomedDbConsumerImpl(AnnotatorContext aCtx, Properties properties)
+	public UmlsToSnomedDbConsumerImpl(AnnotatorContext aCtx, Properties properties, int maxListSize)
 			throws Exception
 	{
 		super(aCtx, properties);
-
+		iv_maxListSize = maxListSize;
 		String resrcName = props.getProperty(DB_CONN_RESRC_KEY_PRP_KEY);
 		JdbcConnectionResource resrc = (JdbcConnectionResource) aCtx.getResourceObject(resrcName);
 
@@ -65,6 +67,19 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
 
 	}
 
+
+	public UmlsToSnomedDbConsumerImpl(AnnotatorContext aCtx, Properties properties)
+			throws Exception
+	{
+		super(aCtx, properties);
+		String resrcName = props.getProperty(DB_CONN_RESRC_KEY_PRP_KEY);
+		JdbcConnectionResource resrc = (JdbcConnectionResource) aCtx.getResourceObject(resrcName);
+
+		String prepStmtSql = props.getProperty(MAP_PREP_STMT_PRP_KEY);
+		Connection conn = resrc.getConnection();
+		mapPrepStmt = conn.prepareStatement(prepStmtSql);
+
+	}
 
 	/**
 	 * Queries the given UMLS CUI against the DB. Returns a set of SNOMED codes.

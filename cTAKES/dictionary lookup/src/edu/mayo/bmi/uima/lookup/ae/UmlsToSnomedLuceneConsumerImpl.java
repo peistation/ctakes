@@ -56,12 +56,20 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 	// LOG4J logger based on class name
 	private Logger logger = Logger.getLogger(getClass().getName());
 
-
+	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
+	// Added 'MaxListSize'
+	private static int iv_maxListSize;
 	private final String SNOMED_MAPPING_PRP_KEY = "snomedCodeMappingField";
 	private final String CUI_MAPPING_PRP_KEY = "cuiMappingField";
-
-	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties)
+	
+	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties, int maxListSize)
 			throws Exception
+	{
+		super(aCtx,properties);
+		iv_maxListSize = maxListSize;
+	}
+	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties)
+	throws Exception
 	{
 		super(aCtx,properties);
 	}
@@ -92,10 +100,10 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 
 			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 			String lookupFieldName = props.getProperty(CUI_MAPPING_PRP_KEY);
-			String valueFieldName = props.getProperty(SNOMED_MAPPING_PRP_KEY);
-			
+			String valueFieldName = props.getProperty(SNOMED_MAPPING_PRP_KEY);	
+
 			// We will lookup entries based on lookupFieldName
-			LuceneDictionaryImpl snomedLikeCodesIndex = new LuceneDictionaryImpl(indexSearcher, lookupFieldName);
+			LuceneDictionaryImpl snomedLikeCodesIndex = new LuceneDictionaryImpl(indexSearcher, lookupFieldName, iv_maxListSize);
 			
 	        logger.info("Loaded Lucene index with "+ indexReader.numDocs() +" entries.");
 	
