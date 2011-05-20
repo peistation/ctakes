@@ -51,10 +51,23 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
 {
     private Searcher iv_searcher;
     private String iv_lookupFieldName;
-	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
-	private int iv_maxHits;
-	// LOG4J logger based on class name
-	private Logger iv_logger = Logger.getLogger(getClass().getName());
+    //ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
+    private int iv_maxHits;
+    // LOG4J logger based on class name
+    private Logger iv_logger = Logger.getLogger(getClass().getName());
+    
+    /**
+     * 
+     * Constructor
+     *
+     */
+    public LuceneDictionaryImpl(Searcher searcher, String lookupFieldName)
+    {
+	this(searcher, lookupFieldName, Integer.MAX_VALUE);
+
+	// TODO Only take perfect matches?
+    }
+    
     /**
      * 
      * Constructor
