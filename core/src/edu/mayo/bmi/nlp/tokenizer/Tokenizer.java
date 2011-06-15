@@ -277,6 +277,10 @@ public class Tokenizer {
 					.getEndOffset());
 			boolean foundSomethingInside = findPunctSymbolInsideToken(tokens,
 					token, tokenText);
+			// sourceforge bug tracker #3072902
+			// if nothing left after remove the contraction, such as the line " n't "
+			// then all of token was turned into a contraction token
+			if (token.getEndOffset()== token.getStartOffset()) foundSomethingInside = true;
 			if (foundSomethingInside) {
 				removeTokenList.add(token);
 			}
