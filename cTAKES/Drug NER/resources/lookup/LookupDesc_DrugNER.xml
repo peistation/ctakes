@@ -105,7 +105,7 @@
 			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
-					<property key="codeMetaRxField" value="code"/>
+					<property key="codeMetaField" value="code"/>
 					<property key="luceneFilterExtResrcKey" value="NamedEntityLookupConsumer"/>
 				</properties>
 			</lookupConsumer>
