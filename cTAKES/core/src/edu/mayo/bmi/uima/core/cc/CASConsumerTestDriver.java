@@ -39,36 +39,38 @@ import org.apache.uima.util.XMLInputSource;
 
 public class CASConsumerTestDriver 
 {
-	public static void main(String[] args) 
-	{
-		try
-		{  
-			String xCasLocation = args[0];
-			String taeDescriptionLocation = args[1];
-			String casConsumerDescriptorLocation = args[2];
-			
-			InputStream xCasStream = new FileInputStream(xCasLocation);
-			
-			AnalysisEngineDescription taeDescription = UIMAFramework.getXMLParser().parseAnalysisEngineDescription(
-					new XMLInputSource(new File(taeDescriptionLocation)));
-			
-			AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(taeDescription);
-			System.out.println("analysis engine created.");
-			
-			CAS cas = ae.newCAS();
-			
-			XCASDeserializer.deserialize(xCasStream, cas);
-			System.out.println("XCAS deserialized");
-			
-			CasConsumerDescription casConsumerDescription = UIMAFramework.getXMLParser().parseCasConsumerDescription(
-				new XMLInputSource(new File(casConsumerDescriptorLocation)));
-            CasConsumer casConsumer = UIMAFramework.produceCasConsumer(casConsumerDescription);
-            System.out.println("CasConsumer initialized.  Calling processCas....");
-            casConsumer.processCas(cas);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
+    public static void main(String[] args) 
+    {
+	try
+	{  
+	    String xCasLocation = args[0];
+	    String taeDescriptionLocation = args[1];
+	    String casConsumerDescriptorLocation = args[2];
+
+	    InputStream xCasStream = new FileInputStream(xCasLocation);
+
+	    AnalysisEngineDescription taeDescription = UIMAFramework.getXMLParser().parseAnalysisEngineDescription(
+		    new XMLInputSource(new File(taeDescriptionLocation)));
+
+	    AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(taeDescription);
+	    System.out.println("analysis engine created.");
+
+	    CAS cas = ae.newCAS();
+
+	    XCASDeserializer.deserialize(xCasStream, cas);
+	    System.out.println("XCAS deserialized");
+
+	    ae.process(cas);
+	    CasConsumerDescription casConsumerDescription = UIMAFramework.getXMLParser().parseCasConsumerDescription(
+		    new XMLInputSource(new File(casConsumerDescriptorLocation)));
+	    CasConsumer casConsumer = UIMAFramework.produceCasConsumer(casConsumerDescription);
+	    System.out.println("CasConsumer initialized.  Calling processCas....");
+	    casConsumer.processCas(cas);
+	    System.out.println("processCas completed....");
 	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	}
+    }
 }
