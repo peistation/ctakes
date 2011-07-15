@@ -209,10 +209,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ae.tokenizer.WordTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ae.tokenizer.WordTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
 </outputs>
 <languagesSupported/>
 </capability>
