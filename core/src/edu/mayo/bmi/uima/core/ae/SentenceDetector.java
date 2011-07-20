@@ -119,21 +119,21 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 	 */
 	public void process(JCas jcas, ResultSpecification resultSpec) throws AnnotatorProcessException {
 
-    	logger.info("Starting processing.");
+	    logger.info("Starting processing.");
 
-		sentenceCount = 0;
+	    sentenceCount = 0;
 
-		String text = jcas.getDocumentText();
+	    String text = jcas.getDocumentText();
 
-		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator<?> sectionItr = indexes.getAnnotationIndex(Segment.type).iterator();
-		while (sectionItr.hasNext()) {
-			Segment sa = (Segment) sectionItr.next();
-			String sectionID = sa.getId();
-			if (!skipSegmentsSet.contains(sectionID)) {
-				sentenceCount = annotateRange(jcas, text, sa, sentenceCount);
-			}
+	    JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+	    Iterator<?> sectionItr = indexes.getAnnotationIndex(Segment.type).iterator();
+	    while (sectionItr.hasNext()) {
+		Segment sa = (Segment) sectionItr.next();
+		String sectionID = sa.getId();
+		if (!skipSegmentsSet.contains(sectionID)) {
+		    sentenceCount = annotateRange(jcas, text, sa, sentenceCount);
 		}
+	    }
 	}
 
 	/**
@@ -198,16 +198,17 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		// Then trim any leading or trailing whitespace of ones that were split.
 		ArrayList<SentenceSpan> sentenceSpans = new ArrayList<SentenceSpan>(0); 
 		for (int i=0; i < potentialSentSpans.length; i++) {
-			if (potentialSentSpans[i]!=null) {
-				sentenceSpans.addAll(potentialSentSpans[i].splitAtLineBreaksAndTrim(NEWLINE)); //TODO Determine line break type
-			}
+		    if (potentialSentSpans[i]!=null) {
+			sentenceSpans.addAll(potentialSentSpans[i].splitAtLineBreaksAndTrim(NEWLINE)); //TODO Determine line break type
+		    }
 		}
 		
 		
 		// Add sentence annotations to the CAS
 		int previousEnd = -1;
 		for (int i = 0; i < sentenceSpans.size(); i++) {
-			SentenceSpan span = sentenceSpans.get(i);
+		    SentenceSpan span = sentenceSpans.get(i);
+		    if (span.getStart()!=span.getEnd()) { // skip empty lines
 			Sentence sa = new Sentence(jcas);
 			sa.setBegin(span.getStart());
 			sa.setEnd(span.getEnd());
@@ -222,6 +223,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 				logger.error("Skipping sentence from " + span.getStart() + " to " + span.getEnd());
 				logger.error("Overlap with previous sentence that ended at " + previousEnd);
 			}
+		    }
 		}
 		return sentenceCount;
 	}
