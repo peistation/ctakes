@@ -148,7 +148,7 @@ public class SentenceSpan {
 				System.err.print(Integer.valueOf(separatorPattern.charAt(i)));
 				System.err.print(" "); // print a space between values
 			}
-			System.err.println("");
+			System.err.println();
 		
 			//System.err.println("Invalid line break: \\0x" + Byte.parseByte(separatorPattern.getBytes("US-ASCII").toString(),16));
 			subspans.add(this);
@@ -164,25 +164,23 @@ public class SentenceSpan {
 		}
 		
 		// If there is any leading or trailing whitespace, determine position of the trimmed section
-		int trimmedStart = start;
-		//int trimmedEnd = end;
 		int positionOfNonWhiteSpace = 0;
-		if (trimmedLen != coveredText.length()) {
-			// Use indexOf to skip past the white space.
-			// Consider looking through looking characters using Character.isWhiteSpace(ch)
-			positionOfNonWhiteSpace = coveredText.indexOf(trimmedText);
-			trimmedStart = start + positionOfNonWhiteSpace;
-			//trimmedEnd = trimmedStart + trimmedLen;		
-		}
 		
 		// Split into multiple sentences if contains end-of-line characters
 		// or return just one sentence if no end-of-line characters are within the trimmed string
-		String spans[] = trimmedText.split(separatorPattern);
-		int position = trimmedStart;
+		String spans[] = coveredText.split(separatorPattern);
+		int position = start;
 		for (String s : spans) {
 			String t = s.trim();
+			if (t.length()>0) {
+			    positionOfNonWhiteSpace = s.indexOf(t.charAt(0));
+			} else {
+			    positionOfNonWhiteSpace = 0;
+			}
+			// Might have trimmed off some at the beginning of the sentences other than the 1st (#0)
+			position += positionOfNonWhiteSpace; // sf Bugs artifact 3083903: For _each_ sentence, advance past any spaces at beginning of line
 			subspans.add(new SentenceSpan(position, position+t.length(), t));
-			position += s.length()+separatorPattern.length();
+			position += (s.length()-positionOfNonWhiteSpace + separatorPattern.length());
 		}
 		
 		return subspans;
