@@ -74,14 +74,14 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 	private Set<?> skipSegmentsSet;
 
 	private SentenceDetectorME sentenceDetector;
-	
+
 	private String NEWLINE = "\n";
 
 	private int sentenceCount = 0;
 
 	public void initialize(AnnotatorContext aContext) throws AnnotatorConfigurationException,
-			AnnotatorInitializationException {
-		
+	AnnotatorInitializationException {
+
 		super.initialize(aContext);
 
 		context = aContext;
@@ -97,7 +97,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 	 */
 	private void configInit() throws AnnotatorContextException {
 		MaxentModelResource mmResrc = (MaxentModelResource) context.getResourceObject(MAXENT_MODEL_RESRC_KEY);
-    	// <code>SuffixMaxentModelResourceImpl</code> will log the name of the resource at load() time
+		// <code>SuffixMaxentModelResourceImpl</code> will log the name of the resource at load() time
 		// logger.info("Sentence detector resource: " + mmResrc.getModel().toString());
 
 		if (mmResrc == null) {
@@ -119,21 +119,21 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 	 */
 	public void process(JCas jcas, ResultSpecification resultSpec) throws AnnotatorProcessException {
 
-	    logger.info("Starting processing.");
+		logger.info("Starting processing.");
 
-	    sentenceCount = 0;
+		sentenceCount = 0;
 
-	    String text = jcas.getDocumentText();
+		String text = jcas.getDocumentText();
 
-	    JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-	    Iterator<?> sectionItr = indexes.getAnnotationIndex(Segment.type).iterator();
-	    while (sectionItr.hasNext()) {
-		Segment sa = (Segment) sectionItr.next();
-		String sectionID = sa.getId();
-		if (!skipSegmentsSet.contains(sectionID)) {
-		    sentenceCount = annotateRange(jcas, text, sa, sentenceCount);
+		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+		Iterator<?> sectionItr = indexes.getAnnotationIndex(Segment.type).iterator();
+		while (sectionItr.hasNext()) {
+			Segment sa = (Segment) sectionItr.next();
+			String sectionID = sa.getId();
+			if (!skipSegmentsSet.contains(sectionID)) {
+				sentenceCount = annotateRange(jcas, text, sa, sentenceCount);
+			}
 		}
-	    }
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 	protected int annotateRange(JCas jcas, String text, Segment section, int sentenceCount) 
 		throws AnnotatorProcessException {
 
-		
+
 		int b = section.getBegin();
 		int e = section.getEnd();
 
@@ -166,7 +166,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		int numSentences = sentenceBreaks.length;
 		// There might be text after the last sentence-ending found by detector, so +1
 		SentenceSpan[] potentialSentSpans = new SentenceSpan[numSentences+1];
-		
+
 		int sentStart = b;
 		int sentEnd = b;
 		// Start by filling in sentence spans from what OpenNLP tools detected
@@ -177,7 +177,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 			potentialSentSpans[i] = new SentenceSpan(sentStart, sentEnd, coveredText);
 			sentStart = sentEnd;
 		}
-		
+
 		// If detector didn't find any sentence-endings, 
 		// or there was text after the last sentence-ending found,
 		// create a sentence from what's left, as long as it's not all whitespace.
@@ -189,8 +189,8 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 				numSentences++;
 			}
 		}
-		
-		
+
+
 		// Copy potentialSentSpans into sentenceSpans,
 		// ignoring any that are entirely whitespace,
 		// trimming the rest,
@@ -198,36 +198,36 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		// Then trim any leading or trailing whitespace of ones that were split.
 		ArrayList<SentenceSpan> sentenceSpans = new ArrayList<SentenceSpan>(0); 
 		for (int i=0; i < potentialSentSpans.length; i++) {
-		    if (potentialSentSpans[i]!=null) {
-			sentenceSpans.addAll(potentialSentSpans[i].splitAtLineBreaksAndTrim(NEWLINE)); //TODO Determine line break type
-		    }
+			if (potentialSentSpans[i]!=null) {
+				sentenceSpans.addAll(potentialSentSpans[i].splitAtLineBreaksAndTrim(NEWLINE)); //TODO Determine line break type
+			}
 		}
-		
-		
+
+
 		// Add sentence annotations to the CAS
 		int previousEnd = -1;
 		for (int i = 0; i < sentenceSpans.size(); i++) {
-		    SentenceSpan span = sentenceSpans.get(i);
-		    if (span.getStart()!=span.getEnd()) { // skip empty lines
-			Sentence sa = new Sentence(jcas);
-			sa.setBegin(span.getStart());
-			sa.setEnd(span.getEnd());
-			if (previousEnd<=sa.getBegin()) {
-				// System.out.println("Adding Sentence Annotation for " + span.toString());
-				sa.setSentenceNumber(sentenceCount);
-				sa.addToIndexes();
-				sentenceCount++;
-				previousEnd = span.getEnd();
+			SentenceSpan span = sentenceSpans.get(i);
+			if (span.getStart()!=span.getEnd()) { // skip empty lines
+				Sentence sa = new Sentence(jcas);
+				sa.setBegin(span.getStart());
+				sa.setEnd(span.getEnd());
+				if (previousEnd<=sa.getBegin()) {
+					// System.out.println("Adding Sentence Annotation for " + span.toString());
+					sa.setSentenceNumber(sentenceCount);
+					sa.addToIndexes();
+					sentenceCount++;
+					previousEnd = span.getEnd();
+				}
+				else {
+					logger.error("Skipping sentence from " + span.getStart() + " to " + span.getEnd());
+					logger.error("Overlap with previous sentence that ended at " + previousEnd);
+				}
 			}
-			else {
-				logger.error("Skipping sentence from " + span.getStart() + " to " + span.getEnd());
-				logger.error("Overlap with previous sentence that ended at " + previousEnd);
-			}
-		    }
 		}
 		return sentenceCount;
 	}
-	
+
 	/**
 	 * Train a new sentence detector from the training data in the first file
 	 * and write the model to the second file.<br>
@@ -245,9 +245,9 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 			usage(logger);
 			System.exit(-1);
 		}
-		
+
 		File inFile = getReadableFile(args[0]);
-		
+
 		File outFile = getFileInExistingDir(args[1]);
 		//File outFile = new File(args[1]);
 
@@ -255,30 +255,30 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		if (args.length > 2) {
 			iters = parseInt(args[2], logger);
 		}
-		
+
 		int cut = 5;
 		if (args.length > 3) {
 			cut = parseInt(args[3], logger);
 		}
-		
+
 		// Now, do the actual training
 		EndOfSentenceScannerImpl scanner = new EndOfSentenceScannerImpl();
 		int numEosc = scanner.getEndOfSentenceCharacters().length;
-		
+
 		logger.info("Training new model from " + inFile.getAbsolutePath());  
 		logger.info("Using " + numEosc + " end of sentence characters.");
 		GISModel mod = SentenceDetectorME.train(inFile, iters, cut, scanner);			
 		SuffixSensitiveGISModelWriter ssgmw = new SuffixSensitiveGISModelWriter(mod, outFile);
 		logger.info("Saving the model as: " + outFile.getAbsolutePath());
 		ssgmw.persist();
-	
+
 	}
-	
+
 	public static void usage(Logger log) {
 		log.info("Usage: java " + SentenceDetector.class.getName() + 
-				" training_data_filename name_of_model_to_create <iters> <cut>");
+					" training_data_filename name_of_model_to_create <iters> <cut>");
 	}
-	
+
 	public static int parseInt(String s, Logger log) {
 		try {
 			return Integer.parseInt(s);
@@ -287,7 +287,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 			throw(nfe);
 		}
 	}
-	
+
 	public static File getReadableFile(String fn) throws IOException {
 		File f = new File(fn);
 		if (!f.canRead()) {
@@ -295,7 +295,7 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		}
 		return f;
 	}
-	
+
 	public static File getFileInExistingDir(String fn) throws IOException {
 		File f = new File(fn);
 		if (!f.getParentFile().isDirectory()) {
@@ -303,5 +303,5 @@ public class SentenceDetector extends JTextAnnotator_ImplBase {
 		}
 		return f;
 	}
-	
+
 }
