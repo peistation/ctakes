@@ -588,11 +588,31 @@ public class Tokenizer {
 		List<Token> eolTokens = new ArrayList<Token>();
 		for (int i = 0; i < text.length(); i++) {
 			char currentChar = text.charAt(i);
-			if ((currentChar == crChar) || (currentChar == nlChar)) {
-				Token t = new Token(i, i + 1);
+			/**
+			 * Fixed: ID: 3307765 to handle windows CRLF \r\n new lines in Docs
+			 */
+			Token t = null;
+			if (currentChar == nlChar) {
+				t = new Token(i, i + 1);
+			} else if (currentChar == crChar) {
+				if ((i + 1) < text.length()) {
+					char nextChar = text.charAt(i + 1);
+					if (nextChar == nlChar) {
+						t = new Token(i, i + 2);
+						i++;
+					} else {
+						t = new Token(i, i + 1);
+					}
+				} else {
+					t = new Token(i, i + 1);
+				}
+			}
+
+			if (t != null) {
 				t.setType(Token.TYPE_EOL);
 				eolTokens.add(t);
 			}
+
 		}
 		return eolTokens;
 	}
