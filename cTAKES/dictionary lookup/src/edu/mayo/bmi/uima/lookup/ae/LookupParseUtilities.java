@@ -223,7 +223,7 @@ public class LookupParseUtilities
 	
 	private static Set parseLookupBindingXml(AnnotatorContext annotCtx,
 			Map dictMap, Element lookupBindingsEl) throws Exception {
-		int maxListSize = getMaxSizeList();
+
 		Set lsSet = new HashSet();
 		Iterator itr = lookupBindingsEl.getChildren().iterator();
 		while (itr.hasNext())
@@ -240,6 +240,7 @@ public class LookupParseUtilities
 
 			Class[] constrArgs = { AnnotatorContext.class, Properties.class };
 			Class[] constrArgsConsum = { AnnotatorContext.class, Properties.class, int.class };//ohnlp-Bugs-3296301
+			Class[] constrArgsConsumb = { AnnotatorContext.class, Properties.class };
 
 			Element lookupInitEl = bindingEl.getChild("lookupInitializer");
 			String liClassName = lookupInitEl.getAttributeValue("className");
@@ -255,10 +256,25 @@ public class LookupParseUtilities
 			Element lcPropertiesEl = lookupConsumerEl.getChild("properties");
 			Properties lcProps = parsePropertiesXml(lcPropertiesEl);
 			Class lcClass = Class.forName(lcClassName);
-			Constructor lcConstr = lcClass.getConstructor(constrArgsConsum);
-			Object[] lcArgs = { annotCtx, lcProps, maxListSize };//ohnlp-Bugs-3296301
-			LookupConsumer lc = (LookupConsumer) lcConstr.newInstance(lcArgs);
+			Constructor[] consts = lcClass.getConstructors();
+			Constructor lcConstr = null;
+			Object[] lcArgs = null;
+			for(int i=0;i<consts.length;i++)
+			{
+			lcConstr = consts[i];
+				if (Arrays.equals(constrArgsConsum,lcConstr.getParameterTypes()) )
+				{
+					lcConstr = lcClass.getConstructor(constrArgsConsum);
+					lcArgs = new Object[]{ annotCtx, lcProps, maxListSize };//ohnlp-Bugs-3296301					
+				}
+				else if (Arrays.equals(constrArgsConsumb,lcConstr.getParameterTypes()) )
+				{
+					lcConstr = lcClass.getConstructor(constrArgsConsumb);
+					lcArgs = new Object[]{ annotCtx, lcProps };
+				}				
+			}
 
+			LookupConsumer lc = (LookupConsumer) lcConstr.newInstance(lcArgs);
 			LookupAlgorithm la = li.getLookupAlgorithm(dictEngine);
 
 			LookupSpec ls = new LookupSpec(la, li, lc);
