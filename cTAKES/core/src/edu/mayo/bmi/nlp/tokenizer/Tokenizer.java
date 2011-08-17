@@ -628,6 +628,7 @@ public class Tokenizer {
 		final char wsChar = ' ';
 		final char tabChar = '\t';
 		final char newlineChar = '\n';
+		final char crChar = '\r';		
 		boolean insideText = false;
 		int startIndex = 0;
 		int endIndex = 0;
@@ -635,7 +636,7 @@ public class Tokenizer {
 		for (int i = 0; i < text.length(); i++) {
 			char currentChar = text.charAt(i);
 			if ((currentChar != wsChar) && (currentChar != tabChar)
-					&& (currentChar != newlineChar)) {
+					&& (currentChar != newlineChar) && (currentChar != crChar)) {
 				if (insideText == false) {
 					insideText = true;
 					startIndex = i;
