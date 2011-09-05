@@ -16,6 +16,7 @@ import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
@@ -124,9 +125,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   private static final int NERTypeIdentifier = 1;
   private static boolean handledRanges;
   private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
-  private String appendPRN = " : prn";
-  private Set iv_exclusionTagSet = null;
-  private Set iv_medicationRelatedSections = new HashSet();
+  private Set<String> iv_exclusionTagSet = null;
+  private Set<String> iv_medicationRelatedSections = new HashSet<String>();
 
   public void initialize(AnnotatorContext annotCtx)
       throws AnnotatorInitializationException, AnnotatorConfigurationException
@@ -164,8 +164,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     try
     {
       JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-      Iterator segmentItr = indexes.getAnnotationIndex(Segment.type).iterator();
-      Iterator baseTokenItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
+      FSIterator segmentItr = indexes.getAnnotationIndex(Segment.type).iterator();
+      FSIterator baseTokenItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
 
       List<edu.mayo.bmi.fsm.token.BaseToken> baseTokenList = new ArrayList<edu.mayo.bmi.fsm.token.BaseToken>();
       while (baseTokenItr.hasNext())
@@ -198,7 +198,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   private void generateUidValues(JCas jcas)
   {
     int uid = 0;
-    Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(
+    FSIterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(
         IdentifiedAnnotation.type).iterator();
     while (itr.hasNext())
     {
@@ -857,7 +857,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   private List<Annotation> getAnnotationsInSpan(JCas jcas, int type, int begin, int end)
   {
     List<Annotation> list = new ArrayList<Annotation>();
-    Iterator annItr = FSUtil.getAnnotationsIteratorInSpan(jcas, type, begin,
+    FSIterator annItr = FSUtil.getAnnotationsIteratorInSpan(jcas, type, begin,
         end);
     while (annItr.hasNext())
     {
@@ -880,23 +880,23 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       throws Exception
   {
     List baseTokenList = getAnnotationsInSpanWithAdaptToBaseTokenFSM(jcas, BaseToken.type, begin, end + 1);
-    List neTokenList = getAnnotationsInSpan(jcas, NamedEntity.type, begin, end + 1);
-    List weTokenList = getAnnotationsInSpan(jcas, WordToken.type, begin, end + 1);
+    List<Annotation> neTokenList = getAnnotationsInSpan(jcas, NamedEntity.type, begin, end + 1);
+    List<Annotation> weTokenList = getAnnotationsInSpan(jcas, WordToken.type, begin, end + 1);
 
     // execute FSM logic
     executeFSMs(jcas, baseTokenList, neTokenList, weTokenList);
   }
 
-  private void generateDrugMentionsAndAnnotations(JCas jcas, List nerTokenList,
+  private void generateDrugMentionsAndAnnotations(JCas jcas, List<NamedEntity> nerTokenList,
       int begin, int end, DrugMentionAnnotation recurseNER,
-      String relatedStatus, int countNER, List globalDrugNER) throws Exception
+      String relatedStatus, int countNER, List<DrugMentionAnnotation> globalDrugNER) throws Exception
   {
 
-    Iterator uniqueNER = nerTokenList.iterator();
+    Iterator<NamedEntity> uniqueNER = nerTokenList.iterator();
     DrugMentionAnnotation drugTokenAnt = null;
     NamedEntity tokenAnt = null;
 
-    List holdDrugNERArr = new ArrayList();
+    List<DrugMentionAnnotation> holdDrugNERArr = new ArrayList<DrugMentionAnnotation>();
 
     while (uniqueNER.hasNext())
     {
@@ -1803,7 +1803,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     neAnnot.setTypeID(NERTypeIdentifier);
 	int [] updatedSpan = {beginSpan, endChunk};
 
-    List buildNewNER = new ArrayList();
+    List<NamedEntity> buildNewNER = new ArrayList<NamedEntity>();
 
     buildNewNER.add(neAnnot);
 
