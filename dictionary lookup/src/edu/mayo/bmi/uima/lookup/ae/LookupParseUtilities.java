@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -240,7 +241,7 @@ public class LookupParseUtilities
 
 			Class[] constrArgs = { AnnotatorContext.class, Properties.class };
 			Class[] constrArgsConsum = { AnnotatorContext.class, Properties.class, int.class };//ohnlp-Bugs-3296301
-			Class[] constrArgsConsumb = { AnnotatorContext.class, Properties.class };
+			Class[] constrArgsConsumB = { AnnotatorContext.class, Properties.class };
 
 			Element lookupInitEl = bindingEl.getChild("lookupInitializer");
 			String liClassName = lookupInitEl.getAttributeValue("className");
@@ -265,11 +266,11 @@ public class LookupParseUtilities
 				if (Arrays.equals(constrArgsConsum,lcConstr.getParameterTypes()) )
 				{
 					lcConstr = lcClass.getConstructor(constrArgsConsum);
-					lcArgs = new Object[]{ annotCtx, lcProps, maxListSize };//ohnlp-Bugs-3296301					
+					lcArgs = new Object[]{ annotCtx, lcProps, maxSizeList };//ohnlp-Bugs-3296301					
 				}
-				else if (Arrays.equals(constrArgsConsumb,lcConstr.getParameterTypes()) )
+				else if (Arrays.equals(constrArgsConsumB,lcConstr.getParameterTypes()) )
 				{
-					lcConstr = lcClass.getConstructor(constrArgsConsumb);
+					lcConstr = lcClass.getConstructor(constrArgsConsumB);
 					lcArgs = new Object[]{ annotCtx, lcProps };
 				}				
 			}
@@ -312,6 +313,6 @@ public class LookupParseUtilities
 		return props;
 	}
 	// Added 'maxListSize'.  Size equals max int by default 
-	private static int  maxSizeList = new Integer(0).MAX_VALUE; //ohnlp-Bugs-3296301
+	private static int  maxSizeList = Integer.MAX_VALUE; //ohnlp-Bugs-3296301
 
 }
