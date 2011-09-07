@@ -89,6 +89,10 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
     	try
     	{
     		Query q = new TermQuery(new Term(iv_lookupFieldName, str));
+    		if (iv_maxHits==0) {
+    			iv_maxHits=Integer.MAX_VALUE;
+    			iv_logger.warn("iv_maxHits was 0, using Integer.MAX_VALUE instead");
+    		}
     		TopDocs topDoc = iv_searcher.search(q, iv_maxHits);
     		ScoreDoc[] hits = topDoc.scoreDocs;
     		if (hits.length == iv_maxHits) {

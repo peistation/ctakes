@@ -92,6 +92,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		String resrcName = iv_props.getProperty(LUCENE_FILTER_RESRC_KEY_PRP_KEY);
 		LuceneIndexReaderResource resrc = (LuceneIndexReaderResource) aCtx.getResourceObject(resrcName);
 		iv_searcher = new IndexSearcher(resrc.getIndexReader());
+		iv_maxHits = Integer.MAX_VALUE;
 	}
 	public void consumeHits(JCas jcas, Iterator lhItr)
 			throws AnnotatorProcessException

@@ -62,16 +62,47 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 	private final String SNOMED_MAPPING_PRP_KEY = "snomedCodeMappingField";
 	private final String CUI_MAPPING_PRP_KEY = "cuiMappingField";
 	
+	private LuceneDictionaryImpl snomedLikeCodesIndex;
+
+	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties)
+			throws Exception
+	{
+		this(aCtx,properties,Integer.MAX_VALUE);
+	}
+
+	// ohnlp Bugs tracker ID: 3390078 do not reload lucene index for each document, load in constructor
 	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties, int maxListSize)
 			throws Exception
 	{
 		super(aCtx,properties);
 		iv_maxListSize = maxListSize;
-	}
-	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties)
-	throws Exception
-	{
-		super(aCtx,properties);
+		
+		IndexReader indexReader;
+		String indexPath = null;
+		String indexDirAbsPath = null;
+		try {
+			// For the sample dictionary, we use the following lucene index.
+			indexPath = "lookup/snomed-like_codes_sample";
+			File indexDir = FileLocator.locateFile(indexPath); // TODO parameterize this
+			indexDirAbsPath = indexDir.getAbsolutePath();
+			
+			indexReader = IndexReader.open(FSDirectory.open(indexDir)); 
+
+			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+			String lookupFieldName = props.getProperty(CUI_MAPPING_PRP_KEY);
+			
+			// We will lookup entries based on lookupFieldName
+			snomedLikeCodesIndex = new LuceneDictionaryImpl(indexSearcher, lookupFieldName, iv_maxListSize);
+			
+			logger.info("Loaded Lucene index with "+ indexReader.numDocs() +" entries.");
+	        
+		} catch (IOException ioe) {
+			
+		    logger.info("Lucene index: " + indexDirAbsPath);
+		    throw new DictionaryException(ioe);
+		    
+		}
+
 	}
 
 
@@ -87,36 +118,12 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 	{
 		Set codeSet = new HashSet();
 		
-		IndexReader indexReader;
-		String indexPath = null;
-		String indexDirAbsPath = null;
-		try {
-			// For the sample dictionary, we use the following lucene index.
-			indexPath = "lookup/snomed-like_codes_sample";
-			File indexDir = FileLocator.locateFile(indexPath); // TODO parameterize this
-			indexDirAbsPath = indexDir.getAbsolutePath();
-			
-			indexReader = IndexReader.open(FSDirectory.open(indexDir)); 
-
-			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-			String lookupFieldName = props.getProperty(CUI_MAPPING_PRP_KEY);
-			String valueFieldName = props.getProperty(SNOMED_MAPPING_PRP_KEY);	
-
-			// We will lookup entries based on lookupFieldName
-			LuceneDictionaryImpl snomedLikeCodesIndex = new LuceneDictionaryImpl(indexSearcher, lookupFieldName, iv_maxListSize);
-			
-	        logger.info("Loaded Lucene index with "+ indexReader.numDocs() +" entries.");
-	
-	        // Get the entries with field lookupFieldName having value umlsCode
-	        Collection<MetaDataHit> mdhCollection = snomedLikeCodesIndex.getEntries(umlsCode);
+		String valueFieldName = props.getProperty(SNOMED_MAPPING_PRP_KEY);
+		// Get the entries with field lookupFieldName having value umlsCode
+		Collection<MetaDataHit> mdhCollection = snomedLikeCodesIndex.getEntries(umlsCode);
 	        
-	        for (MetaDataHit mdh: mdhCollection) {
-	        	codeSet.add(mdh.getMetaFieldValue(valueFieldName));
-	        }
-		} catch (IOException ioe) {
-			
-	        logger.info("Lucene index: " + indexDirAbsPath);
-			throw new DictionaryException(ioe);
+		for (MetaDataHit mdh: mdhCollection) {
+		    codeSet.add(mdh.getMetaFieldValue(valueFieldName));
 		}
 		
 		return codeSet;
