@@ -2048,60 +2048,60 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     throw new Exception("No CDT adapter for class: " + obj.getClass());
   }
 
-  public Iterator getLookupTokenIterator(JCas jcas, int beginRange, int endRange)
-      throws AnnotatorInitializationException
-  {
-    List ltList = new ArrayList();
-
-    Iterator btaItr = FSUtil.getAnnotationsIteratorInSpan(jcas, BaseToken.type,
-        beginRange, endRange);
-
-    while (btaItr.hasNext())
-    {
-      BaseToken bta = (BaseToken) btaItr.next();
-      if (!(bta instanceof NewlineToken) || (bta instanceof PunctuationToken)
-          || (bta instanceof ContractionToken) || (bta instanceof SymbolToken))
-      {
-        LookupToken lt = new LookupAnnotationToJCasAdapter(bta);
-
-        // POS exclusion logic for first word lookup
-        // if (isTagExcluded(bta.getPennTag()))
-        if (isTagExcluded(bta.getNormalizedForm()))
-        {
-          lt.addStringAttribute(
-              FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, "false");
-        } else
-        {
-          lt.addStringAttribute(
-              FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, "true");
-        }
-
-        if (bta instanceof WordToken)
-        {
-          WordToken wta = (WordToken) bta;
-          String canonicalForm = wta.getCanonicalForm();
-
-          if (canonicalForm != null)
-          {
-            lt.addStringAttribute(CANONICAL_VARIANT_ATTR, canonicalForm);
-          }
-        }
-
-        ltList.add(lt);
-      }
-    }
-    return ltList.iterator();
-  }
-
-  private boolean isTagExcluded(String tag)
-  {
-    if ((iv_exclusionTagSet == null) || (tag == null))
-    {
-      return false;
-    }
-
-    return iv_exclusionTagSet.contains(tag.toLowerCase());
-  }
+//  public Iterator getLookupTokenIterator(JCas jcas, int beginRange, int endRange)
+//      throws AnnotatorInitializationException
+//  {
+//    List ltList = new ArrayList();
+//
+//    Iterator btaItr = FSUtil.getAnnotationsIteratorInSpan(jcas, BaseToken.type,
+//        beginRange, endRange);
+//
+//    while (btaItr.hasNext())
+//    {
+//      BaseToken bta = (BaseToken) btaItr.next();
+//      if (!(bta instanceof NewlineToken) || (bta instanceof PunctuationToken)
+//          || (bta instanceof ContractionToken) || (bta instanceof SymbolToken))
+//      {
+//        LookupToken lt = new LookupAnnotationToJCasAdapter(bta);
+//
+//        // POS exclusion logic for first word lookup
+//        // if (isTagExcluded(bta.getPennTag()))
+//        if (isTagExcluded(bta.getNormalizedForm()))
+//        {
+//          lt.addStringAttribute(
+//              FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, "false");
+//        } else
+//        {
+//          lt.addStringAttribute(
+//              FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, "true");
+//        }
+//
+//        if (bta instanceof WordToken)
+//        {
+//          WordToken wta = (WordToken) bta;
+//          String canonicalForm = wta.getCanonicalForm();
+//
+//          if (canonicalForm != null)
+//          {
+//            lt.addStringAttribute(CANONICAL_VARIANT_ATTR, canonicalForm);
+//          }
+//        }
+//
+//        ltList.add(lt);
+//      }
+//    }
+//    return ltList.iterator();
+//  }
+//
+//  private boolean isTagExcluded(String tag)
+//  {
+//    if ((iv_exclusionTagSet == null) || (tag == null))
+//    {
+//      return false;
+//    }
+//
+//    return iv_exclusionTagSet.contains(tag.toLowerCase());
+//  }
 
   private boolean findNextDrugEntityPost(int spanLength, int[][] elementSpan,
       NamedEntity nea, int endPhrase)
