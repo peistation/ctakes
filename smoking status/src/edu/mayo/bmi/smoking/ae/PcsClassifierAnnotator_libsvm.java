@@ -28,7 +28,7 @@ import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {
 	Set<String> stopWords;
-	List<String> goWords;
+	Set<String> goWords;
 	boolean caseSensitive = true;
 	Map<?, ?> tokenCounts;
 	svm_model model; // trained libsvm model
@@ -39,7 +39,7 @@ public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {
 
 		tokenCounts = new HashMap();
 		stopWords = new HashSet<String>();
-		goWords = new ArrayList<String>();
+		goWords = new HashSet<String>();
 
 		try {
 			Object paramValue = aContext
@@ -52,7 +52,7 @@ public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {
 					.getAbsolutePath());
 			FileResource pcsKeyWordFile = (FileResource) aContext
 					.getResourceObject("PCSKeyWordFile");
-			goWords = readOrderedLinesFromFile(pcsKeyWordFile.getFile()
+			goWords = readLinesFromFile(pcsKeyWordFile.getFile()
 					.getAbsolutePath());
 			FileResource pathOfTrainedModel = (FileResource) aContext
 					.getResourceObject("PathOfModel");
@@ -192,23 +192,6 @@ public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {
 			if (!caseSensitive)
 				line = line.toLowerCase();
 			returnValues.add(line);
-
-		}
-		return returnValues;
-	}
-	
-	private List<String> readOrderedLinesFromFile(String fileName) throws IOException
-	{
-		List<String> returnValues = new ArrayList<String>();
-		File file = new File(fileName);
-	    BufferedReader fileReader = new BufferedReader(new FileReader(file));
-		
-		String line;
-		while((line = fileReader.readLine()) != null)
-		{
-			if(line.length()==0) continue;
-    		if(!caseSensitive) line = line.toLowerCase();
-        		returnValues.add(line);
 
 		}
 		return returnValues;
