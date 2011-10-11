@@ -50,7 +50,7 @@ delimited file.</description>
 <nameValuePair>
 <name>OutputFile</name>
 <value>
-<string>C:/Documents and Settings/m054274/My Documents/Downloads/cTAKES-1.1.0-pear-src-bin/smoking status/data/test/output/record_resolution.txt</string>
+<string>$main_root/data/test/output/record_resolution.txt</string>
 </value>
 </nameValuePair>
 <nameValuePair>
