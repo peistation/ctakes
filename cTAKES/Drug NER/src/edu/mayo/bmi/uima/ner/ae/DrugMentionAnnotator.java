@@ -680,7 +680,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     
     uniqueNEs = findUniqueMentions(allNEs.toArray());
 
-    int priorEndNL = seg.getEnd();
+    int lastNL = seg.getEnd();
     boolean lastOne = false;
     Iterator newLineItr = 
       FSUtil.getAnnotationsIteratorInSpan(jcas, NewlineToken.type, begin, end);
@@ -719,8 +719,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
           && ((begin < end) || (!hasNext && begin <= end) || foundLeftParen))
       {
 
-        if (begin == end)
+        if (begin == end) {
           foundLeftParen = false;
+          end = end+1;
+        }
         NewlineToken nl = null;
         if (hasNLEnd && newLineItr.hasNext())
         {
@@ -731,7 +733,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
           wrapItUp = true;
         boolean findNextNL = false;
 
-        if (priorEndNL <= thisNER.getBegin())
+        if (lastNL <= thisNER.getBegin())
         {
           begin = thisNER.getBegin();
         }
@@ -742,7 +744,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
         } else if (nl != null)
         {
-          priorEndNL = nl.getEnd();
+          lastNL = nl.getEnd();
         }
 
         if (!hasNext)
@@ -764,28 +766,23 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
             } else if (nextNER.getBegin() >= nl.getEnd() && hasNext)
             {
               end = nextNERPosition;
-            } else if (hasNext)
-            {
-              end = begin;
-              // end = nl.getEnd();
-
-            }
+            } 
           } else if (hasNLEnd && hasNext)
           {
 
             foundLeftParen = findCoveredTextInSpan(jcas, PunctuationToken.type, nextNER.getBegin()-1, nextNER.getBegin()+1, (new String[]{"(","/"}));
             
-            if (nl == null && foundLeftParen)
+           /* if (nl == null && foundLeftParen && !hasNext)
             {
               end = seg.getEnd();
-            } else if (nl != null && nl.getEnd() > nextNER.getBegin()
+            } else */if (nl != null && nl.getEnd() > nextNER.getBegin()
                 && !foundLeftParen)
             {
               end = nextNERPosition;
-            } else if (foundLeftParen)
+            } /*else if (foundLeftParen && nl != null)
             {
               end = nl.getEnd();
-            } else
+            } */else
             {
               end = nextNER.getBegin();
             }
@@ -795,7 +792,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
           } else
             end = seg.getEnd();
 
-          if (begin < end)
+          if (begin <  end)
           {
             findDrugAttributesInRange(jcas, begin, end);
 //TODO: need to fix - use the list above - uniqueNEs and subset that list instead of getting new list of annotations
@@ -829,17 +826,17 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
   private boolean findCoveredTextInSpan(JCas jcas, int annotationType, int beginOffset, int endOffset, String[] searchStrs)
   {
-    boolean foundRightParen = false;
+    boolean foundCoveredText = false;
     
-    Iterator findRightParen = FSUtil.getAnnotationsIteratorInSpan(jcas, annotationType, beginOffset, endOffset);
-    while (findRightParen.hasNext() && !foundRightParen)
+    Iterator coveredTextIter = FSUtil.getAnnotationsIteratorInSpan(jcas, annotationType, beginOffset, endOffset);
+    while (coveredTextIter.hasNext() && !foundCoveredText)
     {
-      Annotation ann= (Annotation) findRightParen.next();
-      for(int i=0; i<searchStrs.length && !foundRightParen; i++)
-        foundRightParen = searchStrs[i].equals(ann.getCoveredText());
+      Annotation ann= (Annotation) coveredTextIter.next();
+      for(int i=0; i<searchStrs.length && !foundCoveredText; i++)
+        foundCoveredText = searchStrs[i].equals(ann.getCoveredText());
     }
     
-    return foundRightParen;
+    return foundCoveredText;
   }
   
   private List getAnnotationsInSpanWithAdaptToBaseTokenFSM(JCas jcas, int type,
@@ -920,6 +917,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       }
       if (tokenAnt != null && (isDrugNER || relatedStatus != null))
       {
+    	boolean keepNoChangeStatus = false;
 
         boolean maxExists = false;
         int maxOffsetEnd = 0;
@@ -953,239 +951,248 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
                 DrugChangeStatusElement.MAXIMUM_STATUS) != 0)
                 && dsa.getEnd() < holdRightEnd)
             {
-              holdStatusChanges.add(dsa);
+            	holdStatusChanges.add(dsa);
             } else if (dsa.getChangeStatus().compareTo(
-                DrugChangeStatusElement.MAXIMUM_STATUS) == 0
-                && dsa.getEnd() < holdRightEnd)
+            		DrugChangeStatusElement.MAXIMUM_STATUS) == 0
+            		&& dsa.getEnd() < holdRightEnd)
             {
-              maxExists = true;
-              maxOffsetEnd = dsa.getEnd();
+            	maxExists = true;
+            	maxOffsetEnd = dsa.getEnd();
             }
 
           } else
           {
-            boolean noWeirdError = true;
-            boolean pullOut = false;
-            while (!pullOut & !isolate && findSubSection.hasNext()
-                && noWeirdError)
-            {
-              try
-              {
-                // each status change is checked against all
-                // available sub-spans in that range
-                SubSectionAnnotation sub = (SubSectionAnnotation) findSubSection
-                    .next();
-                Iterator findStartLF = FSUtil.getAnnotationsIteratorInSpan(
-                    jcas, NewlineToken.type, holdLeftStart, sub.getBegin() + 1);
-                Iterator findEndLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
-                    NewlineToken.type, sub.getEnd(), holdRightEnd);
+        	  boolean noWeirdError = true;
+        	  boolean pullOut = false;
+        	  while (!pullOut & !isolate && findSubSection.hasNext()
+        			  && noWeirdError)
+        	  {
+        		  try
+        		  {
+        			  // each status change is checked against all
+        			  // available sub-spans in that range
+        			  SubSectionAnnotation sub = (SubSectionAnnotation) findSubSection
+        			  .next();
+        			  Iterator findStartLF = FSUtil.getAnnotationsIteratorInSpan(
+        					  jcas, NewlineToken.type, holdLeftStart, sub.getBegin() + 1);
+        			  Iterator findEndLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
+        					  NewlineToken.type, sub.getEnd(), holdRightEnd);
 
-                if (findStartLF.hasNext() && findEndLF.hasNext())
-                {
+        			  if (findStartLF.hasNext() && findEndLF.hasNext())
+        			  {
 
-                  while (findStartLF.hasNext())
-                  {
-                    // int countSymbols = 0;
-                    NewlineToken nta = (NewlineToken) findStartLF.next();
+        				  while (findStartLF.hasNext())
+        				  {
+        					  // int countSymbols = 0;
+        					  NewlineToken nta = (NewlineToken) findStartLF.next();
 
-                    // Iterator findSymbols =
-                    // FSUtil.getAnnotationsInSpanIterator(jcas,
-                    // SymbolToken.type,
-                    // nta.getEnd(), sub.getBegin());
-                    //					
-                    // while (findSymbols.hasNext())
-                    // {
-                    // findSymbols.next();
-                    // countSymbols++;
-                    // }
+        					  // Iterator findSymbols =
+        					  // FSUtil.getAnnotationsInSpanIterator(jcas,
+        					  // SymbolToken.type,
+        					  // nta.getEnd(), sub.getBegin());
+        					  //					
+        					  // while (findSymbols.hasNext())
+        					  // {
+        					  // findSymbols.next();
+        					  // countSymbols++;
+        					  // }
 
-                    int countSymbols = FSUtil.countAnnotationsInSpan(jcas,
-                        SymbolToken.type, nta.getEnd(), sub.getBegin());
+        					  int countSymbols = FSUtil.countAnnotationsInSpan(jcas,
+        							  SymbolToken.type, nta.getEnd(), sub.getBegin());
 
-                    if ((nta.getEnd() + countSymbols + 1) >= sub.getBegin())
-                    {
-                      isolate = true;
-                      holdRightEnd = sub.getBegin();
-                      end = sub.getBegin();
-                    }
-                  }
+        					  if ((nta.getEnd() + countSymbols + 1) >= sub.getBegin())
+        					  {
+        						  isolate = true;
+        						  holdRightEnd = sub.getBegin();
+        						  end = sub.getBegin();
+        					  }
+        				  }
 
-                  if (!isolate)
-                  {
-                    DrugChangeStatusAnnotation dsa = (DrugChangeStatusAnnotation) statusChangeItr
-                        .next();
-                    holdStatusChanges.add(dsa);
-                    pullOut = true;
-                    sub.removeFromIndexes();
-                  }
-                } else if (findEndLF.hasNext())
-                {
-                  // subsection is on a prior separate line than the rest
-                  // of the content
-                  holdLeftStart = sub.getEnd();
-                  // sub.removeFromIndexes();
+        				  if (!isolate)
+        				  {
+        					  DrugChangeStatusAnnotation dsa = (DrugChangeStatusAnnotation) statusChangeItr
+        					  .next();
+        					  holdStatusChanges.add(dsa);
+        					  pullOut = true;
+        					  sub.removeFromIndexes();
+        				  }
+        			  } else if (findEndLF.hasNext())
+        			  {
+        				  // subsection is on a prior separate line than the rest
+        				  // of the content
+        				  holdLeftStart = sub.getEnd();
+        				  // sub.removeFromIndexes();
 
-                } else if (sub.getBegin() > tokenAnt.getEnd())
-                {
-                  end = sub.getBegin();
-                  holdRightEnd = sub.getBegin();
-                  sub.removeFromIndexes();
-                } else
-                {
-                  holdLeftStart = sub.getEnd();
-                  holdRightEnd = tokenAnt.getBegin();
-                }
-              } catch (NoSuchElementException nsee)
-              {
-                noWeirdError = false;
-                iv_logger.info(nsee.getLocalizedMessage());
-              }
-            }
+        			  } else if (sub.getBegin() > tokenAnt.getEnd())
+        			  {
+        				  end = sub.getBegin();
+        				  holdRightEnd = sub.getBegin();
+        				  sub.removeFromIndexes();
+        			  } else
+        			  {
+        				  holdLeftStart = sub.getEnd();
+        				  holdRightEnd = tokenAnt.getBegin();
+        			  }
+        		  } catch (NoSuchElementException nsee)
+        		  {
+        			  noWeirdError = false;
+        			  iv_logger.info(nsee.getLocalizedMessage());
+        		  }
+        	  }
           }
         }
-        
-    // handles cases like "then discontinue" so the two change status mentions are merged and the last 
-    // value is used for the change status i.e. 'discontinue'
 
-		List modifiedOrderDrugStatusChanges = new ArrayList();
-		Iterator sortStatusChanges = sortAnnotations(
-				holdStatusChanges.toArray()).iterator();
-		Iterator sortNextStatusChanges = sortAnnotations(
-				holdStatusChanges.toArray()).iterator();
-		// increment sortNextStatusChanges
-		if (sortNextStatusChanges.hasNext()) sortNextStatusChanges.next();
-		boolean skipNext = false;
-		int checkSkippedOffsetBegin = 0, checkSkippedOffsetEnd = 0;
-		while (sortStatusChanges.hasNext()) {
-			DrugChangeStatusAnnotation hos1 = (DrugChangeStatusAnnotation) sortStatusChanges.next();
-			if (sortNextStatusChanges.hasNext()) {
+        // handles cases like "then discontinue" so the two change status mentions are merged and the last 
+        // value is used for the change status i.e. 'discontinue'
 
-				DrugChangeStatusAnnotation hos2 = (DrugChangeStatusAnnotation) sortNextStatusChanges.next();
-				if (hos1.getBegin() == hos2.getBegin()) {
-					if (hos1.getEnd() >= hos2.getEnd()) {
-						skipNext = true;
-						checkSkippedOffsetBegin = hos2.getBegin();
-						checkSkippedOffsetEnd = hos2.getEnd();
-						hos2.removeFromIndexes();
-						modifiedOrderDrugStatusChanges.add(hos1);
-						
-					} else {
-		            	  iv_logger.info("found reverse case . . need to handle");
-					}
+        List modifiedOrderDrugStatusChanges = new ArrayList();
+        Iterator sortStatusChanges = sortAnnotations(
+        		holdStatusChanges.toArray()).iterator();
+        Iterator sortNextStatusChanges = sortAnnotations(
+        		holdStatusChanges.toArray()).iterator();
+        // increment sortNextStatusChanges
+        if (sortNextStatusChanges.hasNext()) sortNextStatusChanges.next();
+        boolean skipNext = false;
+        int checkSkippedOffsetBegin = 0, checkSkippedOffsetEnd = 0;
+        while (sortStatusChanges.hasNext()) {
+        	DrugChangeStatusAnnotation hos1 = (DrugChangeStatusAnnotation) sortStatusChanges.next();
+        	if (sortNextStatusChanges.hasNext()) {
 
-				} else if (!skipNext) {
-					modifiedOrderDrugStatusChanges.add(hos1);
-				} else 
-					skipNext = false;
-			}
-			else if (checkSkippedOffsetBegin != hos1.getBegin() && checkSkippedOffsetEnd != hos1.getEnd()){
-				modifiedOrderDrugStatusChanges.add(hos1);
-			}
-		}        
+        		DrugChangeStatusAnnotation hos2 = (DrugChangeStatusAnnotation) sortNextStatusChanges.next();
+        		if (hos1.getBegin() == hos2.getBegin()) {
+        			if (hos1.getEnd() >= hos2.getEnd()) {
+        				skipNext = true;
+        				checkSkippedOffsetBegin = hos2.getBegin();
+        				checkSkippedOffsetEnd = hos2.getEnd();
+        				hos2.removeFromIndexes();
+        				modifiedOrderDrugStatusChanges.add(hos1);
+
+        			} else {
+        				iv_logger.info("found reverse case . . need to handle");
+        			}
+
+        		} else if (!skipNext) {
+        			modifiedOrderDrugStatusChanges.add(hos1);
+        		} else 
+        			skipNext = false;
+        	}
+        	else if (checkSkippedOffsetBegin == 0 || (checkSkippedOffsetBegin != hos1.getBegin() && checkSkippedOffsetEnd != hos1.getEnd())){
+        		modifiedOrderDrugStatusChanges.add(hos1);
+        	}
+        }        
 
         Iterator orderedStatusChanges = sortAnnotations(
-            holdStatusChanges.toArray()).iterator();
+        		holdStatusChanges.toArray()).iterator();
         Iterator orderedDrugStatusChanges = sortAnnotations(
-            holdStatusChanges.toArray()).iterator();
+        		holdStatusChanges.toArray()).iterator();
 
-		if (modifiedOrderDrugStatusChanges.size() > 0 ) {
-			int [] newSpan = {begin, end};
-			newSpan = statusChangePhraseGenerator ( jcas,  begin,  end,  maxExists,  uniqueNER, 
-				 orderedStatusChanges,  modifiedOrderDrugStatusChanges,  relatedStatus,  drugTokenAnt,  
-				 globalDrugNER,  countNER );
-			begin = newSpan[0];
-			end = newSpan[1];
-		}
-		DrugMention dm = new DrugMention(jcas, begin, end);	
-		
+        if (modifiedOrderDrugStatusChanges.size() > 0 ) {
+        	int [] newSpan = {begin, end};
+        	newSpan = statusChangePhraseGenerator ( jcas,  begin,  end,  maxExists,  uniqueNER, 
+        			orderedStatusChanges,  modifiedOrderDrugStatusChanges,  relatedStatus,  drugTokenAnt,  
+        			globalDrugNER,  countNER );
+        	begin = newSpan[0];
+        	end = newSpan[1];
+        	if ((drugTokenAnt.getDrugChangeStatus() != null && drugTokenAnt.getDrugChangeStatus().equals(DrugChangeStatusToken.NOCHANGE)) ||
+        			(drugTokenAnt.getDrugChangeStatus() != null && drugTokenAnt.getDrugChangeStatus().equals(DrugChangeStatusToken.OTHER)))  {
+        		keepNoChangeStatus = true;
+        		if (drugTokenAnt.getDrugChangeStatus().equals(DrugChangeStatusToken.OTHER))
+        			drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+        	}            
+        	// No change is default state since the change state has been handled
+        }
+        DrugMention dm = new DrugMention(jcas, begin, end);	
+        boolean overrideStatus = false;
+        boolean statusFound = false;
+        if (!keepNoChangeStatus) {
         // All entries may not be appropriate, so some
         // filtering
         // may need to be implemented here
         JFSIndexRepository indexes = jcas.getJFSIndexRepository();
         Iterator subSectionItr = indexes.getAnnotationIndex(
-            SubSectionAnnotation.type).iterator();
-        boolean statusFound = false;
+        		SubSectionAnnotation.type).iterator();
+    
         String statusKey = null;
         while (subSectionItr.hasNext() && !statusFound)
         {
 
-          SubSectionAnnotation ssid = (SubSectionAnnotation) subSectionItr
-              .next();
+        	SubSectionAnnotation ssid = (SubSectionAnnotation) subSectionItr
+        	.next();
 
-          if (ssid.getSubSectionBodyBegin() <= tokenAnt.getBegin()
-              && ssid.getSubSectionBodyEnd() >= tokenAnt.getEnd())
-          {
+        	if (ssid.getSubSectionBodyBegin() <= tokenAnt.getBegin()
+        			&& ssid.getSubSectionBodyEnd() >= tokenAnt.getEnd())
+        	{
 
-            // Look for special case where date comes before the
-            // drug mention
-            // A better means to locate the beginning of the chunk
-            // is lacking here mainly due
-            // to the fact that the sentence annotator cannot be
-            // trusted to find the beginning
-            // accurately.
-            boolean overrideDate = false;
-            Iterator statusSpecialDateItr = FSUtil
-                .getAnnotationsIteratorInSpan(jcas, DateAnnotation.type, ssid
-                    .getEnd(), drugTokenAnt.getBegin());
-            while (statusSpecialDateItr.hasNext() && !overrideDate)
-            {
-              DateAnnotation specialDate = (DateAnnotation) statusSpecialDateItr
-                  .next();
-              Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
-                  NewlineToken.type, ssid.getEnd(), specialDate.getBegin());
-              if (!findLF.hasNext())
-              {
-                // if (specialDate.getEnd() <=
-                // drugTokenAnt.getBegin() ){
-                drugTokenAnt.setStartDate(specialDate.getCoveredText());
-                overrideDate = true;
-              }
-            }
+        		// Look for special case where date comes before the
+        		// drug mention
+        		// A better means to locate the beginning of the chunk
+        		// is lacking here mainly due
+        		// to the fact that the sentence annotator cannot be
+        		// trusted to find the beginning
+        		// accurately.
+        		boolean overrideDate = false;
+        		Iterator statusSpecialDateItr = FSUtil
+        		.getAnnotationsIteratorInSpan(jcas, DateAnnotation.type, ssid
+        				.getEnd(), drugTokenAnt.getBegin());
+        		while (statusSpecialDateItr.hasNext() && !overrideDate)
+        		{
+        			DateAnnotation specialDate = (DateAnnotation) statusSpecialDateItr
+        			.next();
+        			Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
+        					NewlineToken.type, ssid.getEnd(), specialDate.getBegin());
+        			if (!findLF.hasNext())
+        			{
+        				// if (specialDate.getEnd() <=
+        				// drugTokenAnt.getBegin() ){
+        				drugTokenAnt.setStartDate(specialDate.getCoveredText());
+        				overrideDate = true;
+        			}
+        		}
 
-            DrugChangeStatusAnnotation dsa = null;
-            if (orderedDrugStatusChanges.hasNext())
-            {
-              dsa = (DrugChangeStatusAnnotation) orderedDrugStatusChanges
-                  .next();
-            }
-            if (dsa != null
-                && (dsa.getChangeStatus().compareTo(
-                    DrugChangeStatusElement.START_STATUS) == 0 || dsa
-                    .getChangeStatus().compareTo(
-                        DrugChangeStatusElement.STOP_STATUS) == 0))
-            {
-              // Should we override here? Let's get only the first
-              // one as an override
+        		DrugChangeStatusAnnotation dsa = null;
+        		if (orderedDrugStatusChanges.hasNext())
+        		{
+        			dsa = (DrugChangeStatusAnnotation) orderedDrugStatusChanges
+        			.next();
+        		}
+        		if (dsa != null
+        				&& (dsa.getChangeStatus().compareTo(
+        						DrugChangeStatusElement.START_STATUS) == 0 || dsa
+        						.getChangeStatus().compareTo(
+        								DrugChangeStatusElement.STOP_STATUS) == 0))
+        		{
+        			// Should we override here? Let's get only the first
+        			// one as an override
 
-              drugTokenAnt.setDrugChangeStatus(dsa.getChangeStatus());
-            } else
-            {
-              statusKey = dm.convertToChangeStatus(ssid.getCoveredText());
-              if (ssid.getStatus() == 1)
-              {
+        			drugTokenAnt.setDrugChangeStatus(dsa.getChangeStatus());
+        		} else
+        		{
+        			statusKey = dm.convertToChangeStatus(ssid.getCoveredText());
+        			if (ssid.getStatus() == 1)
+        			{
 
-                // drugTokenAnt.setCertainty(-1);
-                statusKey = DrugChangeStatusToken.STOP;
-              }
-              if (statusKey.compareTo(DrugChangeStatusToken.NOCHANGE) == 0)
-              {
-                Iterator oneDrugChangeStatus = FSUtil
-                    .getAnnotationsIteratorInSpan(jcas,
-                        DrugChangeStatusAnnotation.type, ssid.getBegin(), ssid
-                            .getEnd() + 1);
-                if (oneDrugChangeStatus.hasNext())
-                {
-                  dsa = (DrugChangeStatusAnnotation) oneDrugChangeStatus.next();
-                  drugTokenAnt.setDrugChangeStatus(dsa.getChangeStatus());
-                  statusKey = dsa.getChangeStatus();
-                }
-              }
-              drugTokenAnt.setStatus(ssid.getStatus());
-              dm.setDrugChangeStatusElement(statusKey, begin, end);
+        				// drugTokenAnt.setCertainty(-1);
+        				statusKey = DrugChangeStatusToken.STOP;
+        			}
+        			if (statusKey.compareTo(DrugChangeStatusToken.NOCHANGE) == 0)
+        			{
+        				Iterator oneDrugChangeStatus = FSUtil
+        				.getAnnotationsIteratorInSpan(jcas,
+        						DrugChangeStatusAnnotation.type, ssid.getBegin(), ssid
+        						.getEnd() + 1);
+        				if (oneDrugChangeStatus.hasNext())
+        				{
+        					dsa = (DrugChangeStatusAnnotation) oneDrugChangeStatus.next();
+        					drugTokenAnt.setDrugChangeStatus(dsa.getChangeStatus());
+        					statusKey = dsa.getChangeStatus();
+        				}
+        			}
+        			drugTokenAnt.setStatus(ssid.getStatus());
+        			dm.setDrugChangeStatusElement(statusKey, begin, end);
 
-              statusFound = true;
-            }
-          }
+        			statusFound = true;
+        		}
+        	}
         }
 
         // Look for special case where status comes before the drug
@@ -1195,22 +1202,24 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         // to the fact that the sentence annotator cannot be trusted to
         // find the beginning
         // accurately.
-        boolean overrideStatus = false;
+
         Iterator statusSpecialChangeItr = FSUtil.getAnnotationsIteratorInSpan(
-            jcas, DrugChangeStatusAnnotation.type, begin - 20, drugTokenAnt
-                .getBegin() + 1);
+        		jcas, DrugChangeStatusAnnotation.type, begin - 20, drugTokenAnt
+        		.getBegin() + 1);
         while (statusSpecialChangeItr.hasNext())
         {
-          DrugChangeStatusAnnotation specialDsa = (DrugChangeStatusAnnotation) statusSpecialChangeItr
-              .next();
-          if (specialDsa.getEnd() + 1 == drugTokenAnt.getBegin()
-              && relatedStatus == null)
-          {
-            drugTokenAnt.setDrugChangeStatus(specialDsa.getChangeStatus());
-            overrideStatus = true;
-          }
+        	DrugChangeStatusAnnotation specialDsa = (DrugChangeStatusAnnotation) statusSpecialChangeItr
+        	.next();
+        	if (specialDsa.getEnd() + 1 == drugTokenAnt.getBegin()
+        			&& relatedStatus == null)
+        	{
+        		drugTokenAnt.setDrugChangeStatus(specialDsa.getChangeStatus());
+        		drugTokenAnt.setChangeStatusBegin(specialDsa.getBegin());
+        		drugTokenAnt.setChangeStatusEnd(specialDsa.getEnd());
+        		overrideStatus = true;
+        	}
         }
-
+        }
         // If a strength token is discovered before the next
         // distinguished
         // drug mentions then the remaining sentence is scanned for
@@ -1224,290 +1233,308 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         // .next();
         // holdStrength.add(sa);
         // }
+        String strengthText = null;
+        boolean onlyNeedOneStrength = false;
+        if (!keepNoChangeStatus || (drugTokenAnt.getStrength() == null)) {
         List holdStrength = getAnnotationsInSpan(jcas, StrengthAnnotation.type,
-            begin, end + 1);
+        		begin, end + 1);
 
         Iterator strengthItr = findUniqueMentions(holdStrength.toArray())
-            .iterator();
+        .iterator();
 
         double strengthValue = 0;
 
-        String strengthText = null;
+
         int holdStrengthBeginOffset = 0, holdStrengthEndOffset = 0;
-        boolean onlyNeedOneStrength = false;
-        while (strengthItr.hasNext() && !onlyNeedOneStrength)
-        {
-          StrengthAnnotation sa = (StrengthAnnotation) strengthItr.next();
 
-          if (holdStrengthBeginOffset != sa.getBegin()
-              && holdStrengthEndOffset != sa.getEnd()
-              && (relatedStatus != null))
-          {
 
-            double curStrengthValue = 0;
+        	while (strengthItr.hasNext() && !onlyNeedOneStrength)
+        	{
+        		StrengthAnnotation sa = (StrengthAnnotation) strengthItr.next();
 
-            int hyphenLocation = sa.getCoveredText().indexOf("-");
-            String holdStrengthValue = sa.getCoveredText();
+        		if (holdStrengthBeginOffset != sa.getBegin()
+        				&& holdStrengthEndOffset != sa.getEnd()
+        				&& (relatedStatus != null))
+        		{
 
-            if (hyphenLocation > 0)
-            {
-              holdStrengthValue = holdStrengthValue
-                  .substring(0, hyphenLocation);
-            }
+        			double curStrengthValue = 0;
 
-            int spaceLocation = holdStrengthValue.indexOf(" ");
+        			int hyphenLocation = sa.getCoveredText().indexOf("-");
+        			String holdStrengthValue = sa.getCoveredText();
 
-            if (spaceLocation > 0)
-            {
-              holdStrengthValue = holdStrengthValue.substring(0, spaceLocation);
-            }
+        			if (hyphenLocation > 0)
+        			{
+        				holdStrengthValue = holdStrengthValue
+        				.substring(0, hyphenLocation);
+        			}
 
-            if (holdStrengthValue != null
-                && holdStrengthValue.compareTo("") != 0)
-              curStrengthValue = new Double(dm
-                  .parseDoubleValue(holdStrengthValue)).doubleValue();
-            boolean findLowValue = true;
+        			int spaceLocation = holdStrengthValue.indexOf(" ");
 
-            if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
-            {
-              if (curStrengthValue > strengthValue)
-              {
-                strengthValue = curStrengthValue;
-                strengthText = dm.getStrengthElement();
-              }
-            } else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
-            {
-              if (findLowValue)
-                strengthValue = curStrengthValue;
-              if (curStrengthValue <= strengthValue)
-              {
-                strengthValue = curStrengthValue;
-                strengthText = dm.getStrengthElement();
-              }
-              findLowValue = false;
+        			if (spaceLocation > 0)
+        			{
+        				holdStrengthValue = holdStrengthValue.substring(0, spaceLocation);
+        			}
 
-            } else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
-            {
+        			if (holdStrengthValue != null
+        					&& holdStrengthValue.compareTo("") != 0)
+        				curStrengthValue = new Double(dm
+        						.parseDoubleValue(holdStrengthValue)).doubleValue();
+        			boolean findLowValue = true;
 
-              strengthValue = curStrengthValue;
-              strengthText = dm.getStrengthElement();
-              // get first value found
-            }
-          } else
-          {
-            strengthText = dm.getStrengthElement();
-            if (!maxExists)
-              onlyNeedOneStrength = true;
-            else if (maxOffsetEnd + 1 == sa.getBegin())
-            {
-              onlyNeedOneStrength = true;
-              strengthText = sa.getCoveredText();
-            }
-          }
+        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			{
+        				if (curStrengthValue > strengthValue)
+        				{
+        					strengthValue = curStrengthValue;
+        					strengthText = dm.getStrengthElement();
+        				}
+        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			{
+        				if (findLowValue)
+        					strengthValue = curStrengthValue;
+        				if (curStrengthValue <= strengthValue)
+        				{
+        					strengthValue = curStrengthValue;
+        					strengthText = dm.getStrengthElement();
+        				}
+        				findLowValue = false;
 
-          holdStrengthBeginOffset = sa.getBegin();
-          holdStrengthEndOffset = sa.getEnd();
+        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
+        			{
 
-        }
+        				strengthValue = curStrengthValue;
+        				strengthText = dm.getStrengthElement();
+        				// get first value found
+        			}
+        		} else
+        		{
+        			strengthText = dm.getStrengthElement();
+        			if (!maxExists)
+        				onlyNeedOneStrength = true;
+        			else if (maxOffsetEnd + 1 == sa.getBegin())
+        			{
+        				onlyNeedOneStrength = true;
+        				strengthText = sa.getCoveredText();
+        			}
+        		}
 
+        		holdStrengthBeginOffset = sa.getBegin();
+        		holdStrengthEndOffset = sa.getEnd();
+
+        	}
+      }
+        String doseText = null;
+        if (!keepNoChangeStatus || (drugTokenAnt.getDosage() == null)) {
         Iterator dosageItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
-            DosagesAnnotation.type, begin, end + 1);
+        		DosagesAnnotation.type, begin, end + 1);
         List holdDosages = new ArrayList();
         double doseValue = 0;
-        String doseText = null;
+
         int holdDoseBeginOffset = 0, holdDoseEndOffset = 0;
         boolean onlyNeedOneDose = false;
-        while (dosageItr.hasNext() && !onlyNeedOneDose)
-        {
-          DosagesAnnotation da = (DosagesAnnotation) dosageItr.next();
-          if (holdDoseBeginOffset != da.getBegin()
-              && holdDoseEndOffset != da.getEnd() && relatedStatus != null)
-          {
-            int removeComma = da.getCoveredText().indexOf(',');
-            String doseTextCheck = da.getCoveredText();
-            if (removeComma > 0)
-            {
-              doseTextCheck = doseTextCheck.substring(0, removeComma);
-            }
-            double curDoseValue = new Double(dm
-                .convertFromTextToNum(doseTextCheck)).doubleValue();
-            boolean findLowValue = true;
-            if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
-            {
-              if (curDoseValue > doseValue)
-              {
-                doseValue = curDoseValue;
-                doseText = dm.getDosageElement();
-              } else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
-              {
 
-                doseValue = curDoseValue;
-                doseText = dm.getDosageElement();
+        	while (dosageItr.hasNext() && !onlyNeedOneDose)
+        	{
+        		DosagesAnnotation da = (DosagesAnnotation) dosageItr.next();
+        		if (holdDoseBeginOffset != da.getBegin()
+        				&& holdDoseEndOffset != da.getEnd() && relatedStatus != null)
+        		{
+        			int removeComma = da.getCoveredText().indexOf(',');
+        			String doseTextCheck = da.getCoveredText();
+        			if (removeComma > 0)
+        			{
+        				doseTextCheck = doseTextCheck.substring(0, removeComma);
+        			}
+        			double curDoseValue = new Double(dm
+        					.convertFromTextToNum(doseTextCheck)).doubleValue();
+        			boolean findLowValue = true;
+        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			{
+        				if (curDoseValue > doseValue)
+        				{
+        					doseValue = curDoseValue;
+        					doseText = dm.getDosageElement();
+        				} else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
+        				{
 
-              }
-            } else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
-            {
-              if (findLowValue)
-                doseValue = curDoseValue;
-              if (curDoseValue <= doseValue)
-              {
-                doseValue = curDoseValue;
-                doseText = dm.getDosageElement();
-              }
-              findLowValue = false;
-            }
-            holdDosages.add(da);
-            holdDoseBeginOffset = da.getBegin();
-            holdDoseEndOffset = da.getEnd();
-          } else
-          {
-            doseText = dm.getDosageElement();
+        					doseValue = curDoseValue;
+        					doseText = dm.getDosageElement();
 
-            if (!maxExists)
-              onlyNeedOneDose = true;
-          }
+        				}
+        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			{
+        				if (findLowValue)
+        					doseValue = curDoseValue;
+        				if (curDoseValue <= doseValue)
+        				{
+        					doseValue = curDoseValue;
+        					doseText = dm.getDosageElement();
+        				}
+        				findLowValue = false;
+        			}
+        			holdDosages.add(da);
+        			holdDoseBeginOffset = da.getBegin();
+        			holdDoseEndOffset = da.getEnd();
+        		} else
+        		{
+        			doseText = dm.getDosageElement();
+
+        			if (!maxExists)
+        				onlyNeedOneDose = true;
+        		}
+        	}
         }
+        String frequencyText = null;
+        if (!keepNoChangeStatus || (drugTokenAnt.getFrequency() == null)) {
         Iterator freqItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
-            FrequencyAnnotation.type, begin, end + 1);
+        		FrequencyAnnotation.type, begin, end + 1);
 
         List holdFreqItr = new ArrayList();
         while (freqItr.hasNext())
         {
-          holdFreqItr.add(freqItr.next());
+        	holdFreqItr.add(freqItr.next());
         }
         Iterator frequencyItr = sortAnnotations(holdFreqItr.toArray())
-            .iterator();
+        .iterator();
 
         List holdFrequency = new ArrayList();
         double frequencyValue = 0;
-        String frequencyText = null;
+
         int holdFrequencyBeginOffset = 0, holdFrequencyEndOffset = 0;
         boolean onlyNeedOneFrequency = false;
-        while (frequencyItr.hasNext() && !onlyNeedOneFrequency)
-        {
-          FrequencyAnnotation fa = (FrequencyAnnotation) frequencyItr.next();
 
-          if (dm.frequency != null
-              && dm.frequency.getFrequencyMention() == null)
-          {
-            double curFrequencyValue = new Double(dm.convertFromTextToNum(fa
-                .getCoveredText())).doubleValue();
-            String curFreqValueText = new Double(curFrequencyValue).toString();
-            dm
-                .setFrequencyElement(curFreqValueText, fa.getBegin(), fa
-                    .getEnd());
-            frequencyText = curFreqValueText;
-          }
-          onlyNeedOneFrequency = true;
+        	while (frequencyItr.hasNext() && !onlyNeedOneFrequency)
+        	{
+        		FrequencyAnnotation fa = (FrequencyAnnotation) frequencyItr.next();
 
-          holdFrequency.add(fa);
-          holdFrequencyBeginOffset = fa.getBegin();
-          holdFrequencyEndOffset = fa.getEnd();
+        		if (dm.frequency != null
+        				&& dm.frequency.getFrequencyMention() == null)
+        		{
+        			double curFrequencyValue = new Double(dm.convertFromTextToNum(fa
+        					.getCoveredText())).doubleValue();
+        			String curFreqValueText = new Double(curFrequencyValue).toString();
+        			dm
+        			.setFrequencyElement(curFreqValueText, fa.getBegin(), fa
+        					.getEnd());
+        			frequencyText = curFreqValueText;
+        		}
+        		onlyNeedOneFrequency = true;
+
+        		holdFrequency.add(fa);
+        		holdFrequencyBeginOffset = fa.getBegin();
+        		holdFrequencyEndOffset = fa.getEnd();
+        	}
         }
-
+        boolean foundPRN = false;
+        String frequencyUnitText = null;
+        if (!keepNoChangeStatus || (drugTokenAnt.getFrequencyUnit() == null)) {
         Iterator frequencyUnitItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
-            FrequencyUnitAnnotation.type, begin, end + 1);
+        		FrequencyUnitAnnotation.type, begin, end + 1);
         List holdFrequencyUnit = new ArrayList();
         double frequencyUnitValue = 0;
-        String frequencyUnitText = null;
+
         int holdFrequencyUnitBeginOffset = 0, holdFrequencyUnitEndOffset = 0;
         boolean onlyNeedOneFrequencyUnit = false;
-        boolean foundPRN = false;
-        while (frequencyUnitItr.hasNext() && !onlyNeedOneFrequencyUnit)
-        {
-          FrequencyUnitAnnotation fua = (FrequencyUnitAnnotation) frequencyUnitItr
-              .next();
-          if (holdFrequencyUnitBeginOffset != fua.getBegin()
-              && holdFrequencyUnitEndOffset != fua.getEnd()
-              && relatedStatus != null)
-          {
-            double curFrequencyUnitValue = new Float(fua.getPeriod())
-                .doubleValue();
-
-            boolean findLowValue = true;
-            if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
-            {
-              if (curFrequencyUnitValue > frequencyUnitValue)
-              {
-                frequencyUnitValue = curFrequencyUnitValue;
-                frequencyUnitText = dm.getFrequencyUnitElement();
-              }
-            } else if (relatedStatus == null
-                || relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
-            {
-              if (findLowValue)
-                frequencyUnitValue = curFrequencyUnitValue;
-              if (curFrequencyUnitValue <= frequencyUnitValue)
-              {
-                frequencyUnitValue = curFrequencyUnitValue;
-                frequencyUnitText = dm.getFrequencyUnitElement();
-              }
-              findLowValue = false;
-            }
-          } else
-          {
-            if (fua.getPeriod() == FrequencyUnitToken.QUANTITY_PRN)
-              foundPRN = true;
-            else
-            {
-              frequencyUnitText = dm.getFrequencyUnitElement();
-
-              if (!maxExists)
-              {
-                onlyNeedOneStrength = true;
-              }
-
-            }
-          }
-
-          holdFrequencyUnit.add(fua);
-          holdFrequencyUnitBeginOffset = fua.getBegin();
-          holdFrequencyUnitEndOffset = fua.getEnd();
-        }
-        
+ 
        
+        	while (frequencyUnitItr.hasNext() && !onlyNeedOneFrequencyUnit)
+        	{
+        		FrequencyUnitAnnotation fua = (FrequencyUnitAnnotation) frequencyUnitItr
+        		.next();
+        		if (holdFrequencyUnitBeginOffset != fua.getBegin()
+        				&& holdFrequencyUnitEndOffset != fua.getEnd()
+        				&& relatedStatus != null)
+        		{
+        			double curFrequencyUnitValue = new Float(fua.getPeriod())
+        			.doubleValue();
+
+        			boolean findLowValue = true;
+        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			{
+        				if (curFrequencyUnitValue > frequencyUnitValue)
+        				{
+        					frequencyUnitValue = curFrequencyUnitValue;
+        					frequencyUnitText = dm.getFrequencyUnitElement();
+        				}
+        			} else if (relatedStatus == null
+        					|| relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			{
+        				if (findLowValue)
+        					frequencyUnitValue = curFrequencyUnitValue;
+        				if (curFrequencyUnitValue <= frequencyUnitValue)
+        				{
+        					frequencyUnitValue = curFrequencyUnitValue;
+        					frequencyUnitText = dm.getFrequencyUnitElement();
+        				}
+        				findLowValue = false;
+        			}
+        		} else
+        		{
+        			if (fua.getPeriod() == FrequencyUnitToken.QUANTITY_PRN)
+        				foundPRN = true;
+        			else
+        			{
+        				frequencyUnitText = dm.getFrequencyUnitElement();
+
+        				if (!maxExists)
+        				{
+        					onlyNeedOneStrength = true;
+        				}
+
+        			}
+        		}
+
+        		holdFrequencyUnit.add(fua);
+        		holdFrequencyUnitBeginOffset = fua.getBegin();
+        		holdFrequencyUnitEndOffset = fua.getEnd();
+        	}
+
+        }
         if (recurseNER != null && recurseNER.getDrugChangeStatus() != null
-            && relatedStatus != null  && dm.changeStatus == null)
-          drugTokenAnt.setDrugChangeStatus(relatedStatus);
-        else if (dm.changeStatus != null && 
+        		&& relatedStatus != null  && dm.changeStatus == null)
+        	drugTokenAnt.setDrugChangeStatus(relatedStatus);
+        else if (keepNoChangeStatus || (dm.changeStatus != null && 
         		(dm.changeStatus.getDrugChangeStatus().equals(DrugChangeStatusToken.INCREASEFROM) 
-				|| dm.changeStatus.getDrugChangeStatus().equals(DrugChangeStatusToken.DECREASEFROM))) {
-			drugTokenAnt.setDrugChangeStatus("noChange");
-		}
+        				|| dm.changeStatus.getDrugChangeStatus().equals(DrugChangeStatusToken.DECREASEFROM)))) {
+        	drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+        }
         else if (dm.getDrugChangeStatusElement() != null
-            && dm.getDrugChangeStatusElement().compareTo("") != 0
-            && dm.getDrugChangeStatusElement().compareTo(
-                DrugChangeStatusToken.NOCHANGE) != 0
-            /*
-             * && drugTokenAnt.getDrugChangeStatus() != null && drugTokenAnt
-             * .getDrugChangeStatus().compareTo(DrugChangeStatusToken .NOCHANGE)
-             * == 0
-             */
-            && !overrideStatus)
+        		&& dm.getDrugChangeStatusElement().compareTo("") != 0
+        		&& dm.getDrugChangeStatusElement().compareTo(
+        				DrugChangeStatusToken.NOCHANGE) != 0
+        				/*
+        				 * && drugTokenAnt.getDrugChangeStatus() != null && drugTokenAnt
+        				 * .getDrugChangeStatus().compareTo(DrugChangeStatusToken .NOCHANGE)
+        				 * == 0
+        				 */
+        				&& !overrideStatus)
         {
-          // Don't want subsections here
+        	// Don't want subsections here
 
-          Iterator negateStatusChanges = FSUtil.getAnnotationsIteratorInSpan(
-              jcas, SubSectionAnnotation.type,
-              dm.changeStatus.getBeginOffset(),
-              dm.changeStatus.getEndOffset() + 2);
-          if (!negateStatusChanges.hasNext() || statusFound)
-            drugTokenAnt.setDrugChangeStatus(dm.getDrugChangeStatusElement());
-          else
-            drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+        	Iterator negateStatusChanges = FSUtil.getAnnotationsIteratorInSpan(
+        			jcas, SubSectionAnnotation.type,
+        			dm.changeStatus.getBeginOffset(),
+        			dm.changeStatus.getEndOffset() + 2);
+        	if ((!negateStatusChanges.hasNext() || statusFound) && !keepNoChangeStatus) {
+        		drugTokenAnt.setDrugChangeStatus(dm.getDrugChangeStatusElement());
+        		drugTokenAnt.setChangeStatusBegin(dm.getChangeStatusBegin());
+        		drugTokenAnt.setChangeStatusEnd(dm.getChangeStatusEnd());
+        	}
+        	else
+        		drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
         } else if (relatedStatus != null) {
-			drugTokenAnt.setDrugChangeStatus(relatedStatus);
-		}else if (drugTokenAnt.getDrugChangeStatus() == null
-            || drugTokenAnt.getDrugChangeStatus().compareTo("") == 0)
-          drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-
-        float confidenceScore = alignDrugMentionAttributes( strengthText,  dm ,  drugTokenAnt,  recurseNER,  relatedStatus,  statusFound,  overrideStatus,
-				 maxExists,  doseText,  frequencyText,  frequencyUnitText);
-		drugTokenAnt.setConfidence(confidenceScore);
-
+        	drugTokenAnt.setDrugChangeStatus(relatedStatus);
+        } else if (drugTokenAnt.getDrugChangeStatus() == null
+        		|| drugTokenAnt.getDrugChangeStatus().compareTo("") == 0)
+        	drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+        if (!keepNoChangeStatus) {
+        	float confidenceScore = alignDrugMentionAttributes( strengthText,  dm ,  drugTokenAnt,  recurseNER,  relatedStatus,  statusFound,  overrideStatus,
+        		maxExists,  doseText,  frequencyText,  frequencyUnitText);
+        	drugTokenAnt.setConfidence(confidenceScore);
+        }
 
         if (foundPRN)
-          drugTokenAnt.setDrugChangeStatus(drugTokenAnt.getDrugChangeStatus());
+        	drugTokenAnt.setDrugChangeStatus(drugTokenAnt.getDrugChangeStatus());
 
         ChunkAnnotation ca = new ChunkAnnotation(jcas, begin, end);
         ca.addToIndexes();
@@ -1542,8 +1569,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       if (strengthText != null /* && holdStatusChanges.isEmpty() */)
       {
         drugTokenAnt.setStrength(strengthText);
-        // drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
-        // drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
+        drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
       } else if (recurseNER != null && recurseNER.getStrength() != null)
       {
         drugTokenAnt.setStrength(recurseNER.getStrength());
@@ -1780,8 +1807,6 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
         	checkSpan = generateAdditionalNER(jcas, drugTokenAnt, drugStatus, begin, end,
                 countNER, globalDrugNER);
-            if (drugStatus.getChangeStatus().compareTo("change") == 0)
-              drugTokenAnt.setDrugChangeStatus("noChange");
 
           }
       }
@@ -1790,224 +1815,348 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   
   private int[] generateAdditionalNER(JCas jcas,
       DrugMentionAnnotation tokenDrugNER,
-      DrugChangeStatusAnnotation drugChangeStatus, int beginSpan, int endChunk,
+      DrugChangeStatusAnnotation drugChangeStatus, int beginSpan, int endSpan,
       int count, List globalNER) throws Exception
   {
-
+	  boolean noPriorMention = false;
+	  boolean noPostMention = false;
+	int originalEndSpan = endSpan;
+	int originalBeginSpan = beginSpan;
     NamedEntity neAnnot = new NamedEntity(jcas, tokenDrugNER.getBegin(),
-        tokenDrugNER.getEnd());
-
+			  tokenDrugNER.getEnd());
     int beginChunk = drugChangeStatus.getEnd();
+    DrugMention compareDM = new DrugMention(jcas, beginChunk, endSpan);
+    DrugMention priorDM = new DrugMention(jcas, beginSpan, drugChangeStatus
+        .getBegin());
+    if ((priorDM.dosage == null) && (priorDM.strength == null) && (priorDM.frequency == null ) )
+    	noPriorMention = true;
+    if ((compareDM.dosage == null) && (compareDM.strength == null) && (compareDM.frequency == null ) )
+    	noPostMention = true;
     count++;
-    
+    if ( !noPriorMention)  {
+    	if (priorDM.dosage != null) {
+    		tokenDrugNER.setDosage(priorDM.getDosageElement());
+    		tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+    		tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+    	}
+    	if (priorDM.strength != null) {
+    		tokenDrugNER.setStrength(priorDM.getStrengthElement());
+    		tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+    		tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+    	}
+    	if (priorDM.frequency != null) {
+    		tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+    		tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+    		tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+    	}
+    }
     neAnnot.setTypeID(NERTypeIdentifier);
-	int [] updatedSpan = {beginSpan, endChunk};
+	int [] updatedSpan = {beginSpan, endSpan};
 
     List<NamedEntity> buildNewNER = new ArrayList<NamedEntity>();
 
     buildNewNER.add(neAnnot);
 
     if (drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.DECREASE) == 0)
+    		DrugChangeStatusToken.DECREASE) == 0)
     {
-	  updatedSpan[1] = beginChunk;
-      generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-          endChunk, tokenDrugNER, DrugChangeStatusToken.DECREASE, count,
-          globalNER);
-      tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+    	if (noPriorMention) {//Look for highest value on right side 
+    		endSpan =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[1];
+    	}
+    	updatedSpan[0] = beginChunk;
+    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+    			endSpan, tokenDrugNER, DrugChangeStatusToken.DECREASE, count,
+    			globalNER);
+    	if (noPriorMention) {
+    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
+    		if (compareDM.dosage != null) {
+    			tokenDrugNER.setDosage(compareDM.getDosageElement());
+    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+    		}
+    		if (compareDM.strength != null) {
+    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
+    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+    		}
+    		if (compareDM.frequency != null) {
+    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+    		}
+    	}
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
     } else if (drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.DECREASEFROM) == 0)
+    		DrugChangeStatusToken.DECREASEFROM) == 0)
     {
-		generateDrugMentionsAndAnnotations(jcas,
-				buildNewNER, drugChangeStatus.getEnd(), endChunk,
-				tokenDrugNER, DrugChangeStatusToken.DECREASE, count, globalNER);
-		tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-		
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.INCREASE) == 0)
-    {
-	  updatedSpan[1] = beginChunk;
-      generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-          endChunk, tokenDrugNER, DrugChangeStatusToken.INCREASE, count,
-          globalNER);
-      tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.INCREASEFROM) == 0)
-    {
-      generateDrugMentionsAndAnnotations(jcas, buildNewNER, drugChangeStatus.getEnd(), 
-    		  endChunk, tokenDrugNER,
-				DrugChangeStatusToken.INCREASE, count, globalNER);
-      tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.STOP) == 0)
-    {
+    	if (noPriorMention) {//Look for lowest value on right side 
+    		beginChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
+    	}
+    	generateDrugMentionsAndAnnotations(jcas,
+    			buildNewNER, beginChunk, endSpan,
+    			tokenDrugNER, DrugChangeStatusToken.DECREASE, count, globalNER);
+    	if (noPriorMention) {
+    		priorDM = new DrugMention(jcas, originalBeginSpan, beginChunk);
+    		if (priorDM.dosage != null) {
+    			tokenDrugNER.setDosage(priorDM.getDosageElement());
+    			tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+    			tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+    		}
+    		if (priorDM.strength != null) {
+    			tokenDrugNER.setStrength(priorDM.getStrengthElement());
+    			tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+    			tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+    		}
+    		if (priorDM.frequency != null) {
+    			tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+    			tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+    			tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+    		}
+    	}
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
 
-//      generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-//          endChunk, tokenDrugNER, DrugChangeStatusToken.STOP, count, globalNER);
-      tokenDrugNER.setDrugChangeStatus(tokenDrugNER.getDrugChangeStatus());
+    } else if (drugChangeStatus.getChangeStatus().compareTo(
+    		DrugChangeStatusToken.INCREASE) == 0)
+    {
+    	if (noPriorMention) {//Look for highest value on right side 
+    		endSpan =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[1];
+    	}
+    	updatedSpan[0] = beginChunk;
+    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+    			endSpan, tokenDrugNER, DrugChangeStatusToken.INCREASE, count,
+    			globalNER);
+    	if (noPriorMention) {
+    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
+    		if (compareDM.dosage != null) {
+    			tokenDrugNER.setDosage(compareDM.getDosageElement());
+    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+    		}
+    		if (compareDM.strength != null) {
+    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
+    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+    		}
+    		if (compareDM.frequency != null) {
+    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+    		}
+    	}
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+    } else if (drugChangeStatus.getChangeStatus().compareTo(
+    		DrugChangeStatusToken.INCREASEFROM) == 0)
+    {
+    	if (noPriorMention) {//Look for lowest value on right side 
+    		beginChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
+    	}
+    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk, 
+    			endSpan, tokenDrugNER,
+    			DrugChangeStatusToken.INCREASE, count, globalNER);
+    	if (noPriorMention) {
+    		priorDM = new DrugMention(jcas, originalBeginSpan, beginChunk);
+    		if (priorDM.dosage != null) {
+    			tokenDrugNER.setDosage(priorDM.getDosageElement());
+    			tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+    			tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+    		}
+    		if (priorDM.strength != null) {
+    			tokenDrugNER.setStrength(priorDM.getStrengthElement());
+    			tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+    			tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+    		}
+    		if (priorDM.frequency != null) {
+    			tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+    			tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+    			tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+    		}
+    	}
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+    } else if (drugChangeStatus.getChangeStatus().compareTo(
+    		DrugChangeStatusToken.STOP) == 0)
+    {
+    	tokenDrugNER.setDrugChangeStatus(tokenDrugNER.getDrugChangeStatus());
     } else if ((drugChangeStatus.getChangeStatus().compareTo(
-        DrugChangeStatusToken.OTHER) == 0)
-        || drugChangeStatus.getChangeStatus().compareTo(
-            DrugChangeStatusToken.SUM) == 0)
+    		DrugChangeStatusToken.OTHER) == 0)
+    		|| drugChangeStatus.getChangeStatus().compareTo(
+    				DrugChangeStatusToken.SUM) == 0)
     {
 
-      DrugMention compareDM = new DrugMention(jcas, beginChunk, endChunk);
-      DrugMention priorDM = new DrugMention(jcas, beginSpan, drugChangeStatus
-          .getBegin());
 
-      double strengthChange = 1;
-      double dosageChange = 1;
-      double frequencyChange = 1;
+    	double strengthChange = 1;
+    	double dosageChange = 1;
+    	double frequencyChange = 1;
+    	if (noPriorMention) {
+    		int [] updateSpan =   getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false);
+    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
+    		if (compareDM.dosage != null) {
+    			tokenDrugNER.setDosage(compareDM.getDosageElement());
+    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+    		}
+    		if (compareDM.strength != null) {
+    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
+    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+    		}
+    		if (compareDM.frequency != null) {
+    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+    		}
+    	}
+    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+    	if (compareDM.getStrengthElement() != null
+    			&& compareDM.getStrengthElement().compareTo("") != 0
+    			&& compareDM != null)
+    	{
+    		strengthChange = new Double(compareDM.parseDoubleValue(compareDM
+    				.getStrengthElement())).doubleValue();
 
-      if (compareDM.getStrengthElement() != null
-          && compareDM.getStrengthElement().compareTo("") != 0
-          && compareDM != null)
-      {
-        strengthChange = new Double(compareDM.parseDoubleValue(compareDM
-            .getStrengthElement())).doubleValue();
+    	} else if (priorDM.getStrengthElement() != null
+    			&& priorDM.getStrengthElement().compareTo("") != 0
+    			&& priorDM.getStrengthElement().length() > 0)
+    	{
+    		int spacePosition = priorDM.getStrengthElement().indexOf(" ");
+    		if (spacePosition > 0)
+    		{
+    			strengthChange = new Double(priorDM.parseDoubleValue(priorDM
+    					.getStrengthElement().substring(0, spacePosition))).doubleValue();
 
-      } else if (priorDM.getStrengthElement() != null
-          && priorDM.getStrengthElement().compareTo("") != 0
-          && priorDM.getStrengthElement().length() > 0)
-      {
-        int spacePosition = priorDM.getStrengthElement().indexOf(" ");
-        if (spacePosition > 0)
-        {
-          strengthChange = new Double(priorDM.parseDoubleValue(priorDM
-              .getStrengthElement().substring(0, spacePosition))).doubleValue();
+    		} else
+    		{
+    			strengthChange = new Double(priorDM.parseDoubleValue(priorDM
+    					.getStrengthElement())).doubleValue();
 
-        } else
-        {
-          strengthChange = new Double(priorDM.parseDoubleValue(priorDM
-              .getStrengthElement())).doubleValue();
+    		}
+    	}
+    	if (compareDM.getDosageElement() != null
+    			&& compareDM.getDosageElement().compareTo("") != 0)
+    	{
+    		dosageChange = new Double(compareDM.parseDoubleValue(compareDM
+    				.getDosageElement())).doubleValue();
+    	} else if (priorDM.getDosageElement() != null
+    			&& priorDM.getDosageElement().compareTo("") != 0)
+    	{
+    		dosageChange = new Double(priorDM.parseDoubleValue(priorDM
+    				.getDosageElement())).doubleValue();
+    	}
+    	if (compareDM.getFrequencyElement() != null
+    			&& compareDM.getFrequencyElement().compareTo("") != 0)
+    	{
+    		frequencyChange = new Double(compareDM.parseDoubleValue(compareDM
+    				.getFrequencyElement())).doubleValue();
+    	} else if (priorDM.getFrequencyElement() != null
+    			&& priorDM.getFrequencyElement().compareTo("") != 0)
+    	{
+    		frequencyChange = new Double(priorDM.parseDoubleValue(priorDM
+    				.getFrequencyElement())).doubleValue();
+    	}
 
-        }
-      }
-      if (compareDM.getDosageElement() != null
-          && compareDM.getDosageElement().compareTo("") != 0)
-      {
-        dosageChange = new Double(compareDM.parseDoubleValue(compareDM
-            .getDosageElement())).doubleValue();
-      } else if (priorDM.getDosageElement() != null
-          && priorDM.getDosageElement().compareTo("") != 0)
-      {
-        dosageChange = new Double(priorDM.parseDoubleValue(priorDM
-            .getDosageElement())).doubleValue();
-      }
-      if (compareDM.getFrequencyElement() != null
-          && compareDM.getFrequencyElement().compareTo("") != 0)
-      {
-        frequencyChange = new Double(compareDM.parseDoubleValue(compareDM
-            .getFrequencyElement())).doubleValue();
-      } else if (priorDM.getFrequencyElement() != null
-          && priorDM.getFrequencyElement().compareTo("") != 0)
-      {
-        frequencyChange = new Double(priorDM.parseDoubleValue(priorDM
-            .getFrequencyElement())).doubleValue();
-      }
-
-      double strengthBefore = 1;
-      double dosageBefore = 1;
+    	double strengthBefore = 1;
+    	double dosageBefore = 1;
       double frequencyBefore = 1;
 
       if (priorDM.getStrengthElement() != null
-          && priorDM.getStrengthElement().compareTo("") != 0
-          && priorDM.getStrengthElement().length() > 0)
+    		  && priorDM.getStrengthElement().compareTo("") != 0
+    		  && priorDM.getStrengthElement().length() > 0)
       {
-        strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
-            .getStrengthElement())).doubleValue();
-        tokenDrugNER.setStrength(priorDM.getStrengthElement());
-        tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
-        tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+    	  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
+    			  .getStrengthElement())).doubleValue();
+    	  tokenDrugNER.setStrength(priorDM.getStrengthElement());
+    	  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+    	  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
       } else if (tokenDrugNER.getStrength() != null
-          && tokenDrugNER.getStrength().compareTo("") != 0
-          && tokenDrugNER.getStrength().length() > 0)
+    		  && tokenDrugNER.getStrength().compareTo("") != 0
+    		  && tokenDrugNER.getStrength().length() > 0)
       {
-        boolean handledSeparator = false;
-        int hyphPosition = tokenDrugNER.getStrength().indexOf('-');
-        String hyphString = tokenDrugNER.getStrength();
-        if (hyphPosition > 0)
-        {
-          hyphString = tokenDrugNER.getStrength().substring(0, hyphPosition);
+    	  boolean handledSeparator = false;
+    	  int hyphPosition = tokenDrugNER.getStrength().indexOf('-');
+    	  String hyphString = tokenDrugNER.getStrength();
+    	  if (hyphPosition > 0)
+    	  {
+    		  hyphString = tokenDrugNER.getStrength().substring(0, hyphPosition);
 
-          strengthBefore = new Double(compareDM.parseDoubleValue(compareDM
-              .convertFromTextToNum(hyphString))).doubleValue();
-          handledSeparator = true;
-        }
-        int spacePosition = hyphString.indexOf(" ");
-        if (spacePosition > 0)
-        {
-          hyphString = hyphString.substring(0, spacePosition);
-          strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
-              .convertFromTextToNum(hyphString))).doubleValue();
-          handledSeparator = true;
-        }
-        if (!handledSeparator)
-          strengthBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-              .getStrength())).doubleValue();
+    		  strengthBefore = new Double(compareDM.parseDoubleValue(compareDM
+    				  .convertFromTextToNum(hyphString))).doubleValue();
+    		  handledSeparator = true;
+    	  }
+    	  int spacePosition = hyphString.indexOf(" ");
+    	  if (spacePosition > 0)
+    	  {
+    		  hyphString = hyphString.substring(0, spacePosition);
+    		  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
+    				  .convertFromTextToNum(hyphString))).doubleValue();
+    		  handledSeparator = true;
+    	  }
+    	  if (!handledSeparator)
+    		  strengthBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+    				  .getStrength())).doubleValue();
       }
       if (priorDM.getDosageElement() != null
-          && priorDM.getDosageElement().compareTo("") != 0
-          && priorDM.dosage != null)
+    		  && priorDM.getDosageElement().compareTo("") != 0
+    		  && priorDM.dosage != null)
       {
-        dosageBefore = new Double(priorDM.getDosageElement()).doubleValue();
-        tokenDrugNER.setDosage(priorDM.getDosageElement());
-        tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
-        tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+    	  dosageBefore = new Double(priorDM.getDosageElement()).doubleValue();
+    	  tokenDrugNER.setDosage(priorDM.getDosageElement());
+    	  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+    	  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
       } else if (tokenDrugNER.getDosage() != null
-          && tokenDrugNER.getDosage().compareTo("") != 0)
+    		  && tokenDrugNER.getDosage().compareTo("") != 0)
       {
-        dosageBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-            .getDosage())).doubleValue();
+    	  dosageBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+    			  .getDosage())).doubleValue();
       }
       if (priorDM.getFrequencyElement() != null
-          && priorDM.getFrequencyElement().compareTo("") != 0)
+    		  && priorDM.getFrequencyElement().compareTo("") != 0)
       {
-        frequencyBefore = new Double(priorDM.parseDoubleValue(priorDM
-            .getFrequencyElement())).doubleValue();
-        tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+    	  frequencyBefore = new Double(priorDM.parseDoubleValue(priorDM
+    			  .getFrequencyElement())).doubleValue();
+    	  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
 
       } else if (tokenDrugNER.getFrequency() != null
-          && tokenDrugNER.getFrequency().compareTo("") != 0)
+    		  && tokenDrugNER.getFrequency().compareTo("") != 0)
       {
-        frequencyBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-            .getFrequency())).doubleValue();
+    	  frequencyBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+    			  .getFrequency())).doubleValue();
       }
       if ((drugChangeStatus.getChangeStatus().compareTo(
-          DrugChangeStatusToken.SUM) == 0)
-          && (strengthChange > 1 && strengthBefore > 1 || strengthChange == strengthBefore))
+    		  DrugChangeStatusToken.SUM) == 0)
+    		  && (strengthChange > 1 && strengthBefore > 1 || strengthChange == strengthBefore))
       {
-        Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
-            NewlineToken.type, neAnnot.getBegin(), beginChunk);
-        if (!findLF.hasNext())
-        {
-          if (frequencyChange <= 1 && frequencyBefore > 1)
-            tokenDrugNER.setFrequency("1.0");
-          generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-              endChunk, tokenDrugNER, DrugChangeStatusToken.SUM, count,
-              globalNER);
+    	  Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
+    			  NewlineToken.type, neAnnot.getBegin(), beginChunk);
+    	  if (!findLF.hasNext())
+    	  {
+    		  if (frequencyChange <= 1 && frequencyBefore > 1)
+    			  tokenDrugNER.setFrequency("1.0");
+    		  generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+    				  endSpan, tokenDrugNER, DrugChangeStatusToken.SUM, count,
+    				  globalNER);
 
-        }
+    	  }
 
       } 				
       else if (strengthChange * dosageChange
-				* frequencyChange > strengthBefore
-				* dosageBefore * frequencyBefore) {
-			generateDrugMentionsAndAnnotations(jcas,
-					buildNewNER, beginChunk,
-					endChunk, tokenDrugNER,
-					DrugChangeStatusToken.INCREASE, count, globalNER);
-		} 
-		else {
-			generateDrugMentionsAndAnnotations(jcas,
-					buildNewNER, beginChunk,
-					endChunk, tokenDrugNER,
-					DrugChangeStatusToken.DECREASE, count, globalNER);
-		}
+    		  * frequencyChange > strengthBefore
+    		  * dosageBefore * frequencyBefore) {
+    	  generateDrugMentionsAndAnnotations(jcas,
+    			  buildNewNER, beginChunk,
+    			  endSpan, tokenDrugNER,
+    			  DrugChangeStatusToken.INCREASE, count, globalNER);
+      } 
+      else {
+    	  generateDrugMentionsAndAnnotations(jcas,
+    			  buildNewNER, beginChunk,
+    			  endSpan, tokenDrugNER,
+    			  DrugChangeStatusToken.DECREASE, count, globalNER);
+      }
 
-
-	}
-	return updatedSpan;
+  		tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+      //      }
+    }
+    return updatedSpan;
   }
 
   private edu.mayo.bmi.fsm.token.BaseToken adaptToFSMBaseToken(BaseToken obj)
@@ -2240,5 +2389,285 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
     return span;
   }
+  private void findFSMInRange(JCas jcas, int begin, int end) throws Exception {
+		NamedEntity ne = null;
+		WordToken we = null;
+		// grab iterator over tokens within this chunk
+		Iterator btaItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+				BaseToken.type, begin,
+				end+1);
+		// do the same as above for named entities
+		// grab iterator over tokens within this chunk
+		Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+				NamedEntity.type, begin,
+				end+1);
+		// List neTokenList = new ArrayList();
+
+		// do the same as above for word entities
+		// grab iterator over tokens within this chunk
+		Iterator weItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+				WordToken.type, begin,
+				end+1);
+		List weTokenList = new ArrayList();
+		while (weItr.hasNext()) {
+			we = (WordToken) weItr.next();
+			weTokenList.add(we);
+
+		}
+		List neTokenList = new ArrayList();
+
+
+		while (neItr.hasNext()) {
+			ne = (NamedEntity) neItr.next();
+
+			neTokenList.add(ne);
+		}
+
+
+		// adapt JCas objects into objects expected by the
+		// Finite state
+		// machines
+		List baseTokenList = new ArrayList();
+		while (btaItr.hasNext()) {
+			BaseToken bta = (BaseToken) btaItr
+			.next();
+
+			baseTokenList.add(adaptToFSMBaseToken(bta));
+		}
+
+		// execute FSM logic
+
+		executeFSMs(jcas, baseTokenList, neTokenList,
+				weTokenList);
+  }
+	/**
+	 * 
+	 * @param jcas
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	private int [] findOffsetsInPattern(JCas jcas, int begin, int end, int elementType, int[][] location, boolean highest) {
+		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+		Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
+		int [] lastLocation =  {-1,-1};
+		boolean wantMuliple = true;
+	    if (elementType == StrengthAnnotation.type) {
+     	 while (neItr.hasNext() && wantMuliple) {
+     		 StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+
+     		 if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
+         		 if (!highest) wantMuliple = false;
+         		 lastLocation[0] = nea.getBegin();
+         		 lastLocation[1] = nea.getEnd();
+     		 }
+  	    }
+     } else if (elementType == FrequencyAnnotation.type) {
+			while (neItr.hasNext()&& wantMuliple) {
+				FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
+				 
+	       		 if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
+	       			if (!highest) wantMuliple = false;
+	 				lastLocation[0] = nea.getBegin();
+		       		 lastLocation[1] = nea.getEnd();
+	       		 }			}
+		}  else if (elementType == DosagesAnnotation.type) {
+     	 while (neItr.hasNext()&& wantMuliple) {
+     		 DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
+     		 
+     		 if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
+     			if (!highest) wantMuliple = false;
+          		lastLocation[0] = nea.getBegin();
+          		lastLocation[1] = nea.getEnd();
+     		 }
+  	    }
+     }
+	    
+	    return lastLocation;
+	}
+  /**
+   * return window span to find reasons for the given d
+   * @param jcas
+   * @return int[0] is begin offset and int[1] is end offset 
+   * @throws Exception 
+   */
+  private int[] getAdjustedWindowSpan(JCas jcas,  int begin, int end, boolean highestRange) throws Exception {
+	  int[] spanStrength = {-1, -1}, spanFrequency = {-1, -1}, spanDose = {-1, -1};
+	  JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+	  int[] senSpan = {begin, end };
+
+	  // Up to 10 of each type of signature item and drug mentions are allowed.  If more than that are available the 
+	  // ArrayIndexOutOfBoundsException is thrown/caught and the sentence is skipped
+
+	  int[][] strengthSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	  int[][] freqSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	  int[][] doseSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	  int[][] parenthesisSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	  int[][] statusSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+
+
+		  //for a given span if exist more than one drug and signature elements do the following
+	  int drugSpanLength = 0, strengthSpanLength = 0, freqSpanLength = 0 , doseSpanLength = 0 ;       
+
+	  int  beginSpan = senSpan[0], endSpan = senSpan[1];
+
+	  freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
+	  doseSpanLength = findInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan);
+	  int parenthesisSpanLength = findInPattern(jcas, beginSpan, endSpan, PunctuationToken.type, parenthesisSpan);
+	  strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan);
+	  spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
+	  spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange); 
+	  spanDose = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange);
+	// Since were looking for the   
+	  if (spanStrength[0] == -1 && spanFrequency[0] == -1 && spanDose[0] == -1)
+		  return senSpan;
+ 
+		  senSpan = spanStrength[0] > spanFrequency[0]? spanStrength : spanFrequency; 
+		  return spanDose[0] > senSpan[0]? spanDose : senSpan; 
+
+
+  }
+
+/**
+ * 
+ * @param jcas
+ * @param begin
+ * @param end
+ * @return
+ */
+private int findInPattern(JCas jcas, int begin, int end, int elementType, int[][] location) {
+	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+	Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
+	int [] lastLocation =  {-1,-1};
+	int counter = 0;
+    if (elementType == StrengthAnnotation.type) {
+ 	 while (neItr.hasNext()) {
+ 		 StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+ 		 lastLocation[0] = nea.getBegin();
+ 		 lastLocation[1] = nea.getEnd();
+ 		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+ 			 location[counter][0]= lastLocation[0];
+ 			 location[counter][1]= lastLocation[1];
+ 			 counter++;
+ 		 }
+    }
+ } else if (elementType == FrequencyAnnotation.type) {
+		while (neItr.hasNext()) {
+			FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
+			lastLocation[0] = nea.getBegin();
+       		 lastLocation[1] = nea.getEnd();
+       		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+       			 location[counter][0]= lastLocation[0];
+       			 location[counter][1]= lastLocation[1];
+       			 counter++;
+       		 }			}
+	} else if (elementType == FrequencyUnitAnnotation.type) {
+		while (neItr.hasNext()) {
+			FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr.next();
+			lastLocation[0] = nea.getBegin();
+       		 lastLocation[1] = nea.getEnd();
+       		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+       			 location[counter][0]= lastLocation[0];
+       			 location[counter][1]= lastLocation[1];
+       			 counter++;
+       		 }
+		}
+	}    else if (elementType == DosagesAnnotation.type) {
+ 	 while (neItr.hasNext()) {
+ 		 DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
+ 		lastLocation[0] = nea.getBegin();
+		 lastLocation[1] = nea.getEnd();
+ 		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+ 			 location[counter][0]= lastLocation[0];
+ 			 location[counter][1]= lastLocation[1];
+ 			 counter++;
+ 		 }
+    }
+ }else if (elementType == RouteAnnotation.type) {
+		while (neItr.hasNext()) {
+			RouteAnnotation nea = (RouteAnnotation) neItr.next();
+			lastLocation[0] = nea.getBegin();
+       		 lastLocation[1] = nea.getEnd();
+       		 if (nea.getBegin()>=begin && nea.getEnd() <= end) {
+       			 location[counter][0]= lastLocation[0];
+       			 location[counter][1]= lastLocation[1];
+       			 counter++;
+       		 }
+		}
+	} else if (elementType == FormAnnotation.type) {
+		while (neItr.hasNext()) {
+			FormAnnotation nea = (FormAnnotation) neItr.next();
+			lastLocation[0] = nea.getBegin();
+       		 lastLocation[1] = nea.getEnd();
+       		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+       			 location[counter][0]= lastLocation[0];
+       			 location[counter][1]= lastLocation[1];
+       			 counter++;
+       		 }
+		}
+	}    
+	else if (elementType == DurationAnnotation.type) {
+ 	 while (neItr.hasNext()) {
+ 		DurationAnnotation nea = (DurationAnnotation) neItr.next();
+ 		lastLocation[0] = nea.getBegin();
+		 lastLocation[1] = nea.getEnd();
+ 		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+ 			 location[counter][0]= lastLocation[0];
+ 			 location[counter][1]= lastLocation[1];
+ 			 counter++;
+ 		 }
+    }
+ 	 
+ } 
+	else if (elementType == DrugChangeStatusAnnotation.type) {
+   	 while (neItr.hasNext()) {
+   		DrugChangeStatusAnnotation nea = (DrugChangeStatusAnnotation) neItr.next();
+      		lastLocation[0] = nea.getBegin();
+     		 lastLocation[1] = nea.getEnd();
+     		 if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+     			 location[counter][0]= lastLocation[0];
+     			 location[counter][1]= lastLocation[1];
+     			 counter++;
+     		 }
+   	    }
+      	 
+      } else if (elementType == NamedEntity.type) {
+   while (neItr.hasNext()) {
+    	NamedEntity nea = (NamedEntity) neItr.next();
+    		if(nea.getTypeID()==1 || nea.getTypeID()==0) {
+    			lastLocation[0]= nea.getBegin();
+    			lastLocation[1] = nea.getEnd(); 
+ 		 	if ((counter == 0 || lastLocation[0] != location[counter-1][0]) && (nea.getBegin()>=begin && nea.getEnd() <= end)) {
+ 		 		location[counter][0]= lastLocation[0];
+ 		 		location[counter][1]= lastLocation[1];
+ 		 		counter++;
+ 		 	}
+    		 
+    		}
+    }
+ } else if (elementType == PunctuationToken.type) {
+ 	 while (neItr.hasNext()) {
+ 		boolean foundPair = false;
+ 		PunctuationToken nea = (PunctuationToken) neItr.next();
+ 		 if (nea.getCoveredText().compareTo("(")==0)
+   		lastLocation[0] = nea.getBegin();
+ 		 else if (nea.getCoveredText().compareTo(")")==0) {
+  		 lastLocation[1] = nea.getEnd();
+  		 foundPair = true;
+ 		 }
+  	 if (nea.getBegin()>=begin && nea.getEnd() <= end && foundPair && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+  			 location[counter][0]= lastLocation[0];
+  			 location[counter][1]= lastLocation[1];
+  			 counter++;
+  		 }
+	    }
+   	 
+   }
+    
+    return counter;
+}
+
 
 }
+
+
