@@ -297,6 +297,8 @@ public class DrugChangeStatusFSM {
 		
 		startState.addTransition(new WordSetCondition(iv_singleChangeWordSet, false), endState);
 		startState.addTransition(new TextValueCondition("followed", false), byState);
+		startState.addTransition(
+				new WordSetCondition(iv_changeWordSet, false), endState);
 		startState.addTransition(new AnyCondition(), startState);
 		
 		byState.addTransition(new TextValueCondition("by", false), endState);
@@ -634,8 +636,8 @@ public class DrugChangeStatusFSM {
 
 		State thenStatusState = new NamedState("DUALSTARTTHENDECREASEFROM");
 		State sectionStatusState = new NamedState("DUALFROMDECREASE");
-		State firstTheState = new NamedState("FIRSTTHEDECREASE");
-		State secondTheState = new NamedState("SECONDTHEDECREASE");
+//		State firstTheState = new NamedState("FIRSTTHEDECREASE");
+//		State secondTheState = new NamedState("SECONDTHEDECREASE");
 		
 		Condition firstDualCondition = new WordSetCondition(
 				iv_firstDecreaseDualWordSet, false);
@@ -768,7 +770,7 @@ public class DrugChangeStatusFSM {
 
 				State currentState = fsm.getCurrentState();
 				if (currentState.getStartStateFlag()) {
-					tokenStartMap.put(fsm, new Integer(i));
+					tokenStartMap.put(fsm, Integer.valueOf(i));
 				}
 				if (currentState.getEndStateFlag()) {
 					Object o = tokenStartMap.get(fsm);

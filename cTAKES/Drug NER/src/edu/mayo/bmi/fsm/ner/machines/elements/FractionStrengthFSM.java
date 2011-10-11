@@ -209,7 +209,7 @@ public class FractionStrengthFSM
                 State currentState = fsm.getCurrentState();
                 if (currentState.getStartStateFlag())
                 {
-                    tokenStartMap.put(fsm, new Integer(i));
+                    tokenStartMap.put(fsm, Integer.valueOf(i));
                 }
                 if (currentState.getEndStateFlag())
                 {
