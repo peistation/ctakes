@@ -175,8 +175,8 @@ public class SentenceAdjuster extends JCasAnnotator_ImplBase {
 
 			if (prevSent == null)
 				continue; // got to have 2 sentences
-
-			if (prevSent.getCoveredText().endsWith(":")) {
+// Added a check for the currSent being null which should not be happening, but apparently is for some reason 10/7/2011
+			if (prevSent.getCoveredText().endsWith(":") && currSent != null) {
 				int newEnd = -1;
 				if ((currSent.getSentenceNumber() - 1) == prevSent
 						.getSentenceNumber()) {
