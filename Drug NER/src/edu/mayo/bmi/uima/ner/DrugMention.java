@@ -525,6 +525,17 @@ public class DrugMention implements DrugModel {
 		return null;
 	}
 
+	private String findEndDateElement(JCas jcas, int beginOffset, int endOffset) {
+
+		Iterator firItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+				DateAnnotation.type, beginOffset, endOffset + 1);
+		while (firItr.hasNext()) {
+			DateAnnotation da = (DateAnnotation) firItr.next();
+			if (da.getBegin() == beginOffset)
+				return da.getCoveredText();
+		}
+		return null;
+	}
 
 	private String findDosageElement(JCas jcas, int beginOffset, int endOffset) {
 
@@ -662,7 +673,18 @@ public class DrugMention implements DrugModel {
 				else if ((da.getCoveredText().compareToIgnoreCase(
 						FormElement.SOLUTION) == 0)
 						|| (da.getCoveredText()
-								.compareToIgnoreCase("solutions") == 0))
+								.compareToIgnoreCase("solutions") == 0)
+						|| (da.getCoveredText()
+								.compareToIgnoreCase("soln") == 0)
+						|| (da.getCoveredText()
+								.compareToIgnoreCase("concentrate") == 0)
+						|| (da.getCoveredText()
+								.compareToIgnoreCase("concentrat") == 0)
+						|| (da.getCoveredText()
+								.compareToIgnoreCase("conc") == 0)
+						|| (da.getCoveredText()
+								.compareToIgnoreCase("solu") == 0))
+					
 					return FormElement.SOLUTION;
 				else if ((da.getCoveredText().compareToIgnoreCase(
 						FormElement.SPRAY) == 0)
@@ -677,6 +699,9 @@ public class DrugMention implements DrugModel {
 						|| (da.getCoveredText().compareToIgnoreCase(
 								"suppositories") == 0))
 					return FormElement.SUPPOSITORY;
+				else if ((da.getCoveredText().compareToIgnoreCase(FormElement.SYRINGE) == 0 )
+						|| (da.getCoveredText().compareToIgnoreCase("syrnge") == 0))
+					return FormElement.SYRINGE;
 				else if ((da.getCoveredText().compareToIgnoreCase(
 						FormElement.SYRUP) == 0)
 						|| (da.getCoveredText().compareToIgnoreCase("syrups") == 0))
@@ -684,13 +709,20 @@ public class DrugMention implements DrugModel {
 				else if ((da.getCoveredText().compareToIgnoreCase(
 						FormElement.TABLET) == 0)
 						|| (da.getCoveredText().compareToIgnoreCase("tablets") == 0)
-						|| (da.getCoveredText().compareToIgnoreCase("capsule") == 0)
-						|| (da.getCoveredText().compareToIgnoreCase("capsules") == 0)
-						|| (da.getCoveredText().compareToIgnoreCase("cap") == 0)
-						|| (da.getCoveredText().compareToIgnoreCase("caps") == 0)
+// Capsule needs to be handled differently
+//						|| (da.getCoveredText().compareToIgnoreCase("capsule") == 0)
+//						|| (da.getCoveredText().compareToIgnoreCase("capsules") == 0)
+//						|| (da.getCoveredText().compareToIgnoreCase("cap") == 0)
+//						|| (da.getCoveredText().compareToIgnoreCase("caps") == 0)
 						|| (da.getCoveredText().compareToIgnoreCase("tab") == 0)
 						|| (da.getCoveredText().compareToIgnoreCase("tabs") == 0))
 					return FormElement.TABLET;
+				else if ((da.getCoveredText().compareToIgnoreCase(FormElement.CAPSULE) == 0)
+						|| (da.getCoveredText().compareToIgnoreCase("capsule") == 0)
+						|| (da.getCoveredText().compareToIgnoreCase("capsules") == 0)
+						|| (da.getCoveredText().compareToIgnoreCase("cap") == 0)
+						|| (da.getCoveredText().compareToIgnoreCase("caps") == 0))
+					return FormElement.CAPSULE;
 				return null;
 			}
 		}
@@ -1387,7 +1419,18 @@ public class DrugMention implements DrugModel {
 			return strength.getEndOffset();
 		
 	}
+	// Add drug change status offsets begin
+	public int getChangeStatusBegin() {
 
+		return changeStatus.getBeginOffset();
+
+	}
+	public int getChangeStatusEnd() {
+
+		return changeStatus.getEndOffset();
+
+	}
+	// Add drug change status offsets end
 	/**
 	 * Scan a string for the first occurrence of some regex Pattern.
 	 * 
