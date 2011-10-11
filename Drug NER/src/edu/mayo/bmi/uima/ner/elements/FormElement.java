@@ -30,7 +30,9 @@ public class FormElement {
     public static final String SPRAY = "spray";
     public static final String SUPPOSITORY = "suppository";
     public static final String SYRUP = "syrup";
-    public static final String TABLET = "tablet"; 
+    public static final String TABLET = "tablet";
+
+	public static final String SYRINGE = "syringe"; 
     
     public FormElement(){
     	
