@@ -22,7 +22,7 @@ public class RouteToken extends BaseTokenImpl {
     public static final int TRANSDERMAL = 11;
     public static final int TRANSMUCOSAL = 12;
     
-    private static int current = 0;
+    private int current = 0;
     
 	public RouteToken(int startOffset, int endOffset) {
 		super(startOffset, endOffset);
