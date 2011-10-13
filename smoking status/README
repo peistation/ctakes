@@ -21,7 +21,7 @@ install and setup information pertaining to all the cTAKES components.
 Introduction
 ############
 
-This is version 1.0 of the cTAKES smoking status annotator.  The pipeline has been tested on flat text files and CDA documents.  The sample provided uses a bar (|) delimited file with multiple records (and patients) per file.  The dictionary
+This is version 1.2 of the cTAKES smoking status annotator.  The pipeline has been tested on flat text files and CDA documents.  The sample provided uses a bar (|) delimited file with multiple records (and patients) per file.  The dictionary
 lookup annotator is limited to smoking status dictionaries provided in the '/resources/ss/data/*.dictionary' files.  Specific details can be found in the 'smokingStatus_AMIA2009.pdf' and the 'smokingStatus_Overview.html' files.
 
 #####################################
@@ -275,4 +275,10 @@ One of the next releases will look into addressing the following:
   - FIXED - CdaCasInitializer.xml must be used from 'document preprocessor'
   - FIXED - SimulatedProdSmokingTAE.xml -> ExternalBaseAggregateTAE.xml -> ./SimpleSegmentAnnotator.xml -- need to reference the one in core 
     edu.mayo.bmi.smoking.ae.SimpleSegmentAnnotator - must use core/edu.mayo.bmi.uima.core.ae.SimpleSegmentAnnotator.java
+    
+   Version 1.2 Addendum
+   - FIXED - The LibSVM features in the previous cTAKES version are not fed into the system in correct order and cause incorrect "past smoker", "current smoker", and "smoker" classification. The new version fixed this problem. 
+   - FIXED - Subsections not being correctly handled causing misclassifications. 
+   - FIXED - Remove the type, SmokingSentence in SmokingProductionTypeSystem.xml. 
+   
   
