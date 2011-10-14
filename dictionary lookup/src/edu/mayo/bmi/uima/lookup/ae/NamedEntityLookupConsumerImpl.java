@@ -49,6 +49,8 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 
 	private final String CODING_SCHEME_PRP_KEY = "codingScheme";
 
+	private final String TYPE_ID_FIELD = "typeIdField";
+	
 	private Properties iv_props;
 	
 	private static int iv_maxSize;
@@ -69,6 +71,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 	public void consumeHits(JCas jcas, Iterator lhItr)
 			throws AnnotatorProcessException
 	{
+		String typeId = null;
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
 		while (hitsByOffsetItr.hasNext())
 		{
@@ -95,6 +98,9 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 				oc.setCode(mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY)));
 				oc.setCodingScheme(iv_props.getProperty(CODING_SCHEME_PRP_KEY));
 
+				if(iv_props.getProperty(TYPE_ID_FIELD) != null)
+					typeId = mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
+				
 				ocArr.set(ocArrIdx, oc);
 				ocArrIdx++;
 			}
@@ -104,7 +110,16 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 			neAnnot.setEnd(neEnd);
 			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
+			if(typeId != null){
+				int tid=-1;
+				try{ tid = Integer.parseInt(typeId);
+				}catch( NumberFormatException nfe )
+				{ tid = -1; }
+				
+				neAnnot.setTypeID(tid);
+			}
 			neAnnot.addToIndexes();
+			
 		}
 	}
 }
