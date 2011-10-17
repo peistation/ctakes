@@ -51,8 +51,25 @@
     <description>Perform rule-based side effect extraction</description>
     <version>1.0</version>
     <vendor>Mayo</vendor>
-    <configurationParameters searchStrategy="language_fallback"/>
-    <configurationParameterSettings/>
+    <configurationParameters searchStrategy="language_fallback">
+      <configurationParameter>
+        <name>ChunkCreatorClass</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>Chunker/ChunkCreatorClass</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>ChunkCreatorClass</name>
+        <value>
+          <string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentWithTagsAnnotator</node>
