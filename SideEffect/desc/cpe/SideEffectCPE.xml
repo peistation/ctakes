@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/Volumes/bmi/Dept/projects/Text/Outcomes/data/manual_annotations/round3/texts_test</string>
+                        <string>/dir_with_input_files</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -18,7 +18,7 @@
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
         <casProcessor deployment="integrated" name="SideEffectAggregateTAE">
             <descriptor>
-                <import location="../analysis_engine/SideEffectAggregateTAE_EDTDB.xml"/>
+                <import location="../analysis_engine/SideEffectAggregateTAE.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>OutputFile</name>
                     <value>
-                        <string>/Volumes/bmi/Dept/projects/Text/Outcomes/data/manual_annotations/round3/texts_test/xcas/output.txt</string>
+                        <string>/output_dir/output.txt</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>OutputDirectory</name>
                     <value>
-                        <string>/Volumes/bmi/Dept/projects/Text/Outcomes/data/manual_annotations/round3/texts_test/xcas</string>
+                        <string>/output_dir/xcas</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
