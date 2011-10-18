@@ -46,5 +46,5 @@ public interface TypeSystemConst
 //	public static final int NE_DIAG_STATUS_PROBABLE = 3;
 
 //	public static final int NE_CERTAINTY_POSITIVE = 1;
-//	public static final int NE_CERTAINTY_NEGATED = -1;
+	public static final int NE_CERTAINTY_NEGATED = -1;
 }
