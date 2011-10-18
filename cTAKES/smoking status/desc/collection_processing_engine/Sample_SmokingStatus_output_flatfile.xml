@@ -9,7 +9,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>C:/Documents and Settings/m054274/My Documents/Downloads/cTAKES-1.1.0-pear-src-bin/smoking status/data/test</string>
+<string>data/test</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
