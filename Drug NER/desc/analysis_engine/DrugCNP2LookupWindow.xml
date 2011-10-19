@@ -55,6 +55,9 @@
         <value>
           <array>
             <string>SIMPLE_SEGMENT</string>
+            <string>20104</string>
+            <string>20133</string>
+            <string>20147</string>
           </array>
         </value>
       </nameValuePair>
