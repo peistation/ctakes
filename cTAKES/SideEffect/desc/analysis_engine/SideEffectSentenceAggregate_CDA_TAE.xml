@@ -39,11 +39,11 @@
     <delegateAnalysisEngine key="SideEffectAnnotator">
       <import location="SideEffectAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="CdaCasInitializer">
       <import location="../../../document preprocessor/desc/CdaCasInitializer.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ExtractionPrepAnnotator">
+      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LookupWindowAnnotator">
       <import location="LookupWindowAnnotator_sideEffect.xml"/>
@@ -56,7 +56,7 @@
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
-    <name>SideEffectSentenceAggregateTAE</name>
+    <name>SideEffectSentenceAggregate_CDA_TAE</name>
     <description>Perform
 1)  Rule-based side effect extraction
 2) ML side-effect sentence classification</description>

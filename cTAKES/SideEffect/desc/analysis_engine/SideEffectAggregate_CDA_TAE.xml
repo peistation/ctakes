@@ -47,7 +47,7 @@
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
-    <name>SideEffectAggregateTAE</name>
+    <name>SideEffectAggregate_CDA_TAE</name>
     <description>Perform rule-based side effect extraction</description>
     <version>1.0</version>
     <vendor>Mayo</vendor>
