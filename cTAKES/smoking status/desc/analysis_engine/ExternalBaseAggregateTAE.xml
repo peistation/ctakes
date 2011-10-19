@@ -10,7 +10,7 @@
       <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
