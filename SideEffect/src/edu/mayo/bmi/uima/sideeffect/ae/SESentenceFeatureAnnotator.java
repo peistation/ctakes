@@ -25,8 +25,8 @@ import org.apache.uima.jcas.cas.StringArray;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.FSUtil;
-import edu.mayo.bmi.uima.sideeffect.types.PSESentence;
-import edu.mayo.bmi.uima.sideeffect.types.PSESentenceFeature;
+import edu.mayo.bmi.uima.sideeffect.type.PSESentence;
+import edu.mayo.bmi.uima.sideeffect.type.PSESentenceFeature;
 
 /**
  * Extract SE sentence (from PSESentence) features and add them to PSESentenceFeature.

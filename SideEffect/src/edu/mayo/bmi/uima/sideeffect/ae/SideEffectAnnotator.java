@@ -27,8 +27,8 @@ import edu.mayo.bmi.uima.core.type.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
-import edu.mayo.bmi.uima.sideeffect.types.SESentence;
-import edu.mayo.bmi.uima.sideeffect.types.SideEffectAnnotation;
+import edu.mayo.bmi.uima.sideeffect.type.SESentence;
+import edu.mayo.bmi.uima.sideeffect.type.SideEffectAnnotation;
 import edu.mayo.bmi.uima.sideeffect.util.PatternMatch;
 import edu.mayo.bmi.uima.sideeffect.util.SEUtil;
 

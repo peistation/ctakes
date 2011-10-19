@@ -17,7 +17,7 @@ import org.apache.uima.jcas.JFSIndexRepository;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.core.util.FSUtil;
-import edu.mayo.bmi.uima.sideeffect.types.PSESentence;
+import edu.mayo.bmi.uima.sideeffect.type.PSESentence;
 import edu.mayo.bmi.uima.sideeffect.util.SEUtil;
 
 /**
