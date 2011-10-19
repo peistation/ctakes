@@ -19,9 +19,9 @@ import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
 
-import edu.mayo.bmi.uima.sideeffect.types.PSESentenceFeature;
-import edu.mayo.bmi.uima.sideeffect.types.SESentence;
-import edu.mayo.bmi.uima.sideeffect.types.SideEffectAnnotation;
+import edu.mayo.bmi.uima.sideeffect.type.PSESentenceFeature;
+import edu.mayo.bmi.uima.sideeffect.type.SESentence;
+import edu.mayo.bmi.uima.sideeffect.type.SideEffectAnnotation;
 
 /**
  * Classify side effect sentences and add them to SESentence
