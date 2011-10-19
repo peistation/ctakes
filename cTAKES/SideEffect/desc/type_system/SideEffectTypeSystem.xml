@@ -8,7 +8,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.sideeffect.types.SideEffectAnnotation</name>
+      <name>edu.mayo.bmi.uima.sideeffect.type.SideEffectAnnotation</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
@@ -25,24 +25,24 @@
         <featureDescription>
           <name>sentence</name>
           <description>sentence containing side effect</description>
-          <rangeTypeName>edu.mayo.bmi.uima.sideeffect.types.SESentence</rangeTypeName>
+          <rangeTypeName>edu.mayo.bmi.uima.sideeffect.type.SESentence</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.sideeffect.types.PSESentence</name>
+      <name>edu.mayo.bmi.uima.sideeffect.type.PSESentence</name>
       <description>sentence(s) that contains potential side effect and causing drug</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.sideeffect.types.PSESentenceFeature</name>
+      <name>edu.mayo.bmi.uima.sideeffect.type.PSESentenceFeature</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
           <name>pseSen</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.sideeffect.types.PSESentence</rangeTypeName>
+          <rangeTypeName>edu.mayo.bmi.uima.sideeffect.type.PSESentence</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>features</name>
@@ -52,7 +52,7 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.sideeffect.types.SESentence</name>
+      <name>edu.mayo.bmi.uima.sideeffect.type.SESentence</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
