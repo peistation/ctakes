@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -361,5 +363,30 @@ public class SEUtil {
 		}
 		
 		return false;
+	}
+	
+	
+
+	/**
+	 * helper to look for plain text view for CDA processing or else use the default view.
+	 * @param cas
+	 * @param name
+	 * @return
+	 * @throws CASException
+	 */
+	public static JCas getJCasViewWithDefault(CAS cas, String name) throws CASException{
+		JCas returnCas = null;
+		Iterator<JCas> viewItr = cas.getJCas().getViewIterator();
+		while(viewItr.hasNext()){
+			JCas newJcas = viewItr.next();
+			if(newJcas.getViewName().equals(name)){
+				returnCas = newJcas;
+			}
+		}
+		
+		if (returnCas == null)
+			returnCas = cas.getJCas();
+		
+		return returnCas;
 	}
 }
