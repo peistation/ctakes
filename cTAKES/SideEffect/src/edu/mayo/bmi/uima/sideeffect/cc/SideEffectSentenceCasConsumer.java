@@ -16,6 +16,7 @@ import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.sideeffect.type.SESentence;
+import edu.mayo.bmi.uima.sideeffect.util.SEUtil;
 
 public class SideEffectSentenceCasConsumer extends CasConsumer_ImplBase {
 	public static final String PARAM_OUTPUT_FILE = "OutputFile";
@@ -45,7 +46,7 @@ public class SideEffectSentenceCasConsumer extends CasConsumer_ImplBase {
 	public void processCas(CAS cas) throws ResourceProcessException {
 		try {
 			JCas jcas;
-			jcas = cas.getJCas().getView("plaintext");
+			jcas = SEUtil.getJCasViewWithDefault(cas, "plaintext");
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();			
 			
 	        String docName = DocumentIDAnnotationUtil.getDocumentID(jcas);        
