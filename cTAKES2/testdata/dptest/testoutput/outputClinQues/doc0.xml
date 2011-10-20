@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CAS version="2">
+    <uima.cas.Sofa _indexed="0" _id="9" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="The study physician called a hematologist and while she was on hold I ( investigator ) asked what the question was . When should you do an ultrasound to look at the endometrial stripe versus an endometrial sample with a Pipelle on someone on hormone replacement therapy or someone with postmenopausal bleeding ? "/>
+    <uima.tcas.DocumentAnnotation _indexed="1" _id="444" _ref_sofa="9" begin="0" end="312" language="x-unspecified"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="1" _ref_sofa="9" begin="0" end="3" tokenNumber="0" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="16" _ref_sofa="9" begin="4" end="9" tokenNumber="1" normalizedForm="study" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="24" _ref_sofa="9" begin="10" end="19" tokenNumber="2" normalizedForm="physician" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="32" _ref_sofa="9" begin="20" end="26" tokenNumber="3" normalizedForm="cal" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="40" _ref_sofa="9" begin="27" end="28" tokenNumber="4" normalizedForm="a" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="48" _ref_sofa="9" begin="29" end="41" tokenNumber="5" normalizedForm="hematologist" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="56" _ref_sofa="9" begin="42" end="45" tokenNumber="6" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="64" _ref_sofa="9" begin="46" end="51" tokenNumber="7" normalizedForm="while" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="72" _ref_sofa="9" begin="52" end="55" tokenNumber="8" normalizedForm="she" partOfSpeech="PRP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="80" _ref_sofa="9" begin="56" end="59" tokenNumber="9" normalizedForm="was" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="88" _ref_sofa="9" begin="60" end="62" tokenNumber="10" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="96" _ref_sofa="9" begin="63" end="67" tokenNumber="11" normalizedForm="hold" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="104" _ref_sofa="9" begin="68" end="69" tokenNumber="12" normalizedForm="i" partOfSpeech="CD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="112" _ref_sofa="9" begin="70" end="71" tokenNumber="13" normalizedForm="(" partOfSpeech="("/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="120" _ref_sofa="9" begin="72" end="84" tokenNumber="14" normalizedForm="investigator" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="128" _ref_sofa="9" begin="85" end="86" tokenNumber="15" normalizedForm=")" partOfSpeech=")"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="136" _ref_sofa="9" begin="87" end="92" tokenNumber="16" normalizedForm="ask" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="144" _ref_sofa="9" begin="93" end="97" tokenNumber="17" normalizedForm="what" partOfSpeech="WP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="152" _ref_sofa="9" begin="98" end="101" tokenNumber="18" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="160" _ref_sofa="9" begin="102" end="110" tokenNumber="19" normalizedForm="question" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="168" _ref_sofa="9" begin="111" end="114" tokenNumber="20" normalizedForm="was" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="176" _ref_sofa="9" begin="115" end="116" tokenNumber="21" normalizedForm="." partOfSpeech="."/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="190" _ref_sofa="9" begin="117" end="121" tokenNumber="22" normalizedForm="when" partOfSpeech="WRB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="198" _ref_sofa="9" begin="122" end="128" tokenNumber="23" normalizedForm="should" partOfSpeech="MD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="206" _ref_sofa="9" begin="129" end="132" tokenNumber="24" normalizedForm="you" partOfSpeech="PRP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="214" _ref_sofa="9" begin="133" end="135" tokenNumber="25" normalizedForm="do" partOfSpeech="VB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="222" _ref_sofa="9" begin="136" end="138" tokenNumber="26" normalizedForm="an" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="230" _ref_sofa="9" begin="139" end="149" tokenNumber="27" normalizedForm="ultrasound" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="238" _ref_sofa="9" begin="150" end="152" tokenNumber="28" partOfSpeech="TO"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="246" _ref_sofa="9" begin="153" end="157" tokenNumber="29" normalizedForm="look" partOfSpeech="VB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="254" _ref_sofa="9" begin="158" end="160" tokenNumber="30" normalizedForm="at" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="262" _ref_sofa="9" begin="161" end="164" tokenNumber="31" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="270" _ref_sofa="9" begin="165" end="176" tokenNumber="32" normalizedForm="endometrial" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="278" _ref_sofa="9" begin="177" end="183" tokenNumber="33" normalizedForm="stripe" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="286" _ref_sofa="9" begin="184" end="190" tokenNumber="34" normalizedForm="versu" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="294" _ref_sofa="9" begin="191" end="193" tokenNumber="35" normalizedForm="an" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="302" _ref_sofa="9" begin="194" end="205" tokenNumber="36" normalizedForm="endometrial" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="310" _ref_sofa="9" begin="206" end="212" tokenNumber="37" normalizedForm="sample" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="318" _ref_sofa="9" begin="213" end="217" tokenNumber="38" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="326" _ref_sofa="9" begin="218" end="219" tokenNumber="39" normalizedForm="a" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="334" _ref_sofa="9" begin="220" end="227" tokenNumber="40" normalizedForm="pipelle" partOfSpeech="NNP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="342" _ref_sofa="9" begin="228" end="230" tokenNumber="41" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="350" _ref_sofa="9" begin="231" end="238" tokenNumber="42" normalizedForm="someone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="358" _ref_sofa="9" begin="239" end="241" tokenNumber="43" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="366" _ref_sofa="9" begin="242" end="249" tokenNumber="44" normalizedForm="hormone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="374" _ref_sofa="9" begin="250" end="261" tokenNumber="45" normalizedForm="replacement" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="382" _ref_sofa="9" begin="262" end="269" tokenNumber="46" normalizedForm="therapy" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="390" _ref_sofa="9" begin="270" end="272" tokenNumber="47" normalizedForm="or" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="398" _ref_sofa="9" begin="273" end="280" tokenNumber="48" normalizedForm="someone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="406" _ref_sofa="9" begin="281" end="285" tokenNumber="49" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="414" _ref_sofa="9" begin="286" end="300" tokenNumber="50" normalizedForm="postmenopausal" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="422" _ref_sofa="9" begin="301" end="309" tokenNumber="51" normalizedForm="bleed" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="430" _ref_sofa="9" begin="310" end="311" tokenNumber="52" normalizedForm="?" partOfSpeech="."/>
+    <edu.mayo.bmi.uima.core.type.Segment _indexed="1" _id="449" _ref_sofa="9" begin="0" end="312" id="SIMPLE_SEGMENT"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="184" _ref_sofa="9" begin="0" end="116" sentenceNumber="0"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="438" _ref_sofa="9" begin="117" end="311" sentenceNumber="1"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="454" _ref_sofa="9" begin="0" end="116" ID="0"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="468" _ref_sofa="9" begin="0" end="3" FORM="The" POSTAG="DT" DEPREL="TMP" ID="1" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="the" _ref_HEAD="454"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="482" _ref_sofa="9" begin="4" end="9" FORM="study" POSTAG="NN" DEPREL="ADV" ID="2" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="study" _ref_HEAD="468"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="496" _ref_sofa="9" begin="10" end="19" FORM="physician" POSTAG="NN" DEPREL="TMP" ID="3" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="physician" _ref_HEAD="454"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="510" _ref_sofa="9" begin="20" end="26" FORM="called" POSTAG="VBD" DEPREL="ADV" ID="4" CPOSTAG="VBD" FEATS="_" PDEPREL="_" LEMMA="call" _ref_HEAD="468"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="524" _ref_sofa="9" begin="27" end="28" FORM="a" POSTAG="DT" DEPREL="PMOD" ID="5" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="a" _ref_HEAD="482"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="538" _ref_sofa="9" begin="29" end="41" FORM="hematologist" POSTAG="NN" DEPREL="SBJ" ID="6" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="hematologist" _ref_HEAD="552"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="552" _ref_sofa="9" begin="42" end="45" FORM="and" POSTAG="CC" DEPREL="LOC" ID="7" CPOSTAG="CC" FEATS="_" PDEPREL="_" LEMMA="and" _ref_HEAD="524"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="566" _ref_sofa="9" begin="46" end="51" FORM="while" POSTAG="IN" DEPREL="NMOD" ID="8" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="while" _ref_HEAD="594"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="580" _ref_sofa="9" begin="52" end="55" FORM="she" POSTAG="PRP" DEPREL="ADV" ID="9" CPOSTAG="PRP" FEATS="_" PDEPREL="_" LEMMA="she" _ref_HEAD="468"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="594" _ref_sofa="9" begin="56" end="59" FORM="was" POSTAG="VBD" DEPREL="LOC" ID="10" CPOSTAG="VBD" FEATS="_" PDEPREL="_" LEMMA="be" _ref_HEAD="552"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="608" _ref_sofa="9" begin="60" end="62" FORM="on" POSTAG="IN" DEPREL="LOC" ID="11" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="on" _ref_HEAD="524"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="622" _ref_sofa="9" begin="63" end="67" FORM="hold" POSTAG="NN" DEPREL="ROOT" ID="12" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="hold" _ref_HEAD="454"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="636" _ref_sofa="9" begin="68" end="69" FORM="I" POSTAG="CD" DEPREL="ADV" ID="13" CPOSTAG="CD" FEATS="_" PDEPREL="_" LEMMA="i" _ref_HEAD="468"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="650" _ref_sofa="9" begin="70" end="71" FORM="(" POSTAG="(" DEPREL="NMOD" ID="14" CPOSTAG="(" FEATS="_" PDEPREL="_" LEMMA="(" _ref_HEAD="664"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="664" _ref_sofa="9" begin="72" end="84" FORM="investigator" POSTAG="NN" DEPREL="SBJ" ID="15" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="investigator" _ref_HEAD="706"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="678" _ref_sofa="9" begin="85" end="86" FORM=")" POSTAG=")" DEPREL="NMOD" ID="16" CPOSTAG=")" FEATS="_" PDEPREL="_" LEMMA=")" _ref_HEAD="748"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="692" _ref_sofa="9" begin="87" end="92" FORM="asked" POSTAG="VBD" DEPREL="NMOD" ID="17" CPOSTAG="VBD" FEATS="_" PDEPREL="_" LEMMA="ask" _ref_HEAD="678"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="706" _ref_sofa="9" begin="93" end="97" FORM="what" POSTAG="WP" DEPREL="NMOD" ID="18" CPOSTAG="WP" FEATS="_" PDEPREL="_" LEMMA="what" _ref_HEAD="762"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="720" _ref_sofa="9" begin="98" end="101" FORM="the" POSTAG="DT" DEPREL="TMP" ID="19" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="the" _ref_HEAD="636"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="734" _ref_sofa="9" begin="102" end="110" FORM="question" POSTAG="NN" DEPREL="NMOD" ID="20" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="question" _ref_HEAD="748"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="748" _ref_sofa="9" begin="111" end="114" FORM="was" POSTAG="VBD" DEPREL="P" ID="21" CPOSTAG="VBD" FEATS="_" PDEPREL="_" LEMMA="be" _ref_HEAD="552"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="762" _ref_sofa="9" begin="115" end="116" FORM="." POSTAG="." DEPREL="CONJ" ID="22" CPOSTAG="." FEATS="_" PDEPREL="_" LEMMA="." _ref_HEAD="678"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="776" _ref_sofa="9" begin="117" end="311" ID="0"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="790" _ref_sofa="9" begin="117" end="121" FORM="When" POSTAG="WRB" DEPREL="P" ID="1" CPOSTAG="WRB" FEATS="_" PDEPREL="_" LEMMA="when" _ref_HEAD="1196"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="804" _ref_sofa="9" begin="122" end="128" FORM="should" POSTAG="MD" DEPREL="TMP" ID="2" CPOSTAG="MD" FEATS="_" PDEPREL="_" LEMMA="should" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="818" _ref_sofa="9" begin="129" end="132" FORM="you" POSTAG="PRP" DEPREL="AMOD" ID="3" CPOSTAG="PRP" FEATS="_" PDEPREL="_" LEMMA="you" _ref_HEAD="860"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="832" _ref_sofa="9" begin="133" end="135" FORM="do" POSTAG="VB" DEPREL="DEP" ID="4" CPOSTAG="VB" FEATS="_" PDEPREL="_" LEMMA="do" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="846" _ref_sofa="9" begin="136" end="138" FORM="an" POSTAG="DT" DEPREL="TMP" ID="5" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="an" _ref_HEAD="818"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="860" _ref_sofa="9" begin="139" end="149" FORM="ultrasound" POSTAG="NN" DEPREL="NMOD" ID="6" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="ultrasound" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="874" _ref_sofa="9" begin="150" end="152" FORM="to" POSTAG="TO" DEPREL="NMOD" ID="7" CPOSTAG="TO" FEATS="_" PDEPREL="_" LEMMA="to" _ref_HEAD="846"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="888" _ref_sofa="9" begin="153" end="157" FORM="look" POSTAG="VB" DEPREL="NMOD" ID="8" CPOSTAG="VB" FEATS="_" PDEPREL="_" LEMMA="look" _ref_HEAD="846"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="902" _ref_sofa="9" begin="158" end="160" FORM="at" POSTAG="IN" DEPREL="ADV" ID="9" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="at" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="916" _ref_sofa="9" begin="161" end="164" FORM="the" POSTAG="DT" DEPREL="CONJ" ID="10" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="the" _ref_HEAD="818"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="930" _ref_sofa="9" begin="165" end="176" FORM="endometrial" POSTAG="JJ" DEPREL="NMOD" ID="11" CPOSTAG="JJ" FEATS="_" PDEPREL="_" LEMMA="endometrial" _ref_HEAD="958"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="944" _ref_sofa="9" begin="177" end="183" FORM="stripe" POSTAG="NN" DEPREL="TMP" ID="12" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="stripe" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="958" _ref_sofa="9" begin="184" end="190" FORM="versus" POSTAG="CC" DEPREL="NMOD" ID="13" CPOSTAG="CC" FEATS="_" PDEPREL="_" LEMMA="versus" _ref_HEAD="1014"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="972" _ref_sofa="9" begin="191" end="193" FORM="an" POSTAG="DT" DEPREL="NMOD" ID="14" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="an" _ref_HEAD="846"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="986" _ref_sofa="9" begin="194" end="205" FORM="endometrial" POSTAG="JJ" DEPREL="TMP" ID="15" CPOSTAG="JJ" FEATS="_" PDEPREL="_" LEMMA="endometrial" _ref_HEAD="1056"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1000" _ref_sofa="9" begin="206" end="212" FORM="sample" POSTAG="NN" DEPREL="TMP" ID="16" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="sample" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1014" _ref_sofa="9" begin="213" end="217" FORM="with" POSTAG="IN" DEPREL="NMOD" ID="17" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="with" _ref_HEAD="846"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1028" _ref_sofa="9" begin="218" end="219" FORM="a" POSTAG="DT" DEPREL="PMOD" ID="18" CPOSTAG="DT" FEATS="_" PDEPREL="_" LEMMA="a" _ref_HEAD="958"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1042" _ref_sofa="9" begin="220" end="227" FORM="Pipelle" POSTAG="NNP" DEPREL="ADV" ID="19" CPOSTAG="NNP" FEATS="_" PDEPREL="_" LEMMA="pipelle" _ref_HEAD="1070"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1056" _ref_sofa="9" begin="228" end="230" FORM="on" POSTAG="IN" DEPREL="PMOD" ID="20" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="on" _ref_HEAD="958"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1070" _ref_sofa="9" begin="231" end="238" FORM="someone" POSTAG="NN" DEPREL="SUB" ID="21" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="someone" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1084" _ref_sofa="9" begin="239" end="241" FORM="on" POSTAG="IN" DEPREL="PMOD" ID="22" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="on" _ref_HEAD="958"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1098" _ref_sofa="9" begin="242" end="249" FORM="hormone" POSTAG="NN" DEPREL="NMOD" ID="23" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="hormone" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1112" _ref_sofa="9" begin="250" end="261" FORM="replacement" POSTAG="NN" DEPREL="CONJ" ID="24" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="replacement" _ref_HEAD="776"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1126" _ref_sofa="9" begin="262" end="269" FORM="therapy" POSTAG="NN" DEPREL="NMOD" ID="25" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="therapy" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1140" _ref_sofa="9" begin="270" end="272" FORM="or" POSTAG="CC" DEPREL="PRN" ID="26" CPOSTAG="CC" FEATS="_" PDEPREL="_" LEMMA="or" _ref_HEAD="1112"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1154" _ref_sofa="9" begin="273" end="280" FORM="someone" POSTAG="NN" DEPREL="NMOD" ID="27" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="someone" _ref_HEAD="1210"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1168" _ref_sofa="9" begin="281" end="285" FORM="with" POSTAG="IN" DEPREL="OBJ" ID="28" CPOSTAG="IN" FEATS="_" PDEPREL="_" LEMMA="with" _ref_HEAD="1140"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1182" _ref_sofa="9" begin="286" end="300" FORM="postmenopausal" POSTAG="JJ" DEPREL="LOC" ID="29" CPOSTAG="JJ" FEATS="_" PDEPREL="_" LEMMA="postmenopausal" _ref_HEAD="1140"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1196" _ref_sofa="9" begin="301" end="309" FORM="bleeding" POSTAG="NN" DEPREL="OBJ" ID="30" CPOSTAG="NN" FEATS="_" PDEPREL="_" LEMMA="bleeding" _ref_HEAD="1140"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1210" _ref_sofa="9" begin="310" end="311" FORM="?" POSTAG="." DEPREL="ADV" ID="31" CPOSTAG="." FEATS="_" PDEPREL="_" LEMMA="?" _ref_HEAD="790"/>
+</CAS>
