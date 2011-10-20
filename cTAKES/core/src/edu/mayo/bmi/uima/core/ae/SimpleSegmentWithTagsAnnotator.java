@@ -42,7 +42,7 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  * Creates a single segment annotation that spans the entire document. This is
  * useful for running a TAE without a CasInitializer that would normally create
  * the segment annotations.
- * uima.lookup
+ * 
  * @author Mayo Clinic
  */
 public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
@@ -101,10 +101,10 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 					if (charNum == '[') {
 						charPos++;
 						if (((charNum = fileReader.read()) == 's')
-								|| (charNum == 'e') || (charNum == 'h')) {
+								|| (charNum == 'e')) {
 							charPos++;
 							if (((charNum = fileReader.read()) == 't')
-									|| (charNum == 'n') || (charNum =='e')) {
+									|| (charNum == 'n')) {
 								charPos++;
 								if (((charNum = fileReader.read()) == 'a')
 										|| (charNum == 'd')) {
@@ -126,13 +126,7 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 										for (int i = 0; i < sectIdArr.length; i++)
 											sectIdArr[i] = ' ';
 										sa.addToIndexes();
-									} else if (charNum == 'd') { // stand alone header
-										Segment sa = new Segment(jcas);
-										sa.setBegin(64);
-										sa.setEnd(64);
-										sa.setId("head");
-										sa.addToIndexes();
-									}
+									} 
 									charPos++;
 								}
 							}
