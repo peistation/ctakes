@@ -886,7 +886,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
   private void generateDrugMentionsAndAnnotations(JCas jcas, List<NamedEntity> nerTokenList,
       int begin, int end, DrugMentionAnnotation recurseNER,
-      String relatedStatus, int countNER, List<DrugMentionAnnotation> globalDrugNER) throws Exception
+      String [] relatedStatus, int countNER, List<DrugMentionAnnotation> globalDrugNER) throws Exception
   {
 
     Iterator<NamedEntity> uniqueNER = nerTokenList.iterator();
@@ -1281,14 +1281,14 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         						.parseDoubleValue(holdStrengthValue)).doubleValue();
         			boolean findLowValue = true;
 
-        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			if (relatedStatus[0].compareTo(DrugChangeStatusToken.INCREASE) == 0)
         			{
         				if (curStrengthValue > strengthValue)
         				{
         					strengthValue = curStrengthValue;
         					strengthText = dm.getStrengthElement();
         				}
-        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			} else if (relatedStatus[0].compareTo(DrugChangeStatusToken.DECREASE) == 0)
         			{
         				if (findLowValue)
         					strengthValue = curStrengthValue;
@@ -1299,7 +1299,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         				}
         				findLowValue = false;
 
-        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
+        			} else if (relatedStatus[0].compareTo(DrugChangeStatusToken.SUM) == 0)
         			{
 
         				strengthValue = curStrengthValue;
@@ -1348,20 +1348,20 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         			double curDoseValue = new Double(dm
         					.convertFromTextToNum(doseTextCheck)).doubleValue();
         			boolean findLowValue = true;
-        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			if (relatedStatus[0].compareTo(DrugChangeStatusToken.INCREASE) == 0)
         			{
         				if (curDoseValue > doseValue)
         				{
         					doseValue = curDoseValue;
         					doseText = dm.getDosageElement();
-        				} else if (relatedStatus.compareTo(DrugChangeStatusToken.SUM) == 0)
+        				} else if (relatedStatus[0].compareTo(DrugChangeStatusToken.SUM) == 0)
         				{
 
         					doseValue = curDoseValue;
         					doseText = dm.getDosageElement();
 
         				}
-        			} else if (relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			} else if (relatedStatus[0].compareTo(DrugChangeStatusToken.DECREASE) == 0)
         			{
         				if (findLowValue)
         					doseValue = curDoseValue;
@@ -1449,15 +1449,15 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         			.doubleValue();
 
         			boolean findLowValue = true;
-        			if (relatedStatus.compareTo(DrugChangeStatusToken.INCREASE) == 0)
+        			if (relatedStatus[0].compareTo(DrugChangeStatusToken.INCREASE) == 0)
         			{
         				if (curFrequencyUnitValue > frequencyUnitValue)
         				{
         					frequencyUnitValue = curFrequencyUnitValue;
         					frequencyUnitText = dm.getFrequencyUnitElement();
         				}
-        			} else if (relatedStatus == null
-        					|| relatedStatus.compareTo(DrugChangeStatusToken.DECREASE) == 0)
+        			} else if (relatedStatus[0] == null
+        					|| relatedStatus[0].compareTo(DrugChangeStatusToken.DECREASE) == 0)
         			{
         				if (findLowValue)
         					frequencyUnitValue = curFrequencyUnitValue;
@@ -1491,8 +1491,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
         }
         if (recurseNER != null && recurseNER.getDrugChangeStatus() != null
-        		&& relatedStatus != null  && dm.changeStatus == null)
-        	drugTokenAnt.setDrugChangeStatus(relatedStatus);
+        		&& relatedStatus[0] != null  && dm.changeStatus == null)
+        	drugTokenAnt.setDrugChangeStatus(relatedStatus[0]);
         else if (keepNoChangeStatus || (dm.changeStatus != null && 
         		(dm.changeStatus.getDrugChangeStatus().equals(DrugChangeStatusToken.INCREASEFROM) 
         				|| dm.changeStatus.getDrugChangeStatus().equals(DrugChangeStatusToken.DECREASEFROM)))) {
@@ -1522,13 +1522,18 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         	}
         	else
         		drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-        } else if (relatedStatus != null) {
-        	drugTokenAnt.setDrugChangeStatus(relatedStatus);
+        } else if (relatedStatus != null && relatedStatus[0] != null) {
+        	drugTokenAnt.setDrugChangeStatus(relatedStatus[0]);
+        	drugTokenAnt.setChangeStatusBegin(new Integer (relatedStatus[1]).intValue());
+        	drugTokenAnt.setChangeStatusEnd(new Integer (relatedStatus[2]).intValue());
         } else if (drugTokenAnt.getDrugChangeStatus() == null
         		|| drugTokenAnt.getDrugChangeStatus().compareTo("") == 0)
         	drugTokenAnt.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
         if (!keepNoChangeStatus) {
-        	float confidenceScore = alignDrugMentionAttributes( strengthText,  dm ,  drugTokenAnt,  recurseNER,  relatedStatus,  statusFound,  overrideStatus,
+        	String relatedStatusString = null;
+        	if (relatedStatus != null && relatedStatus[0] != null)
+        		relatedStatusString = relatedStatus[0];
+        	float confidenceScore = alignDrugMentionAttributes( strengthText,  dm ,  drugTokenAnt,  recurseNER,  relatedStatusString,  statusFound,  overrideStatus,
         		maxExists,  doseText,  frequencyText,  frequencyUnitText);
         	drugTokenAnt.setConfidence(confidenceScore);
         }
@@ -1708,7 +1713,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   }
   
   private int [] statusChangePhraseGenerator (JCas jcas, int begin, int end, boolean maxExists, Iterator uniqueNER, 
-			Iterator orderedStatusChanges, List holdStatusChanges, String relatedStatus, 
+			Iterator orderedStatusChanges, List holdStatusChanges, String [] relatedStatus, 
 			DrugMentionAnnotation drugTokenAnt, List globalDrugNER, int countNER ) throws Exception 
   {
 		int [] checkSpan = {begin, end};
@@ -1814,350 +1819,366 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   }
   
   private int[] generateAdditionalNER(JCas jcas,
-      DrugMentionAnnotation tokenDrugNER,
-      DrugChangeStatusAnnotation drugChangeStatus, int beginSpan, int endSpan,
-      int count, List globalNER) throws Exception
-  {
+		  DrugMentionAnnotation tokenDrugNER,
+		  DrugChangeStatusAnnotation drugChangeStatus, int beginSpan, int endSpan,
+		  int count, List globalNER) throws Exception
+		  {
 	  boolean noPriorMention = false;
 	  boolean noPostMention = false;
-	int originalEndSpan = endSpan;
-	int originalBeginSpan = beginSpan;
-    NamedEntity neAnnot = new NamedEntity(jcas, tokenDrugNER.getBegin(),
+	  int originalEndSpan = endSpan;
+	  int originalBeginSpan = beginSpan;
+	  NamedEntity neAnnot = new NamedEntity(jcas, tokenDrugNER.getBegin(),
 			  tokenDrugNER.getEnd());
-    int beginChunk = drugChangeStatus.getEnd();
-    DrugMention compareDM = new DrugMention(jcas, beginChunk, endSpan);
-    DrugMention priorDM = new DrugMention(jcas, beginSpan, drugChangeStatus
-        .getBegin());
-    if ((priorDM.dosage == null) && (priorDM.strength == null) && (priorDM.frequency == null ) )
-    	noPriorMention = true;
-    if ((compareDM.dosage == null) && (compareDM.strength == null) && (compareDM.frequency == null ) )
-    	noPostMention = true;
-    count++;
-    if ( !noPriorMention)  {
-    	if (priorDM.dosage != null) {
-    		tokenDrugNER.setDosage(priorDM.getDosageElement());
-    		tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
-    		tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
-    	}
-    	if (priorDM.strength != null) {
-    		tokenDrugNER.setStrength(priorDM.getStrengthElement());
-    		tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
-    		tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
-    	}
-    	if (priorDM.frequency != null) {
-    		tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
-    		tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
-    		tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
-    	}
-    }
-    neAnnot.setTypeID(NERTypeIdentifier);
-	int [] updatedSpan = {beginSpan, endSpan};
+	  int beginChunk = drugChangeStatus.getEnd();
+	  DrugMention compareDM = new DrugMention(jcas, beginChunk, endSpan);
+	  DrugMention priorDM = new DrugMention(jcas, beginSpan, drugChangeStatus
+			  .getBegin());
+	  if ((priorDM.dosage == null) && (priorDM.strength == null) && (priorDM.frequency == null ) )
+		  noPriorMention = true;
+	  if ((compareDM.dosage == null) && (compareDM.strength == null) && (compareDM.frequency == null ) )
+		  noPostMention = true;
+	  count++;
+	  if ( !noPriorMention)  {
+		  if (priorDM.dosage != null) {
+			  tokenDrugNER.setDosage(priorDM.getDosageElement());
+			  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+			  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+		  }
+		  if (priorDM.strength != null) {
+			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
+			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+		  }
+		  if (priorDM.frequency != null) {
+			  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+			  tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+			  tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+		  }
+	  }
+	  neAnnot.setTypeID(NERTypeIdentifier);
+	  int [] updatedSpan = {beginSpan, endSpan};
 
-    List<NamedEntity> buildNewNER = new ArrayList<NamedEntity>();
+	  List<NamedEntity> buildNewNER = new ArrayList<NamedEntity>();
 
-    buildNewNER.add(neAnnot);
+	  buildNewNER.add(neAnnot);
 
-    if (drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.DECREASE) == 0)
-    {
-    	if (noPriorMention) {//Look for highest value on right side 
-    		endSpan =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[1];
-    	}
-    	updatedSpan[0] = beginChunk;
-    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-    			endSpan, tokenDrugNER, DrugChangeStatusToken.DECREASE, count,
-    			globalNER);
-    	if (noPriorMention) {
-    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
-    		if (compareDM.dosage != null) {
-    			tokenDrugNER.setDosage(compareDM.getDosageElement());
-    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
-    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
-    		}
-    		if (compareDM.strength != null) {
-    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
-    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
-    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
-    		}
-    		if (compareDM.frequency != null) {
-    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
-    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
-    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
-    		}
-    	}
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.DECREASEFROM) == 0)
-    {
-    	if (noPriorMention) {//Look for lowest value on right side 
-    		beginChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
-    	}
-    	generateDrugMentionsAndAnnotations(jcas,
-    			buildNewNER, beginChunk, endSpan,
-    			tokenDrugNER, DrugChangeStatusToken.DECREASE, count, globalNER);
-    	if (noPriorMention) {
-    		priorDM = new DrugMention(jcas, originalBeginSpan, beginChunk);
-    		if (priorDM.dosage != null) {
-    			tokenDrugNER.setDosage(priorDM.getDosageElement());
-    			tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
-    			tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
-    		}
-    		if (priorDM.strength != null) {
-    			tokenDrugNER.setStrength(priorDM.getStrengthElement());
-    			tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
-    			tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
-    		}
-    		if (priorDM.frequency != null) {
-    			tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
-    			tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
-    			tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
-    		}
-    	}
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+	  if (drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.DECREASE) == 0)
+	  {
+		  int endChunk = 0;
+		  int startChunk = 0;
+		  int midChunk = 0;
+		  if (noPriorMention) {//Look for highest value on right side 
+			  startChunk =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[0];
+			  midChunk =  getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
+			  endChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[1];
+		  }
+		  updatedSpan[0] = beginChunk;
+		  String [] changeStatusArray = new String [] {DrugChangeStatusToken.DECREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+		  generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+				  midChunk, tokenDrugNER, changeStatusArray, count,
+				  globalNER);
+		  if (noPriorMention) {
+			  compareDM = new DrugMention(jcas, startChunk, endChunk);
+			  if (compareDM.dosage != null) {
+				  tokenDrugNER.setDosage(compareDM.getDosageElement());
+				  tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+				  tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+			  }
+			  if (compareDM.strength != null) {
+				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
+				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+			  }
+			  if (compareDM.frequency != null) {
+				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+				  tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+				  tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+			  }
+		  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+	  } else if (drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.DECREASEFROM) == 0)
+	  {
+		  if (noPriorMention) {//Look for lowest value on right side 
+			  beginChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
+		  }
+		  String [] changeStatusArray = new String [] {DrugChangeStatusToken.DECREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+		  generateDrugMentionsAndAnnotations(jcas,
+				  buildNewNER, beginChunk, endSpan,
+				  tokenDrugNER, changeStatusArray, count, globalNER);
+		  if (noPriorMention) {
+			  priorDM = new DrugMention(jcas, originalBeginSpan, beginChunk);
+			  if (priorDM.dosage != null) {
+				  tokenDrugNER.setDosage(priorDM.getDosageElement());
+				  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+				  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+			  }
+			  if (priorDM.strength != null) {
+				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
+				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  }
+			  if (priorDM.frequency != null) {
+				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+				  tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+				  tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+			  }
+		  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
 
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.INCREASE) == 0)
-    {
-    	if (noPriorMention) {//Look for highest value on right side 
-    		endSpan =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[1];
-    	}
-    	updatedSpan[0] = beginChunk;
-    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-    			endSpan, tokenDrugNER, DrugChangeStatusToken.INCREASE, count,
-    			globalNER);
-    	if (noPriorMention) {
-    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
-    		if (compareDM.dosage != null) {
-    			tokenDrugNER.setDosage(compareDM.getDosageElement());
-    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
-    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
-    		}
-    		if (compareDM.strength != null) {
-    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
-    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
-    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
-    		}
-    		if (compareDM.frequency != null) {
-    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
-    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
-    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
-    		}
-    	}
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.INCREASEFROM) == 0)
-    {
-    	if (noPriorMention) {//Look for lowest value on right side 
-    		beginChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
-    	}
-    	generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk, 
-    			endSpan, tokenDrugNER,
-    			DrugChangeStatusToken.INCREASE, count, globalNER);
-    	if (noPriorMention) {
-    		priorDM = new DrugMention(jcas, originalBeginSpan, beginChunk);
-    		if (priorDM.dosage != null) {
-    			tokenDrugNER.setDosage(priorDM.getDosageElement());
-    			tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
-    			tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
-    		}
-    		if (priorDM.strength != null) {
-    			tokenDrugNER.setStrength(priorDM.getStrengthElement());
-    			tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
-    			tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
-    		}
-    		if (priorDM.frequency != null) {
-    			tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
-    			tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
-    			tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
-    		}
-    	}
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
-    } else if (drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.STOP) == 0)
-    {
-    	tokenDrugNER.setDrugChangeStatus(tokenDrugNER.getDrugChangeStatus());
-    } else if ((drugChangeStatus.getChangeStatus().compareTo(
-    		DrugChangeStatusToken.OTHER) == 0)
-    		|| drugChangeStatus.getChangeStatus().compareTo(
-    				DrugChangeStatusToken.SUM) == 0)
-    {
+	  } else if (drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.INCREASE) == 0)
+	  {
+		  if (noPriorMention) {//Look for highest value on right side 
+			  endSpan =	getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[0];
+		  }
+		  updatedSpan[0] = beginChunk;
+		  String [] changeStatusArray = new String [] {DrugChangeStatusToken.INCREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+		  generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+				  endSpan, tokenDrugNER, changeStatusArray, count,
+				  globalNER);
+		  if (noPriorMention) {
+			  compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
+			  if (compareDM.dosage != null) {
+				  tokenDrugNER.setDosage(compareDM.getDosageElement());
+				  tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+				  tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+			  }
+			  if (compareDM.strength != null) {
+				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
+				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+			  }
+			  if (compareDM.frequency != null) {
+				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+				  tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+				  tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+			  }
+		  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+	  } else if (drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.INCREASEFROM) == 0)
+	  {
+		  int startChunk = 0;
+		  int endChunk = 0;
+		  int midChunk = 0;
+		  if (noPriorMention) {//Look for lowest value on right side 
+			  startChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[0];
+			  midChunk =  getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false)[1];
+			  endChunk = getAdjustedWindowSpan(jcas,  beginChunk, endSpan, true)[1];
+		  }
+		  String [] changeStatusArray = new String [] {DrugChangeStatusToken.INCREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+		  generateDrugMentionsAndAnnotations(jcas, buildNewNER, startChunk, 
+				  endChunk, tokenDrugNER,
+				  changeStatusArray, count, globalNER);
+		  if (noPriorMention) {
+			  priorDM = new DrugMention(jcas, originalBeginSpan, midChunk);
+			  if (priorDM.dosage != null) {
+				  tokenDrugNER.setDosage(priorDM.getDosageElement());
+				  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+				  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+			  }
+			  if (priorDM.strength != null) {
+				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
+				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  }
+			  if (priorDM.frequency != null) {
+				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+				  tokenDrugNER.setFrequencyBegin(priorDM.getFrequencyBegin());
+				  tokenDrugNER.setFrequencyEnd(priorDM.getFrequencyEnd());
+			  }
+		  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.NOCHANGE);
+	  } else if (drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.STOP) == 0)
+	  {
+		  tokenDrugNER.setDrugChangeStatus(tokenDrugNER.getDrugChangeStatus());
+	  } else if ((drugChangeStatus.getChangeStatus().compareTo(
+			  DrugChangeStatusToken.OTHER) == 0)
+			  || drugChangeStatus.getChangeStatus().compareTo(
+					  DrugChangeStatusToken.SUM) == 0)
+	  {
 
 
-    	double strengthChange = 1;
-    	double dosageChange = 1;
-    	double frequencyChange = 1;
-    	if (noPriorMention) {
-    		int [] updateSpan =   getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false);
-    		compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
-    		if (compareDM.dosage != null) {
-    			tokenDrugNER.setDosage(compareDM.getDosageElement());
-    			tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
-    			tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
-    		}
-    		if (compareDM.strength != null) {
-    			tokenDrugNER.setStrength(compareDM.getStrengthElement());
-    			tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
-    			tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
-    		}
-    		if (compareDM.frequency != null) {
-    			tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
-    			tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
-    			tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
-    		}
-    	}
-    	tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
-    	if (compareDM.getStrengthElement() != null
-    			&& compareDM.getStrengthElement().compareTo("") != 0
-    			&& compareDM != null)
-    	{
-    		strengthChange = new Double(compareDM.parseDoubleValue(compareDM
-    				.getStrengthElement())).doubleValue();
+		  double strengthChange = 1;
+		  double dosageChange = 1;
+		  double frequencyChange = 1;
+		  if (noPriorMention) {
+			  int [] updateSpan =   getAdjustedWindowSpan(jcas,  beginChunk, endSpan, false);
+			  compareDM = new DrugMention(jcas, endSpan, originalEndSpan);
+			  if (compareDM.dosage != null) {
+				  tokenDrugNER.setDosage(compareDM.getDosageElement());
+				  tokenDrugNER.setDosageBegin(compareDM.getDosageBegin());
+				  tokenDrugNER.setDosageEnd(compareDM.getDosageEnd());
+			  }
+			  if (compareDM.strength != null) {
+				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
+				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
+				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+			  }
+			  if (compareDM.frequency != null) {
+				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
+				  tokenDrugNER.setFrequencyBegin(compareDM.getFrequencyBegin());
+				  tokenDrugNER.setFrequencyEnd(compareDM.getFrequencyEnd());
+			  }
+		  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+		  if (compareDM.getStrengthElement() != null
+				  && compareDM.getStrengthElement().compareTo("") != 0
+				  && compareDM != null)
+		  {
+			  strengthChange = new Double(compareDM.parseDoubleValue(compareDM
+					  .getStrengthElement())).doubleValue();
 
-    	} else if (priorDM.getStrengthElement() != null
-    			&& priorDM.getStrengthElement().compareTo("") != 0
-    			&& priorDM.getStrengthElement().length() > 0)
-    	{
-    		int spacePosition = priorDM.getStrengthElement().indexOf(" ");
-    		if (spacePosition > 0)
-    		{
-    			strengthChange = new Double(priorDM.parseDoubleValue(priorDM
-    					.getStrengthElement().substring(0, spacePosition))).doubleValue();
+		  } else if (priorDM.getStrengthElement() != null
+				  && priorDM.getStrengthElement().compareTo("") != 0
+				  && priorDM.getStrengthElement().length() > 0)
+		  {
+			  int spacePosition = priorDM.getStrengthElement().indexOf(" ");
+			  if (spacePosition > 0)
+			  {
+				  strengthChange = new Double(priorDM.parseDoubleValue(priorDM
+						  .getStrengthElement().substring(0, spacePosition))).doubleValue();
 
-    		} else
-    		{
-    			strengthChange = new Double(priorDM.parseDoubleValue(priorDM
-    					.getStrengthElement())).doubleValue();
+			  } else
+			  {
+				  strengthChange = new Double(priorDM.parseDoubleValue(priorDM
+						  .getStrengthElement())).doubleValue();
 
-    		}
-    	}
-    	if (compareDM.getDosageElement() != null
-    			&& compareDM.getDosageElement().compareTo("") != 0)
-    	{
-    		dosageChange = new Double(compareDM.parseDoubleValue(compareDM
-    				.getDosageElement())).doubleValue();
-    	} else if (priorDM.getDosageElement() != null
-    			&& priorDM.getDosageElement().compareTo("") != 0)
-    	{
-    		dosageChange = new Double(priorDM.parseDoubleValue(priorDM
-    				.getDosageElement())).doubleValue();
-    	}
-    	if (compareDM.getFrequencyElement() != null
-    			&& compareDM.getFrequencyElement().compareTo("") != 0)
-    	{
-    		frequencyChange = new Double(compareDM.parseDoubleValue(compareDM
-    				.getFrequencyElement())).doubleValue();
-    	} else if (priorDM.getFrequencyElement() != null
-    			&& priorDM.getFrequencyElement().compareTo("") != 0)
-    	{
-    		frequencyChange = new Double(priorDM.parseDoubleValue(priorDM
-    				.getFrequencyElement())).doubleValue();
-    	}
+			  }
+		  }
+		  if (compareDM.getDosageElement() != null
+				  && compareDM.getDosageElement().compareTo("") != 0)
+		  {
+			  dosageChange = new Double(compareDM.parseDoubleValue(compareDM
+					  .getDosageElement())).doubleValue();
+		  } else if (priorDM.getDosageElement() != null
+				  && priorDM.getDosageElement().compareTo("") != 0)
+		  {
+			  dosageChange = new Double(priorDM.parseDoubleValue(priorDM
+					  .getDosageElement())).doubleValue();
+		  }
+		  if (compareDM.getFrequencyElement() != null
+				  && compareDM.getFrequencyElement().compareTo("") != 0)
+		  {
+			  frequencyChange = new Double(compareDM.parseDoubleValue(compareDM
+					  .getFrequencyElement())).doubleValue();
+		  } else if (priorDM.getFrequencyElement() != null
+				  && priorDM.getFrequencyElement().compareTo("") != 0)
+		  {
+			  frequencyChange = new Double(priorDM.parseDoubleValue(priorDM
+					  .getFrequencyElement())).doubleValue();
+		  }
 
-    	double strengthBefore = 1;
-    	double dosageBefore = 1;
-      double frequencyBefore = 1;
+		  double strengthBefore = 1;
+		  double dosageBefore = 1;
+		  double frequencyBefore = 1;
 
-      if (priorDM.getStrengthElement() != null
-    		  && priorDM.getStrengthElement().compareTo("") != 0
-    		  && priorDM.getStrengthElement().length() > 0)
-      {
-    	  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
-    			  .getStrengthElement())).doubleValue();
-    	  tokenDrugNER.setStrength(priorDM.getStrengthElement());
-    	  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
-    	  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
-      } else if (tokenDrugNER.getStrength() != null
-    		  && tokenDrugNER.getStrength().compareTo("") != 0
-    		  && tokenDrugNER.getStrength().length() > 0)
-      {
-    	  boolean handledSeparator = false;
-    	  int hyphPosition = tokenDrugNER.getStrength().indexOf('-');
-    	  String hyphString = tokenDrugNER.getStrength();
-    	  if (hyphPosition > 0)
-    	  {
-    		  hyphString = tokenDrugNER.getStrength().substring(0, hyphPosition);
+		  if (priorDM.getStrengthElement() != null
+				  && priorDM.getStrengthElement().compareTo("") != 0
+				  && priorDM.getStrengthElement().length() > 0)
+		  {
+			  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
+					  .getStrengthElement())).doubleValue();
+			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
+			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
+			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+		  } else if (tokenDrugNER.getStrength() != null
+				  && tokenDrugNER.getStrength().compareTo("") != 0
+				  && tokenDrugNER.getStrength().length() > 0)
+		  {
+			  boolean handledSeparator = false;
+			  int hyphPosition = tokenDrugNER.getStrength().indexOf('-');
+			  String hyphString = tokenDrugNER.getStrength();
+			  if (hyphPosition > 0)
+			  {
+				  hyphString = tokenDrugNER.getStrength().substring(0, hyphPosition);
 
-    		  strengthBefore = new Double(compareDM.parseDoubleValue(compareDM
-    				  .convertFromTextToNum(hyphString))).doubleValue();
-    		  handledSeparator = true;
-    	  }
-    	  int spacePosition = hyphString.indexOf(" ");
-    	  if (spacePosition > 0)
-    	  {
-    		  hyphString = hyphString.substring(0, spacePosition);
-    		  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
-    				  .convertFromTextToNum(hyphString))).doubleValue();
-    		  handledSeparator = true;
-    	  }
-    	  if (!handledSeparator)
-    		  strengthBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-    				  .getStrength())).doubleValue();
-      }
-      if (priorDM.getDosageElement() != null
-    		  && priorDM.getDosageElement().compareTo("") != 0
-    		  && priorDM.dosage != null)
-      {
-    	  dosageBefore = new Double(priorDM.getDosageElement()).doubleValue();
-    	  tokenDrugNER.setDosage(priorDM.getDosageElement());
-    	  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
-    	  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
-      } else if (tokenDrugNER.getDosage() != null
-    		  && tokenDrugNER.getDosage().compareTo("") != 0)
-      {
-    	  dosageBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-    			  .getDosage())).doubleValue();
-      }
-      if (priorDM.getFrequencyElement() != null
-    		  && priorDM.getFrequencyElement().compareTo("") != 0)
-      {
-    	  frequencyBefore = new Double(priorDM.parseDoubleValue(priorDM
-    			  .getFrequencyElement())).doubleValue();
-    	  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
+				  strengthBefore = new Double(compareDM.parseDoubleValue(compareDM
+						  .convertFromTextToNum(hyphString))).doubleValue();
+				  handledSeparator = true;
+			  }
+			  int spacePosition = hyphString.indexOf(" ");
+			  if (spacePosition > 0)
+			  {
+				  hyphString = hyphString.substring(0, spacePosition);
+				  strengthBefore = new Double(priorDM.parseDoubleValue(priorDM
+						  .convertFromTextToNum(hyphString))).doubleValue();
+				  handledSeparator = true;
+			  }
+			  if (!handledSeparator)
+				  strengthBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+						  .getStrength())).doubleValue();
+		  }
+		  if (priorDM.getDosageElement() != null
+				  && priorDM.getDosageElement().compareTo("") != 0
+				  && priorDM.dosage != null)
+		  {
+			  dosageBefore = new Double(priorDM.getDosageElement()).doubleValue();
+			  tokenDrugNER.setDosage(priorDM.getDosageElement());
+			  tokenDrugNER.setDosageBegin(priorDM.getDosageBegin());
+			  tokenDrugNER.setDosageEnd(priorDM.getDosageEnd());
+		  } else if (tokenDrugNER.getDosage() != null
+				  && tokenDrugNER.getDosage().compareTo("") != 0)
+		  {
+			  dosageBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+					  .getDosage())).doubleValue();
+		  }
+		  if (priorDM.getFrequencyElement() != null
+				  && priorDM.getFrequencyElement().compareTo("") != 0)
+		  {
+			  frequencyBefore = new Double(priorDM.parseDoubleValue(priorDM
+					  .getFrequencyElement())).doubleValue();
+			  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
 
-      } else if (tokenDrugNER.getFrequency() != null
-    		  && tokenDrugNER.getFrequency().compareTo("") != 0)
-      {
-    	  frequencyBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
-    			  .getFrequency())).doubleValue();
-      }
-      if ((drugChangeStatus.getChangeStatus().compareTo(
-    		  DrugChangeStatusToken.SUM) == 0)
-    		  && (strengthChange > 1 && strengthBefore > 1 || strengthChange == strengthBefore))
-      {
-    	  Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
-    			  NewlineToken.type, neAnnot.getBegin(), beginChunk);
-    	  if (!findLF.hasNext())
-    	  {
-    		  if (frequencyChange <= 1 && frequencyBefore > 1)
-    			  tokenDrugNER.setFrequency("1.0");
-    		  generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
-    				  endSpan, tokenDrugNER, DrugChangeStatusToken.SUM, count,
-    				  globalNER);
+		  } else if (tokenDrugNER.getFrequency() != null
+				  && tokenDrugNER.getFrequency().compareTo("") != 0)
+		  {
+			  frequencyBefore = new Double(compareDM.parseDoubleValue(tokenDrugNER
+					  .getFrequency())).doubleValue();
+		  }
+		  if ((drugChangeStatus.getChangeStatus().compareTo(
+				  DrugChangeStatusToken.SUM) == 0)
+				  && (strengthChange > 1 && strengthBefore > 1 || strengthChange == strengthBefore))
+		  {
+			  Iterator findLF = FSUtil.getAnnotationsIteratorInSpan(jcas,
+					  NewlineToken.type, neAnnot.getBegin(), beginChunk);
+			  if (!findLF.hasNext())
+			  {
+				  if (frequencyChange <= 1 && frequencyBefore > 1)
+					  tokenDrugNER.setFrequency("1.0");
+				  String [] changeStatusArray = new String [] {DrugChangeStatusToken.SUM, new Integer (0).toString(), new Integer(0).toString()};
+				  generateDrugMentionsAndAnnotations(jcas, buildNewNER, beginChunk,
+						  endSpan, tokenDrugNER, changeStatusArray, count,
+						  globalNER);
 
-    	  }
+			  }
 
-      } 				
-      else if (strengthChange * dosageChange
-    		  * frequencyChange > strengthBefore
-    		  * dosageBefore * frequencyBefore) {
-    	  generateDrugMentionsAndAnnotations(jcas,
-    			  buildNewNER, beginChunk,
-    			  endSpan, tokenDrugNER,
-    			  DrugChangeStatusToken.INCREASE, count, globalNER);
-      } 
-      else {
-    	  generateDrugMentionsAndAnnotations(jcas,
-    			  buildNewNER, beginChunk,
-    			  endSpan, tokenDrugNER,
-    			  DrugChangeStatusToken.DECREASE, count, globalNER);
-      }
+		  } 				
+		  else if (strengthChange * dosageChange
+				  * frequencyChange > strengthBefore
+				  * dosageBefore * frequencyBefore) {
+			  String [] changeStatusArray = new String [] {DrugChangeStatusToken.INCREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+			  generateDrugMentionsAndAnnotations(jcas,
+					  buildNewNER, beginChunk,
+					  endSpan, tokenDrugNER,
+					  changeStatusArray, count, globalNER);
+		  } 
+		  else {
+			  String [] changeStatusArray = new String [] {DrugChangeStatusToken.DECREASE, new Integer (drugChangeStatus.getBegin()).toString(), new Integer(drugChangeStatus.getEnd()).toString()};
+			  generateDrugMentionsAndAnnotations(jcas,
+					  buildNewNER, beginChunk,
+					  endSpan, tokenDrugNER,
+					  changeStatusArray, count, globalNER);
+		  }
 
-  		tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
-      //      }
-    }
-    return updatedSpan;
-  }
+		  tokenDrugNER.setDrugChangeStatus(DrugChangeStatusToken.OTHER);
+		  //      }
+	  }
+	  return updatedSpan;
+		  }
 
   private edu.mayo.bmi.fsm.token.BaseToken adaptToFSMBaseToken(BaseToken obj)
       throws Exception
@@ -2505,8 +2526,6 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 	  int[][] parenthesisSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
 	  int[][] statusSpan = {{-1, -1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
 
-
-		  //for a given span if exist more than one drug and signature elements do the following
 	  int drugSpanLength = 0, strengthSpanLength = 0, freqSpanLength = 0 , doseSpanLength = 0 ;       
 
 	  int  beginSpan = senSpan[0], endSpan = senSpan[1];
@@ -2518,13 +2537,15 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 	  spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
 	  spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange); 
 	  spanDose = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange);
-	// Since were looking for the   
+
 	  if (spanStrength[0] == -1 && spanFrequency[0] == -1 && spanDose[0] == -1)
 		  return senSpan;
- 
+	  if (highestRange  && spanStrength[0]!=-1) {
 		  senSpan = spanStrength[0] > spanFrequency[0]? spanStrength : spanFrequency; 
-		  return spanDose[0] > senSpan[0]? spanDose : senSpan; 
-
+	  } else if (spanFrequency[0]!=-1) {
+		  senSpan = spanStrength[0] < spanFrequency[0]? spanStrength : spanFrequency; 
+	  }
+	  return spanDose[0] > senSpan[0]? spanDose : senSpan;
 
   }
 
