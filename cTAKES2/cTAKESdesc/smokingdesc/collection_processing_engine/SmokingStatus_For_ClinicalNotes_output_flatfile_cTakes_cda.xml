@@ -9,7 +9,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>R:\Dept\projects\Text\NHGRI\April2009\data\testRuns_4_09\smoking_1_year_before\04_02_09_testing_xml</string>
+<string>data/test</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -43,7 +43,7 @@
 <nameValuePair>
 <name>OutputFile</name>
 <value>
-<string>R:\Dept\projects\Text\NHGRI\April2009\data\testRuns_4_09\smoking_1_year_before\debugcTakes\output\record_resolution_cda</string>
+<string>data/test/output</string>
 </value>
 </nameValuePair>
 <nameValuePair>
