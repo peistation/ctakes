@@ -1,2 +1,0 @@
-sample_note.txt|pain|64|68|Ibuprofen|30|39|Ibuprofen discontinued because of pain.
-sample_note.txt|pain|156|160|Aspirin|146|153|Aspirin - pain
