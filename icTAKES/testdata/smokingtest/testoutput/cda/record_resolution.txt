@@ -1,0 +1,1 @@
+testpatient_cn_1.xml|CURRENT_SMOKER

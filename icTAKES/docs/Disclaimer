@@ -1,0 +1,7 @@
+Date: 10/18/2011
+Author: Hongfang Liu
+
+The content of README is not fully reviewed. Please refer to 
+<cTAKES_HOME>/README for information.
+
+Also, some of the annotators may not have the results you expect if using the provided toy dictionaries in <cTAKES_HOME>/resources/lookupresources. You can contact Dr. Hongfang Liu (liu.hongfang@mayo.edu) at Mayo Clinic for resources with production dictionaries. 

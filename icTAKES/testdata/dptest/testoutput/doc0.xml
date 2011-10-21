@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CAS version="2">
+    <uima.cas.Sofa _indexed="0" _id="15" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="The study physician called a hematologist and while she was on hold I ( investigator ) asked what the question was . When should you do an ultrasound to look at the endometrial stripe versus an endometrial sample with a Pipelle on someone on hormone replacement therapy or someone with postmenopausal bleeding ? "/>
+    <uima.tcas.DocumentAnnotation _indexed="1" _id="472" _ref_sofa="15" begin="0" end="312" language="x-unspecified"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="22" _ref_sofa="15" begin="0" end="3" tokenNumber="0" normalizedForm="the" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="30" _ref_sofa="15" begin="4" end="9" tokenNumber="1" normalizedForm="study" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="38" _ref_sofa="15" begin="10" end="19" tokenNumber="2" normalizedForm="physician" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="46" _ref_sofa="15" begin="20" end="26" tokenNumber="3" normalizedForm="call" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="54" _ref_sofa="15" begin="27" end="28" tokenNumber="4" normalizedForm="a" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="62" _ref_sofa="15" begin="29" end="41" tokenNumber="5" normalizedForm="hematologist" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="70" _ref_sofa="15" begin="42" end="45" tokenNumber="6" normalizedForm="and" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="78" _ref_sofa="15" begin="46" end="51" tokenNumber="7" normalizedForm="while" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="86" _ref_sofa="15" begin="52" end="55" tokenNumber="8" normalizedForm="she" partOfSpeech="PRP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="94" _ref_sofa="15" begin="56" end="59" tokenNumber="9" normalizedForm="be" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="102" _ref_sofa="15" begin="60" end="62" tokenNumber="10" normalizedForm="on" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="110" _ref_sofa="15" begin="63" end="67" tokenNumber="11" normalizedForm="hold" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="118" _ref_sofa="15" begin="68" end="69" tokenNumber="12" normalizedForm="i" partOfSpeech="CD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="126" _ref_sofa="15" begin="70" end="71" tokenNumber="13" normalizedForm="(" partOfSpeech="("/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="134" _ref_sofa="15" begin="72" end="84" tokenNumber="14" normalizedForm="investigator" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="142" _ref_sofa="15" begin="85" end="86" tokenNumber="15" normalizedForm=")" partOfSpeech=")"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="150" _ref_sofa="15" begin="87" end="92" tokenNumber="16" normalizedForm="ask" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="158" _ref_sofa="15" begin="93" end="97" tokenNumber="17" normalizedForm="what" partOfSpeech="WP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="166" _ref_sofa="15" begin="98" end="101" tokenNumber="18" normalizedForm="the" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="174" _ref_sofa="15" begin="102" end="110" tokenNumber="19" normalizedForm="question" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="182" _ref_sofa="15" begin="111" end="114" tokenNumber="20" normalizedForm="be" partOfSpeech="VBD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="190" _ref_sofa="15" begin="115" end="116" tokenNumber="21" normalizedForm="." partOfSpeech="."/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="218" _ref_sofa="15" begin="117" end="121" tokenNumber="22" normalizedForm="when" partOfSpeech="WRB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="226" _ref_sofa="15" begin="122" end="128" tokenNumber="23" normalizedForm="should" partOfSpeech="MD"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="234" _ref_sofa="15" begin="129" end="132" tokenNumber="24" normalizedForm="you" partOfSpeech="PRP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="242" _ref_sofa="15" begin="133" end="135" tokenNumber="25" normalizedForm="do" partOfSpeech="VB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="250" _ref_sofa="15" begin="136" end="138" tokenNumber="26" normalizedForm="an" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="258" _ref_sofa="15" begin="139" end="149" tokenNumber="27" normalizedForm="ultrasound" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="266" _ref_sofa="15" begin="150" end="152" tokenNumber="28" normalizedForm="to" partOfSpeech="TO"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="274" _ref_sofa="15" begin="153" end="157" tokenNumber="29" normalizedForm="look" partOfSpeech="VB"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="282" _ref_sofa="15" begin="158" end="160" tokenNumber="30" normalizedForm="at" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="290" _ref_sofa="15" begin="161" end="164" tokenNumber="31" normalizedForm="the" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="298" _ref_sofa="15" begin="165" end="176" tokenNumber="32" normalizedForm="endometrial" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="306" _ref_sofa="15" begin="177" end="183" tokenNumber="33" normalizedForm="stripe" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="314" _ref_sofa="15" begin="184" end="190" tokenNumber="34" normalizedForm="versus" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="322" _ref_sofa="15" begin="191" end="193" tokenNumber="35" normalizedForm="an" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="330" _ref_sofa="15" begin="194" end="205" tokenNumber="36" normalizedForm="endometrial" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="338" _ref_sofa="15" begin="206" end="212" tokenNumber="37" normalizedForm="sample" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="346" _ref_sofa="15" begin="213" end="217" tokenNumber="38" normalizedForm="with" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="354" _ref_sofa="15" begin="218" end="219" tokenNumber="39" normalizedForm="a" partOfSpeech="DT"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="362" _ref_sofa="15" begin="220" end="227" tokenNumber="40" normalizedForm="pipelle" partOfSpeech="NNP"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="370" _ref_sofa="15" begin="228" end="230" tokenNumber="41" normalizedForm="on" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="378" _ref_sofa="15" begin="231" end="238" tokenNumber="42" normalizedForm="someone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="386" _ref_sofa="15" begin="239" end="241" tokenNumber="43" normalizedForm="on" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="394" _ref_sofa="15" begin="242" end="249" tokenNumber="44" normalizedForm="hormone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="402" _ref_sofa="15" begin="250" end="261" tokenNumber="45" normalizedForm="replacement" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="410" _ref_sofa="15" begin="262" end="269" tokenNumber="46" normalizedForm="therapy" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="418" _ref_sofa="15" begin="270" end="272" tokenNumber="47" normalizedForm="or" partOfSpeech="CC"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="426" _ref_sofa="15" begin="273" end="280" tokenNumber="48" normalizedForm="someone" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="434" _ref_sofa="15" begin="281" end="285" tokenNumber="49" normalizedForm="with" partOfSpeech="IN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="442" _ref_sofa="15" begin="286" end="300" tokenNumber="50" normalizedForm="postmenopausal" partOfSpeech="JJ"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="450" _ref_sofa="15" begin="301" end="309" tokenNumber="51" normalizedForm="bleeding" partOfSpeech="NN"/>
+    <edu.mayo.bmi.uima.core.type.BaseToken _indexed="1" _id="458" _ref_sofa="15" begin="310" end="311" tokenNumber="52" normalizedForm="?" partOfSpeech="."/>
+    <edu.mayo.bmi.uima.core.type.Segment _indexed="1" _id="477" _ref_sofa="15" begin="0" end="312" id="SIMPLE_SEGMENT"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="198" _ref_sofa="15" begin="0" end="116" sentenceNumber="0"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="466" _ref_sofa="15" begin="117" end="311" sentenceNumber="1"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="1" _ref_sofa="15" begin="0" end="117" ID="0"/>
+    <edu.mayo.bmi.nlp.parser.type.ConllDependencyNode _indexed="1" _id="204" _ref_sofa="15" begin="117" end="312" ID="0"/>
+</CAS>
