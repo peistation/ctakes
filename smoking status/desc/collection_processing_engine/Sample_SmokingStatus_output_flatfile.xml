@@ -46,12 +46,6 @@
                         <string>data/test/output/record_resolution.txt</string>
                     </value>
                 </nameValuePair>
-                <nameValuePair>
-                    <name>RunPatientLevelClassification</name>
-                    <value>
-                        <boolean>true</boolean>
-                    </value>
-                </nameValuePair>
             </configurationParameterSettings>
         </casProcessor>
     </casProcessors>
