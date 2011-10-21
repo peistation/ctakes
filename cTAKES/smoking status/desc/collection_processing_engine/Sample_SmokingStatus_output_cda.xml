@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>data/test</string>
+                        <string>data/test/cda</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -44,6 +44,12 @@
                     <name>OutputFile</name>
                     <value>
                         <string>data/test/output/record_resolution.txt</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>ProcessingCDADocument</name>
+                    <value>
+                        <boolean>true</boolean>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
