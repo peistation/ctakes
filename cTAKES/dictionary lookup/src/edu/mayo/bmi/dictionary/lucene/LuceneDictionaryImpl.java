@@ -30,13 +30,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.util.Version;
 
 import edu.mayo.bmi.dictionary.BaseDictionaryImpl;
 import edu.mayo.bmi.dictionary.Dictionary;
@@ -88,12 +94,26 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
 
     	try
     	{
-    		Query q = new TermQuery(new Term(iv_lookupFieldName, str));
+    		Query q = null; 
+    		TopDocs topDoc = null;
+    		if (str.indexOf('-') == -1) {
+    			q = new TermQuery(new Term(iv_lookupFieldName, str));
+    			topDoc = iv_searcher.search(q, iv_maxHits);
+    		}
+    		else {  // needed the KeyworkAnalyzer for situations where the hypen was included in the f-word
+    			QueryParser query = new QueryParser(Version.LUCENE_30, iv_lookupFieldName, new KeywordAnalyzer());
+    			try {
+					 topDoc = iv_searcher.search(query.parse(str.replace('-', ' ')), iv_maxHits);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
     		if (iv_maxHits==0) {
     			iv_maxHits=Integer.MAX_VALUE;
     			iv_logger.warn("iv_maxHits was 0, using Integer.MAX_VALUE instead");
     		}
-    		TopDocs topDoc = iv_searcher.search(q, iv_maxHits);
+    		
     		ScoreDoc[] hits = topDoc.scoreDocs;
     		if (hits.length == iv_maxHits) {
     			iv_logger.warn("'iv_maxHits' equals the list length returned by the lucene query (" + hits.length+").");
