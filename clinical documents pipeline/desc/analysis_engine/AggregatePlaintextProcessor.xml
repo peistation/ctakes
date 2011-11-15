@@ -27,6 +27,12 @@
     <delegateAnalysisEngine key="Chunker">
       <import location="../../../chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
+<delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingNP">
+<import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingNP.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingPPNP">
+<import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
+</delegateAnalysisEngine>
     <!--
 	<delegateAnalysisEngine key="ClearParserAE">
 	  <import location="../../../dependency parser/desc/analysis_engine/ClearParserAE.xml"/>
@@ -47,7 +53,9 @@
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>AggregatePlaintextProcessor</name>
-    <description>Runs the complete pipeline for annotating clinical documents in plain text format.</description>
+<description>Runs the complete pipeline for annotating clinical documents in plain text format.  
+Includes adjusting NP chunks to include NP NP and NP PP NP.
+</description>
     <version/>
     <vendor/>
     <configurationParameters searchStrategy="language_fallback">
@@ -88,6 +96,8 @@
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
         <node>Chunker</node>
+        <node>AdjustNounPhraseToIncludeFollowingNP</node>
+        <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
 	<!--
             <node>ClearParserAE</node>
 	-->
