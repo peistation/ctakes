@@ -125,6 +125,7 @@
         <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
@@ -219,6 +220,7 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
         <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />     	
 	<!--
             <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
             <pathelement path="${_dependency_parser.dir}/${res.dir}" />
