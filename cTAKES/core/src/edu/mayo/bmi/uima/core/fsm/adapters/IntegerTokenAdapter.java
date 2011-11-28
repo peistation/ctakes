@@ -42,7 +42,11 @@ public class IntegerTokenAdapter extends NumberTokenAdapter implements
 	{
 		super(nta);
 
-		iv_val = Long.parseLong(removeCommas(nta.getCoveredText()));
+		if (nta.getCoveredText().length() > 0) {
+		    iv_val = Long.parseLong(removeCommas(nta.getCoveredText()));
+		} else {
+		    iv_val = 0;
+		}
 	}
 
 	public long getValue()

@@ -41,7 +41,7 @@ public class NumberTokenAdapter extends BaseTokenAdapter implements NumberToken
 	{
 		super(nta);
 		
-		if (nta.getCoveredText().charAt(0) == '-')
+		if (nta.getCoveredText().length() > 0 && nta.getCoveredText().charAt(0) == '-')
 		{
 			iv_isPositive = false;
 		}		
