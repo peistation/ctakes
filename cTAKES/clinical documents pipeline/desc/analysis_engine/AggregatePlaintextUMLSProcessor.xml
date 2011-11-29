@@ -15,11 +15,11 @@
     <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
       <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="NegationAnnotator">
-      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="StatusAnnotator">
       <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="NegationAnnotator">
+      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
       <import location="ExtractionPrepAnnotator.xml"/>
@@ -33,16 +33,18 @@
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../POS tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LvgAnnotator">
+      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
-    <name>AggregatePlaintextProcessor</name>
-    <description>Runs the complete pipeline for annotating clinical documents in plain text format.</description>
+    <name>AggregatePlaintextUMLSProcessor</name>
+    <description>Runs the complete pipeline for annotating clinical documents in plain text format using the built in UMLS (SNOMEDCT and RxNORM) dictionaries.  This uses the dictionary lookup/desc/DictionaryLookupAnnotatorUMLS.xml
+and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml file with your UMLS username and password.
+</description>
     <version/>
     <vendor/>
     <configurationParameters searchStrategy="language_fallback">
