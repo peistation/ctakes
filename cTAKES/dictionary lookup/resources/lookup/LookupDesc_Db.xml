@@ -36,7 +36,7 @@
 			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="text"/>
-					<property key="maxPermutationLevel" value="5"/>
+					<property key="maxPermutationLevel" value="7"/>
 					<!--	<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.Sentence"/> -->
 					<property key="windowAnnotations" value="edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation"/>  
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/>
