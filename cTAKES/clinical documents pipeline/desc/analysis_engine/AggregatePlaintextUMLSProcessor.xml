@@ -30,6 +30,12 @@
     <delegateAnalysisEngine key="LookupWindowAnnotator">
       <import location="LookupWindowAnnotator.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingNP">
+      <import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingNP.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingPPNP">
+      <import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -85,6 +91,8 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
         <node>Chunker</node>
+        <node>AdjustNounPhraseToIncludeFollowingNP</node>
+        <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
         <node>LookupWindowAnnotator</node>
         <node>DictionaryLookupAnnotatorDB</node>
         <node>StatusAnnotator</node>
