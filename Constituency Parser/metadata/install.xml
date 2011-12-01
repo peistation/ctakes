@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COMPONENT_INSTALLATION_DESCRIPTOR>
+	<OS>
+		<NAME>Windows and Linux</NAME>
+	</OS>
+	<TOOLKITS>
+		<JDK_VERSION>1.4.0</JDK_VERSION>
+	</TOOLKITS>
+	<UIMA_FRAMEWORK>
+	</UIMA_FRAMEWORK>
+	<SUBMITTED_COMPONENT>
+		<ID>Constituency Parser</ID>
+		<NAME></NAME>
+		<DESC>$main_root/desc/ConstituencyParserAnnotator.xml</DESC>
+		<DEPLOYMENT>standard</DEPLOYMENT>
+	</SUBMITTED_COMPONENT>
+	<INSTALLATION>
+		<PROCESS>
+			<ACTION>set_env_variable</ACTION>
+			<PARAMETERS>
+				<COMMENTS></COMMENTS>
+				<VAR_VALUE>$main_root/bin;/Applications/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar;/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar;$main_root/bin;$main_root/../core/bin;$main_root/../core/resources;$main_root/../core/lib/opennlp-tools-1.4.0.jar;$main_root/../core/lib/maxent-2.5.0.jar;$main_root/../core/lib/jdom.jar;$main_root/../core/lib/log4j-1.2.8.jar;$main_root/../core/lib/lucene-core-3.0.2.jar;$main_root/../core/lib/trove.jar;$main_root/../core/lib/OpenAI_FSM.jar;/Applications/apache-uima/lib/uimaj-bootstrap.jar;/Applications/apache-uima/lib/uima-tools.jar;/Applications/apache-uima/lib/uima-examples.jar;/Applications/apache-uima/lib/uima-document-annotation.jar;/Applications/apache-uima/lib/uima-cpe.jar;/Applications/apache-uima/lib/uima-core.jar;/Applications/apache-uima/lib/uima-adapter-vinci.jar;/Applications/apache-uima/lib/uima-adapter-soap.jar;/Applications/apache-uima/lib/jVinci.jar;/Applications/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar;/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar;$main_root/../core/lib/MIRUtility.jar;$main_root/../NE contexts/bin;$main_root/../dictionary lookup/bin;$main_root/../dictionary lookup/resources;$main_root/../context dependent tokenizer/bin;$main_root/../chunker/bin;$main_root/../chunker/resources;$main_root/../POS tagger/bin;$main_root/../POS tagger/resources;$main_root/../LVG/bin;$main_root/../LVG/resources;$main_root/../LVG/lib/lvg2008dist.jar;$main_root/resources;$main_root/desc;$main_root/../clinical documents pipeline/bin;$main_root/../clinical documents pipeline/resources;$main_root/../document preprocessor/bin;$main_root/../document preprocessor/lib/log4j-1.2.8.jar;$main_root/../document preprocessor/resources;$main_root/../document preprocessor/lib/xercesImpl.jar;$main_root/../document preprocessor/lib/xml-apis.jar;$main_root/../document preprocessor/lib/xmlParserAPIs.jar;$main_root/lib/libsvm-2.91.jar;$main_root/lib/lucene-core-3.0.2.jar;$main_root/resources;$main_root/desc;$main_root/lib/libsvm-2.91.jar;$main_root/lib/lucene-core-3.0.2.jar;</VAR_VALUE>
+				<VAR_NAME>CLASSPATH</VAR_NAME>
+			</PARAMETERS>
+		</PROCESS>
+	</INSTALLATION>
+</COMPONENT_INSTALLATION_DESCRIPTOR>

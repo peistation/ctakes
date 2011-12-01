@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>TreebankNode</name>
+  <description/>
+  <version>1.0</version>
+  <vendor/>
+  <imports>
+    <import location="TopTreebankNode.xml"/>
+  </imports>
+  <types>
+    <typeDescription>
+      <name>org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>nodeType</name>
+          <description>Penn Treebank-style node label</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>nodeValue</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>leaf</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>parent</name>
+          <description/>
+          <rangeTypeName>org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>children</name>
+          <description/>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>nodeTags</name>
+          <description/>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>headIndex</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>
