@@ -37,15 +37,40 @@ public class IntegerTokenAdapter extends NumberTokenAdapter implements
 		IntegerToken
 {
 	private long iv_val;
+	private double iv_double;
+
+	static String negativeSign = "-";
 
 	public IntegerTokenAdapter(NumToken nta)
 	{
 		super(nta);
 
 		if (nta.getCoveredText().length() > 0) {
-		    iv_val = Long.parseLong(removeCommas(nta.getCoveredText()));
+			String numAsString = removeCommas(nta.getCoveredText());
+			
+			// Parse as a long by default
+			try {
+			    iv_val = Long.parseLong(numAsString);
+			} catch (NumberFormatException e) {
+			    if (numAsString.startsWith(negativeSign)) {
+			    	iv_val = Long.MIN_VALUE;
+			    } else {
+			    	iv_val = Long.MAX_VALUE;
+			    }
+			}
+
+			try {
+				iv_double = Double.parseDouble(numAsString);
+			} catch (NumberFormatException e) {
+				if (numAsString.startsWith(negativeSign)) {
+					iv_double =  - Double.MAX_VALUE;
+				} else {
+					iv_double = Double.MAX_VALUE;
+				}
+			}
 		} else {
-		    iv_val = 0;
+			iv_val = 0;
+			iv_double = 0;
 		}
 	}
 
@@ -53,4 +78,14 @@ public class IntegerTokenAdapter extends NumberTokenAdapter implements
 	{
 		return iv_val;
 	}
+	
+	/* If a string of numbers is too long to be represented by a long, then
+	 * this method could be used to get an approximation of the value as a double 
+	 * Or use the covered text and process as you wish 
+	 */
+	public double getValueAsDouble() {
+		return iv_double;
+	}
+
+
 }
