@@ -29,15 +29,48 @@ import edu.mayo.bmi.nlp.tokenizer.Token;
 public class IntegerTokenAdapter extends NumberTokenAdapter implements
 		IntegerToken {
 	private long iv_val;
+	private double iv_double;
 
+	static String negativeSign = "-";
+	
 	public IntegerTokenAdapter(Token tok) {
 		super(tok);
 
-		iv_val = Long.parseLong(removeCommas(tok.getText()));
+		String numAsString = removeCommas(tok.getText());
+		
+		// Parse as a long by default
+		try {
+			iv_val = Long.parseLong(numAsString);
+		} catch (NumberFormatException e) {
+			if (numAsString.startsWith(negativeSign)) {
+				iv_val = Long.MIN_VALUE;
+			} else {
+				iv_val = Long.MAX_VALUE;
+			}
+		}
+
+		try {
+			iv_double = Double.parseDouble(numAsString);
+		} catch (NumberFormatException e) {
+			if (numAsString.startsWith(negativeSign)) {
+				iv_double =  - Double.MAX_VALUE;
+			} else {
+				iv_double = Double.MAX_VALUE;
+			}
+		}
+		
 	}
 
 	public long getValue() {
 		return iv_val;
+	}
+
+	/* If a string of numbers is too long to be represented by a long, then
+	 * this method could be used to get an approximation of the value as a double 
+	 * Or use the covered text and process as you wish 
+	 */
+	public double getValueAsDouble() {
+		return iv_double;
 	}
 
 }
