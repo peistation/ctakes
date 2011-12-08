@@ -186,7 +186,7 @@
               <nameValuePair>
                 <name>URL</name>
                 <value>
-                  <string>jdbc:hsqldb:file:../dictionary lookup/resources/lookup/umls/umls</string>
+                  <string>jdbc:hsqldb:file:../dictionary lookup/resources/lookup/umls2011ab/umls</string>
                 </value>
               </nameValuePair>
               <nameValuePair>

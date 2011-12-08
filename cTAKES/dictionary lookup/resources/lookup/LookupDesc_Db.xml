@@ -5,7 +5,7 @@
 	
 		<dictionary id="DICT_UMLS_MS" externalResourceKey="DbConnection" caseSensitive="false">
 			<implementation>
-				<jdbcImpl tableName="umls_ms_2010aa"/>
+				<jdbcImpl tableName="umls_ms_2011ab"/>
 			</implementation>
 			<lookupField fieldName="fword"/>
 			<metaFields>
