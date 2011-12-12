@@ -237,7 +237,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/drug_index</string>
+                  <string>lookup/rxnorm_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
