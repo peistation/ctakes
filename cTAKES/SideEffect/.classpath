@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/libsvm-2.91.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dictionary lookup"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA_HOME"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
