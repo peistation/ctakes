@@ -158,7 +158,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/rxnorm</string>
+                  <string>lookup/rxnorm_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
