@@ -2,7 +2,8 @@
 
 <project name="cTAKES" default="all" basedir=".">
     <description>
-        Compile cTAKES. Default target is all, which generates type system, and compiles all projects.
+        Compile cTAKES. Default target is all, which generates type system, compiles all projects,
+    	and generates javadoc.
     </description>
 
 
@@ -59,17 +60,27 @@
     <!-- - - - - - - - - -->
     <!-- Project folders -->
     <!-- - - - - - - - - -->
-    <property name="_chunker.dir" value="chunker" />
-    <property name="_clinical_documents_pipeline.dir" value="clinical documents pipeline" />
-    <property name="_context_dependent_tokenizer.dir" value="context dependent tokenizer" />
-    <property name="_core.dir" value="core" />
-    <property name="_dictionary_lookup.dir" value="dictionary lookup" />
-    <property name="_document_preprocessor.dir" value="document preprocessor" />
-    <property name="_LVG.dir" value="LVG" />
-    <property name="_NE_contexts.dir" value="NE contexts" />
-    <property name="_POS_tagger.dir" value="POS tagger" />
-    <property name="_dependency_parser.dir" value="dependency parser" />
-    <property name="docs.dir" value="docs" />
+    <property name="_chunker.dir" value="../chunker" />
+    <property name="_clinical_documents_pipeline.dir" value="../clinical documents pipeline" />
+    <property name="_context_dependent_tokenizer.dir" value="../context dependent tokenizer" />
+    <property name="_core.dir" value="../core" />
+    <property name="_dictionary_lookup.dir" value="../dictionary lookup" />
+    <property name="_document_preprocessor.dir" value="../document preprocessor" />
+    <property name="_LVG.dir" value="../LVG" />
+    <property name="_NE_contexts.dir" value="../NE contexts" />
+    <property name="_POS_tagger.dir" value="../POS tagger" />
+    <property name="_dependency_parser.dir" value="../dependency parser" />
+    <property name="_pad_termspotter.dir" value="../PAD term spotter" />
+    <property name="_drug_ner.dir" value="../Drug NER" />
+    <property name="_smoking_status.dir" value="../smoking status" />
+    <property name="_side_effects.dir" value="../SideEffect_cTAKES" />
+    <property name="_constituency_parser.dir" value="../Constituency Parser" />
+    <property name="_coref_resolver.dir" value="../coref-resolver" />
+	
+    <property name="_utils_project.dir" value="../utils" />
+
+	<property name="docs.dir" value="../docs" />
+	<!-- If change these above, also check below for utils -->
 
     <!-- - - - - - - - - - - -->
     <!-- Project subfolders  -->
@@ -186,7 +197,91 @@
         <pathelement path="${_uima.lib}" />
     </path>
 
-    <!-- - - - - - - - - - -->
+    <path id="_pad_termspotter.cp">
+        <pathelement path="${_pad_termspotter.dir}/${src.dir}" />
+        <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
+        <pathelement path="${_chunker.dir}/${bin.dir}" />
+        <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
+        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
+        <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_uima.lib}" />
+    </path>
+
+    <path id="_drug_ner.cp">
+        <pathelement path="${_drug_ner.dir}/${src.dir}" />
+        <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
+        <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
+        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
+        <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_uima.lib}" />
+	</path>
+
+    <path id="_smoking_status.cp">
+        <pathelement path="${_smoking_status.dir}/${src.dir}" />
+        <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement path="${_chunker.dir}/${bin.dir}" />
+        <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement path="${_document_preprocessor.dir}/${bin.dir}" />
+        <pathelement path="${_LVG.dir}/${bin.dir}" />
+        <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
+        <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement location="${_smoking_status.dir}/${lib.dir}/libsvm-2.91.jar" />
+        <pathelement location="${_smoking_status.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
+        <pathelement path="${_uima.lib}" />
+    </path>
+
+    <path id="_side_effects.cp">
+        <pathelement path="${_side_effects.dir}/${src.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_side_effects}/${lib.dir}/libsvm-2.91.jar" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement path="${_uima.lib}" />
+    </path>
+
+    <path id="_constituency_parser.cp" >
+    <pathelement path="${_constituency_parser.dir}/${src.dir}" />
+    <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
+    <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+    <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+    <pathelement path="${_chunker.dir}/${bin.dir}" />
+    <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
+    <pathelement path="${_core.dir}/${bin.dir}" />
+    <pathelement path="${_uima.lib}" />
+    </path>
+
+    <path id="_coref_resolver.cp" >
+        <pathelement path="${_coref_resolver.dir}/${src.dir}" />
+        <pathelement location="${_coref_resolver.dir}/${lib.dir}/Jama-1.0.2.jar" />
+        <pathelement location="${_coref_resolver.dir}/${lib.dir}/libsvm.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_side_effects}/${lib.dir}/libsvm-2.91.jar" />
+        <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement path="${_constituency_parser.dir}/${bin.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
+        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement path="${_uima.lib}" />
+    </path>
+
+	<!-- - - - - - - - - - -->
     <!-- Runtime classpath -->
     <!-- - - - - - - - - - -->
     <path id="testrun.cp">
@@ -250,6 +345,11 @@
         <delete dir="${_NE_contexts.dir}/${bin.dir}" />
         <delete dir="${_POS_tagger.dir}/${bin.dir}" />
         <delete dir="${_dependency_parser.dir}/${bin.dir}" />
+        <delete dir="${_drug_ner.dir}/${bin.dir}" />
+        <delete dir="${_smoking_status.dir}/${bin.dir}" />
+        <delete dir="${_side_effects.dir}/${bin.dir}" />
+        <delete dir="${_constituency_parser.dir}/${bin.dir}" />
+        <delete dir="${_coref_resolver.dir}/${bin.dir}" />
         <delete>
             <fileset dir="${_chunker.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/type/*.java" />
@@ -261,11 +361,13 @@
             <fileset dir="${_NE_contexts.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_POS_tagger.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_dependency_parser.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_drug_ner.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_smoking_status.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_constituency_parser.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_coref_resolver.dir}/${src.dir}" includes="**/type/*.java" />
         </delete>
-        <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/drug_index" />
-        <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/OrangeBook" />
-        <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/snomed-like_codes_sample" />
-        <delete dir="${_dictionary_lookup.dir}/${res.dir}/lookup/snomed-like_sample" />
         <delete dir="${docs.dir}/api" />
         <delete quiet="true" failonerror="false" includeemptydirs="true">
             <fileset dir="." includes="**/.project **/.classpath **/resources/launch/" />
@@ -276,7 +378,12 @@
     <!-- - - - - - - - - - - - - - - - -->
     <!-- DEFAULT: build all projects.  -->
     <!-- - - - - - - - - - - - - - - - -->
-    <target name="all" depends="_types.generate,_dictionaries.expand,_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,_dependency_parser.build,comparexcas.build,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
+    <target name="all" depends="_types.generate,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
+
+    <target name="build_all" depends="build_base, build_extensions, build_other" description="Compiles all source files." />
+    <target name="build_base" depends="_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,_dependency_parser.build" description="Compiles ." />
+    <target name="build_extensions" depends="_pad_termspotter.build,_drug_ner.build,_smoking_status.build,_side_effects.build,_constituency_parser.build,_coref_resolver.build" description="Compiles optional parts of cTAKES." />
+    <target name="build_other" depends="comparexcas.build" description="Compiles Utilities such as CompareXcas." />
 
     <!-- - - - - - - - - - - - - - - - - -->
     <!-- Run CVD in a separate process.  -->
@@ -299,16 +406,14 @@
     <!-- Unzip additional dictionaries -->
     <!-- - - - - - - - - - - - - - - - -->
     <target name="_dictionaries.expand">
-        <unzip src="${_dictionary_lookup.dir}/${res.dir}/lookup/drug_index.zip" dest="${_dictionary_lookup.dir}/${res.dir}/lookup" />
-        <unzip src="${_dictionary_lookup.dir}/${res.dir}/lookup/OrangeBook.zip" dest="${_dictionary_lookup.dir}/${res.dir}/lookup" />
-        <unzip src="${_dictionary_lookup.dir}/${res.dir}/lookup/snomed-like_codes_sample.zip" dest="${_dictionary_lookup.dir}/${res.dir}/lookup" />
-        <unzip src="${_dictionary_lookup.dir}/${res.dir}/lookup/snomed-like_sample.zip" dest="${_dictionary_lookup.dir}/${res.dir}/lookup" />
+    	<!-- no longer needed... -->
+    	<!-- lucene can handle the .svn directories now so can store them in SVN already expanded -->
     </target>
 
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="_types.generate" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type,_dependency_parser.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="_types.generate" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type,_dependency_parser.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_constituency_parser.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
@@ -334,7 +439,7 @@
             <env key="ECLIPSE_HOME" value="${eclipse.home}" />
             <env key="UIMA_HOME" value="${uima.home}" />
             <env key="TEMP" value="${env.TEMP}" />
-            <arg value="${_clinical_documents_pipeline.dir}/${desc.dir}/analysis_engine/AggregatePlaintextProcessor_Mayo.xml" />
+            <arg value="${_clinical_documents_pipeline.dir}/${desc.dir}/analysis_engine/AggregatePlaintextProcessor.xml" />
             <arg value="${_clinical_documents_pipeline.dir}/${src.dir}" />
         </exec>
     </target>
@@ -412,6 +517,76 @@
         </exec>
     </target>
 
+    <target name="_pad_termspotter.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_pad_termspotter.dir}/${desc.dir}/type_system/PADSiteAndTerm.xml" />
+            <arg value="${_pad_termspotter.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_drug_ner.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_drug_ner.dir}/${desc.dir}/type_system/NERTypeSystem.xml" />
+            <arg value="${_drug_ner.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_smoking_status.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_smoking_status.dir}/${desc.dir}/type_system/SmokingProductionTypeSystem.xml" />
+            <arg value="${_smoking_status.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+	<target name="_side_effects.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_side_effects.dir}/${desc.dir}/type_system/SideEffectTypeSystem.xml" />
+            <arg value="${_side_effects.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_constituency_parser.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_constituency_parser.dir}/${desc.dir}/TypeSystem.xml" />
+            <arg value="${_constituency_parser.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_coref_resolver1.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_coref_resolver.dir}/${desc.dir}/type-system/VecInst.xml" />
+            <arg value="${_coref_resolver.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_coref_resolver2.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_coref_resolver.dir}/${desc.dir}/type-system/CorefTypes.xml" />
+            <arg value="${_coref_resolver.dir}/${src.dir}" />
+        </exec>
+    </target>
+
     <!-- - - - - - -->
     <!-- Compilers -->
     <!-- - - - - - -->
@@ -449,7 +624,7 @@
             <classpath refid="_core.cp" />
         </javac>
     </target>
-
+	
     <target name="_dictionary_lookup.build" depends="_types.generate,_core.build">
         <mkdir dir="${_dictionary_lookup.dir}/${bin.dir}" />
         <javac destdir="${_dictionary_lookup.dir}/${bin.dir}">
@@ -503,10 +678,55 @@
         </javac>
     </target>
 
-    <!-- - - - - - - - - - - -->
+    <target name="_pad_termspotter.build" depends="_types.generate,build_base" >
+        <mkdir dir="${_pad_termspotter.dir}/${bin.dir}" />
+        <javac destdir="${_pad_termspotter.dir}/${bin.dir}">
+            <src path="${_pad_termspotter.dir}/${src.dir}" />
+            <classpath refid="_pad_termspotter.cp" />
+        </javac>
+    </target>
+    <target name="_drug_ner.build" depends="_types.generate,build_base" >
+        <mkdir dir="${_drug_ner.dir}/${bin.dir}" />
+        <javac destdir="${_drug_ner.dir}/${bin.dir}">
+            <src path="${_drug_ner.dir}/${src.dir}" />
+            <classpath refid="_drug_ner.cp" />
+        </javac>
+    </target>
+    <target name="_smoking_status.build" depends="_types.generate,build_base" >
+        <mkdir dir="${_smoking_status.dir}/${bin.dir}" />
+        <javac destdir="${_smoking_status.dir}/${bin.dir}">
+            <src path="${_smoking_status.dir}/${src.dir}" />
+            <classpath refid="_smoking_status.cp" />
+        </javac>
+    </target>
+    <target name="_side_effects.build" depends="_types.generate,build_base" >
+        <mkdir dir="${_side_effects.dir}/${bin.dir}" />
+        <javac destdir="${_side_effects.dir}/${bin.dir}">
+            <src path="${_side_effects.dir}/${src.dir}" />
+            <classpath refid="_side_effects.cp" />
+        </javac>
+    </target>
+    <target name="_constituency_parser.build" depends="_types.generate,build_base" >
+        <mkdir dir="${_constituency_parser.dir}/${bin.dir}" />
+        <javac destdir="${_constituency_parser.dir}/${bin.dir}">
+            <src path="${_constituency_parser.dir}/${src.dir}" />
+            <classpath refid="_constituency_parser.cp" />
+        </javac>
+    </target>
+    <target name="_coref_resolver.build" depends="_types.generate,build_base,_constituency_parser.build" >
+        <mkdir dir="${_coref_resolver.dir}/${bin.dir}" />
+        <javac destdir="${_coref_resolver.dir}/${bin.dir}">
+            <src path="${_coref_resolver.dir}/${src.dir}" />
+            <classpath refid="_coref_resolver.cp" />
+        </javac>
+    </target>
+
+	<!-- - - - - - - - - - - -->
     <!-- Javadoc generators  -->
     <!-- - - - - - - - - - - -->
-    <target name="javadoc.generate" description="Generates Javadoc HTML pages.">
+    <target name="javadoc.generate" depends="_javadoc2009.generate,_javadoc2011.generate" />
+	
+    <target name="_javadoc2009.generate" description="Generates Javadoc HTML pages.">
         <mkdir dir="${docs.dir}/api" />
         <javadoc destdir="${docs.dir}/api" windowtitle="Clinical Text Analysis and Knowledge Extraction System API">
             <doctitle><![CDATA[<h1>cTAKES ${pipeline.version} Java API Documentation</h1>]]></doctitle>
@@ -521,6 +741,20 @@
             <packageset dir="${_NE_contexts.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_POS_tagger.dir}/${src.dir}/java" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_dependency_parser.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_pad_termspotter.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_drug_ner.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+        </javadoc>
+    </target>
+
+    <target name="_javadoc2011.generate" description="Generates Javadoc HTML pages.">
+        <mkdir dir="${docs.dir}/api" />
+        <javadoc destdir="${docs.dir}/api" windowtitle="Clinical Text Analysis and Knowledge Extraction System API">
+            <doctitle><![CDATA[<h1>cTAKES ${pipeline.version} Java API Documentation</h1>]]></doctitle>
+            <bottom><![CDATA[Copyright &copy; 2011 Mayo Foundation for Medical Education and Research. All Rights Reserved.]]></bottom>
+            <packageset dir="${_smoking_status.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_side_effects.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_constituency_parser.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_coref_resolver.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
         </javadoc>
     </target>
 
@@ -528,8 +762,8 @@
     <!-- Build CompareXcas -->
     <!-- - - - - - - - - - -->
     <target name="comparexcas.build" description="Build CompareXcas, which can compare two XCAS files without reading a type system file.">
-        <mkdir dir="utils/${bin.dir}" />
-        <javac srcdir="utils/src" destdir="utils/${bin.dir}" />
+        <mkdir dir="${_utils_project.dir}/${bin.dir}" />
+        <javac srcdir="${_utils_project.dir}/${src.dir}" destdir="${_utils_project.dir}/${bin.dir}" />
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - -->
