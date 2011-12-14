@@ -378,7 +378,7 @@
     <!-- - - - - - - - - - - - - - - - -->
     <!-- DEFAULT: build all projects.  -->
     <!-- - - - - - - - - - - - - - - - -->
-    <target name="all" depends="_types.generate,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
+    <target name="all" depends="generate_types,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
 
     <target name="build_all" depends="build_base, build_extensions, build_other" description="Compiles all source files." />
     <target name="build_base" depends="_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,_dependency_parser.build" description="Compiles ." />
@@ -413,14 +413,14 @@
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="_types.generate" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type,_dependency_parser.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_constituency_parser.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="generate_types" depends="_chunker.type,_clinical_documents_pipeline.type,_context_dependent_tokenizer.type,_core.type,_dictionary_lookup.type,_document_preprocessor.type,_LVG.type,_NE_contexts.type,_POS_tagger.type,_dependency_parser.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_constituency_parser.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
 
     <target name="-types.ready">
         <condition>
-            <isset property="types.generated" />
+            <isset property="generate_typesd" />
         </condition>
     </target>
 
@@ -590,7 +590,7 @@
     <!-- - - - - - -->
     <!-- Compilers -->
     <!-- - - - - - -->
-    <target name="_chunker.build" depends="_types.generate,_core.build,_POS_tagger.build">
+    <target name="_chunker.build" depends="generate_types,_core.build,_POS_tagger.build">
         <mkdir dir="${_chunker.dir}/${bin.dir}" />
         <javac destdir="${_chunker.dir}/${bin.dir}">
             <src path="${_chunker.dir}/${src.dir}/java" />
@@ -600,7 +600,7 @@
         </javac>
     </target>
 
-    <target name="_clinical_documents_pipeline.build" depends="_types.generate,_chunker.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build">
+    <target name="_clinical_documents_pipeline.build" depends="generate_types,_chunker.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build">
         <mkdir dir="${_clinical_documents_pipeline.dir}/${bin.dir}" />
         <javac destdir="${_clinical_documents_pipeline.dir}/${bin.dir}">
             <src path="${_clinical_documents_pipeline.dir}/${src.dir}" />
@@ -608,7 +608,7 @@
         </javac>
     </target>
 
-    <target name="_context_dependent_tokenizer.build" depends="_types.generate,_core.build">
+    <target name="_context_dependent_tokenizer.build" depends="generate_types,_core.build">
         <mkdir dir="${_context_dependent_tokenizer.dir}/${bin.dir}" />
         <javac destdir="${_context_dependent_tokenizer.dir}/${bin.dir}">
             <src path="${_context_dependent_tokenizer.dir}/${src.dir}" />
@@ -616,7 +616,7 @@
         </javac>
     </target>
 
-    <target name="_core.build" depends="_types.generate">
+    <target name="_core.build" depends="generate_types">
         <mkdir dir="${_core.dir}/${bin.dir}" />
         <javac destdir="${_core.dir}/${bin.dir}">
             <src path="${_core.dir}/${src.dir}" />
@@ -625,7 +625,7 @@
         </javac>
     </target>
 	
-    <target name="_dictionary_lookup.build" depends="_types.generate,_core.build">
+    <target name="_dictionary_lookup.build" depends="generate_types,_core.build">
         <mkdir dir="${_dictionary_lookup.dir}/${bin.dir}" />
         <javac destdir="${_dictionary_lookup.dir}/${bin.dir}">
             <src path="${_dictionary_lookup.dir}/${src.dir}" />
@@ -634,7 +634,7 @@
         </javac>
     </target>
 
-    <target name="_document_preprocessor.build" depends="_types.generate,_core.build">
+    <target name="_document_preprocessor.build" depends="generate_types,_core.build">
         <mkdir dir="${_document_preprocessor.dir}/${bin.dir}" />
         <javac destdir="${_document_preprocessor.dir}/${bin.dir}">
             <src path="${_document_preprocessor.dir}/${src.dir}" />
@@ -643,7 +643,7 @@
         </javac>
     </target>
 
-    <target name="_LVG.build" depends="_types.generate,_chunker.build,_core.build">
+    <target name="_LVG.build" depends="generate_types,_chunker.build,_core.build">
         <mkdir dir="${_LVG.dir}/${bin.dir}" />
         <javac destdir="${_LVG.dir}/${bin.dir}">
             <src path="${_LVG.dir}/${src.dir}" />
@@ -651,7 +651,7 @@
         </javac>
     </target>
 
-    <target name="_NE_contexts.build" depends="_types.generate,_core.build">
+    <target name="_NE_contexts.build" depends="generate_types,_core.build">
         <mkdir dir="${_NE_contexts.dir}/${bin.dir}" />
         <javac destdir="${_NE_contexts.dir}/${bin.dir}">
             <src path="${_NE_contexts.dir}/${src.dir}" />
@@ -660,7 +660,7 @@
         </javac>
     </target>
 
-    <target name="_POS_tagger.build" depends="_types.generate,_core.build">
+    <target name="_POS_tagger.build" depends="generate_types,_core.build">
         <mkdir dir="${_POS_tagger.dir}/${bin.dir}" />
         <javac destdir="${_POS_tagger.dir}/${bin.dir}">
             <src path="${_POS_tagger.dir}/${src.dir}/java" />
@@ -670,7 +670,7 @@
         </javac>
     </target>
 
-    <target name="_dependency_parser.build" depends="_types.generate,_core.build,_LVG.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build">
+    <target name="_dependency_parser.build" depends="generate_types,_core.build,_LVG.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build">
         <mkdir dir="${_dependency_parser.dir}/${bin.dir}" />
         <javac destdir="${_dependency_parser.dir}/${bin.dir}">
             <src path="${_dependency_parser.dir}/${src.dir}" />
@@ -678,42 +678,42 @@
         </javac>
     </target>
 
-    <target name="_pad_termspotter.build" depends="_types.generate,build_base" >
+    <target name="_pad_termspotter.build" depends="generate_types,build_base" >
         <mkdir dir="${_pad_termspotter.dir}/${bin.dir}" />
         <javac destdir="${_pad_termspotter.dir}/${bin.dir}">
             <src path="${_pad_termspotter.dir}/${src.dir}" />
             <classpath refid="_pad_termspotter.cp" />
         </javac>
     </target>
-    <target name="_drug_ner.build" depends="_types.generate,build_base" >
+    <target name="_drug_ner.build" depends="generate_types,build_base" >
         <mkdir dir="${_drug_ner.dir}/${bin.dir}" />
         <javac destdir="${_drug_ner.dir}/${bin.dir}">
             <src path="${_drug_ner.dir}/${src.dir}" />
             <classpath refid="_drug_ner.cp" />
         </javac>
     </target>
-    <target name="_smoking_status.build" depends="_types.generate,build_base" >
+    <target name="_smoking_status.build" depends="generate_types,build_base" >
         <mkdir dir="${_smoking_status.dir}/${bin.dir}" />
         <javac destdir="${_smoking_status.dir}/${bin.dir}">
             <src path="${_smoking_status.dir}/${src.dir}" />
             <classpath refid="_smoking_status.cp" />
         </javac>
     </target>
-    <target name="_side_effects.build" depends="_types.generate,build_base" >
+    <target name="_side_effects.build" depends="generate_types,build_base" >
         <mkdir dir="${_side_effects.dir}/${bin.dir}" />
         <javac destdir="${_side_effects.dir}/${bin.dir}">
             <src path="${_side_effects.dir}/${src.dir}" />
             <classpath refid="_side_effects.cp" />
         </javac>
     </target>
-    <target name="_constituency_parser.build" depends="_types.generate,build_base" >
+    <target name="_constituency_parser.build" depends="generate_types,build_base" >
         <mkdir dir="${_constituency_parser.dir}/${bin.dir}" />
         <javac destdir="${_constituency_parser.dir}/${bin.dir}">
             <src path="${_constituency_parser.dir}/${src.dir}" />
             <classpath refid="_constituency_parser.cp" />
         </javac>
     </target>
-    <target name="_coref_resolver.build" depends="_types.generate,build_base,_constituency_parser.build" >
+    <target name="_coref_resolver.build" depends="generate_types,build_base,_constituency_parser.build" >
         <mkdir dir="${_coref_resolver.dir}/${bin.dir}" />
         <javac destdir="${_coref_resolver.dir}/${bin.dir}">
             <src path="${_coref_resolver.dir}/${src.dir}" />
