@@ -20,7 +20,7 @@
       <nameValuePair>
         <name>anaphoricityModelFilename</name>
         <value>
-          <string>/home/tmill/Projects/cNLP/cTakes-Ext/coref-resolver/trunk/resources/anaphoricity.model</string>
+          <string>anaphoricity.model</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
