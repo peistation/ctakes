@@ -10,7 +10,7 @@
       <import location="MipacqMarkableExpander.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkablePairGenerator">
-      <import location="../../../CTakes1.1.0/coref-resolver/desc/MipacqMarkablePairGenerator.xml"/>
+      <import location="MipacqMarkablePairGenerator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
