@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputFileName</name>
                     <value>
-                        <string>/home/tmill/Projects/parser/data/test_sents.txt</string>
+                        <string>PATH_TO_YOUR_DATA_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -31,7 +31,7 @@
                 <nameValuePair>
                     <name>modelDir</name>
                     <value>
-                        <string>change me</string>
+                        <string>PATH_TO_YOUR_MODELS_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -51,7 +51,7 @@
                 <nameValuePair>
                     <name>outputFile</name>
                     <value>
-                        <string>change me</string>
+                        <string>PATH_TO_YOUR_OUTPUT_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
