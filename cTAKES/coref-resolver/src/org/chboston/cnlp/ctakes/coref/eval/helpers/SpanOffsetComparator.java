@@ -20,7 +20,7 @@ import java.util.Comparator;
 
 public class SpanOffsetComparator implements Comparator<Span> {
 
-	@Override
+	// remove @Override annotation so compiles cleanly with Java 5
 	public int compare(Span o1, Span o2) {
 		int ret;
 		ret = o1.get(0)[0] - o2.get(0)[0];
