@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="resources"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dependency parser"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/clinical documents pipeline"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/cTakes"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
