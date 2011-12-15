@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="cTAKES" default="all" basedir=".">
+<project name="cTAKES" default="generate_types" basedir=".">
     <description>
-        Compile cTAKES. Default target is all, which generates type system, compiles all projects,
-    	and generates javadoc.
+        Compile cTAKES. Default target is generate_types.
+    	The target named all generates type system, compiles all projects, and generates javadoc.
     </description>
 
 
@@ -73,7 +73,7 @@
     <property name="_pad_termspotter.dir" value="../PAD term spotter" />
     <property name="_drug_ner.dir" value="../Drug NER" />
     <property name="_smoking_status.dir" value="../smoking status" />
-    <property name="_side_effects.dir" value="../SideEffect_cTAKES" />
+    <property name="_side_effects.dir" value="../SideEffect" />
     <property name="_constituency_parser.dir" value="../Constituency Parser" />
     <property name="_coref_resolver.dir" value="../coref-resolver" />
 	
@@ -536,6 +536,7 @@
             <arg value="${_drug_ner.dir}/${src.dir}" />
         </exec>
     </target>
+
 
     <target name="_smoking_status.type">
         <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
