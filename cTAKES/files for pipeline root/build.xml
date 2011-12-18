@@ -768,6 +768,13 @@
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- Zip CompareXcas                           -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - -->
+    <target name="comparexcas.zip" description="Zip CompareXcas.">
+        <zip basedir="${_utils_project.dir}" destfile="./utils.zip" compress="true" />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - -->
     <!-- Extract Eclipse workspace metadata files  -->
     <!-- - - - - - - - - - - - - - - - - - - - - - -->
     <target name="eclipse.metadata.extract" description="Extract Eclipse metadata files.">
