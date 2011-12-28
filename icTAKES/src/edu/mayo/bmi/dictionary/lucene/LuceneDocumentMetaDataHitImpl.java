@@ -52,11 +52,16 @@ public class LuceneDocumentMetaDataHitImpl extends BaseMetaDataHitImpl
     public LuceneDocumentMetaDataHitImpl(Document luceneDoc)
     {
         iv_doc = luceneDoc;
-        Field[] fields = iv_doc.getFields(null);
-        for(int i=0; i<fields.length;i++)
-         {
-        	iv_nameSet.add(fields[i].name());
-            iv_valCol.add(fields[i].stringValue());
+
+        List<Fieldable> fieldEnumList = iv_doc.getFields();
+        
+        ListIterator<Fieldable> fieldEnum = fieldEnumList.listIterator();
+        while (fieldEnum.hasNext())
+        {
+            Field f = (Field) fieldEnum.next();
+
+            iv_nameSet.add(f.name());
+            iv_valCol.add(f.stringValue());
         }
     }
 

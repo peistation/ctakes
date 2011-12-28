@@ -45,7 +45,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.types.ProblemListAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.ProblemListAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.PNPAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.NPSAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.NPPAnnotation</type>

@@ -38,7 +38,7 @@ public class cTAKESCVDGUI  {
   
 
   public static MainFrame createMainFrame() {
-     final MainFrame frame = new MainFrame("cTAKES CAS VISUAL DEBUGGER");
+     final MainFrame frame = new MainFrame(null);// "cTAKES CAS VISUAL DEBUGGER");
     // Set icon -- ToDo check cTAKES logo
     ImageIcon icon = Images.getImageIcon(Images.MICROSCOPE);
     if (icon != null) {

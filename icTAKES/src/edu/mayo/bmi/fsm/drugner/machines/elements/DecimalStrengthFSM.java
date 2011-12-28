@@ -24,9 +24,7 @@ import edu.mayo.bmi.fsm.token.BaseToken;
  */
 public class DecimalStrengthFSM
 {
-	Set iv_fullTextSet = new HashSet();
-
-	Set iv_shortTextSet = new HashSet();
+	
     // contains the finite state machines
     private Set iv_machineSet = new HashSet();
 
@@ -104,7 +102,7 @@ public class DecimalStrengthFSM
                 State currentState = fsm.getCurrentState();
                 if (currentState.getStartStateFlag())
                 {
-                    tokenStartMap.put(fsm, new Integer(i));
+                    tokenStartMap.put(fsm, Integer.valueOf(i));
                 }
                 if (currentState.getEndStateFlag())
                 {

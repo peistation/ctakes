@@ -42,7 +42,6 @@ public class FileLocator
         try
         {
         	//System.out.println("cwd=" + new File(".").getAbsolutePath());
-        	//System.out.println(location);
             return locateOnClasspath(location);
         }
         catch (Exception e)
@@ -56,7 +55,6 @@ public class FileLocator
     {
         ClassLoader cl = FileLocator.class.getClassLoader();
         URL indexUrl = cl.getResource(cpLocation);
-         
         if (indexUrl == null)
         {
             throw new FileNotFoundException(cpLocation);
@@ -71,7 +69,6 @@ public class FileLocator
             throws FileNotFoundException
     {
         File f = new File(explicitLocation);
-     
         if (!f.exists())
         {
             throw new FileNotFoundException(explicitLocation);

@@ -43,11 +43,11 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
+import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.type.OntologyConcept;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
-import edu.mayo.bmi.lookup.vo.LookupHit;
 
 /**
  * Implementation that takes Rxnorm dictionary lookup hits and stores only the

@@ -8,14 +8,15 @@ import java.util.Iterator;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CasConsumer_ImplBase;
-import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.sideeffect.type.SideEffectAnnotation;
+import edu.mayo.bmi.uima.sideeffect.util.SEUtil;
 
 public class SideEffectCasConsumer extends CasConsumer_ImplBase {
 	public static final String PARAM_OUTPUT_FILE = "OutputFile";
@@ -42,11 +43,19 @@ public class SideEffectCasConsumer extends CasConsumer_ImplBase {
 			throw new ResourceInitializationException(ioe);
 		}
 	}
-	 
+
+
+	
 	public void processCas(CAS cas) throws ResourceProcessException {
 		try {
 			JCas jcas;
-			jcas = cas.getJCas();
+			
+			jcas = SEUtil.getJCasViewWithDefault(cas, "plaintext");
+			
+			if(jcas == null){
+				jcas = cas.getJCas(); 
+			}
+			
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();			
 			
 	        String docName = DocumentIDAnnotationUtil.getDocumentID(jcas);        

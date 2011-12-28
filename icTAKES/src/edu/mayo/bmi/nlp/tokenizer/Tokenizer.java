@@ -277,6 +277,10 @@ public class Tokenizer {
 					.getEndOffset());
 			boolean foundSomethingInside = findPunctSymbolInsideToken(tokens,
 					token, tokenText);
+			// sourceforge bug tracker #3072902
+			// if nothing left after remove the contraction, such as the line " n't "
+			// then all of token was turned into a contraction token
+			if (token.getEndOffset()== token.getStartOffset()) foundSomethingInside = true;
 			if (foundSomethingInside) {
 				removeTokenList.add(token);
 			}
@@ -584,11 +588,31 @@ public class Tokenizer {
 		List<Token> eolTokens = new ArrayList<Token>();
 		for (int i = 0; i < text.length(); i++) {
 			char currentChar = text.charAt(i);
-			if ((currentChar == crChar) || (currentChar == nlChar)) {
-				Token t = new Token(i, i + 1);
+			/**
+			 * Fixed: ID: 3307765 to handle windows CRLF \r\n new lines in Docs
+			 */
+			Token t = null;
+			if (currentChar == nlChar) {
+				t = new Token(i, i + 1);
+			} else if (currentChar == crChar) {
+				if ((i + 1) < text.length()) {
+					char nextChar = text.charAt(i + 1);
+					if (nextChar == nlChar) {
+						t = new Token(i, i + 2);
+						i++;
+					} else {
+						t = new Token(i, i + 1);
+					}
+				} else {
+					t = new Token(i, i + 1);
+				}
+			}
+
+			if (t != null) {
 				t.setType(Token.TYPE_EOL);
 				eolTokens.add(t);
 			}
+
 		}
 		return eolTokens;
 	}
@@ -604,6 +628,7 @@ public class Tokenizer {
 		final char wsChar = ' ';
 		final char tabChar = '\t';
 		final char newlineChar = '\n';
+		final char crChar = '\r';		
 		boolean insideText = false;
 		int startIndex = 0;
 		int endIndex = 0;
@@ -611,7 +636,7 @@ public class Tokenizer {
 		for (int i = 0; i < text.length(); i++) {
 			char currentChar = text.charAt(i);
 			if ((currentChar != wsChar) && (currentChar != tabChar)
-					&& (currentChar != newlineChar)) {
+					&& (currentChar != newlineChar) && (currentChar != crChar)) {
 				if (insideText == false) {
 					insideText = true;
 					startIndex = i;

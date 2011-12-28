@@ -32,7 +32,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.types.ProblemListAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.ProblemListAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.PNPAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.NPSAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.NPPAnnotation</type>
@@ -43,7 +43,7 @@
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.NP</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.types.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation</type>
         </outputs>
         <languagesSupported/>

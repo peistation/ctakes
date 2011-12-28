@@ -9,7 +9,7 @@
     <version>1.0</version>
     <vendor>Mayo</vendor>
     <configurationParameters>
-      <configurationParameter>"cTAKESdesc/drugnerdesc/analysis_engine/DrugAggregatePlaintextProcessor.xml"
+      <configurationParameter>
         <name>medicationRelatedSection</name>
         <description>Section ids that need to be considered when generating the DrugMentionAnnotation</description>
         <type>String</type>

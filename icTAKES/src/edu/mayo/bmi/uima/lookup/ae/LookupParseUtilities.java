@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,18 +66,28 @@ import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
 public class LookupParseUtilities
 {
 	//returns a set of LookupSpec objects
-	public static Set parseDescriptor(File descFile, AnnotatorContext aContext)
+	public static Set parseDescriptor(File descFile, AnnotatorContext aContext, int maxListSize)
 			throws JDOMException, IOException, Exception
 	{
 		SAXBuilder saxBuilder = new SAXBuilder();
 		Document doc = saxBuilder.build(descFile);
-
+		maxSizeList = maxListSize;	//ohnlp-Bugs-3296301 fixes limit the search results to fixed 100 records.
 		Map dictMap = parseDictionaries(aContext, doc.getRootElement().getChild(
 				"dictionaries"));
-
+		//ohnlp-Bugs-3296301
 		return parseLookupBindingXml(aContext, dictMap, doc.getRootElement().getChild("lookupBindings"));
 	}
 
+	public static Set parseDescriptor(File descFile, AnnotatorContext aContext)
+	throws JDOMException, IOException, Exception
+	{
+		SAXBuilder saxBuilder = new SAXBuilder();
+		Document doc = saxBuilder.build(descFile);
+		Map dictMap = parseDictionaries(aContext, doc.getRootElement().getChild(
+		"dictionaries"));
+		//ohnlp-Bugs-3296301
+		return parseLookupBindingXml(aContext, dictMap, doc.getRootElement().getChild("lookupBindings"));
+	}
 	private static Map parseDictionaries(AnnotatorContext aContext,
 			Element dictetteersEl) throws AnnotatorContextException, Exception
 	{
@@ -124,7 +135,8 @@ public class LookupParseUtilities
 			}
 			IndexReader indexReader = ((LuceneIndexReaderResource) extResrc).getIndexReader();
 			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-			dict = new LuceneDictionaryImpl(indexSearcher, lookupFieldName);
+			// Added 'MaxListSize' ohnlp-Bugs-3296301
+			dict = new LuceneDictionaryImpl(indexSearcher, lookupFieldName, maxSizeList);
 		}
 		else if (implType.equals("jdbcImpl"))
 		{
@@ -201,7 +213,7 @@ public class LookupParseUtilities
 		while(itr.hasNext()) {
 			Element item = (Element) itr.next();
 			String s = (String)item.getAttributeValue("value");
-			//System.out.println("Adding exclude value["+s+"]"); // TODO - use logger      
+			System.out.println("Adding exclude value["+s+"]"); // TODO - use logger      
 			hs.add(s);
 	    }
 	    
@@ -228,6 +240,8 @@ public class LookupParseUtilities
 			}
 
 			Class[] constrArgs = { AnnotatorContext.class, Properties.class };
+			Class[] constrArgsConsum = { AnnotatorContext.class, Properties.class, int.class };//ohnlp-Bugs-3296301
+			Class[] constrArgsConsumB = { AnnotatorContext.class, Properties.class };
 
 			Element lookupInitEl = bindingEl.getChild("lookupInitializer");
 			String liClassName = lookupInitEl.getAttributeValue("className");
@@ -243,10 +257,25 @@ public class LookupParseUtilities
 			Element lcPropertiesEl = lookupConsumerEl.getChild("properties");
 			Properties lcProps = parsePropertiesXml(lcPropertiesEl);
 			Class lcClass = Class.forName(lcClassName);
-			Constructor lcConstr = lcClass.getConstructor(constrArgs);
-			Object[] lcArgs = { annotCtx, lcProps };
-			LookupConsumer lc = (LookupConsumer) lcConstr.newInstance(lcArgs);
+			Constructor[] consts = lcClass.getConstructors();
+			Constructor lcConstr = null;
+			Object[] lcArgs = null;
+			for(int i=0;i<consts.length;i++)
+			{
+			lcConstr = consts[i];
+				if (Arrays.equals(constrArgsConsum,lcConstr.getParameterTypes()) )
+				{
+					lcConstr = lcClass.getConstructor(constrArgsConsum);
+					lcArgs = new Object[]{ annotCtx, lcProps, maxSizeList };//ohnlp-Bugs-3296301					
+				}
+				else if (Arrays.equals(constrArgsConsumB,lcConstr.getParameterTypes()) )
+				{
+					lcConstr = lcClass.getConstructor(constrArgsConsumB);
+					lcArgs = new Object[]{ annotCtx, lcProps };
+				}				
+			}
 
+			LookupConsumer lc = (LookupConsumer) lcConstr.newInstance(lcArgs);
 			LookupAlgorithm la = li.getLookupAlgorithm(dictEngine);
 
 			LookupSpec ls = new LookupSpec(la, li, lc);
@@ -255,7 +284,21 @@ public class LookupParseUtilities
 		}
 		return lsSet;
 	}
-
+	/**
+	 * Get the maximum list size to be returned from a lucene index
+	 * @return maxSizeList
+	 */
+	public static int getMaxSizeList () {
+		return maxSizeList;
+	}
+	/**
+	 * Set the maximum list size to be returned from a lucene index
+	 * @return maxSizeList
+	 */
+	public static void setMaxSizeList (int maxListSize) {
+		maxSizeList = maxListSize;
+	}
+	
 	private static Properties parsePropertiesXml(Element propsEl)
 	{
 		Properties props = new Properties();
@@ -269,4 +312,7 @@ public class LookupParseUtilities
 		}
 		return props;
 	}
+	// Added 'maxListSize'.  Size equals max int by default 
+	private static int  maxSizeList = Integer.MAX_VALUE; //ohnlp-Bugs-3296301
+
 }

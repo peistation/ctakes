@@ -45,6 +45,7 @@ import edu.mayo.bmi.lookup.algorithms.FirstTokenPermutationImpl;
 import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.lookup.phrasebuilder.PhraseBuilder;
 import edu.mayo.bmi.lookup.phrasebuilder.VariantPhraseBuilderImpl;
+import edu.mayo.bmi.lookup.vo.LookupToken;
 import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.ContractionToken;
 import edu.mayo.bmi.uima.core.type.NewlineToken;
@@ -52,7 +53,6 @@ import edu.mayo.bmi.uima.core.type.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.SymbolToken;
 import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.JCasUtil;
-import edu.mayo.bmi.lookup.vo.LookupToken;
 
 /**
  * @author Mayo Clinic

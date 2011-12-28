@@ -132,7 +132,8 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 
 	public void initialize(UimaContext uimaContext)	throws ResourceInitializationException {
 		super.initialize(uimaContext);
-			String posModelPath = null;
+
+		String posModelPath = null;
 
 		try {
 			posModelPath = (String) uimaContext.getConfigParameterValue(POS_MODEL_FILE_PARAM);

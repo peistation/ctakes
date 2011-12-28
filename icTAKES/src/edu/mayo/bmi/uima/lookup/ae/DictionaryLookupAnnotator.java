@@ -49,10 +49,10 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
-import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.lookup.vo.LookupToken;
 import edu.mayo.bmi.lookup.vo.LookupTokenComparator;
+import edu.mayo.bmi.uima.core.resource.FileResource;
 
 /**
  * UIMA annotator that identified entities based on lookup.
@@ -113,7 +113,6 @@ public class DictionaryLookupAnnotator extends JTextAnnotator_ImplBase
 
 	/**
 	 * Entry point for processing.
-	 * edu.mayo.bmi.lookup.ae.FirstTokenPermLookupInitializerImpl
 	 */
 	public void process(JCas jcas, ResultSpecification resultSpec)
 			throws AnnotatorProcessException {

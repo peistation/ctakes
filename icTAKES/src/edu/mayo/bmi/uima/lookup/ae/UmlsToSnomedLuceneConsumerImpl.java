@@ -35,12 +35,14 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.dictionary.lucene.LuceneDictionaryImpl;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
+import edu.mayo.bmi.uima.core.resource.FileResource;
 
 /**
  * Implementation that takes UMLS dictionary lookup hits and stores as NamedEntity 
@@ -58,9 +60,10 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 
 	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
 	// Added 'MaxListSize'
-	private int iv_maxListSize;
+	private static int iv_maxListSize;
 	private final String SNOMED_MAPPING_PRP_KEY = "snomedCodeMappingField";
 	private final String CUI_MAPPING_PRP_KEY = "cuiMappingField";
+	private final String SNOMED_CODE_LIST_CONFIG_PARM = "CodesListIndexDirectory";
 	
 	private LuceneDictionaryImpl snomedLikeCodesIndex;
 
@@ -78,14 +81,24 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 		iv_maxListSize = maxListSize;
 		
 		IndexReader indexReader;
-		String indexPath = null;
 		String indexDirAbsPath = null;
 		try {
-			// For the sample dictionary, we use the following lucene index.
-			indexPath = "lookupresources/lookup/snomed-like_codes_sample";
-		//	indexPath="lookupresources/lookup/snomed-like_sample";
-			File indexDir = FileLocator.locateFile(indexPath); // TODO parameterize this
+			
+			// ohnlp Bugs tracker ID: 3425014 SNOMED lucene dictionary lookup hardcodes resource path 
+			FileResource fResrc = (FileResource) aCtx.getResourceObject(SNOMED_CODE_LIST_CONFIG_PARM);
+			if (fResrc == null) logger.error("Unable to find config parm " + SNOMED_CODE_LIST_CONFIG_PARM +  ".");
+			File indexDir = fResrc.getFile();
 			indexDirAbsPath = indexDir.getAbsolutePath();
+
+			try {
+				logger.info("Using lucene index: " + indexDir.getAbsolutePath());
+			}
+			catch (Exception e) {
+				throw new AnnotatorConfigurationException(e);
+			}
+
+			// For the sample dictionary, we use the following lucene index.
+			//indexPath = "lookup/snomed-like_codes_sample";
 			
 			indexReader = IndexReader.open(FSDirectory.open(indexDir)); 
 
@@ -94,7 +107,7 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 			
 			// We will lookup entries based on lookupFieldName
 			snomedLikeCodesIndex = new LuceneDictionaryImpl(indexSearcher, lookupFieldName, iv_maxListSize);
-		//	System.out.println(indexReader.numDocs());
+			
 			logger.info("Loaded Lucene index with "+ indexReader.numDocs() +" entries.");
 	        
 		} catch (IOException ioe) {

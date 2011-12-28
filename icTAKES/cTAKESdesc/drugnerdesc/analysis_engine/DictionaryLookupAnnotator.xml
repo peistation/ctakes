@@ -86,7 +86,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookupresources/lookup/drug_index</string>
+                  <string>drugnerresources/lookup/drug_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>

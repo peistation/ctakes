@@ -55,10 +55,13 @@
         <value>
           <array>
             <string>SIMPLE_SEGMENT</string>
+            <string>20104</string>
+            <string>20133</string>
+            <string>20147</string>
           </array>
         </value>
       </nameValuePair>
-      <nameValuePair>  
+      <nameValuePair>
         <name>dataDrugBindMap</name>
         <value>
           <array>
@@ -71,7 +74,20 @@
     <typeSystemDescription>
       <imports>
         <import location="../../typesystem/cTAKESTypes.xml"/>
+        
       </imports>
+      <types>
+        <typeDescription>
+          <name>edu.mayo.bmi.uima.common.type.CopySrcAnnotation</name>
+          <description>Used for testing CopyAnnotator.</description>
+          <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+          <name>edu.mayo.bmi.uima.common.type.CopyDestAnnotation</name>
+          <description>Used for testing CopyAnnotator.</description>
+          <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+      </types>
     </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>

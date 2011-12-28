@@ -28,27 +28,6 @@ This param is optional.  If not specified, then the classification feature of th
         <mandatory>false</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>negationContradictionWords</name>
-        <description>Contradiction words list. If this word appears in sentence do not negate.</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>UimaDescriptorStep1</name>
-        <description>Step 1 descriptor file.</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>UimaDescriptorStep2</name>
-        <description>Step 2 descriptor file.</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
         <name>SectionsToIgnore</name>
         <description>sections to ignore for ClassifiableEntries - Family History (20109)</description>
         <type>String</type>
@@ -84,32 +63,12 @@ This param is optional.  If not specified, then the classification feature of th
           </array>
         </value>
       </nameValuePair>
-      <nameValuePair>
-        <name>negationContradictionWords</name>
-        <value>
-          <string>smokingresources/data/context/negationContradictionWords.txt</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>UimaDescriptorStep1</name>
-        <value>
-          <string>smokingdesc/analysis_engine/ProductionPostSentenceAggregate_step1.xml</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>UimaDescriptorStep2</name>
-        <value>
-          <string>smokingdesc/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</string>
-        </value>
-      </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
         <import location="../../typesystem/cTAKESTypes.xml"/>
       </imports>
     </typeSystemDescription>
-    <typePriorities/>
-    <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs/>
@@ -123,6 +82,26 @@ This param is optional.  If not specified, then the classification feature of th
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
   </analysisEngineMetaData>
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>UimaDescriptorStep1Key</key>
+      <description/>
+      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <optional>false</optional>
+    </externalResourceDependency>
+    <externalResourceDependency>
+      <key>UimaDescriptorStep2Key</key>
+      <description/>
+      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <optional>false</optional>
+    </externalResourceDependency>
+    <externalResourceDependency>
+      <key>negationContradictionWordsKey</key>
+      <description/>
+      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <optional>false</optional>
+    </externalResourceDependency>
+  </externalResourceDependencies>
   <resourceManagerConfiguration>
     <externalResources>
       <externalResource>
@@ -152,15 +131,15 @@ This param is optional.  If not specified, then the classification feature of th
     </externalResources>
     <externalResourceBindings>
       <externalResourceBinding>
-        <key>UimaDescriptorStep1</key>
+        <key>UimaDescriptorStep1Key</key>
         <resourceName>UimaDescriptorStep1</resourceName>
       </externalResourceBinding>
       <externalResourceBinding>
-        <key>UimaDescriptorStep2</key>
+        <key>UimaDescriptorStep2Key</key>
         <resourceName>UimaDescriptorStep2</resourceName>
       </externalResourceBinding>
       <externalResourceBinding>
-        <key>negationContradictionWords</key>
+        <key>negationContradictionWordsKey</key>
         <resourceName>negationContradictionWords</resourceName>
       </externalResourceBinding>
     </externalResourceBindings>

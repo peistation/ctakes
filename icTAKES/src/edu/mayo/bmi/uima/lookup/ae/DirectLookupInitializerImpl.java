@@ -40,6 +40,7 @@ import edu.mayo.bmi.lookup.algorithms.DirectPassThroughImpl;
 import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.lookup.phrasebuilder.PhraseBuilder;
 import edu.mayo.bmi.lookup.phrasebuilder.VariantPhraseBuilderImpl;
+import edu.mayo.bmi.lookup.vo.LookupToken;
 import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.ContractionToken;
 import edu.mayo.bmi.uima.core.type.NewlineToken;
@@ -47,9 +48,8 @@ import edu.mayo.bmi.uima.core.type.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.core.type.SymbolToken;
 import edu.mayo.bmi.uima.core.type.WordToken;
-import edu.mayo.bmi.lookup.vo.LookupToken;
 
-/** Snomed
+/**
  * @author Mayo Clinic
  */
 public class DirectLookupInitializerImpl implements LookupInitializer

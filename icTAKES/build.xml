@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="cTAKES1.2.2" name="Create Runnable Jar for Project cTAKES_HF">
-      <target name="cTAKES1.2.2">
+<project default="cTAKES1.3.2" name="Create Runnable Jar for Project cTAKES_HF">
+      <target name="cTAKES1.3.2">
         <mkdir dir="bin"/>
    <path id="_ctakes.cp">
-        <pathelement location="lib/uima_tools.jar"/>
+            <pathelement location="lib/uima_tools.jar"/>
             <pathelement location="lib/uima-tools.jar"/>
             <pathelement location="lib/uima-examples.jar"/>
             <pathelement location="lib/uima-document-annotation.jar"/>
@@ -17,6 +17,8 @@
             <pathelement location="lib/maxent-2.5.0.jar"/>
             <pathelement location="lib/lvg2010dist.jar"/>
             <pathelement location="lib/lucene-core-3.0.2.jar"/>
+            <pathelement location="lib/Jama-1.0.2.jar"/>
+            <pathelement location="lib/SQLWrapper.jar"/>
             <pathelement location="lib/log4j-1.2.15.jar"/>
             <pathelement location="lib/jVinci.jar"/>
             <pathelement location="lib/jdom.jar"/>

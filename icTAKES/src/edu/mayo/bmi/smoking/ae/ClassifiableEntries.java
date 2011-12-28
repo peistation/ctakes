@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.apache.uima.pear.tools.PackageInstaller;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -36,7 +38,7 @@ import edu.mayo.bmi.smoking.i2b2.type.RecordSentence;
 import edu.mayo.bmi.smoking.type.SmokingDocumentClassification;
 import edu.mayo.bmi.smoking.util.ClassifiableEntry;
 import edu.mayo.bmi.smoking.util.TruthValue;
-import edu.mayo.bmi.uima.core.resource.FileLocator;
+import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.type.DocumentID;
 import edu.mayo.bmi.uima.core.type.Segment;
 import edu.mayo.bmi.uima.core.type.Sentence;
@@ -53,8 +55,10 @@ public class ClassifiableEntries extends JCasAnnotator_ImplBase {
 	 * Name of configuration parameter that must be set to the filepath of the
 	 * UIMA descriptor ProductionPostSentenceAggregate.xml
 	 */
-	public static final String PARAM_SMOKING_STATUS_DESC_STEP1 = "UimaDescriptorStep1";
-	public static final String PARAM_SMOKING_STATUS_DESC_STEP2 = "UimaDescriptorStep2";
+//	public static final String PARAM_SMOKING_STATUS_DESC_STEP1 = "UimaDescriptorStep1";
+//	public static final String PARAM_SMOKING_STATUS_DESC_STEP2 = "UimaDescriptorStep2";
+	public static final String PARAM_SMOKING_STATUS_DESC_STEP1KEY = "UimaDescriptorStep1Key";
+	public static final String PARAM_SMOKING_STATUS_DESC_STEP2KEY = "UimaDescriptorStep2Key";
 
 	/**
 	 * Name of configuration parameter that must be set to the filepath of the
@@ -88,44 +92,63 @@ public class ClassifiableEntries extends JCasAnnotator_ImplBase {
 
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
-	
+		boolean windowsSystem = true;
+		try {
 			super.initialize(aContext);
-		
-				
+
+			ResMgr = UIMAFramework.newDefaultResourceManager();
 			iv_procEntryList = new ArrayList<ClassifiableEntry>();
 			iv_entryIndexMap = new HashMap<String, List<ClassifiableEntry>>();
 			iv_segList = new ArrayList<Segment>();
 
 			// load (optional) truth data
-		try{	initTruthData();
-			// load TAE from XML descriptor
-		
-			String step1Desc = (String) aContext.getConfigParameterValue(PARAM_SMOKING_STATUS_DESC_STEP1);
-			    
-			File desc1File = FileLocator.locateFile(step1Desc);
-			System.out.println(desc1File);
-			XMLInputSource xis=new XMLInputSource(desc1File);
-			taeSpecifierStep1 = UIMAFramework.getXMLParser()
-					.parseResourceSpecifier(xis);
+			initTruthData();
+			// What type of operating system type are we running on? Unix or Windows
+			if (System.getProperty("file.separator").matches("/"))
+				windowsSystem = false;
 			
-			String step2Desc = (String) aContext.getConfigParameterValue(PARAM_SMOKING_STATUS_DESC_STEP2);
-			File desc2File = FileLocator.locateFile(step2Desc);
-			taeSpecifierStep2 = UIMAFramework.getXMLParser()
-					.parseResourceSpecifier(
-							new XMLInputSource(desc2File));
-		
+			// load TAE from XML descriptor
+			FileResource fResrc = (FileResource) aContext.getResourceObject(PARAM_SMOKING_STATUS_DESC_STEP1KEY);
+			File descFile = fResrc.getFile();
+			taeSpecifierStep1 = UIMAFramework.getXMLParser().parseResourceSpecifier(
+			new XMLInputSource(fResrc.getFile()));			
+
+			fResrc = (FileResource) aContext.getResourceObject(PARAM_SMOKING_STATUS_DESC_STEP2KEY);
+			descFile = fResrc.getFile();
+
+			taeSpecifierStep2 = UIMAFramework.getXMLParser().parseResourceSpecifier(
+					new XMLInputSource(fResrc.getFile()));			
+
 			ra = new ResolutionAnnotator();
 			ra.initialize(aContext);
-			taeStep1 = UIMAFramework.produceAnalysisEngine(taeSpecifierStep1,
-					ResMgr, null);
-			taeStep2 = UIMAFramework.produceAnalysisEngine(taeSpecifierStep2,
-					ResMgr, null);
-			jcas_local = CasCreationUtils.createCas(
-					taeStep1.getAnalysisEngineMetaData()).getJCas();
+			String dataPath  = aContext.getDataPath();
+			System.out.println("descFile "+descFile.getAbsolutePath());
+//			if (!descFile.getAbsolutePath().contains(apiMacroHome)) {
+//				ClassLoader thisBundle = this.getClass().getClassLoader();
+//				iv_logger.info("Using data path : "+dataPath);
+//				if (!windowsSystem) {
+//					//thisBundle.getSystemResources(dataPath);
+//					dataPath = "\""+dataPath+"\"";
+//					// This bundle is needed for Linux issues w/ embedded blanks in path names 
+//					//this.getClass().getClassLoader().getResource(dataPath);
+//					ResMgr.setExtensionClassPath(thisBundle, dataPath, true);
+//				} else {
+//					ResMgr.setExtensionClassPath(dataPath, true);
+//				}
+//			}
+//			else if (iv_logger.isInfoEnabled()) {
+//				iv_logger.warn("Shouldn't need to set the classpath "+descFile.getAbsolutePath());
+//			}
+			taeStep1 = UIMAFramework.produceAnalysisEngine(taeSpecifierStep1, ResMgr, null);
+			taeStep2 = UIMAFramework.produceAnalysisEngine(taeSpecifierStep2, ResMgr, null);
+			jcas_local = CasCreationUtils.createCas(taeStep1.getAnalysisEngineMetaData()).getJCas();
 			
+//			if (iv_logger.isInfoEnabled())
+//				iv_logger.info("Loaded UIMA TAE from descriptor: "
+//						+ descFile.getAbsolutePath().replaceAll(apiMacroHome, "."));
+
 			// get sections to ignore
-			String[] sections = (String[]) getContext()
-					.getConfigParameterValue(PARAM_IGNORE_SECTIONS);
+			String[] sections = (String[]) getContext().getConfigParameterValue(PARAM_IGNORE_SECTIONS);
 			sectionsToIgnore = new HashSet<String>();
 			for (int i = 0; i < sections.length; i++)
 				sectionsToIgnore.add(sections[i]);
@@ -453,6 +476,7 @@ public class ClassifiableEntries extends JCasAnnotator_ImplBase {
 
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new AnnotatorProcessException(e);
 		}
 
@@ -602,10 +626,10 @@ public class ClassifiableEntries extends JCasAnnotator_ImplBase {
 	private int iCurrentCtr;
 	private int iNonSmokerCtr;
 	private int iUnknownCtr;
-	private String apiMacroHome = "\\$main_root";
+	//private String apiMacroHome = "\\$main_root";
 	private JCas jcas_local;
 	private ResolutionAnnotator ra;
-	private ResourceManager ResMgr = UIMAFramework.newDefaultResourceManager();
+	private ResourceManager ResMgr;
 	private Set<String> sectionsToIgnore;
 
 }

@@ -17,6 +17,8 @@
 	<classpathentry kind="lib" path="lib/OpenAI_FSM.jar"/>
 	<classpathentry kind="lib" path="lib/opennlp-tools-1.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/trove.jar"/>
+	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/SQLWrapper.jar"/>
 	<classpathentry kind="lib" path="lib/uima-adapter-soap.jar"/>
 	<classpathentry kind="lib" path="lib/uima-adapter-vinci.jar"/>
 	<classpathentry kind="lib" path="lib/uima-core.jar"/>

@@ -388,7 +388,7 @@ public class DurationFSM {
 
 				State currentState = fsm.getCurrentState();
 				if (currentState.getStartStateFlag()) {
-					tokenStartMap.put(fsm, new Integer(i));
+					tokenStartMap.put(fsm, Integer.valueOf(i));
 				}
 				if (currentState.getEndStateFlag()) {
 					Object o = tokenStartMap.get(fsm);
@@ -451,7 +451,7 @@ public class DurationFSM {
 
 				State currentState = fsm.getCurrentState();
 				if (currentState.getStartStateFlag()) {
-					tokenStartMap.put(fsm, new Integer(i));
+					tokenStartMap.put(fsm, Integer.valueOf(i));
 				}
 				if (currentState.getEndStateFlag()) {
 					Object o = tokenStartMap.get(fsm);

@@ -20,7 +20,7 @@
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ctx.types.ContextAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ctx.type.ContextAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>

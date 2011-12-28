@@ -5,9 +5,9 @@
 <annotatorImplementationName>edu.mayo.bmi.uima.lvg.ae.LvgAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>LVG Annotator</name>
-<description></description>
-<version></version>
-<vendor></vendor>
+<description/>
+<version/>
+<vendor/>
 <configurationParameters>
 <configurationParameter>
 <name>UseSegments</name>
@@ -97,7 +97,7 @@
 <name>SegmentsToSkip</name>
 <value>
 <array>
-<string></string>
+<string/>
 </array>
 </value>
 </nameValuePair>
@@ -197,10 +197,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ae.tokenizer.WordTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ae.tokenizer.WordTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
 </outputs>
 <languagesSupported/>
 </capability>
@@ -214,7 +214,7 @@
 <externalResourceDependencies>
 <externalResourceDependency>
 <key>LvgCmdApi</key>
-<description></description>
+<description/>
 <interfaceName>edu.mayo.bmi.uima.lvg.resource.LvgCmdApiResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
@@ -223,7 +223,7 @@
 <externalResources>
 <externalResource>
 <name>LvgCmdApi</name>
-<description></description>
+<description/>
 <fileResourceSpecifier>
 <fileUrl>file:lvgresources/lvg/data/config/lvg.properties</fileUrl>
 </fileResourceSpecifier>

@@ -41,10 +41,10 @@ import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
+import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.type.UmlsConcept;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
-import edu.mayo.bmi.lookup.vo.LookupHit;
 
 /**
  * Implementation that takes UMLS dictionary lookup hits and stores as NamedEntity 
