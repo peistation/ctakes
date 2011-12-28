@@ -16,7 +16,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import edu.mayo.bmi.smoking.Const;
 import edu.mayo.bmi.uima.SmokingStatus.type.UnknownSmokerNamedEntityAnnotation;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 public class KuRuleBasedClassifierAnnotator extends JCasAnnotator_ImplBase {

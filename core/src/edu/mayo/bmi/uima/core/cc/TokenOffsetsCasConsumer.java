@@ -39,11 +39,11 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**
- * For each CAS a local file with the offsets of the BaseToken annotations is written to a directory specifed by a parameter.
+ * For each CAS a local file with the offsets of the BaseTokenAnnotations is written to a directory specifed by a parameter.
  * The format of the output files is
  * 0|13
  * 17|19
@@ -52,7 +52,7 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  *   
  * This CAS consumer does not make use of any annotation information in the 
  * cas except for the document id specified the CommonTypeSystem.xml 
- * descriptor and the BaseToken annotations.  The document id will be the 
+ * descriptor and the BaseTokenAnnotations.  The document id will be the 
  * name of the file written for each CAS.  
  * 
  * This CAS consumer was written so that token offsets could be written to 

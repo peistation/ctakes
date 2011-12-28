@@ -38,10 +38,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.Sentence;
 
 public class ContextAnnotatorTests {
 
@@ -68,7 +68,7 @@ public class ContextAnnotatorTests {
 		contextAnnotator.initialize(uimaContext);
 
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_LEFT_SCOPE_SIZE_PARAM, new Integer(8));
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.BaseToken");
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
@@ -162,7 +162,7 @@ public class ContextAnnotatorTests {
 		assertEquals(1, leftScopeTokens.size());
 		assertEquals(firstToken, leftScopeTokens.get(0));
 		// it should be the same if the focus type is different
-		focus = new IdentifiedAnnotation(jCas, 3, 11);
+		focus = new NamedEntity(jCas, 3, 11);
 		assertEquals("armer we", focus.getCoveredText());
 		leftScopeTokens = contextAnnotator.getLeftScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(1, leftScopeTokens.size());
@@ -175,20 +175,20 @@ public class ContextAnnotatorTests {
 		assertEquals(8, leftScopeTokens.size());
 
 		// "A farmer went trotting upon his gray mare"
-		focus = new IdentifiedAnnotation(jCas, 9, 27);
+		focus = new NamedEntity(jCas, 9, 27);
 		assertEquals("went trotting upon", focus.getCoveredText());
 		leftScopeTokens = contextAnnotator.getLeftScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(2, leftScopeTokens.size());
 		assertEquals(firstToken, leftScopeTokens.get(0));
 		assertEquals(secondToken, leftScopeTokens.get(1));
 
-		focus = new IdentifiedAnnotation(jCas, 7, 27);
+		focus = new NamedEntity(jCas, 7, 27);
 		assertEquals("r went trotting upon", focus.getCoveredText());
 		leftScopeTokens = contextAnnotator.getLeftScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(1, leftScopeTokens.size());
 		assertEquals(firstToken, leftScopeTokens.get(0));
 
-		focus = new IdentifiedAnnotation(jCas, 11, 27);
+		focus = new NamedEntity(jCas, 11, 27);
 		assertEquals("nt trotting upon", focus.getCoveredText());
 		leftScopeTokens = contextAnnotator.getLeftScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(2, leftScopeTokens.size());
@@ -200,7 +200,7 @@ public class ContextAnnotatorTests {
 		// the token farmer should not be returned as part of left tokens
 		sentence = new Sentence(jCas, 5, 27);
 		assertEquals("mer went trotting upon", sentence.getCoveredText());
-		focus = new IdentifiedAnnotation(jCas, 9, 27);
+		focus = new NamedEntity(jCas, 9, 27);
 		assertEquals("went trotting upon", focus.getCoveredText());
 		leftScopeTokens = contextAnnotator.getLeftScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(0, leftScopeTokens.size());
@@ -256,7 +256,7 @@ public class ContextAnnotatorTests {
 		contextAnnotator.initialize(uimaContext);
 
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_RIGHT_SCOPE_SIZE_PARAM, new Integer(4));
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.BaseToken");
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
@@ -361,7 +361,7 @@ public class ContextAnnotatorTests {
 		assertEquals(penultimateToken, rightScopeTokens.get(0));
 		assertEquals(lastToken, rightScopeTokens.get(1));
 
-		focus = new IdentifiedAnnotation(jCas, 9, 27);
+		focus = new NamedEntity(jCas, 9, 27);
 		assertEquals("went trotting upon", focus.getCoveredText());
 		rightScopeTokens = contextAnnotator.getRightScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(4, rightScopeTokens.size());
@@ -370,7 +370,7 @@ public class ContextAnnotatorTests {
 		assertEquals("mare", rightScopeTokens.get(2).getCoveredText());
 		assertEquals(",", rightScopeTokens.get(3).getCoveredText());
 
-		focus = new IdentifiedAnnotation(jCas, 9, 29);
+		focus = new NamedEntity(jCas, 9, 29);
 		assertEquals("went trotting upon h", focus.getCoveredText());
 		rightScopeTokens = contextAnnotator.getRightScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals("gray", rightScopeTokens.get(0).getCoveredText());
@@ -390,7 +390,7 @@ public class ContextAnnotatorTests {
 		sentence = new Sentence(jCas, 120, 136);
 		System.out.println(sentence.getCoveredText());
 		assertEquals("ty, lumpety, lum", sentence.getCoveredText());
-		focus = new IdentifiedAnnotation(jCas, 124, 131);
+		focus = new NamedEntity(jCas, 124, 131);
 		assertEquals("lumpety", focus.getCoveredText());
 		rightScopeTokens = contextAnnotator.getRightScopeContextAnnotations(jCas, focus, sentence);
 		assertEquals(1, rightScopeTokens.size());
@@ -421,7 +421,7 @@ public class ContextAnnotatorTests {
 		ContextAnnotator contextAnnotator = new ContextAnnotator();
 		contextAnnotator.initialize(uimaContext);
 
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.BaseToken");
 
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
@@ -492,12 +492,12 @@ public class ContextAnnotatorTests {
 		// if focus is a named entity that overlaps with other tokens, but does
 		// not completely contain other tokens, then middle tokens should should
 		// be empty
-		focus = new IdentifiedAnnotation(jCas, 3, 11);
+		focus = new NamedEntity(jCas, 3, 11);
 		assertEquals("armer we", focus.getCoveredText());
 		middleScopeTokens = contextAnnotator.getMiddleScopeContextAnnotations(jCas, focus);
 		assertEquals(0, middleScopeTokens.size());
 
-		focus = new IdentifiedAnnotation(jCas, 0, 13);
+		focus = new NamedEntity(jCas, 0, 13);
 		assertEquals("A farmer went", focus.getCoveredText());
 		middleScopeTokens = contextAnnotator.getMiddleScopeContextAnnotations(jCas, focus);
 		assertEquals(3, middleScopeTokens.size());

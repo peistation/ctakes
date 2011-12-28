@@ -9,21 +9,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.TOP;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.util.XMLInputSource;
 
 import edu.mayo.bmi.smoking.Const;
 import edu.mayo.bmi.uima.SmokingStatus.type.NonSmokerNamedEntityAnnotation;
 import edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation;
+import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 /**
@@ -187,7 +190,7 @@ public class ResolutionAnnotator
 		while (neItr.hasNext())
 		{
 			SmokerNamedEntityAnnotation neAnn = (SmokerNamedEntityAnnotation) neItr.next();
-			int certainty = neAnn.getPolarity();
+			int certainty = neAnn.getCertainty();
 			//TODO: need to re-define this in TypeSystemConst.java and re-release core
 //			if (certainty == TypeSystemConst.NE_CERTAINTY_NEGATED)
 			if (certainty == -1)
@@ -208,7 +211,7 @@ public class ResolutionAnnotator
 		{
 			NonSmokerNamedEntityAnnotation neAnn = (NonSmokerNamedEntityAnnotation) neItr.next();
 			nonSmokerCnt++;
-			iv_logger.info("***NonSmokerNameEntity***" + neAnn.getCoveredText() + " " + nonSmokerCnt + " " + neAnn.getPolarity());
+			iv_logger.info("***NonSmokerNameEntity***" + neAnn.getCoveredText() + " " + nonSmokerCnt + " " + neAnn.getCertainty());
 		}
 
 		return nonSmokerCnt;

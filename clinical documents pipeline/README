@@ -19,15 +19,19 @@ chunking, named entity recognition, context detection, and negation detection.
 Running the clinical documents pipeline
 ############################################################################
 
+This project (or PEAR file), the "clinical documents pipeline", relies on other 
+projects/PEAR files.  The context dependent tokenizer is an example of just one
+such other project.
+
 The pipeline can process two types of documents
  - plaintext files
  - Clinical Document Architecture (CDA) XML files that conform to the DTD provided 
-
+   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 AggregateCdaProcessor.xml  for CDA documents conforming to the provided DTD.
 
-The file cTAKESdesc/analysis_engine/AggregateCdaProcessor.xml is the aggregate
+The file desc/analysis_engine/AggregateCdaProcessor.xml is the aggregate
 analysis engine to use to run the entire pipeline, including the 
 CdaCasInitialzer analysis engine, which reads CDA documents that conform
 to the DTD provided, and create Segment annotations based on the sections
@@ -50,7 +54,7 @@ The parameters are:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 AggregatePlaintextProcessor.xml  for plaintext documents.
 
-The file cTAKESdesc/analysis_engine/AggregatePlaintextProcessor.xml is the aggregate
+The file desc/analysis_engine/AggregatePlaintextProcessor.xml is the aggregate
 analysis engine to use to run the entire pipeline, including the 
 SimpleSegmentAnnotator analysis engine, which creates a Segment annotation that
 wraps the entire plaintext document.  Other annotators in the pipeline require

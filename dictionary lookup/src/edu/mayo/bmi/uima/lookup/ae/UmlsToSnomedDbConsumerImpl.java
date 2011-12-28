@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.uima.UimaContext;
- 
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+
 import edu.mayo.bmi.uima.core.resource.JdbcConnectionResource;
 
 /**
@@ -53,7 +53,7 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
 	private static int iv_maxListSize;
 	private PreparedStatement mapPrepStmt;
 
-	public UmlsToSnomedDbConsumerImpl(UimaContext aCtx, Properties properties, int maxListSize)
+	public UmlsToSnomedDbConsumerImpl(AnnotatorContext aCtx, Properties properties, int maxListSize)
 			throws Exception
 	{
 		super(aCtx, properties);
@@ -68,7 +68,7 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
 	}
 
 
-	public UmlsToSnomedDbConsumerImpl(UimaContext aCtx, Properties properties)
+	public UmlsToSnomedDbConsumerImpl(AnnotatorContext aCtx, Properties properties)
 			throws Exception
 	{
 		super(aCtx, properties);

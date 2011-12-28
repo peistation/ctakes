@@ -42,14 +42,14 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 
 /**
  * This class creates a file that contains the frequencies of the word tokens found in a set
  * in a text collection.  This cas consumer could potentially be used to create a frequency
  * file for any kind of annotation but only counts Token annotations at the moment.   
  * 
- *  @see edu.mayo.bmi.uima.core.type.syntax.WordToken.java
+ *  @see edu.mayo.bmi.uima.core.type.WordToken.java
  */
 
 public class TokenFreqCasConsumer extends CasConsumer_ImplBase

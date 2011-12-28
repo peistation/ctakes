@@ -23,8 +23,9 @@
  */
 package edu.mayo.bmi.uima.core.ae;
 
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.analysis_engine.ResultSpecification;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
+import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 
 /**
@@ -36,10 +37,10 @@ import org.apache.uima.jcas.JCas;
  * @author Mayo Clinic
  *
  */
-public class NullAnnotator extends JCasAnnotator_ImplBase 
+public class NullAnnotator extends JTextAnnotator_ImplBase 
 {
 
-	   public void process(JCas jcas)
-       throws AnalysisEngineProcessException
+	   public void process(JCas jcas, ResultSpecification resultSpec)
+       throws AnnotatorProcessException
        {}
 }

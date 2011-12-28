@@ -35,7 +35,7 @@ import edu.mayo.bmi.fsm.token.SymbolToken;
 public class SymbolTokenAdapter extends CharacterTokenAdapter implements
 		SymbolToken
 {
-	public SymbolTokenAdapter(edu.mayo.bmi.uima.core.type.syntax.SymbolToken sta)
+	public SymbolTokenAdapter(edu.mayo.bmi.uima.core.type.SymbolToken sta)
 	{
 		super(sta);
 	}

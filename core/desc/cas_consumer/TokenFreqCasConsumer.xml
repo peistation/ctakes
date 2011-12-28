@@ -25,6 +25,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="../TypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

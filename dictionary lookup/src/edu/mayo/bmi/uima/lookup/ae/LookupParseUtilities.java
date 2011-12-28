@@ -39,12 +39,13 @@ import java.util.StringTokenizer;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
 
 import edu.mayo.bmi.dictionary.Dictionary;
 import edu.mayo.bmi.dictionary.DictionaryEngine;
@@ -52,8 +53,8 @@ import edu.mayo.bmi.dictionary.filter.StringPreLookupFilterImpl;
 import edu.mayo.bmi.dictionary.jdbc.JdbcDictionaryImpl;
 import edu.mayo.bmi.dictionary.lucene.LuceneDictionaryImpl;
 import edu.mayo.bmi.dictionary.strtable.StringTable;
-import edu.mayo.bmi.dictionary.strtable.StringTableDictionaryImpl;
 import edu.mayo.bmi.dictionary.strtable.StringTableFactory;
+import edu.mayo.bmi.dictionary.strtable.StringTableDictionaryImpl;
 import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.resource.JdbcConnectionResource;
@@ -65,7 +66,7 @@ import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
 public class LookupParseUtilities
 {
 	//returns a set of LookupSpec objects
-	public static Set parseDescriptor(File descFile, UimaContext aContext, int maxListSize)
+	public static Set parseDescriptor(File descFile, AnnotatorContext aContext, int maxListSize)
 			throws JDOMException, IOException, Exception
 	{
 		SAXBuilder saxBuilder = new SAXBuilder();
@@ -77,7 +78,7 @@ public class LookupParseUtilities
 		return parseLookupBindingXml(aContext, dictMap, doc.getRootElement().getChild("lookupBindings"));
 	}
 
-	public static Set parseDescriptor(File descFile, UimaContext aContext)
+	public static Set parseDescriptor(File descFile, AnnotatorContext aContext)
 	throws JDOMException, IOException, Exception
 	{
 		SAXBuilder saxBuilder = new SAXBuilder();
@@ -87,7 +88,7 @@ public class LookupParseUtilities
 		//ohnlp-Bugs-3296301
 		return parseLookupBindingXml(aContext, dictMap, doc.getRootElement().getChild("lookupBindings"));
 	}
-	private static Map parseDictionaries(UimaContext aContext,
+	private static Map parseDictionaries(AnnotatorContext aContext,
 			Element dictetteersEl) throws AnnotatorContextException, Exception
 	{
 		Map m = new HashMap();
@@ -104,7 +105,7 @@ public class LookupParseUtilities
 		return m;
 	}
 
-	private static DictionaryEngine parseDictionaryXml(UimaContext annotCtx,
+	private static DictionaryEngine parseDictionaryXml(AnnotatorContext annotCtx,
 			Element rootDictEl) throws AnnotatorContextException, Exception
 	{
 		String extResrcKey = rootDictEl.getAttributeValue("externalResourceKey");
@@ -221,7 +222,7 @@ public class LookupParseUtilities
 	}
 
 	
-	private static Set parseLookupBindingXml(UimaContext annotCtx,
+	private static Set parseLookupBindingXml(AnnotatorContext annotCtx,
 			Map dictMap, Element lookupBindingsEl) throws Exception {
 
 		Set lsSet = new HashSet();
@@ -238,9 +239,9 @@ public class LookupParseUtilities
 				throw new Exception("Dictionary undefined: " + dictID);
 			}
 
-			Class[] constrArgs = { UimaContext.class, Properties.class };
-			Class[] constrArgsConsum = { UimaContext.class, Properties.class, int.class };//ohnlp-Bugs-3296301
-			Class[] constrArgsConsumB = { UimaContext.class, Properties.class };
+			Class[] constrArgs = { AnnotatorContext.class, Properties.class };
+			Class[] constrArgsConsum = { AnnotatorContext.class, Properties.class, int.class };//ohnlp-Bugs-3296301
+			Class[] constrArgsConsumB = { AnnotatorContext.class, Properties.class };
 
 			Element lookupInitEl = bindingEl.getChild("lookupInitializer");
 			String liClassName = lookupInitEl.getAttributeValue("className");

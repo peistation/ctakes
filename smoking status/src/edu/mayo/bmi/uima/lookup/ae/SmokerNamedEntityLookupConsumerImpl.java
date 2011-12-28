@@ -4,16 +4,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation;
-import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.OntologyConcept;
+import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.lookup.ae.BaseLookupConsumerImpl;
+import edu.mayo.bmi.uima.lookup.ae.LookupConsumer;
 
 /**
  * copied from edu.may.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl in the "Dictionary Lookup" project
@@ -29,14 +31,14 @@ public class SmokerNamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 
 	private Properties iv_props;
 
-	public SmokerNamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props)
+	public SmokerNamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props)
 	{
 		// TODO property validation
 		iv_props = props;
 	}
 
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnalysisEngineProcessException
+			throws AnnotatorProcessException
 	{
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
 		while (hitsByOffsetItr.hasNext())
@@ -71,7 +73,7 @@ public class SmokerNamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 			SmokerNamedEntityAnnotation neAnnot = new SmokerNamedEntityAnnotation(jcas); //modification
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
-			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
+			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
 			neAnnot.addToIndexes();
 		}

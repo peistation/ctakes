@@ -2,7 +2,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>org.chboston.cnlp.ctakes.coref.uima.ae.MipacqMarkableCreator</annotatorImplementationName>
+  <annotatorImplementationName>edu.mayo.bmi.uima.coref.ae.MipacqMarkableCreator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>MarkableCreator</name>
     <description>Create Markables from NEs and Pronouns</description>
@@ -82,7 +82,6 @@
     <typeSystemDescription>
       <imports>
         <import location="type-system/CorefTypes.xml"/>
-        <import location="../../common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

@@ -7,7 +7,7 @@
 <import location="SimpleSegmentAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
-<import location="../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>  
+<import location="TokenizerAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="POSTagger">
 <import location="POSTagger.xml"/>

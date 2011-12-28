@@ -20,8 +20,8 @@
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
-<name>Smoking Status AE</name>
-<description>Aggregate AE used to run the Smoking Status pipeline.  This should be followed by the RecordResolutionCasConsumer.</description>
+<name>NHGRI RuntimeTAE</name>
+<description>Aggregate TAE used to run the Smoking Status pipeline.  This should be followed by the RecordResolutionCasConsumer.</description>
 <version></version>
 <vendor></vendor>
 <configurationParameters searchStrategy="language_fallback"/>

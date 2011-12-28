@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import opennlp.model.MaxentModel;
+import opennlp.maxent.MaxentModel;
 import opennlp.maxent.io.SuffixSensitiveGISModelReader;
 
 import org.apache.uima.resource.DataResource;

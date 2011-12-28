@@ -124,7 +124,7 @@ POS tagger/bin;^
 core/lib/log4j-1.2.8.jar;^
 core/lib/jdom.jar;^
 core/lib/lucene-1.4-final.jar;^
-core/lib/opennlp-tools-1.4.3.jar;^
+core/lib/opennlp-tools-1.4.0.jar;^
 core/lib/maxent-2.5.0.jar;^
 core/lib/OpenAI_FSM.jar;^
 core/lib/trove.jar;^
@@ -166,7 +166,7 @@ POS\ tagger/bin:\
 core/lib/log4j-1.2.8.jar:\
 core/lib/jdom.jar:\
 core/lib/lucene-1.4-final.jar:\
-core/lib/opennlp-tools-1.4.3.jar:\
+core/lib/opennlp-tools-1.4.0.jar:\
 core/lib/maxent-2.5.0.jar:\
 core/lib/OpenAI_FSM.jar:\
 core/lib/trove.jar:\

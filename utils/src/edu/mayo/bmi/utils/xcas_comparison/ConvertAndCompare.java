@@ -36,7 +36,7 @@ public class ConvertAndCompare {
 		Hashtable<String, String> map = new Hashtable<String, String>();
 		map.put("edu.mayo.bmi.uima.common.type.DocumentID",
 				"edu.mayo.bmi.uima.common.types.DocumentIDAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation",
+		map.put("edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation",
 				"edu.mayo.bmi.uima.lookup.types.LookupWindowAnnotation");
 //		Specify your mappings here
 /*		map.put("",
@@ -68,8 +68,8 @@ public class ConvertAndCompare {
 		map.put("",
 				"uima.tt.VGAnnotation");
 */
-		map.put("edu.mayo.bmi.uima.cdt.type.RomanNumeralAnnotation",
-				"edu.mayo.bmi.uima.cdt.types.RomanNumeralAnnotation");
+		map.put("edu.mayo.bmi.uima.cdt.type.RomanNumberalAnnotation",
+				"edu.mayo.bmi.uima.cdt.types.RomanNumberalAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.FractionAnnotation",
 				"edu.mayo.bmi.uima.cdt.types.FractionAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.DateAnnotation",
@@ -80,11 +80,11 @@ public class ConvertAndCompare {
 				"edu.mayo.bmi.uima.cdt.types.MeasurementAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.PersonTitleAnnotation",
 				"edu.mayo.bmi.uima.cdt.types.PersonTitleAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.Segment",
+		map.put("edu.mayo.bmi.uima.core.type.Segment",
 				"edu.mayo.bmi.uima.common.types.SegmentAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.Sentence",
+		map.put("edu.mayo.bmi.uima.core.type.Sentence",
 				"edu.mayo.bmi.uima.common.types.SentenceAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.syntax.WordToken",
+		map.put("edu.mayo.bmi.uima.core.type.WordToken",
 				"edu.mayo.bmi.uima.common.types.WordTokenAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.NumToken",
 				"edu.mayo.bmi.uima.common.types.NumTokenAnnotation");
@@ -94,7 +94,7 @@ public class ConvertAndCompare {
 				"edu.mayo.bmi.uima.common.types.SymbolTokenAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.NewlineToken",
 				"edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation",
+		map.put("edu.mayo.bmi.uima.core.type.NamedEntity",
 				"edu.mayo.bmi.uima.common.types.NamedEntityAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.UmlsConcept",
 				"edu.mayo.bmi.uima.common.types.UmlsConcept");

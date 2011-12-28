@@ -89,16 +89,12 @@ public class RouteFSM {
 		iv_singleTopicalWordSet.add("cream");
 		iv_singleTopicalWordSet.add("creams");
 		iv_singleTopicalWordSet.add("pv");
-		iv_singleTopicalWordSet.add("p.v.");// TokenizerPTB handles abbreviations as tokens now.
-		iv_singleTopicalWordSet.add("p.v");
 		iv_singleTopicalWordSet.add("topically");
 		iv_singleTopicalWordSet.add("topical");
 		iv_singleTopicalWordSet.add("vaginally");
 		
 		
 		iv_singleOralWordSet.add("po");
-		iv_singleOralWordSet.add("p.o.");// TokenizerPTB handles abbreviations as tokens now.
-		iv_singleOralWordSet.add("p.o");
 		iv_singleOralWordSet.add("mouth");
 		iv_singleOralWordSet.add("orally");
 		iv_singleOralWordSet.add("oral");
@@ -106,9 +102,7 @@ public class RouteFSM {
 		iv_singleRectalWordSet.add("rectally");
 		iv_singleRectalWordSet.add("anally");
 		iv_singleRectalWordSet.add("pr");
-		iv_singleRectalWordSet.add("p.r.");// TokenizerPTB handles abbreviations as tokens now.
-		iv_singleRectalWordSet.add("p.r");
-		
+
 		iv_singleInjectWordSet.add("subcutaneously");
 		iv_singleInjectWordSet.add("subcutaneously");
 		iv_singleInjectWordSet.add("intervenous");

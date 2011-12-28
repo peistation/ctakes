@@ -34,19 +34,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.UmlsConcept;
+import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 /**
  * Implementation that takes UMLS dictionary lookup hits and stores as NamedEntity 
@@ -79,7 +77,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 	protected Properties props;
 
 	
-	public UmlsToSnomedConsumerImpl(UimaContext aCtx, Properties properties)
+	public UmlsToSnomedConsumerImpl(AnnotatorContext aCtx, Properties properties)
 			throws Exception
 	{
 		// TODO property validation could be done here
@@ -108,7 +106,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 	
 
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnalysisEngineProcessException
+			throws AnnotatorProcessException
 	{
 		try
 		{
@@ -193,18 +191,11 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 							arrIdx++;
 						}
 
-						IdentifiedAnnotation neAnnot;
-						if (neType.intValue() == CONST.NE_TYPE_ID_DRUG) {
-							neAnnot = new MedicationEventMention(jcas);	
-						} else {
-							neAnnot = new EntityMention(jcas);	
-						
-						}
-
+						NamedEntity neAnnot = new NamedEntity(jcas);
 						neAnnot.setTypeID(neType.intValue());
 						neAnnot.setBegin(neBegin);
 						neAnnot.setEnd(neEnd);
-						neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
+						neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
 						neAnnot.setOntologyConceptArr(conceptArr);
 						neAnnot.addToIndexes();
 					}
@@ -213,23 +204,23 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 			}
 		}
 		catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
+			throw new AnnotatorProcessException(e);
 		}
 	}
 
 	private int getNamedEntityType(String tui) throws Exception
 	{
 		if (disorderTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_DISORDER;
+			return TypeSystemConst.NE_TYPE_ID_DISORDER;
 		}
 		else if (findingTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_FINDING;
+			return TypeSystemConst.NE_TYPE_ID_FINDING;
 		}
 		else if (antSiteTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
+			return TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE;
 		}
 		else if (procedureTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_PROCEDURE;
+			return TypeSystemConst.NE_TYPE_ID_PROCEDURE;
 		}
 		else {
 			throw new Exception("TUI is not part of valid named entity types: "

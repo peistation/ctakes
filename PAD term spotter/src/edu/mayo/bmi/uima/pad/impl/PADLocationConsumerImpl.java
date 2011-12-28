@@ -8,15 +8,17 @@ import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.pad.type.PADLocation;
 
 
@@ -31,13 +33,13 @@ extends PADConsumerImpl
   
   private static boolean skipRest = false;
   
-  public PADLocationConsumerImpl(UimaContext aCtx, Properties props)
+  public PADLocationConsumerImpl(AnnotatorContext aCtx, Properties props)
   throws AnnotatorContextException, IOException
   { 
   }
 
   public void consumeHits(JCas jcas, Iterator lhItr)
-      throws AnalysisEngineProcessException
+      throws AnnotatorProcessException
   {
     Iterator hitsByOffsetItr = organizeByOffset(lhItr);
     

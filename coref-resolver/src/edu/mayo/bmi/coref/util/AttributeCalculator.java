@@ -24,9 +24,11 @@ import java.util.LinkedList;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import edu.mayo.bmi.uima.chunker.type.Chunk;
+import edu.mayo.bmi.uima.core.type.BaseToken;
 //import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.coref.type.Markable;
 

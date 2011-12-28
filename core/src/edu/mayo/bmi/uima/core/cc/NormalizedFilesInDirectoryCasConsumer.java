@@ -37,7 +37,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**

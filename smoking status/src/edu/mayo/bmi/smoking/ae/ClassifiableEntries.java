@@ -24,10 +24,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceManager;
 import org.apache.uima.resource.ResourceProcessException;
@@ -42,9 +39,9 @@ import edu.mayo.bmi.smoking.type.SmokingDocumentClassification;
 import edu.mayo.bmi.smoking.util.ClassifiableEntry;
 import edu.mayo.bmi.smoking.util.TruthValue;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.DocumentID;
+import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 /**
@@ -270,10 +267,10 @@ public class ClassifiableEntries extends JCasAnnotator_ImplBase {
 		String recordID = null;
 
 		if (iv_logger.isInfoEnabled()) {
-		 	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
-			if (documentIDIterator.hasNext()) {
-				DocumentID didAnn = (DocumentID) documentIDIterator.next();
+			Iterator<?> docItr = jcas.getJFSIndexRepository()
+					.getAnnotationIndex(DocumentID.type).iterator();
+			if (docItr.hasNext()) {
+				DocumentID didAnn = (DocumentID) docItr.next();
 				recordID = didAnn.getDocumentID();
 
 				if (iv_logger.isInfoEnabled())

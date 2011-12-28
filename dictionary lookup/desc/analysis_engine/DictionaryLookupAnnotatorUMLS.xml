@@ -84,6 +84,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
+        <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -91,11 +92,11 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
         </outputs>
         <languagesSupported/>
       </capability>

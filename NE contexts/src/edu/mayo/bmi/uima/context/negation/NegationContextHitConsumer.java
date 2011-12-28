@@ -27,7 +27,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.context.ContextHitConsumer;
 import edu.mayo.bmi.uima.context.ContextHit;
 import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
@@ -38,9 +38,9 @@ import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
 public class NegationContextHitConsumer extends NamedEntityContextHitConsumer implements ContextHitConsumer {
 	public void consumeHit(JCas jcas, Annotation focusAnnot, int scope, ContextHit ctxHit)
 			throws AnalysisEngineProcessException {
-		if (focusAnnot instanceof IdentifiedAnnotation) {
-			IdentifiedAnnotation neAnnot = (IdentifiedAnnotation) focusAnnot;
-			neAnnot.setPolarity(-1);
+		if (focusAnnot instanceof NamedEntity) {
+			NamedEntity neAnnot = (NamedEntity) focusAnnot;
+			neAnnot.setCertainty(-1);
 		}
 
 		createContextAnnot(jcas, focusAnnot, scope, ctxHit).addToIndexes();

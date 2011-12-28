@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.analysis_engine.ResultSpecification;
 import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
@@ -23,11 +20,10 @@ import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
@@ -49,11 +45,11 @@ import edu.mayo.bmi.uima.sideeffect.util.SEUtil;
  * ... means zero or more non-PSE/non-drug string 
  * *** means zero or more string (can be PSE/drug)
  */
-public class SideEffectAnnotator extends JCasAnnotator_ImplBase
+public class SideEffectAnnotator extends JTextAnnotator_ImplBase
 {	
 	private class PotentialSideEffect {
-		IdentifiedAnnotation ne; //NE of PSE
-		IdentifiedAnnotation drug; //potential causative drug
+		NamedEntity ne; //NE of PSE
+		NamedEntity drug; //potential causative drug
 		String sentence; //sentence that contains PSE and potential causative drug
 		int senBegin, senEnd; //offset of sentence
 	}
@@ -79,8 +75,8 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	private List<String> madeVerb = new ArrayList<String>();
 	private List<String> afterWord = new ArrayList<String>();
 
-	public void initialize(UimaContext annotCtx)
-	throws ResourceInitializationException
+	public void initialize(AnnotatorContext annotCtx)
+	throws AnnotatorInitializationException, AnnotatorConfigurationException
 	{ 
 		super.initialize(annotCtx);	
 		
@@ -88,8 +84,8 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 		FileResource fResrc = null;
 		try {
 			fResrc = (FileResource) getContext().getResourceObject("sideEffectTable");	
-		} catch (Exception e) {
-			throw new ResourceInitializationException(e);
+		} catch (AnnotatorContextException e) {
+			e.printStackTrace();
 		}
 		//set a side-effect dictionary
 		setMap(fResrc.getFile(), keyDrugMap, sideEffectMap);
@@ -136,13 +132,13 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	        str = (String[]) getContext().getConfigParameterValue("hasPatternOfPseAfterDrug");
 	        for (int i = 0; i < str.length; i++)
 	        	afterWord.add(str[i]);	        
-		} catch (Exception e) {
-			throw new ResourceInitializationException(e);
+		} catch (AnnotatorContextException e) {
+			e.printStackTrace();
 		}		
 	}
 
-	public void process(JCas jcas)
-	throws AnalysisEngineProcessException
+	public void process(JCas jcas, ResultSpecification resultSpec)
+	throws AnnotatorProcessException
 	{
 		List<PotentialSideEffect> potentialSideEffectLst;
 		List<SideEffect> sideEffectLst;
@@ -170,12 +166,12 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	 */
 	private void removeDuplicatedNEs(JCas jcas) {
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-        Iterator neItr= indexes.getAnnotationIndex(IdentifiedAnnotation.type).iterator();
+        Iterator neItr= indexes.getAnnotationIndex(NamedEntity.type).iterator();
         Set<String> spanSet = new HashSet<String>();
-        List<IdentifiedAnnotation> duplicatedNE = new ArrayList<IdentifiedAnnotation>();
+        List<NamedEntity> duplicatedNE = new ArrayList<NamedEntity>();
         
         while (neItr.hasNext()) {
-        	IdentifiedAnnotation nea = (IdentifiedAnnotation) neItr.next();        	
+        	NamedEntity nea = (NamedEntity) neItr.next();        	
         	String span = Integer.toString(nea.getTypeID())+"|"+
         		Integer.toString(nea.getBegin())+"|"+Integer.toString(nea.getEnd());
         	if(spanSet.contains(span)) {
@@ -184,7 +180,7 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
         	spanSet.add(span);
         }
         
-        for(IdentifiedAnnotation ne : duplicatedNE) {
+        for(NamedEntity ne : duplicatedNE) {
         	ne.removeFromIndexes();
         }
 	}
@@ -197,15 +193,15 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	 * @param jcas
 	 * @return List of non-negated signs/symptoms & diseases/disorders in the document 
 	 */
-	private List<IdentifiedAnnotation> getSideEffectNEs(JCas jcas) {
+	private List<NamedEntity> getSideEffectNEs(JCas jcas) {
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-        Iterator neItr= indexes.getAnnotationIndex(IdentifiedAnnotation.type).iterator();
-        List<IdentifiedAnnotation> l = new ArrayList<IdentifiedAnnotation>();
+        Iterator neItr= indexes.getAnnotationIndex(NamedEntity.type).iterator();
+        List<NamedEntity> l = new ArrayList<NamedEntity>();
         
         while (neItr.hasNext()) {
-        	IdentifiedAnnotation nea = (IdentifiedAnnotation) neItr.next();
+        	NamedEntity nea = (NamedEntity) neItr.next();
         	if(setionsToIgnore.contains(nea.getSegmentID())) continue;
-        	if(nea.getPolarity()==-1) continue; //negated
+        	if(nea.getCertainty()==-1) continue; //negated
         	       	
         	boolean addFlag = true;
         	        	
@@ -214,7 +210,7 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
         		if(l.size()==0) l.add(nea);
         		else {        			
 	        		for(int i=0; i<l.size(); i++) {
-	        			IdentifiedAnnotation x = (IdentifiedAnnotation) l.get(i);
+	        			NamedEntity x = (NamedEntity) l.get(i);
 	        			int j = SEUtil.contains(nea.getBegin(), nea.getEnd(), 
 	        						x.getBegin(), x.getEnd());
 	        			if(j==1) {
@@ -246,21 +242,21 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	 * @return List of PotentialSideEffect
 	 */
 	private List<PotentialSideEffect> getPotentialSideEffects(JCas jcas) {		
-        List<IdentifiedAnnotation> l = getSideEffectNEs(jcas);        
+        List<NamedEntity> l = getSideEffectNEs(jcas);        
         List<PotentialSideEffect> ll = new ArrayList<PotentialSideEffect>();
         
         for(int i=0; i<l.size(); i++) {
-        	IdentifiedAnnotation ne = (IdentifiedAnnotation) l.get(i);
+        	NamedEntity ne = (NamedEntity) l.get(i);
     		int[] senSpan = SEUtil.getSentenceSpanContainingGivenSpan(jcas, ne.getBegin(), ne.getEnd());
     		String sentence = SEUtil.getSentenceTextContainingGivenSpan(jcas, ne.getBegin(), ne.getEnd()).trim();
     		boolean foundDrug = false;
     		
     		//check the same sentence if it contains drug
     		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-    				jcas, IdentifiedAnnotation.type, senSpan[0], senSpan[1]+1);
+    				jcas, NamedEntity.type, senSpan[0], senSpan[1]+1);
     		
     		while(neIter.hasNext()) {
-    			IdentifiedAnnotation n = (IdentifiedAnnotation) neIter.next();
+    			NamedEntity n = (NamedEntity) neIter.next();
     			if(n.getTypeID()==1) { //drug    				
     				PotentialSideEffect pse = new PotentialSideEffect();
         			pse.ne = ne;
@@ -281,11 +277,11 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
     			
     			//only if they are in the same line
     			if(SEUtil.isSpanInSameLine(jcas, previousSenSpan[0], senSpan[1])) {
-    				neIter = FSUtil.getAnnotationsInSpanIterator(jcas, IdentifiedAnnotation.type, 
+    				neIter = FSUtil.getAnnotationsInSpanIterator(jcas, NamedEntity.type, 
     						previousSenSpan[0], previousSenSpan[1]+1);
 
     				while(neIter.hasNext()) {
-    					IdentifiedAnnotation n = (IdentifiedAnnotation) neIter.next();
+    					NamedEntity n = (NamedEntity) neIter.next();
     					if(n.getTypeID()==1) { //drug
     						PotentialSideEffect pse = new PotentialSideEffect();
     						pse.ne = ne;
@@ -471,7 +467,7 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	 */
 	private boolean hasPatternOfPseDueToDrug(JCas jcas, PotentialSideEffect pse, String input) {
 		//false if drug is negated
-		if(pse.drug.getPolarity()==-1) return false;
+		if(pse.drug.getCertainty()==-1) return false;
 
 		//false if not satisfied a given pattern
 		PatternMatch pm = new PatternMatch("(<@PSE>).*(KW).*(<@DRUG>)", input, causeWord1);
@@ -664,11 +660,11 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 		
 		//if sideEffectWord is negated return false
 		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-				jcas, IdentifiedAnnotation.type, pse.senBegin, pse.senEnd+1);
+				jcas, NamedEntity.type, pse.senBegin, pse.senEnd+1);
 		while(neIter.hasNext()) {
-			IdentifiedAnnotation ne = (IdentifiedAnnotation) neIter.next();
+			NamedEntity ne = (NamedEntity) neIter.next();
 			if(ne.getCoveredText().replace('-',' ').toLowerCase().trim()
-					.indexOf(pm.mat.group(1))!=-1 && ne.getPolarity()==-1) 
+					.indexOf(pm.mat.group(1))!=-1 && ne.getCertainty()==-1) 
 				return false;			
 		}
 				
@@ -831,11 +827,11 @@ public class SideEffectAnnotator extends JCasAnnotator_ImplBase
 	private String getRegexInput(JCas jcas, PotentialSideEffect pse) {		
 		String str = pse.sentence.toLowerCase();
 		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-	    		   jcas, IdentifiedAnnotation.type, pse.senBegin, pse.senEnd+1);
+	    		   jcas, NamedEntity.type, pse.senBegin, pse.senEnd+1);
 		
 		//NEs are stored in CAS in order of offsets so using replaceFirst() works
 		while(neIter.hasNext()) {
-			IdentifiedAnnotation nea = (IdentifiedAnnotation) neIter.next();
+			NamedEntity nea = (NamedEntity) neIter.next();
 			if(nea.getTypeID()==1) {
 				String drug="";
 				if(nea.getBegin()==pse.drug.getBegin() && nea.getEnd()==pse.drug.getEnd())

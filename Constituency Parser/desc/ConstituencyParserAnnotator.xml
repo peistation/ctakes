@@ -20,13 +20,14 @@
       <nameValuePair>
         <name>modelFilename</name>
         <value>
-          <string>fastModel</string>
+          <string>parsermodel</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
+        <import location="TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

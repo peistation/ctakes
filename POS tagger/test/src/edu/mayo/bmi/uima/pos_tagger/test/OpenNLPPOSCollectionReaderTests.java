@@ -38,7 +38,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
 
 public class OpenNLPPOSCollectionReaderTests {
 

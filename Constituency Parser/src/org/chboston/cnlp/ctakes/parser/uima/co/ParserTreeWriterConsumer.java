@@ -30,8 +30,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
-
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
 
 public class ParserTreeWriterConsumer extends CasConsumer_ImplBase {
 

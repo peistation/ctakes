@@ -27,23 +27,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.FSIterator;
+import org.apache.uima.analysis_engine.ResultSpecification;
+import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
+import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.cas.TOP;
-import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.util.Pair;
-import edu.mayo.bmi.uima.core.type.util.Pairs;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.Properties;
+import edu.mayo.bmi.uima.core.type.Property;
+import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.WordToken;
 
 /**
  * UIMA annotator that prepares the CAS for output - performs
@@ -51,15 +52,16 @@ import edu.mayo.bmi.uima.core.type.util.Pairs;
  * 
  * @author Mayo Clinic
  */
-public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
+public class ExtractionPrepAnnotator extends JTextAnnotator_ImplBase {
 	private String iv_annotVerPropKey;
 	private int iv_annotVer;
 
 	/**
 	 * Method invoked by UIMA framework to initialize this annotator
 	 */
-	public void initialize(UimaContext aCtx)
-			throws ResourceInitializationException {
+	public void initialize(AnnotatorContext aCtx)
+			throws AnnotatorInitializationException,
+			AnnotatorConfigurationException {
 		
 		super.initialize(aCtx);
 
@@ -67,7 +69,7 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 			iv_annotVer = ((Integer) aCtx.getConfigParameterValue("AnnotationVersion")).intValue();
 			iv_annotVerPropKey = (String) aCtx.getConfigParameterValue("AnnotationVersionPropKey");
 		} catch (Exception e) {
-			throw new ResourceInitializationException(e);
+			throw new AnnotatorInitializationException(e);
 		}
 	
 	}
@@ -75,8 +77,8 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 	/**
 	 * Method invoked by UIMA framework to process a document
 	 */
-	public void process(JCas jcas)
-			throws AnalysisEngineProcessException {
+	public void process(JCas jcas, ResultSpecification rs)
+			throws AnnotatorProcessException {
 		generateUidValues(jcas);
 		generateTokenNormForms(jcas);
 		assignNamedEntityFeats(jcas);
@@ -90,26 +92,26 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 	 * @param jcas
 	 */
 	private void storeAnnotationVersion(JCas jcas) {
-	 	FSIterator<TOP> itr = jcas.getJFSIndexRepository().getAllIndexedFS(Pairs.type);
+		Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(Properties.type).iterator();
 		if (itr == null || !itr.hasNext())
 			return;
 
-		Pairs props = (Pairs) itr.next(); 
+		Properties props = (Properties) itr.next(); 
 
 		// create a new property array that is one item bigger
-		FSArray propArr = props.getPairs();
+		FSArray propArr = props.getPropArr();
 		FSArray newPropArr = new FSArray(jcas, propArr.size() + 1);
 		for (int i = 0; i < propArr.size(); i++) {
 			newPropArr.set(i, propArr.get(i));
 		}
 
-		Pair annotVerProp = new Pair(jcas);    		
-		annotVerProp.setAttribute(iv_annotVerPropKey);
+		Property annotVerProp = new Property(jcas);
+		annotVerProp.setKey(iv_annotVerPropKey);
 		annotVerProp.setValue(String.valueOf(iv_annotVer));
 
 		// add annotation version prop as last item in array
 		newPropArr.set(newPropArr.size() - 1, annotVerProp);
-		props.setPairs(newPropArr);
+		props.setPropArr(newPropArr);
 	}
 
 	/**
@@ -122,7 +124,7 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 				IdentifiedAnnotation.type).iterator();
 		while (itr.hasNext()) {
 			IdentifiedAnnotation idAnnot = (IdentifiedAnnotation) itr.next();
-			idAnnot.setId(uid);
+			idAnnot.setUid(uid);
 			uid++;
 		}
 	}
@@ -173,10 +175,10 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 		}
 
 		// For each NE, assign segment ID and assign ontology concept OIDs if applicable
-		Iterator neItr = indexes.getAnnotationIndex(IdentifiedAnnotation.type).iterator();
+		Iterator neItr = indexes.getAnnotationIndex(NamedEntity.type).iterator();
 		while (neItr.hasNext()) {
 			
-			IdentifiedAnnotation neAnnot = (IdentifiedAnnotation) neItr.next();
+			NamedEntity neAnnot = (NamedEntity) neItr.next();
 
 			// assign segment ID
 			Iterator segItr = segmentSet.iterator();

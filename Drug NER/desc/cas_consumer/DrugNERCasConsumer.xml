@@ -48,7 +48,7 @@
       <nameValuePair>
         <name>OutputDirectory</name>
         <value>
-          <string>testdata/drugnertest/testoutput/xcas</string>
+          <string>R:\Dept\projects\Text\NHGRI\March2010\test\vinod_ctakes_xcas</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -75,7 +75,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
         </inputs>
         <outputs/>
         <inputSofas>

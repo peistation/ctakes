@@ -27,7 +27,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.context.ContextHitConsumer;
 import edu.mayo.bmi.uima.context.ContextHit;
 import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
@@ -40,10 +40,9 @@ public class StatusContextHitConsumer extends NamedEntityContextHitConsumer impl
 			throws AnalysisEngineProcessException {
 		
 		Integer status = (Integer) ctxHit.getMetaData(StatusContextAnalyzer.CTX_HIT_KEY_STATUS_TYPE);
-		if (focusAnnot instanceof IdentifiedAnnotation) {
-			IdentifiedAnnotation neAnnot = (IdentifiedAnnotation) focusAnnot;
-			//TODO: currently status is an int in the old system.  Let's update this to a constant string?
-			neAnnot.setUncertainty(status);
+		if (focusAnnot instanceof NamedEntity) {
+			NamedEntity neAnnot = (NamedEntity) focusAnnot;
+			neAnnot.setStatus(status.intValue());
 		}
 
 		createContextAnnot(jcas, focusAnnot, scope, ctxHit).addToIndexes();

@@ -26,15 +26,14 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.chunker.type.Chunk;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.WordToken;
 
 // TODO: This class hardcoded all the criteria,
 // which should be replaced by a parser of
@@ -43,10 +42,9 @@ public class AnnotationSelector {
 
 	public static ArrayList<Annotation> selectNE (JCas jcas) {
 		ArrayList<Annotation> ret = new ArrayList<Annotation>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(EntityMention.type).iterator();
+		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(NamedEntity.type).iterator();
 		while (iter.hasNext()) {
-			EntityMention a = (EntityMention) iter.next();
-			if(a.getOntologyConceptArr() != null)
+			NamedEntity a = (NamedEntity) iter.next();
 //			int tid = a.getTypeID();
 //			if (tid == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE ||
 //				tid == TypeSystemConst.NE_TYPE_ID_DISORDER ||

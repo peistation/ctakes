@@ -66,6 +66,7 @@ set to '|' then the following line from a file:
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="../TypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

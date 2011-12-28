@@ -22,15 +22,15 @@ import java.util.List;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 import edu.mayo.bmi.uima.coref.type.Markable;
+import edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation;
 
 public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
@@ -113,48 +113,48 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcmIsDrug () {
-		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_DRUG)
+		if (m.getContent() instanceof NamedEntity &&
+				((NamedEntity)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_DRUG)
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcmIsDisorder () {
-		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_DISORDER)
+		if (m.getContent() instanceof NamedEntity &&
+				((NamedEntity)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_DISORDER)
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcmIsFinding () {
-		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_FINDING)
+		if (m.getContent() instanceof NamedEntity &&
+				((NamedEntity)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_FINDING)
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcmIsProcedure () {
-		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_PROCEDURE)
+		if (m.getContent() instanceof NamedEntity &&
+				((NamedEntity)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_PROCEDURE)
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcmIsAnatomicalSite () {
-		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_ANATOMICAL_SITE)
+		if (m.getContent() instanceof NamedEntity &&
+				((NamedEntity)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE)
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcmWnClass () {
-		if (m.getContent() instanceof IdentifiedAnnotation) {
-			IdentifiedAnnotation ne = (IdentifiedAnnotation) m.getContent();
+		if (m.getContent() instanceof NamedEntity) {
+			NamedEntity ne = (NamedEntity) m.getContent();
 			return String.valueOf(ne.getTypeID());
 		} else
 			return "0";

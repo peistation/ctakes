@@ -23,14 +23,7 @@
     <typeDescription>
       <name>org.mipacq.annotation.type.NonCoreferenceRelation</name>
       <description>Hypothesized but negative example of coreference.  Used for debugging coreference model.</description>
-      <supertypeName>org.mipacq.annotation.type.BinaryRelation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>coref_prob</name>
-          <description/>
-          <rangeTypeName>uima.cas.Double</rangeTypeName>
-        </featureDescription>
-      </features>
+      <supertypeName>org.mipacq.annotation.type.CoreferenceRelation</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

@@ -28,6 +28,7 @@ Also creates Sentence annotations.</description>
 <configurationParameterSettings/>
 <typeSystemDescription>
 <imports>
+<import location="TypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

@@ -81,18 +81,7 @@ public class FormFSM {
 	    iv_fullTextSet.add("spray");
 	    iv_fullTextSet.add("suppository");
 	    iv_fullTextSet.add("syrup");
-	    iv_fullTextSet.add("drop");
-		iv_fullTextSet.add("drops");
-		iv_fullTextSet.add("dl");
-		iv_fullTextSet.add("cl");
-		iv_fullTextSet.add("cc");
-		iv_fullTextSet.add("ml");
-		iv_fullTextSet.add("liter");
-		iv_fullTextSet.add("liters");
-		iv_fullTextSet.add("centiliter");
-		iv_fullTextSet.add("centiliters");
-		iv_fullTextSet.add("milliliter");
-		iv_fullTextSet.add("milliliters");
+
  
 		iv_machineSet.add(getFormMachine());
 		

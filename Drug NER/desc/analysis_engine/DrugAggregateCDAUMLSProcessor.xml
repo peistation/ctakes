@@ -68,7 +68,7 @@
       <capability>
         <inputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.DocumentID</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation</type>
         </inputs>
         <outputs/>

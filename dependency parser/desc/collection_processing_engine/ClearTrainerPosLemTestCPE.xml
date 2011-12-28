@@ -55,7 +55,7 @@
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>models/mayo-pos.zip</string>
+                        <string>models/postagger.model.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>

@@ -23,7 +23,7 @@
  */
 package edu.mayo.bmi.uima.core.resource;
 
-import opennlp.model.MaxentModel;
+import opennlp.maxent.MaxentModel;
 
 /**
  * OpenNLP Maxent Model resource.

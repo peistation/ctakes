@@ -26,11 +26,8 @@ import org.apache.uima.cas.FSIterator;
  * Non-Annotation type objects are ignored.
  * Sort order is determined by the character offsets:
  * a1.getBegin() - a2.getBegin() || a1.getEnd - a2.getEnd();
- * @author Mayo Clinic
+ * @author Jiaping Zheng
  *
- */
-/* @author Jiaping Zheng
- * 
  */
 public class FSIteratorToList {
 

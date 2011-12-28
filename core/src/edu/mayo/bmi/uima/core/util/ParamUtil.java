@@ -28,10 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
-import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.resource.ResourceAccessException;
 
 public class ParamUtil {
 
@@ -43,8 +41,8 @@ public class ParamUtil {
 	 *         optional or not set.
 	 * @throws AnnotatorContextException
 	 */
-	public static Set<String> getStringParameterValuesSet(String parameterName, UimaContext annotatorContext)
-			throws ResourceAccessException {
+	public static Set<String> getStringParameterValuesSet(String parameterName, AnnotatorContext annotatorContext)
+			throws AnnotatorContextException {
 		Set<String> returnValues = new HashSet<String>();
 		String[] strings = (String[]) annotatorContext.getConfigParameterValue(parameterName);
 		if (strings == null)
@@ -57,7 +55,7 @@ public class ParamUtil {
 	}
 
 	public static Map<String, String> getStringParameterValuesMap(String parameterName,
-			UimaContext annotatorContext, String keyValueDelimiter) throws ResourceAccessException {
+			AnnotatorContext annotatorContext, String keyValueDelimiter) throws AnnotatorContextException {
 		String[] paramValues = (String[]) annotatorContext.getConfigParameterValue(parameterName);
 		Map<String, String> map = new HashMap<String, String>();
 		for (int i = 0; i < paramValues.length; i++) {

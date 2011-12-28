@@ -13,7 +13,7 @@
 <import location="SentenceDetectorAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
-<import location="../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>  
+<import location="TokenizerAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="POSTagger">
 <import location="POSTagger.xml"/>
@@ -61,8 +61,8 @@
 <flowConstraints>
 <fixedFlow>
 <node>SimpleSegmentAnnotator</node>
-<node>SentenceDetectorAnnotator</node>
 <node>TokenizerAnnotator</node>
+<node>SentenceDetectorAnnotator</node>
 <node>POSTagger</node>
 <node>Chunker</node>
 </fixedFlow>

@@ -29,21 +29,22 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.jcas.JCas;
+
+import org.apache.uima.analysis_engine.ResultSpecification;
+import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
+import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceAccessException;
-import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.nlp.tokenizer.Token;
 import edu.mayo.bmi.nlp.tokenizer.Tokenizer;
 import edu.mayo.bmi.uima.core.resource.StringIntegerMapResource;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.Segment;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 
 /**
@@ -51,125 +52,146 @@ import edu.mayo.bmi.uima.core.util.ParamUtil;
  * 
  * @author Mayo Clinic
  */
-public class TokenizerAnnotator extends JCasAnnotator_ImplBase {
-	// LOG4J logger based on class name
-	private Logger logger = Logger.getLogger(getClass().getName());
+public class TokenizerAnnotator extends JTextAnnotator_ImplBase
+{
+    // LOG4J logger based on class name
+    private Logger logger = Logger.getLogger(getClass().getName());
+  
+    public static final int TOKEN_CAP_NONE = 0;
+    public static final int TOKEN_CAP_FIRST_ONLY = 1;
+    public static final int TOKEN_CAP_MIXED = 2;
+    public static final int TOKEN_CAP_ALL = 3;
 
-	public static final int TOKEN_CAP_NONE = 0;
-	public static final int TOKEN_CAP_FIRST_ONLY = 1;
-	public static final int TOKEN_CAP_MIXED = 2;
-	public static final int TOKEN_CAP_ALL = 3;
+    public static final int TOKEN_NUM_POS_NONE = 0;
+    public static final int TOKEN_NUM_POS_FIRST = 1;
+    public static final int TOKEN_NUM_POS_MIDDLE = 2;
+    public static final int TOKEN_NUM_POS_LAST = 3;
 
-	public static final int TOKEN_NUM_POS_NONE = 0;
-	public static final int TOKEN_NUM_POS_FIRST = 1;
-	public static final int TOKEN_NUM_POS_MIDDLE = 2;
-	public static final int TOKEN_NUM_POS_LAST = 3;
-
-	public static final int TOKEN_NUM_TYPE_UNKNOWN = 0;
-	public static final int TOKEN_NUM_TYPE_INTEGER = 1;
-	public static final int TOKEN_NUM_TYPE_DECIMAL = 2;
-
+    public static final int TOKEN_NUM_TYPE_UNKNOWN = 0;
+    public static final int TOKEN_NUM_TYPE_INTEGER = 1;
+    public static final int TOKEN_NUM_TYPE_DECIMAL = 2;
+    
 	/**
-	 * Value is "SegmentsToSkip". This parameter specifies which segments to
-	 * skip. The parameter should be of type String, should be multi-valued and
-	 * optional.
+	 * Value is "SegmentsToSkip".  This parameter specifies which segments to skip.  The parameter should be
+	 * of type String, should be multi-valued and optional. 
 	 */
 	public static final String PARAM_SEGMENTS_TO_SKIP = "SegmentsToSkip";
 
-	private final String HYPH_FREQ_TABLE_RESRC_KEY = "HyphFreqTable";
+    private final String HYPH_FREQ_TABLE_RESRC_KEY = "HyphFreqTable";
 
-	private UimaContext context;
-	private Set<String> skipSegmentsSet;
+    private AnnotatorContext context;
+    private Set skipSegmentsSet;
 
-	private Tokenizer tokenizer;
+    private Tokenizer tokenizer;
 
-	private int tokenCount = 0;
+    private int tokenCount = 0;
 
-	public void initialize(UimaContext aContext)
-			throws ResourceInitializationException {
-		super.initialize(aContext);
+    public void initialize(AnnotatorContext aContext)
+            throws AnnotatorConfigurationException,
+            AnnotatorInitializationException
+    {
+        super.initialize(aContext);
 
-		context = aContext;
-		try {
-			configInit();
-		} catch (ResourceAccessException ace) {
-			throw new ResourceInitializationException(ace);
-		}
-	}
+        context = aContext;
+        try
+        {
+            configInit();
+        }
+        catch (AnnotatorContextException ace)
+        {
+            throw new AnnotatorConfigurationException(ace);
+        }
+    }
 
-	/**
-	 * Reads configuration parameters.
-	 */
-	private void configInit() throws ResourceAccessException {
-		skipSegmentsSet = ParamUtil.getStringParameterValuesSet(
-				PARAM_SEGMENTS_TO_SKIP, context);
+    /**
+     * Reads configuration parameters.
+     */
+    private void configInit() throws AnnotatorContextException
+    {
+        skipSegmentsSet = ParamUtil.getStringParameterValuesSet(PARAM_SEGMENTS_TO_SKIP, context); 
 
-		int freqCutoff = ((Integer) context
-				.getConfigParameterValue("FreqCutoff")).intValue();
+        int freqCutoff = ((Integer) context.getConfigParameterValue("FreqCutoff")).intValue();
+        try
+        {
+            StringIntegerMapResource strIntMapResrc = (StringIntegerMapResource) context.getResourceObject(HYPH_FREQ_TABLE_RESRC_KEY);
+            if (strIntMapResrc == null)
+            {
+                logger.warn("Unable to locate resource with key="
+                        + HYPH_FREQ_TABLE_RESRC_KEY
+                        + ".  Proceeding without hyphenation support.");
+                tokenizer = new Tokenizer();
+            }
+            else
+            {
+            	logger.info("Hyphen dictionary: " + strIntMapResrc.toString());
+                Map hyphMap = strIntMapResrc.getMap();
+                tokenizer = new Tokenizer(hyphMap, freqCutoff);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new AnnotatorContextException(e);
+        }
+    }
 
-		StringIntegerMapResource strIntMapResrc = (StringIntegerMapResource) context
-				.getResourceObject(HYPH_FREQ_TABLE_RESRC_KEY);
-		if (strIntMapResrc == null) {
-			logger.warn("Unable to locate resource with key="
-					+ HYPH_FREQ_TABLE_RESRC_KEY
-					+ ".  Proceeding without hyphenation support.");
-			tokenizer = new Tokenizer();
-		} else {
-			logger.info("Hyphen dictionary: " + strIntMapResrc.toString());
-			Map<String, Integer> hyphMap = strIntMapResrc.getMap();
-			tokenizer = new Tokenizer(hyphMap, freqCutoff);
-		}
+    /**
+     * Entry point for processing.
+     */
+    public void process(JCas jcas, ResultSpecification resultSpec)
+            throws AnnotatorProcessException {
 
-	}
+    	logger.info(" process(JCas, ResultSpecification)" );
 
-	/**
-	 * Entry point for processing.
-	 */
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+        tokenCount = 0;
 
-		logger.info("process(JCas)");
+        JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+        Iterator segmentItr = indexes.getAnnotationIndex(Segment.type).iterator();
+        while (segmentItr.hasNext())
+        {
+            Segment sa = (Segment) segmentItr.next();
+            String segmentID = sa.getId();
+            if (!skipSegmentsSet.contains(segmentID))
+            {
+                annotateRange(jcas, sa.getBegin(), sa.getEnd());
+            }
+        }
+    }
 
-		tokenCount = 0;
+    /**
+     * A utility method that tokenizes a range of text.
+     */
+    protected void annotateRange(JCas jcas, int beginPos, int endPos)
+            throws AnnotatorProcessException
+    {
+        String text = jcas.getDocumentText().substring(beginPos, endPos);
 
-		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		FSIterator<Annotation> segmentItr = indexes.getAnnotationIndex(
-				Segment.type).iterator();
-		while (segmentItr.hasNext()) {
-			Segment sa = (Segment) segmentItr.next();
-			String segmentID = sa.getId();
-			if (!skipSegmentsSet.contains(segmentID)) {
-				annotateRange(jcas, sa.getBegin(), sa.getEnd());
-			}
-		}
-	}
+        List tokens = null;
+        try
+        {
+            tokens = tokenizer.tokenizeAndSort(text);
+        }
+        catch (Exception e)
+        {
+            throw new AnnotatorProcessException(e);
+        }
 
-	/**
-	 * A utility method that tokenizes a range of text.
-	 */
-	protected void annotateRange(JCas jcas, int beginPos, int endPos)
-			throws AnalysisEngineProcessException {
-		String text = jcas.getDocumentText().substring(beginPos, endPos);
+        Iterator tokenItr = tokens.iterator();
+        while (tokenItr.hasNext())
+        {
+            Token token = (Token) tokenItr.next();
 
-		List<Token> tokens = null;
-		try {
-			tokens = tokenizer.tokenizeAndSort(text);
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
-		}
+            // convert token into JCas object
+            BaseToken bta = TokenConverter.convert(
+                    token,
+                    jcas,
+                    beginPos);
 
-		Iterator<Token> tokenItr = tokens.iterator();
-		while (tokenItr.hasNext()) {
-			Token token = (Token) tokenItr.next();
+            bta.setTokenNumber(tokenCount);
 
-			// convert token into JCas object
-			BaseToken bta = TokenConverter.convert(token, jcas, beginPos);
+            // add JCas object to CAS index
+            bta.addToIndexes();
 
-			bta.setTokenNumber(tokenCount);
-
-			// add JCas object to CAS index
-			bta.addToIndexes();
-
-			tokenCount++;
-		}
-	}
+            tokenCount++;
+        }
+    }
 }

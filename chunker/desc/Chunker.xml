@@ -26,7 +26,7 @@
 <nameValuePair>
 <name>ChunkerModelFile</name>
 <value>
-<string>models/chunk-model.claims-1.5.zip</string>
+<string>models/chunker.model.bin.gz</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -38,6 +38,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="TypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities>
@@ -45,9 +46,9 @@
 <description>For subiterator</description>
 <version>1.0</version>
 <priorityList>
-<type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
-<type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
-<type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type>edu.mayo.bmi.uima.core.type.Segment</type>
+<type>edu.mayo.bmi.uima.core.type.Sentence</type>
+<type>edu.mayo.bmi.uima.core.type.BaseToken</type>
 </priorityList>
 </typePriorities>
 <fsIndexCollection/>
@@ -78,7 +79,7 @@
 <name>ChunkerModelFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:models/chunk-model.claims-1.5.zip</fileUrl>
+<fileUrl>file:models/chunker.model.bin.gz</fileUrl>
 </fileResourceSpecifier>
 <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
 </externalResource>

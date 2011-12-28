@@ -35,7 +35,7 @@ import edu.mayo.bmi.fsm.token.ContractionToken;
 public class ContractionTokenAdapter extends BaseTokenAdapter implements
 		ContractionToken
 {
-	public ContractionTokenAdapter(edu.mayo.bmi.uima.core.type.syntax.ContractionToken cta)
+	public ContractionTokenAdapter(edu.mayo.bmi.uima.core.type.ContractionToken cta)
 	{
 		super(cta);
 	}

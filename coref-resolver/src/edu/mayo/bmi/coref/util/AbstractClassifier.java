@@ -10,7 +10,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
+    
    @Author Tim Miller
  * 
  */
@@ -26,18 +26,19 @@ import libsvm.svm_node;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.resource.ResourceAccessException;
+import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 public class AbstractClassifier {
 
 	private svm_model svmCls = null;
 	private int clsIndex = -1;
-
+	
 	public AbstractClassifier(UimaContext uc, String key, int len) {
 		try{
 			File file = ((FileResource)uc.getResourceObject(key)).getFile();
+			
 			String fn = file.getAbsolutePath();
 			svmCls = svm.svm_load_model(fn);
 			int[] labels = new int[2];
@@ -47,14 +48,14 @@ public class AbstractClassifier {
 			e.printStackTrace();
 		} catch (ResourceAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();	
 		}
 	}
 
 	public double predict(svm_node[] vec){
 		return predict(vec,null);
 	}
-
+	
 	public double predict(svm_node[] vec, TreebankNode path){
 		double[] probs = new double[2];
 		svm.svm_predict_probability(svmCls, vec, probs);

@@ -15,8 +15,8 @@ import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.Sentence;
 
 /**
  * UIMA annotator that uses some patterns and some rules about those patterns to

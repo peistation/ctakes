@@ -34,7 +34,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
@@ -46,12 +46,12 @@ import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.lookup.phrasebuilder.PhraseBuilder;
 import edu.mayo.bmi.lookup.phrasebuilder.VariantPhraseBuilderImpl;
 import edu.mayo.bmi.lookup.vo.LookupToken;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.ContractionToken;
+import edu.mayo.bmi.uima.core.type.NewlineToken;
+import edu.mayo.bmi.uima.core.type.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.SymbolToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.JCasUtil;
 
 /**
@@ -78,7 +78,7 @@ public class FirstTokenPermLookupInitializerImpl implements LookupInitializer
 	// set of exclusion POS tags (lower cased)
 	private Set iv_exclusionTagSet = null;
 
-	public FirstTokenPermLookupInitializerImpl(UimaContext aCtx,
+	public FirstTokenPermLookupInitializerImpl(AnnotatorContext aCtx,
 			Properties props) throws ClassNotFoundException,
 			IllegalAccessException, NoSuchFieldException
 	{

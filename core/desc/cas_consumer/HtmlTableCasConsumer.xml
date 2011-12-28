@@ -38,14 +38,14 @@ annotation_classname|getter_method</description>
       <nameValuePair>
         <name>TableSpanAnnotation</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+          <string>edu.mayo.bmi.uima.core.type.Sentence</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>NestedAnnotations</name>
         <value>
           <array>
-            <string>edu.mayo.bmi.uima.core.type.syntax.BaseToken|getPennTag</string>
+            <string>edu.mayo.bmi.uima.core.type.BaseToken|getPennTag</string>
           </array>
         </value>
       </nameValuePair>

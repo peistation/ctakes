@@ -35,12 +35,13 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.dictionary.lucene.LuceneDictionaryImpl;
+import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.resource.FileResource;
 
 /**
@@ -66,14 +67,14 @@ public class UmlsToSnomedLuceneConsumerImpl extends UmlsToSnomedConsumerImpl imp
 	
 	private LuceneDictionaryImpl snomedLikeCodesIndex;
 
-	public UmlsToSnomedLuceneConsumerImpl(UimaContext aCtx, Properties properties)
+	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties)
 			throws Exception
 	{
 		this(aCtx,properties,Integer.MAX_VALUE);
 	}
 
 	// ohnlp Bugs tracker ID: 3390078 do not reload lucene index for each document, load in constructor
-	public UmlsToSnomedLuceneConsumerImpl(UimaContext aCtx, Properties properties, int maxListSize)
+	public UmlsToSnomedLuceneConsumerImpl(AnnotatorContext aCtx, Properties properties, int maxListSize)
 			throws Exception
 	{
 		super(aCtx,properties);

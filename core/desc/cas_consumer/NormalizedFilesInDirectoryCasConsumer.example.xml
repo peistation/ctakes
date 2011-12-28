@@ -26,6 +26,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

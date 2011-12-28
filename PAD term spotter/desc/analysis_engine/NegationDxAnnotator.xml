@@ -113,31 +113,32 @@
 <nameValuePair>
 <name>WindowAnnotationClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+<string>edu.mayo.bmi.uima.core.type.Sentence</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>FocusAnnotationClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</string>
+<string>edu.mayo.bmi.uima.core.type.NamedEntity</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>ContextAnnotationClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+<string>edu.mayo.bmi.uima.core.type.BaseToken</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="../../../NE contexts/src/edu/mayo/bmi/uima/context/type/ContextTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.context.type.ContextAnnotation</type>

@@ -23,12 +23,12 @@
  */
 package edu.mayo.bmi.uima.core.util;
 
+import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.cas.TOP;
+import org.apache.uima.jcas.JCas;
 
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import edu.mayo.bmi.uima.core.type.DocumentID;
 
 public class DocumentIDAnnotationUtil 
 {
@@ -37,7 +37,8 @@ public class DocumentIDAnnotationUtil
 		try
 		{
 		 	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
+		 	FSIndex fsIndex = indexes.getAnnotationIndex(DocumentID.type);
+		 	FSIterator documentIDIterator = fsIndex.iterator();
 		 	DocumentID documentIDAnnotation = (DocumentID) documentIDIterator.next();
 		 	String documentID = documentIDAnnotation.getDocumentID();
 		 	return documentID;

@@ -30,10 +30,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Sentence</type>
 </outputs>
 <languagesSupported/>
 </capability>

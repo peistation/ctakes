@@ -35,13 +35,13 @@
       <nameValuePair>
         <name>srcObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.syntax.VP</string>
+          <string>edu.mayo.bmi.uima.chunker.type.VP</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>destObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</string>
+          <string>edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -56,6 +56,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
+        <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
       </imports>
       <types>
         <typeDescription>
@@ -75,10 +76,10 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.VP</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.VP</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>

@@ -23,7 +23,7 @@
 <nameValuePair>
 <name>NormalizedTokenClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+<string>edu.mayo.bmi.uima.core.type.BaseToken</string>
 </value>
 </nameValuePair>
 <nameValuePair>

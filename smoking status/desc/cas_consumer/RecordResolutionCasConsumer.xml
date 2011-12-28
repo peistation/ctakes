@@ -50,7 +50,7 @@ delimited file.</description>
 <nameValuePair>
 <name>OutputFile</name>
 <value>
-<string>testdata/smokingtest/testoutput/record_resolution.txt</string>
+<string>$main_root/data/test/output/record_resolution.txt</string>
 </value>
 </nameValuePair>
 <nameValuePair>

@@ -24,10 +24,11 @@ import java.util.Queue;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
+import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
+import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.coref.type.Markable;
 
 public class HobbsTreeNavigator {

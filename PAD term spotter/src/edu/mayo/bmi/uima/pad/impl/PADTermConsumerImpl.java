@@ -8,15 +8,15 @@ import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
 
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
+import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.pad.type.PADTerm;
 
 public class PADTermConsumerImpl 
@@ -26,7 +26,7 @@ extends PADConsumerImpl
   public static int FALSE = 0;
   public static int TRUE  = 1;
   public static String STAND_ALONE = "STAND_ALONE";
-  public PADTermConsumerImpl(UimaContext aCtx, Properties props)
+  public PADTermConsumerImpl(AnnotatorContext aCtx, Properties props)
   throws AnnotatorContextException, IOException
   { 
   }
@@ -34,7 +34,7 @@ extends PADConsumerImpl
 
   
   public void consumeHits(JCas jcas, Iterator lhItr)
-      throws AnalysisEngineProcessException
+      throws AnnotatorProcessException
   {
     Iterator<?> hitsByOffsetItr = organizeByOffset(lhItr);
     

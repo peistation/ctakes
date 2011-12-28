@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.lookup.vo.LookupHit;
@@ -86,5 +86,5 @@ public abstract class BaseLookupConsumerImpl implements LookupConsumer
 	}
 
 	public abstract void consumeHits(JCas jcas, Iterator lookupHitItr)
-			throws AnalysisEngineProcessException;
+			throws AnnotatorProcessException;
 }

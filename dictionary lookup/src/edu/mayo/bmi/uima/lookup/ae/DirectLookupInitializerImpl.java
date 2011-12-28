@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
@@ -41,13 +41,13 @@ import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.lookup.phrasebuilder.PhraseBuilder;
 import edu.mayo.bmi.lookup.phrasebuilder.VariantPhraseBuilderImpl;
 import edu.mayo.bmi.lookup.vo.LookupToken;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.ContractionToken;
+import edu.mayo.bmi.uima.core.type.NewlineToken;
+import edu.mayo.bmi.uima.core.type.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.SymbolToken;
+import edu.mayo.bmi.uima.core.type.WordToken;
 
 /**
  * @author Mayo Clinic
@@ -56,7 +56,7 @@ public class DirectLookupInitializerImpl implements LookupInitializer
 {
 	private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
 
-	public DirectLookupInitializerImpl(UimaContext aCtx, Properties props)
+	public DirectLookupInitializerImpl(AnnotatorContext aCtx, Properties props)
 	{
 		// TODO property validation could be done here
 	}

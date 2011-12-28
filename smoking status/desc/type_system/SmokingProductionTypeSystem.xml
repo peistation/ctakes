@@ -5,9 +5,11 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import location="../../../common-type-system/desc/common_type_system.xml"/>
+    <import location="../../../core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
     <import location="LibSVMTypeSystem.xml"/>
     <import location="I2b2TypeSystem.xml"/>
+    <import location="../../../NE contexts/src/edu/mayo/bmi/uima/context/type/ContextTypeSystem.xml"/>
+    <import location="ModifiedCoreTypeSystem.xml"/>
   </imports>
   <types>
     <typeDescription>
@@ -40,12 +42,12 @@
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>edu.mayo.bmi.uima.core.type.NamedEntity</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.NonSmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>edu.mayo.bmi.uima.core.type.NamedEntity</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.smoking.type.SmokingDocumentClassification</name>
@@ -67,7 +69,7 @@
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.UnknownSmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>edu.mayo.bmi.uima.core.type.NamedEntity</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

@@ -22,9 +22,9 @@
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="ClearParserDependencyParserTokenizedInfPosAggregate">
+        <casProcessor deployment="integrated" name="ClearParserTokenizedInfPosAggregate">
             <descriptor>
-                <import location="../analysis_engine/ClearParserDependencyParserTokenizedInfPosAggregate.xml"/>
+                <import location="../analysis_engine/ClearParserTokenizedInfPosAggregate.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>

@@ -179,7 +179,7 @@
 				<properties>
 					<property key="textMetaFields" value="text"/>
 					<property key="maxPermutationLevel" value="5"/>
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation"/>
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation"/>
 					<property key="exclusionTags" value="AUX,AUXD,AUXG,AUXN,AUXP,AUXZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
@@ -228,7 +228,7 @@
 				<properties>
 					<property key="textMetaFields" value="1"/>
 					<property key="maxPermutationLevel" value="5"/>
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation"/>		
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation"/>		
 				</properties>
 			</lookupInitializer>
 			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">

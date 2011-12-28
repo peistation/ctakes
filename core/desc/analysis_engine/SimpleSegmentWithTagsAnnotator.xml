@@ -28,7 +28,7 @@ However, the section ids are specific to Mayo data. This is provided just as an 
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -37,7 +37,7 @@ However, the section ids are specific to Mayo data. This is provided just as an 
       <capability>
         <inputs/>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
         </outputs>
         <languagesSupported/>
       </capability>

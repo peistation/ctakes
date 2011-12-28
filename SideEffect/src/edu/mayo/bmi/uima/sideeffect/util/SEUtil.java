@@ -12,11 +12,11 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.NewlineToken;
+import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 
 /**
@@ -162,7 +162,7 @@ public class SEUtil {
 	}
 	
 	/**
-	 * Return the List of drug IdentifiedAnnotation within the span
+	 * Return the List of drug NamedEntity within the span
 	 * @param jcas
 	 * @param begin
 	 * @param end
@@ -170,12 +170,12 @@ public class SEUtil {
 	 */
 	public static List getDrugsInSpan(JCas jcas, int begin, int end) {
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-        Iterator neItr= indexes.getAnnotationIndex(IdentifiedAnnotation.type).iterator();
+        Iterator neItr= indexes.getAnnotationIndex(NamedEntity.type).iterator();
         List l = new ArrayList();
         
         //add drug to List
         while (neItr.hasNext()) {
-        	IdentifiedAnnotation nea = (IdentifiedAnnotation) neItr.next();        	
+        	NamedEntity nea = (NamedEntity) neItr.next();        	
         	if(nea.getTypeID()==1)
         		if(nea.getBegin()>=begin && nea.getEnd()<=end)
         			l.add(nea);
@@ -245,11 +245,11 @@ public class SEUtil {
 		ignoreWords.add("and");
 		ignoreWords.add("or");
 
-		List<IdentifiedAnnotation> neLst = new ArrayList<IdentifiedAnnotation>();
+		List<NamedEntity> neLst = new ArrayList<NamedEntity>();
 		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-				jcas, IdentifiedAnnotation.type, begin, end+1);
+				jcas, NamedEntity.type, begin, end+1);
 		while(neIter.hasNext()) {
-			IdentifiedAnnotation ne = (IdentifiedAnnotation) neIter.next();
+			NamedEntity ne = (NamedEntity) neIter.next();
 			if(ne.getTypeID()==neType) neLst.add(ne);
 		}
 		
@@ -261,7 +261,7 @@ public class SEUtil {
 			if(ignoreWords.contains(wt.getCoveredText().toLowerCase())) continue;	
 			
 			boolean isNE = false;
-			for(IdentifiedAnnotation n : neLst) {
+			for(NamedEntity n : neLst) {
 				if(n.getBegin()<=wt.getBegin() && n.getEnd()>=wt.getEnd()) {
 					isNE = true;
 					break;
@@ -289,7 +289,7 @@ public class SEUtil {
 	 * @param nea
 	 * @return
 	 */
-	public static boolean isInUpperCaseStringLine(JCas jcas, IdentifiedAnnotation nea) {
+	public static boolean isInUpperCaseStringLine(JCas jcas, NamedEntity nea) {
 		boolean flag = false;
 		int[] senSpan = getSentenceSpanContainingGivenSpan(
 				jcas, nea.getBegin(), nea.getEnd());
@@ -338,9 +338,9 @@ public class SEUtil {
 	 */
 	public static boolean isDrugBetween(JCas jcas, int begin, int end) {
 		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-				jcas, IdentifiedAnnotation.type, begin, end+1);
+				jcas, NamedEntity.type, begin, end+1);
 		while(neIter.hasNext()) {
-			IdentifiedAnnotation ne = (IdentifiedAnnotation) neIter.next();
+			NamedEntity ne = (NamedEntity) neIter.next();
 			if(ne.getTypeID()==1) return true;
 		}
 		
@@ -356,9 +356,9 @@ public class SEUtil {
 	 */
 	public static boolean isPSEBetween(JCas jcas, int begin, int end) {
 		Iterator neIter = FSUtil.getAnnotationsInSpanIterator(
-				jcas, IdentifiedAnnotation.type, begin, end+1);
+				jcas, NamedEntity.type, begin, end+1);
 		while(neIter.hasNext()) {
-			IdentifiedAnnotation ne = (IdentifiedAnnotation) neIter.next();
+			NamedEntity ne = (NamedEntity) neIter.next();
 			if(ne.getTypeID()==2 || ne.getTypeID()==3) return true;
 		}
 		
