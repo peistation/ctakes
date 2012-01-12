@@ -2,7 +2,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractor</annotatorImplementationName>
+  <annotatorImplementationName>org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>RelationExtractor</name>
     <description>Sample RelationExtractor Annotator; please replace and override</description>
