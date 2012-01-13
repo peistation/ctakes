@@ -21,5 +21,7 @@
 	<classpathentry kind="lib" path="lib/guava-10.0.jar"/>
 	<classpathentry kind="lib" path="lib/hppc-0.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core-3.0.3.RELEASE.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/clinical documents pipeline"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dependency parser"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
