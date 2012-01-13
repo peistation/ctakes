@@ -36,8 +36,8 @@
     <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
       <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="RelationExtractor">
-      <import location="RelationExtractor.xml"/>
+    <delegateAnalysisEngine key="RelationExtractorAnnotator">
+      <import location="RelationExtractorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
       <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
@@ -100,7 +100,7 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
         <node>ExtractionPrepAnnotator</node>
-        <node>RelationExtractor</node>
+        <node>RelationExtractorAnnotator</node>
       </fixedFlow>
     </flowConstraints>
     <typePriorities>
