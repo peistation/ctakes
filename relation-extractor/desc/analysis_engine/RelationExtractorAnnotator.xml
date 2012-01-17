@@ -8,7 +8,7 @@
     <description>Sample RelationExtractor Annotator; please replace and override</description>
     <version>1.0</version>
     <vendor>Childrens Hospital Boston</vendor>
-    <configurationParameters>
+    <configurationParameters searchStrategy="language_fallback">
       <configurationParameter>
         <name>modalAdj</name>
         <type>String</type>
@@ -25,6 +25,18 @@
         <name>otherVerb</name>
         <type>String</type>
         <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>org.cleartk.classifier.CleartkAnnotator.dataWriterFactoryClassName</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
         <mandatory>false</mandatory>
       </configurationParameter>
     </configurationParameters>
@@ -76,6 +88,18 @@
             <string>mean</string>
             <string>follow</string>
           </array>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
+        <value>
+          <string>/home/dima/temp/model/</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>org.cleartk.classifier.CleartkAnnotator.dataWriterFactoryClassName</name>
+        <value>
+          <string>org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

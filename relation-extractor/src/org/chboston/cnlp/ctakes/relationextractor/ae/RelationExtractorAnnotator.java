@@ -62,7 +62,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
         // during training, feed the features to the data writer
         if (this.isTraining()) {
           // TODO: load the relation label from the CAS
-          String category = null;
+          String category = "NO_LABEL_FOR_NOW";
 
           // create a classification instance and write it to the training data
           this.dataWriter.write(new Instance<String>(category, features));
