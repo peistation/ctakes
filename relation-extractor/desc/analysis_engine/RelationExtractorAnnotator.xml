@@ -10,24 +10,6 @@
     <vendor>Childrens Hospital Boston</vendor>
     <configurationParameters searchStrategy="language_fallback">
       <configurationParameter>
-        <name>modalAdj</name>
-        <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>cogved</name>
-        <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>otherVerb</name>
-        <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
         <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
         <type>String</type>
         <multiValued>false</multiValued>
@@ -42,58 +24,9 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>modalAdj</name>
-        <value>
-          <array>
-            <string>necessary</string>
-            <string>good</string>
-            <string>economical</string>
-            <string>possible</string>
-            <string>useful</string>
-            <string>easy</string>
-            <string>certain</string>
-            <string>advisable</string>
-            <string>desirable</string>
-            <string>likely</string>
-            <string>convenient</string>
-            <string>difficult</string>
-            <string>important</string>
-            <string>sufficient</string>
-            <string>legal</string>
-            <string>worthwhile</string>
-          </array>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>cogved</name>
-        <value>
-          <array>
-            <string>recommended</string>
-            <string>thought</string>
-            <string>believed</string>
-            <string>known</string>
-            <string>anticipated</string>
-            <string>assumed</string>
-            <string>expected</string>
-            <string>noted</string>
-          </array>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>otherVerb</name>
-        <value>
-          <array>
-            <string>seem</string>
-            <string>appear</string>
-            <string>mean</string>
-            <string>follow</string>
-          </array>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
         <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
         <value>
-          <string>/home/dima/temp/model/</string>
+          <string>model</string>
         </value>
       </nameValuePair>
       <nameValuePair>

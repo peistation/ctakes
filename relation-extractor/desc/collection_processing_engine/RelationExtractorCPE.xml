@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/home/dima/sharp/relations/data/pilot-5-notes/doc1/SHARPn_pilot_5files</string>
+                        <string>../../../clinical documents pipeline/test/data/plaintext</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -28,9 +28,9 @@
             </errorHandling>
             <checkpoint batch="10000" time="1000ms"/>
         </casProcessor>
-        <casProcessor deployment="integrated" name="Write CAS to XML file">
+        <casProcessor deployment="integrated" name="RelationExtractor">
             <descriptor>
-                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../analysis_engine/RelationExtractorAnnotator.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -41,9 +41,9 @@
             <checkpoint batch="10000" time="1000ms"/>
             <configurationParameterSettings>
                 <nameValuePair>
-                    <name>outputDir</name>
+                    <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
                     <value>
-                        <string>/home/dima/temp/out</string>
+                        <string>models</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

@@ -23,5 +23,9 @@
 	<classpathentry kind="lib" path="lib/spring-core-3.0.3.RELEASE.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/clinical documents pipeline"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dependency parser"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/context dependent tokenizer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Constituency Parser"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NE contexts"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/chunker"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
