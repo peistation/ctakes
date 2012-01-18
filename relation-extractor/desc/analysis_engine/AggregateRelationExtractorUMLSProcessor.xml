@@ -75,6 +75,20 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
           <parameter>Chunker/ChunkCreatorClass</parameter>
         </overrides>
       </configurationParameter>
+      <configurationParameter>
+        <name>UMLSUser</name>
+        <description>UMLS User Name</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>    
+      <configurationParameter>
+        <name>UMLSPW</name>
+        <description>UMLS Password</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>                    
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
