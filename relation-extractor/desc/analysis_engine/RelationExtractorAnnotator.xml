@@ -13,22 +13,16 @@
         <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
         <type>String</type>
         <multiValued>false</multiValued>
-        <mandatory>false</mandatory>
+        <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>org.cleartk.classifier.CleartkAnnotator.dataWriterFactoryClassName</name>
         <type>String</type>
         <multiValued>false</multiValued>
-        <mandatory>false</mandatory>
+        <mandatory>true</mandatory>
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
-      <nameValuePair>
-        <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
-        <value>
-          <string>model</string>
-        </value>
-      </nameValuePair>
       <nameValuePair>
         <name>org.cleartk.classifier.CleartkAnnotator.dataWriterFactoryClassName</name>
         <value>
