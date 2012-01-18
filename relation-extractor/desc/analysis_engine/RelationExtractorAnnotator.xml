@@ -29,6 +29,12 @@
           <string>org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory</string>
         </value>
       </nameValuePair>
+      <nameValuePair>
+          <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
+          <value>
+              <string>models</string>
+          </value>
+      </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>

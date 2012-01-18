@@ -39,14 +39,6 @@
                 <timeout max="100000" default="-1"/>
             </errorHandling>
             <checkpoint batch="10000" time="1000ms"/>
-            <configurationParameterSettings>
-                <nameValuePair>
-                    <name>org.cleartk.classifier.jar.DirectoryDataWriterFactory.outputDirectory</name>
-                    <value>
-                        <string>models</string>
-                    </value>
-                </nameValuePair>
-            </configurationParameterSettings>
         </casProcessor>
     </casProcessors>
     <cpeConfig>
