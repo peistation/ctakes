@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>../../../clinical documents pipeline/test/data/plaintext</string>
+                        <string>../clinical documents pipeline/test/data/plaintext</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
