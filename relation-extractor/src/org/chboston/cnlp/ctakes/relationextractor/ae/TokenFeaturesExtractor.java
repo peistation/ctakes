@@ -59,10 +59,10 @@ public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
    */
   private ContextExtractor<?> tokensBetween = new ContextExtractor<BaseToken>(
       BaseToken.class,
-      coveredText,
+      new NamingExtractor("BetweenMentions", coveredText),
       new FirstCovered(1),
       new LastCovered(1),
-      new Covered());
+      new Bag(new Covered()));
 
   /**
    * Number of words between the mentions
