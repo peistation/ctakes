@@ -18,8 +18,8 @@ import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
 
+import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 
 public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
 
