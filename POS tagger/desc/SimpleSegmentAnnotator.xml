@@ -20,7 +20,6 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -29,7 +28,7 @@
       <capability>
         <inputs/>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Segment</type>
         </outputs>
         <languagesSupported/>
       </capability>
