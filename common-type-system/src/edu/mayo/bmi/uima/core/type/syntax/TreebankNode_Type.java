@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas;
@@ -14,11 +14,10 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** A Penn Treebank-style tree node.  Conforms to PTB 2.0 guidelines.
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:51 EST 2012
  * @generated */
 public class TreebankNode_Type extends Annotation_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -37,11 +36,9 @@ public class TreebankNode_Type extends Annotation_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = TreebankNode.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.syntax.TreebankNode");
  
   /** @generated */
@@ -139,7 +136,7 @@ public class TreebankNode_Type extends Annotation_Type {
     if (lowLevelTypeChecks)
       return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_children), i, true);
     jcas.checkArrayBounds(ll_cas.ll_getRefValue(addr, casFeatCode_children), i);
-	return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_children), i);
+  return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_children), i);
   }
    
   /** @generated */ 

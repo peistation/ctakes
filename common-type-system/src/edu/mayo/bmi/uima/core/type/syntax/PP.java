@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas; 
@@ -10,22 +10,19 @@ import org.apache.uima.jcas.cas.TOP_Type;
 
 
 /** Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.PP
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:50 EST 2012
  * XML source: C:/Users/CH150124/workspace_SHARPn/common-type-system/desc/common_type_system.xml
  * @generated */
 public class PP extends Chunk {
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = JCasRegistry.register(PP.class);
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int type = typeIndexID;
   /** @generated  */
-  @Override
   public              int getTypeIndexID() {return typeIndexID;}
  
   /** Never called.  Disable default constructor
@@ -57,7 +54,7 @@ public class PP extends Chunk {
     * Write your own initialization here
     * <!-- end-user-doc -->
   @generated modifiable */
-  private void readObject() {/*default - does nothing empty block */}
+  private void readObject() {}
      
 }
 

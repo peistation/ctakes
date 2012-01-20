@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas;
@@ -13,11 +13,10 @@ import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
 /** A Penn Treebank Node; as the top node, this stores the whole subsumed sentence's parse tree as a string.  It also stores all the terminals, allowing for traversal of the tree bottom-up (top-down is implied through the TreebankNode's 'children' attribute).
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:51 EST 2012
  * @generated */
 public class TopTreebankNode_Type extends TreebankNode_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -36,11 +35,9 @@ public class TopTreebankNode_Type extends TreebankNode_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = TopTreebankNode.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode");
  
   /** @generated */
@@ -84,7 +81,7 @@ public class TopTreebankNode_Type extends TreebankNode_Type {
     if (lowLevelTypeChecks)
       return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_terminals), i, true);
     jcas.checkArrayBounds(ll_cas.ll_getRefValue(addr, casFeatCode_terminals), i);
-	return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_terminals), i);
+  return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_terminals), i);
   }
    
   /** @generated */ 

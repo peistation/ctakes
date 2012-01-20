@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas;
@@ -13,11 +13,10 @@ import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
 /** A Penn Treebank Node; as a terminal, there is an associated word, and the index of the word is an attribute.
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:51 EST 2012
  * @generated */
 public class TerminalTreebankNode_Type extends TreebankNode_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -36,11 +35,9 @@ public class TerminalTreebankNode_Type extends TreebankNode_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = TerminalTreebankNode.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode");
  
   /** @generated */

@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:37 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.structured;
 
 import org.apache.uima.jcas.JCas;
@@ -14,11 +14,10 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.cas.TOP_Type;
 
 /** Other structured data that captures information about the document, patient, or context of the clinical text.
- * Updated by JCasGen Wed Jan 11 14:37:37 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:42 EST 2012
  * @generated */
 public class Metadata_Type extends TOP_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -37,11 +36,9 @@ public class Metadata_Type extends TOP_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = Metadata.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.structured.Metadata");
  
   /** @generated */
@@ -85,7 +82,7 @@ public class Metadata_Type extends TOP_Type {
     if (lowLevelTypeChecks)
       return ll_cas.ll_getLongArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_providerID), i, true);
     jcas.checkArrayBounds(ll_cas.ll_getRefValue(addr, casFeatCode_providerID), i);
-	return ll_cas.ll_getLongArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_providerID), i);
+  return ll_cas.ll_getLongArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_providerID), i);
   }
    
   /** @generated */ 

@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.textsem;
 
 import org.apache.uima.jcas.JCas;
@@ -14,11 +14,10 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** More generalized from cTAKES: edu.mayo.bmi.uima.core.type.IdentifiedAnnotation. Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:53 EST 2012
  * @generated */
 public class IdentifiedAnnotation_Type extends Annotation_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -37,11 +36,9 @@ public class IdentifiedAnnotation_Type extends Annotation_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = IdentifiedAnnotation.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
  
   /** @generated */
@@ -85,7 +82,7 @@ public class IdentifiedAnnotation_Type extends Annotation_Type {
     if (lowLevelTypeChecks)
       return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_ontologyConceptArr), i, true);
     jcas.checkArrayBounds(ll_cas.ll_getRefValue(addr, casFeatCode_ontologyConceptArr), i);
-	return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_ontologyConceptArr), i);
+  return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_ontologyConceptArr), i);
   }
    
   /** @generated */ 
@@ -206,6 +203,96 @@ public class IdentifiedAnnotation_Type extends Annotation_Type {
     ll_cas.ll_setFloatValue(addr, casFeatCode_confidence, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_polarity;
+  /** @generated */
+  final int     casFeatCode_polarity;
+  /** @generated */ 
+  public int getPolarity(int addr) {
+        if (featOkTst && casFeat_polarity == null)
+      jcas.throwFeatMissing("polarity", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return ll_cas.ll_getIntValue(addr, casFeatCode_polarity);
+  }
+  /** @generated */    
+  public void setPolarity(int addr, int v) {
+        if (featOkTst && casFeat_polarity == null)
+      jcas.throwFeatMissing("polarity", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    ll_cas.ll_setIntValue(addr, casFeatCode_polarity, v);}
+    
+  
+ 
+  /** @generated */
+  final Feature casFeat_uncertainty;
+  /** @generated */
+  final int     casFeatCode_uncertainty;
+  /** @generated */ 
+  public int getUncertainty(int addr) {
+        if (featOkTst && casFeat_uncertainty == null)
+      jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return ll_cas.ll_getIntValue(addr, casFeatCode_uncertainty);
+  }
+  /** @generated */    
+  public void setUncertainty(int addr, int v) {
+        if (featOkTst && casFeat_uncertainty == null)
+      jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    ll_cas.ll_setIntValue(addr, casFeatCode_uncertainty, v);}
+    
+  
+ 
+  /** @generated */
+  final Feature casFeat_conditional;
+  /** @generated */
+  final int     casFeatCode_conditional;
+  /** @generated */ 
+  public boolean getConditional(int addr) {
+        if (featOkTst && casFeat_conditional == null)
+      jcas.throwFeatMissing("conditional", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return ll_cas.ll_getBooleanValue(addr, casFeatCode_conditional);
+  }
+  /** @generated */    
+  public void setConditional(int addr, boolean v) {
+        if (featOkTst && casFeat_conditional == null)
+      jcas.throwFeatMissing("conditional", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    ll_cas.ll_setBooleanValue(addr, casFeatCode_conditional, v);}
+    
+  
+ 
+  /** @generated */
+  final Feature casFeat_generic;
+  /** @generated */
+  final int     casFeatCode_generic;
+  /** @generated */ 
+  public boolean getGeneric(int addr) {
+        if (featOkTst && casFeat_generic == null)
+      jcas.throwFeatMissing("generic", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return ll_cas.ll_getBooleanValue(addr, casFeatCode_generic);
+  }
+  /** @generated */    
+  public void setGeneric(int addr, boolean v) {
+        if (featOkTst && casFeat_generic == null)
+      jcas.throwFeatMissing("generic", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    ll_cas.ll_setBooleanValue(addr, casFeatCode_generic, v);}
+    
+  
+ 
+  /** @generated */
+  final Feature casFeat_subject;
+  /** @generated */
+  final int     casFeatCode_subject;
+  /** @generated */ 
+  public String getSubject(int addr) {
+        if (featOkTst && casFeat_subject == null)
+      jcas.throwFeatMissing("subject", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return ll_cas.ll_getStringValue(addr, casFeatCode_subject);
+  }
+  /** @generated */    
+  public void setSubject(int addr, String v) {
+        if (featOkTst && casFeat_subject == null)
+      jcas.throwFeatMissing("subject", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    ll_cas.ll_setStringValue(addr, casFeatCode_subject, v);}
+    
+  
 
 
 
@@ -246,6 +333,26 @@ public class IdentifiedAnnotation_Type extends Annotation_Type {
  
     casFeat_confidence = jcas.getRequiredFeatureDE(casType, "confidence", "uima.cas.Float", featOkTst);
     casFeatCode_confidence  = (null == casFeat_confidence) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_confidence).getCode();
+
+ 
+    casFeat_polarity = jcas.getRequiredFeatureDE(casType, "polarity", "uima.cas.Integer", featOkTst);
+    casFeatCode_polarity  = (null == casFeat_polarity) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_polarity).getCode();
+
+ 
+    casFeat_uncertainty = jcas.getRequiredFeatureDE(casType, "uncertainty", "uima.cas.Integer", featOkTst);
+    casFeatCode_uncertainty  = (null == casFeat_uncertainty) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_uncertainty).getCode();
+
+ 
+    casFeat_conditional = jcas.getRequiredFeatureDE(casType, "conditional", "uima.cas.Boolean", featOkTst);
+    casFeatCode_conditional  = (null == casFeat_conditional) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_conditional).getCode();
+
+ 
+    casFeat_generic = jcas.getRequiredFeatureDE(casType, "generic", "uima.cas.Boolean", featOkTst);
+    casFeatCode_generic  = (null == casFeat_generic) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_generic).getCode();
+
+ 
+    casFeat_subject = jcas.getRequiredFeatureDE(casType, "subject", "uima.cas.String", featOkTst);
+    casFeatCode_subject  = (null == casFeat_subject) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_subject).getCode();
 
   }
 }

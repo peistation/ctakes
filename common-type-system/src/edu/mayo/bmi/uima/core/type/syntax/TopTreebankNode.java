@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas; 
@@ -11,22 +11,19 @@ import org.apache.uima.jcas.cas.FSArray;
 
 
 /** A Penn Treebank Node; as the top node, this stores the whole subsumed sentence's parse tree as a string.  It also stores all the terminals, allowing for traversal of the tree bottom-up (top-down is implied through the TreebankNode's 'children' attribute).
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:51 EST 2012
  * XML source: C:/Users/CH150124/workspace_SHARPn/common-type-system/desc/common_type_system.xml
  * @generated */
 public class TopTreebankNode extends TreebankNode {
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = JCasRegistry.register(TopTreebankNode.class);
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int type = typeIndexID;
   /** @generated  */
-  @Override
   public              int getTypeIndexID() {return typeIndexID;}
  
   /** Never called.  Disable default constructor
@@ -58,7 +55,7 @@ public class TopTreebankNode extends TreebankNode {
     * Write your own initialization here
     * <!-- end-user-doc -->
   @generated modifiable */
-  private void readObject() {/*default - does nothing empty block */}
+  private void readObject() {}
      
  
     

@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:37 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:26 EST 2012 */
 package edu.mayo.bmi.uima.core.type.structured;
 
 import org.apache.uima.jcas.JCas;
@@ -14,11 +14,10 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.cas.TOP_Type;
 
 /** Demographic information about the patient in a clinical document.  Attributes come from Clinical Element Models (CEMs).
- * Updated by JCasGen Wed Jan 11 14:37:37 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:42 EST 2012
  * @generated */
 public class Demographics_Type extends TOP_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -37,11 +36,9 @@ public class Demographics_Type extends TOP_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = Demographics.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.structured.Demographics");
  
   /** @generated */

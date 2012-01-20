@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:37 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:26 EST 2012 */
 package edu.mayo.bmi.uima.core.type.refsem;
 
 import org.apache.uima.jcas.JCas;
@@ -14,11 +14,10 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.cas.TOP_Type;
 
 /** A basic semantic unit, mappable to an ontology.  Includes things like Entities, Events, Attributes, Dates.
- * Updated by JCasGen Wed Jan 11 14:37:37 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:31 EST 2012
  * @generated */
 public class Element_Type extends TOP_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -37,11 +36,9 @@ public class Element_Type extends TOP_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = Element.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.refsem.Element");
  
   /** @generated */
@@ -103,7 +100,7 @@ public class Element_Type extends TOP_Type {
     if (lowLevelTypeChecks)
       return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_mentions), i, true);
     jcas.checkArrayBounds(ll_cas.ll_getRefValue(addr, casFeatCode_mentions), i);
-	return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_mentions), i);
+  return ll_cas.ll_getRefArrayValue(ll_cas.ll_getRefValue(addr, casFeatCode_mentions), i);
   }
    
   /** @generated */ 
@@ -230,16 +227,16 @@ public class Element_Type extends TOP_Type {
   /** @generated */
   final int     casFeatCode_uncertainty;
   /** @generated */ 
-  public String getUncertainty(int addr) {
+  public int getUncertainty(int addr) {
         if (featOkTst && casFeat_uncertainty == null)
       jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.refsem.Element");
-    return ll_cas.ll_getStringValue(addr, casFeatCode_uncertainty);
+    return ll_cas.ll_getIntValue(addr, casFeatCode_uncertainty);
   }
   /** @generated */    
-  public void setUncertainty(int addr, String v) {
+  public void setUncertainty(int addr, int v) {
         if (featOkTst && casFeat_uncertainty == null)
       jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.refsem.Element");
-    ll_cas.ll_setStringValue(addr, casFeatCode_uncertainty, v);}
+    ll_cas.ll_setIntValue(addr, casFeatCode_uncertainty, v);}
     
   
 
@@ -288,7 +285,7 @@ public class Element_Type extends TOP_Type {
     casFeatCode_polarity  = (null == casFeat_polarity) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_polarity).getCode();
 
  
-    casFeat_uncertainty = jcas.getRequiredFeatureDE(casType, "uncertainty", "uima.cas.String", featOkTst);
+    casFeat_uncertainty = jcas.getRequiredFeatureDE(casType, "uncertainty", "uima.cas.Integer", featOkTst);
     casFeatCode_uncertainty  = (null == casFeat_uncertainty) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_uncertainty).getCode();
 
   }

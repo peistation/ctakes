@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.textsem;
 
 import org.apache.uima.jcas.JCas; 
@@ -13,22 +13,19 @@ import org.apache.uima.jcas.cas.TOP;
 
 
 /** More generalized from cTAKES: edu.mayo.bmi.uima.core.type.IdentifiedAnnotation. Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:53 EST 2012
  * XML source: C:/Users/CH150124/workspace_SHARPn/common-type-system/desc/common_type_system.xml
  * @generated */
 public class IdentifiedAnnotation extends Annotation {
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = JCasRegistry.register(IdentifiedAnnotation.class);
   /** @generated
    * @ordered 
    */
-  @SuppressWarnings ("hiding")
   public final static int type = typeIndexID;
   /** @generated  */
-  @Override
   public              int getTypeIndexID() {return typeIndexID;}
  
   /** Never called.  Disable default constructor
@@ -60,7 +57,7 @@ public class IdentifiedAnnotation extends Annotation {
     * Write your own initialization here
     * <!-- end-user-doc -->
   @generated modifiable */
-  private void readObject() {/*default - does nothing empty block */}
+  private void readObject() {}
      
  
     
@@ -222,6 +219,96 @@ public class IdentifiedAnnotation extends Annotation {
     if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_confidence == null)
       jcasType.jcas.throwFeatMissing("confidence", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
     jcasType.ll_cas.ll_setFloatValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_confidence, v);}    
+   
+    
+  //*--------------*
+  //* Feature: polarity
+
+  /** getter for polarity - gets 
+   * @generated */
+  public int getPolarity() {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_polarity == null)
+      jcasType.jcas.throwFeatMissing("polarity", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return jcasType.ll_cas.ll_getIntValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_polarity);}
+    
+  /** setter for polarity - sets  
+   * @generated */
+  public void setPolarity(int v) {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_polarity == null)
+      jcasType.jcas.throwFeatMissing("polarity", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    jcasType.ll_cas.ll_setIntValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_polarity, v);}    
+   
+    
+  //*--------------*
+  //* Feature: uncertainty
+
+  /** getter for uncertainty - gets 
+   * @generated */
+  public int getUncertainty() {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_uncertainty == null)
+      jcasType.jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return jcasType.ll_cas.ll_getIntValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_uncertainty);}
+    
+  /** setter for uncertainty - sets  
+   * @generated */
+  public void setUncertainty(int v) {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_uncertainty == null)
+      jcasType.jcas.throwFeatMissing("uncertainty", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    jcasType.ll_cas.ll_setIntValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_uncertainty, v);}    
+   
+    
+  //*--------------*
+  //* Feature: conditional
+
+  /** getter for conditional - gets 
+   * @generated */
+  public boolean getConditional() {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_conditional == null)
+      jcasType.jcas.throwFeatMissing("conditional", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return jcasType.ll_cas.ll_getBooleanValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_conditional);}
+    
+  /** setter for conditional - sets  
+   * @generated */
+  public void setConditional(boolean v) {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_conditional == null)
+      jcasType.jcas.throwFeatMissing("conditional", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    jcasType.ll_cas.ll_setBooleanValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_conditional, v);}    
+   
+    
+  //*--------------*
+  //* Feature: generic
+
+  /** getter for generic - gets 
+   * @generated */
+  public boolean getGeneric() {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_generic == null)
+      jcasType.jcas.throwFeatMissing("generic", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return jcasType.ll_cas.ll_getBooleanValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_generic);}
+    
+  /** setter for generic - sets  
+   * @generated */
+  public void setGeneric(boolean v) {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_generic == null)
+      jcasType.jcas.throwFeatMissing("generic", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    jcasType.ll_cas.ll_setBooleanValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_generic, v);}    
+   
+    
+  //*--------------*
+  //* Feature: subject
+
+  /** getter for subject - gets 
+   * @generated */
+  public String getSubject() {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_subject == null)
+      jcasType.jcas.throwFeatMissing("subject", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_subject);}
+    
+  /** setter for subject - sets  
+   * @generated */
+  public void setSubject(String v) {
+    if (IdentifiedAnnotation_Type.featOkTst && ((IdentifiedAnnotation_Type)jcasType).casFeat_subject == null)
+      jcasType.jcas.throwFeatMissing("subject", "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+    jcasType.ll_cas.ll_setStringValue(addr, ((IdentifiedAnnotation_Type)jcasType).casFeatCode_subject, v);}    
   }
 
     

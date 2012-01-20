@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:38 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:27 EST 2012 */
 package edu.mayo.bmi.uima.core.type.syntax;
 
 import org.apache.uima.jcas.JCas;
@@ -12,11 +12,10 @@ import org.apache.uima.cas.Type;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation_Type;
 
 /** Semantic roles according to the PropBank standard.  The "category" as used here can be any of 7 numbered arguments or 15 modifier labels.
- * Updated by JCasGen Wed Jan 11 14:37:38 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:50 EST 2012
  * @generated */
 public class SemanticRole_Type extends BinaryTextRelation_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -35,11 +34,9 @@ public class SemanticRole_Type extends BinaryTextRelation_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = SemanticRole.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.syntax.SemanticRole");
 
 

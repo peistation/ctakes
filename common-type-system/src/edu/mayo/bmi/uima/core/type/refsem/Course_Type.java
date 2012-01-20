@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:37 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:26 EST 2012 */
 package edu.mayo.bmi.uima.core.type.refsem;
 
 import org.apache.uima.jcas.JCas;
@@ -13,11 +13,10 @@ import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
 /** 
- * Updated by JCasGen Wed Jan 11 14:37:37 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:30 EST 2012
  * @generated */
 public class Course_Type extends Attribute_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -36,11 +35,9 @@ public class Course_Type extends Attribute_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = Course.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.refsem.Course");
  
   /** @generated */

@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Jan 11 14:37:37 EST 2012 */
+/* First created by JCasGen Thu Jan 19 17:46:26 EST 2012 */
 package edu.mayo.bmi.uima.core.type.refsem;
 
 import org.apache.uima.jcas.JCas;
@@ -11,11 +11,10 @@ import org.apache.uima.cas.impl.TypeImpl;
 import org.apache.uima.cas.Type;
 
 /** 
- * Updated by JCasGen Wed Jan 11 14:37:37 EST 2012
+ * Updated by JCasGen Fri Jan 20 10:31:31 EST 2012
  * @generated */
 public class Entity_Type extends Element_Type {
   /** @generated */
-  @Override
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
   private final FSGenerator fsGenerator = 
@@ -34,11 +33,9 @@ public class Entity_Type extends Element_Type {
   	  }
     };
   /** @generated */
-  @SuppressWarnings ("hiding")
   public final static int typeIndexID = Entity.typeIndexID;
   /** @generated 
      @modifiable */
-  @SuppressWarnings ("hiding")
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("edu.mayo.bmi.uima.core.type.refsem.Entity");
 
 

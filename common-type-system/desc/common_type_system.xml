@@ -4,6 +4,10 @@
   <description>This is a Common Type System for SHARP NLP. It includes general types necessary to store annotations and interface with clinical element models</description>
   <version>1.0</version>
   <vendor>Mayo - NLP</vendor>
+<imports>
+<import location="../../core/src/edu/mayo/bmi/uima/core/type/Properties.xml"/>
+<import location="../../core/src/edu/mayo/bmi/uima/core/type/Property.xml"/>
+</imports>  
   <types>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.WordToken</name>
@@ -810,7 +814,7 @@
         <featureDescription>
           <name>uncertainty</name>
           <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -1382,6 +1386,31 @@
           <name>confidence</name>
           <description>The confidence of the annotation.</description>
           <rangeTypeName>uima.cas.Float</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>polarity</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>uncertainty</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>conditional</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>generic</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>subject</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
