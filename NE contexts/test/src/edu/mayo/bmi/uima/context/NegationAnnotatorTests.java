@@ -35,7 +35,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class NegationAnnotatorTests {
 
@@ -56,9 +56,9 @@ public class NegationAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.SCOPE_ORDER_PARAM, "RIGHT", 1);
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "edu.mayo.bmi.uima.context.negation.NegationContextAnalyzer");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "edu.mayo.bmi.uima.context.negation.NegationContextHitConsumer");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.WINDOW_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.Sentence");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.NamedEntity");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.WINDOW_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.textspan.Sentence");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
 
@@ -67,82 +67,82 @@ public class NegationAnnotatorTests {
 
 		text = "No evidence of ankle edema is noted.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
-		NamedEntity ne1 = addNE(jCas, 21, 26, "edema");
+		IdentifiedAnnotation ne1 = addNE(jCas, 21, 26, "edema");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "evidence of ankle edema is noted.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 18, 23, "edema");
 		negationAnnotator.process(jCas);
-		assertEquals(0, ne1.getCertainty());
+		assertEquals(0, ne1.getPolarity());
 
 		text = "He denies gastric reflux symptoms, and he denies any symptoms referable to his to his genitourinary system.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 18, 24, "reflux");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "He has no history of cardiac-related problems and no family history of coronary artery disease.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 71, 94, "coronary artery disease");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "He is a lifetime nonsmoker, reports he walks for 30-minutes 4-5 times a week and has no history of hypoglycemia.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 99, 111, "hypoglycemia");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "Electrocardiogram was negative for ischemia, PVC's were less than 5 per minute.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 35, 43, "ischemia");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "He does not have diabetes.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 17, 25, "diabetes");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "She denies any loss of vision, double-vision, dysarthria, or dysphagia.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 15, 29, "loss of vision");
-		NamedEntity ne2 = addNE(jCas, 31, 44, "double-vision");
-		NamedEntity ne3 = addNE(jCas, 46, 56, "dysarthria");
-		NamedEntity ne4 = addNE(jCas, 61, 70, "dysphagia");
+		IdentifiedAnnotation ne2 = addNE(jCas, 31, 44, "double-vision");
+		IdentifiedAnnotation ne3 = addNE(jCas, 46, 56, "dysarthria");
+		IdentifiedAnnotation ne4 = addNE(jCas, 61, 70, "dysphagia");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
-		assertEquals(-1, ne2.getCertainty());
-		assertEquals(-1, ne3.getCertainty());
-		assertEquals(-1, ne4.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
+		assertEquals(-1, ne2.getPolarity());
+		assertEquals(-1, ne3.getPolarity());
+		assertEquals(-1, ne4.getPolarity());
 		
 		text = "Her pain problem began gradually in June of 2000 without prior incident, injury, or illness.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 73, 79, "injury");
 		ne2 = addNE(jCas, 84, 91, "illness");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
-		assertEquals(-1, ne2.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
+		assertEquals(-1, ne2.getPolarity());
 
 		text = "I found no evidence for cancer in this examination.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 24, 30, "cancer");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 		text = "Careful examination of the head, face, and neck reveal no skin cancers.";
 		jCas = TestUtil.processAE(segmentTokenSentenceAE, text);
 		ne1 = addNE(jCas, 58, 70, "skin cancers");
 		negationAnnotator.process(jCas);
-		assertEquals(-1, ne1.getCertainty());
+		assertEquals(-1, ne1.getPolarity());
 
 	}
 
-	private NamedEntity addNE(JCas jCas, int neBegin, int neEnd, String neText) throws ResourceInitializationException, AnalysisEngineProcessException {
-		NamedEntity namedEntity = new NamedEntity(jCas, neBegin, neEnd);
+	private IdentifiedAnnotation addNE(JCas jCas, int neBegin, int neEnd, String neText) throws ResourceInitializationException, AnalysisEngineProcessException {
+		IdentifiedAnnotation namedEntity = new IdentifiedAnnotation(jCas, neBegin, neEnd);
 		namedEntity.addToIndexes();
 		assertEquals(neText, namedEntity.getCoveredText());
 		return namedEntity;

@@ -6,15 +6,15 @@
   <vendor/>
   <imports>
     <import name="edu.mayo.bmi.uima.context.type.ContextTypeSystem"/>
-    <import name="edu.mayo.bmi.uima.core.type.Segment"/>
-    <import name="edu.mayo.bmi.uima.core.type.BaseToken"/>
-    <import name="edu.mayo.bmi.uima.core.type.WordToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.textspan.Segment"/>
+    <import name="edu.mayo.bmi.uima.core.type.syntax.BaseToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.syntax.WordToken"/>
     <import name="edu.mayo.bmi.uima.core.type.ContractionToken"/>
     <import name="edu.mayo.bmi.uima.core.type.NewlineToken"/>
     <import name="edu.mayo.bmi.uima.core.type.NumToken"/>
     <import name="edu.mayo.bmi.uima.core.type.PunctuationToken"/>
     <import name="edu.mayo.bmi.uima.core.type.SymbolToken"/>
-    <import name="edu.mayo.bmi.uima.core.type.Sentence"/>
-    <import name="edu.mayo.bmi.uima.core.type.NamedEntity"/>
+    <import name="edu.mayo.bmi.uima.core.type.textspan.Sentence"/>
+    <import name="edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation"/>
   </imports>
 </typeSystemDescription>
