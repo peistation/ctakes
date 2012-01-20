@@ -73,7 +73,6 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
         <import location="../type_system/NERTypeSystem.xml"/>
       </imports>
       <types>
@@ -95,7 +94,7 @@
       <capability>
         <inputs>
           <type allAnnotatorFeatures="true">uima.tt.CNPAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.types.LookupWindowAnnotation</type>

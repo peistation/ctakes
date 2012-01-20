@@ -11,11 +11,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -27,14 +25,10 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.DocumentID;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.Properties;
-import edu.mayo.bmi.uima.core.type.Property;
-import edu.mayo.bmi.uima.core.type.Segment;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation;
@@ -89,7 +83,8 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 		gotDup = false;
 		clinicNumber = "";
 
-		generateTokenNormForms(cas);
+//		TODO: Move to Common Type System
+//		generateTokenNormForms(cas);
 		assignNamedEntityFeats(cas);
 
 		//storeAnnotationVersion(cas);
@@ -100,105 +95,102 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 	 * 
 	 * @param jcas
 	 */
-	private void storeAnnotationVersion(CAS cas)
-			throws ResourceProcessException {
-		try {
-			JCas jcas = cas.getJCas();
-			Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(
-					Properties.type).iterator();
-			if (itr == null || !itr.hasNext())
-				return;
-
-			Properties props = (Properties) itr.next();
-
-			// create a new property array that is one item bigger
-			FSArray propArr = props.getPropArr();
-			FSArray newPropArr = new FSArray(jcas, propArr.size() + 1);
-			for (int i = 0; i < propArr.size(); i++) {
-				newPropArr.set(i, propArr.get(i));
-			}
-
-			Property annotVerProp = new Property(jcas);
-			annotVerProp.setKey(iv_annotVerPropKey);
-			annotVerProp.setValue(String.valueOf(iv_annotVer));
-
-			// add annotation version prop as last item in array
-			newPropArr.set(newPropArr.size() - 1, annotVerProp);
-			props.setPropArr(newPropArr);
-		} catch (Exception e) {
-			throw new ResourceProcessException(e);
-		}
-	}
+//	TODO: Move to Common Type System
+//	private void storeAnnotationVersion(CAS cas)
+//			throws ResourceProcessException {
+//		try {
+//			JCas jcas = cas.getJCas();
+//			Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(
+//					Properties.type).iterator();
+//			if (itr == null || !itr.hasNext())
+//				return;
+//
+//			Properties props = (Properties) itr.next();
+//
+//			// create a new property array that is one item bigger
+//			FSArray propArr = props.getPropArr();
+//			FSArray newPropArr = new FSArray(jcas, propArr.size() + 1);
+//			for (int i = 0; i < propArr.size(); i++) {
+//				newPropArr.set(i, propArr.get(i));
+//			}
+//
+//			Property annotVerProp = new Property(jcas);
+//			annotVerProp.setKey(iv_annotVerPropKey);
+//			annotVerProp.setValue(String.valueOf(iv_annotVer));
+//
+//			// add annotation version prop as last item in array
+//			newPropArr.set(newPropArr.size() - 1, annotVerProp);
+//			props.setPropArr(newPropArr);
+//		} catch (Exception e) {
+//			throw new ResourceProcessException(e);
+//		}
+//	}
 
 	/**
 	 * Generates normalized form for each token annotation.
 	 */
-	private void generateTokenNormForms(CAS cas)
-			throws ResourceProcessException {
-		try {
-		    //JCas jcas = cas.getJCas();
-		    JCas jcas  = cas.getJCas().getView("plaintext");
-			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-			Iterator propertiesItr = indexes
-					.getAnnotationIndex(Properties.type).iterator();
-
-			while (propertiesItr.hasNext()) {
-				Properties props = (Properties) propertiesItr.next();
-				FSArray fsArr = props.getPropArr();
-				for (int i = 0; i < fsArr.size(); i++)
-				{
-					if (fsArr.get(i) != null) 
-					{
-					    Property fs = (Property) fsArr.get(i);
-					    
-					    if (fs.getKey().compareTo("REV_DATE") == 0) 
-					    {
-						gotValidDate = true;
-						vRevDate = fs.getValue();
-					    }
-					    else if (fs.getKey().compareTo("NOTE_DATE") == 0) 
-					    {
-						vNoteDate = fs.getValue();
-					    }
-					    else if (fs.getKey().compareTo("CLINICAL_NUMBER") == 0) 
-					    {
-						if (fs.getValue().length() < 8)
-						    vClinicalNumber = "0"+fs.getValue();
-						else 
-						    vClinicalNumber = fs.getValue();
-					    }
-					}
-				}
-			}
-			// key = Integer startOffset, value = abbr AnnotationFS
-			Map abbrMap = new HashMap();
-//			JFSIndexRepository indexes_orig = jcas_orig.getJFSIndexRepository();
-//			Iterator docItr = indexes_orig.getAnnotationIndex(DocumentID.type).iterator();
-
-			
-			Iterator docItr = indexes.getAnnotationIndex(DocumentID.type).iterator();
-			
-			while (docItr.hasNext()) 
-			{
-			    DocumentID doc = (DocumentID) docItr.next();
-			    if (gotValidDate)
-				clinicNumber = vClinicalNumber;
-			    abbrMap.put(new Integer(doc.getBegin()), doc);
-			}
-
-
-			Iterator btaItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
-			while (btaItr.hasNext()) 
-			{
-			    BaseToken bta = (BaseToken) btaItr.next();
-			    String normForm = null;
-			    bta.setNormalizedForm(normForm);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-			throw new ResourceProcessException(e);
-		}
-	}
+//	TODO: Move to Common Type System	
+//	private void generateTokenNormForms(CAS cas)
+//			throws ResourceProcessException {
+//		try {
+//		    JCas jcas  = cas.getJCas().getView("plaintext");
+//			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+//			Iterator propertiesItr = indexes
+//					.getAnnotationIndex(Properties.type).iterator();
+//
+//			while (propertiesItr.hasNext()) {
+//				Properties props = (Properties) propertiesItr.next();
+//				FSArray fsArr = props.getPropArr();
+//				for (int i = 0; i < fsArr.size(); i++)
+//				{
+//					if (fsArr.get(i) != null) 
+//					{
+//					    Property fs = (Property) fsArr.get(i);
+//					    
+//					    if (fs.getKey().compareTo("REV_DATE") == 0) 
+//					    {
+//						gotValidDate = true;
+//						vRevDate = fs.getValue();
+//					    }
+//					    else if (fs.getKey().compareTo("NOTE_DATE") == 0) 
+//					    {
+//						vNoteDate = fs.getValue();
+//					    }
+//					    else if (fs.getKey().compareTo("CLINICAL_NUMBER") == 0) 
+//					    {
+//						if (fs.getValue().length() < 8)
+//						    vClinicalNumber = "0"+fs.getValue();
+//						else 
+//						    vClinicalNumber = fs.getValue();
+//					    }
+//					}
+//				}
+//			}
+//			Map abbrMap = new HashMap();
+//
+//			Iterator docItr = indexes.getAnnotationIndex(DocumentID.type).iterator();
+//			
+//			while (docItr.hasNext()) 
+//			{
+//			    DocumentID doc = (DocumentID) docItr.next();
+//			    if (gotValidDate)
+//				clinicNumber = vClinicalNumber;
+//			    abbrMap.put(new Integer(doc.getBegin()), doc);
+//			}
+//
+//
+//			Iterator btaItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
+//			while (btaItr.hasNext()) 
+//			{
+//			    BaseToken bta = (BaseToken) btaItr.next();
+//			    String normForm = null;
+//			    bta.setNormalizedForm(normForm);
+//			}
+//		} catch (Exception e) {
+//		    e.printStackTrace();
+//			throw new ResourceProcessException(e);
+//		}
+//	}
 
 	/**
 	 * Assigns typeID and segmentID values to Drug NamedEntities
@@ -320,13 +312,13 @@ System.err.println("Checking if segmentID ["+segmentID+"] is valid - NE["+neAnno
 										|| localDate.length() < 1) {
 									localDate = globalDate;
 								}
-								Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, neAnnot.getBegin(), neAnnot.getEnd()+1);
+								Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, IdentifiedAnnotation.type, neAnnot.getBegin(), neAnnot.getEnd()+1);
 								String neCui = "n/a";
 								String status = "n/a";
 								String rxNormCui = "n/a";
 								if (neItr.hasNext()){
-									NamedEntity ne = (NamedEntity) neItr.next();
-									status = new Integer(ne.getStatus()).toString();
+									IdentifiedAnnotation ne = (IdentifiedAnnotation) neItr.next();
+									status = new Integer(ne.getUncertainty()).toString();
 									if (ne.getTypeID() == 1){
 
 										FSArray ocArr = ne.getOntologyConceptArr();

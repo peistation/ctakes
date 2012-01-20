@@ -96,7 +96,6 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="file:../type_system/ContextTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <capabilities>

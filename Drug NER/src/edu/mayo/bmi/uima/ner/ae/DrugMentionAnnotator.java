@@ -9,19 +9,18 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceAccessException;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.fsm.ner.machines.elements.DecimalStrengthFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.DosagesFSM;
@@ -47,9 +46,6 @@ import edu.mayo.bmi.fsm.ner.output.elements.RouteToken;
 import edu.mayo.bmi.fsm.ner.output.elements.StrengthToken;
 import edu.mayo.bmi.fsm.ner.output.util.SubSectionIndicator;
 import edu.mayo.bmi.fsm.ner.output.util.SuffixStrengthToken;
-import edu.mayo.bmi.lookup.algorithms.FirstTokenPermutationImpl;
-import edu.mayo.bmi.lookup.vo.LookupToken;
-import edu.mayo.bmi.uima.cdt.type.DateAnnotation;
 import edu.mayo.bmi.uima.core.ae.TokenizerAnnotator;
 import edu.mayo.bmi.uima.core.fsm.adapters.ContractionTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.DecimalTokenAdapter;
@@ -58,18 +54,18 @@ import edu.mayo.bmi.uima.core.fsm.adapters.NewlineTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.PunctuationTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.SymbolTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.WordTokenAdapter;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.ContractionToken;
-import edu.mayo.bmi.uima.core.type.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.NewlineToken;
-import edu.mayo.bmi.uima.core.type.NumToken;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.Segment;
-import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.SymbolToken;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
+import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
+import edu.mayo.bmi.uima.core.type.syntax.NumToken;
+import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.textsem.DateAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
@@ -88,7 +84,6 @@ import edu.mayo.bmi.uima.drugner.type.RouteAnnotation;
 import edu.mayo.bmi.uima.drugner.type.StrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SuffixStrengthAnnotation;
-import edu.mayo.bmi.uima.lookup.ae.LookupAnnotationToJCasAdapter;
 import edu.mayo.bmi.uima.ner.DrugMention;
 import edu.mayo.bmi.uima.ner.elements.DrugChangeStatusElement;
 
@@ -99,7 +94,7 @@ import edu.mayo.bmi.uima.ner.elements.DrugChangeStatusElement;
  * 
  * @author Mayo Clinic
  */
-public class DrugMentionAnnotator extends JTextAnnotator_ImplBase 
+public class DrugMentionAnnotator extends JCasAnnotator_ImplBase 
 {
   // LOG4J logger based on class name
   public static Logger iv_logger = Logger.getLogger(DrugMentionAnnotator.class);
@@ -128,17 +123,17 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   private Set<String> iv_exclusionTagSet = null;
   private Set<String> iv_medicationRelatedSections = new HashSet<String>();
 
-  public void initialize(AnnotatorContext annotCtx)
-      throws AnnotatorInitializationException, AnnotatorConfigurationException
+  public void initialize(UimaContext annotCtx)
+      throws ResourceInitializationException
   {
     super.initialize(annotCtx);
     try
     {
       iv_medicationRelatedSections = ParamUtil.getStringParameterValuesSet(
           PARAM_SEGMENTS_MEDICATION_RELATED, annotCtx);
-    } catch (AnnotatorContextException e)
+    } catch (ResourceAccessException e)
     {
-      throw new AnnotatorInitializationException(e);
+      throw new ResourceInitializationException(e);
     }
 
     iv_fractionFSM = new FractionStrengthFSM();
@@ -157,8 +152,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     iv_logger.info("Finite state machines loaded.");
   }
 
-  public void process(JCas jcas, ResultSpecification rs)
-      throws AnnotatorProcessException
+  public void process(JCas jcas)
+      throws AnalysisEngineProcessException
   {
 
     try
@@ -188,7 +183,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     } 
     catch (Exception e)
     {
-      throw new AnnotatorProcessException(e);
+      throw new AnalysisEngineProcessException(e);
     }
   }
 
@@ -203,7 +198,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     while (itr.hasNext())
     {
       IdentifiedAnnotation idAnnot = (IdentifiedAnnotation) itr.next();
-      idAnnot.setUid(uid);
+      idAnnot.setId(uid);
       uid++;
     }
   }
@@ -478,7 +473,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         Iterator chkNE = namedE.iterator();
         Iterator newNE = wordTokenList.iterator();
         boolean neFound = false;
-        NamedEntity ne = null;
+        IdentifiedAnnotation ne = null;
         WordToken we = null;
 
         StrengthToken mt = (StrengthToken) measurementTokenItr.next();
@@ -667,7 +662,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   private void generateDrugMentions(JCas jcas, Segment seg) throws Exception
   {
     int begin = seg.getBegin(), end = seg.getEnd() + 1;
-    NamedEntity nextNER = null;
+    IdentifiedAnnotation nextNER = null;
     int nextNERPosition = 0;
     List uniqueNEs;
     List allNEs;
@@ -676,7 +671,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
     
     allNEs = 
-      FSUtil.getAnnotationsInSpan(jcas, NamedEntity.type, begin, end, validNeTypes);
+      FSUtil.getAnnotationsInSpan(jcas, IdentifiedAnnotation.type, begin, end, validNeTypes);
     
     uniqueNEs = findUniqueMentions(allNEs.toArray());
 
@@ -687,17 +682,17 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     
     for (int i = 0; i < uniqueNEs.size(); i++)
     {
-      NamedEntity thisNER = (NamedEntity) uniqueNEs.get(i);
+      IdentifiedAnnotation thisNER = (IdentifiedAnnotation) uniqueNEs.get(i);
       boolean hasNext = false;
       if (uniqueNEs.size() > i + 1)
       {
-        nextNER = (NamedEntity) uniqueNEs.get(i + 1);
+        nextNER = (IdentifiedAnnotation) uniqueNEs.get(i + 1);
         nextNERPosition = nextNER.getBegin();
         if (nextNER != null)
           hasNext = true;
       } else if (!uniqueNEs.isEmpty())
       {
-        nextNER = (NamedEntity) uniqueNEs.get(i);
+        nextNER = (IdentifiedAnnotation) uniqueNEs.get(i);
         nextNERPosition = nextNER.getBegin();
         lastOne = true;
       }
@@ -797,7 +792,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
             findDrugAttributesInRange(jcas, begin, end);
 //TODO: need to fix - use the list above - uniqueNEs and subset that list instead of getting new list of annotations
             List neTokenUpdatedList = getAnnotationsInSpan(jcas,
-                NamedEntity.type, begin, end + 1);
+                IdentifiedAnnotation.type, begin, end + 1);
 //TODO: 10/28/2010 -- exception
 // it seems that this can still happen triggered by either from FSM or a case where the array exceeds the length            
             if (!neTokenUpdatedList.isEmpty())
@@ -877,28 +872,28 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       throws Exception
   {
     List baseTokenList = getAnnotationsInSpanWithAdaptToBaseTokenFSM(jcas, BaseToken.type, begin, end + 1);
-    List<Annotation> neTokenList = getAnnotationsInSpan(jcas, NamedEntity.type, begin, end + 1);
+    List<Annotation> neTokenList = getAnnotationsInSpan(jcas, IdentifiedAnnotation.type, begin, end + 1);
     List<Annotation> weTokenList = getAnnotationsInSpan(jcas, WordToken.type, begin, end + 1);
 
     // execute FSM logic
     executeFSMs(jcas, baseTokenList, neTokenList, weTokenList);
   }
 
-  private void generateDrugMentionsAndAnnotations(JCas jcas, List<NamedEntity> nerTokenList,
+  private void generateDrugMentionsAndAnnotations(JCas jcas, List<IdentifiedAnnotation> nerTokenList,
       int begin, int end, DrugMentionAnnotation recurseNER,
       String [] relatedStatus, int countNER, List<DrugMentionAnnotation> globalDrugNER) throws Exception
   {
 
-    Iterator<NamedEntity> uniqueNER = nerTokenList.iterator();
+    Iterator<IdentifiedAnnotation> uniqueNER = nerTokenList.iterator();
     DrugMentionAnnotation drugTokenAnt = null;
-    NamedEntity tokenAnt = null;
+    IdentifiedAnnotation tokenAnt = null;
 
     List<DrugMentionAnnotation> holdDrugNERArr = new ArrayList<DrugMentionAnnotation>();
 
     while (uniqueNER.hasNext())
     {
 
-      tokenAnt = (NamedEntity) uniqueNER.next();
+      tokenAnt = (IdentifiedAnnotation) uniqueNER.next();
       boolean isDrugNER = false;
       FSArray ocArr = tokenAnt.getOntologyConceptArr();
       if (ocArr != null)
@@ -1558,7 +1553,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         {
           drugNERArr.set(i, (FeatureStructure) globalDrugNER.get(i));
         }
-        tokenAnt.setDrugMentionArr(drugNERArr);
+//        TODO: Move to Common Type System
+//        tokenAnt.setDrugMentionArr(drugNERArr);
       }
     }
   }
@@ -1827,7 +1823,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 	  boolean noPostMention = false;
 	  int originalEndSpan = endSpan;
 	  int originalBeginSpan = beginSpan;
-	  NamedEntity neAnnot = new NamedEntity(jcas, tokenDrugNER.getBegin(),
+	  IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas, tokenDrugNER.getBegin(),
 			  tokenDrugNER.getEnd());
 	  int beginChunk = drugChangeStatus.getEnd();
 	  DrugMention compareDM = new DrugMention(jcas, beginChunk, endSpan);
@@ -1858,7 +1854,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 	  neAnnot.setTypeID(NERTypeIdentifier);
 	  int [] updatedSpan = {beginSpan, endSpan};
 
-	  List<NamedEntity> buildNewNER = new ArrayList<NamedEntity>();
+	  List<IdentifiedAnnotation> buildNewNER = new ArrayList<IdentifiedAnnotation>();
 
 	  buildNewNER.add(neAnnot);
 
@@ -2274,7 +2270,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 //  }
 
   private boolean findNextDrugEntityPost(int spanLength, int[][] elementSpan,
-      NamedEntity nea, int endPhrase)
+      IdentifiedAnnotation nea, int endPhrase)
   {
     boolean patternFound = false;
     for (int l = 0; l < spanLength && !patternFound; l++)
@@ -2289,7 +2285,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   }
 
   private boolean findNextDrugEntityPre(int spanLength, int[][] elementSpan,
-      NamedEntity nea, int priorDrugEnd)
+      IdentifiedAnnotation nea, int priorDrugEnd)
   {
     boolean patternFound = false;
     for (int l = 0; l < spanLength && !patternFound; l++)
@@ -2304,7 +2300,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   }
 
   private boolean findNextParenRelativeToNE(int spanLength,
-      int[][] elementSpan, NamedEntity nea, int priorDrugEnd, int startOffset)
+      int[][] elementSpan, IdentifiedAnnotation nea, int priorDrugEnd, int startOffset)
   {
     boolean patternFound = false;
     for (int l = startOffset; l < spanLength && !patternFound; l++)
@@ -2346,7 +2342,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
   {
     int[] validNeTypes =
     { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
-    int numDrugs = FSUtil.countAnnotationsInSpan(jcas, NamedEntity.type, begin,
+    int numDrugs = FSUtil.countAnnotationsInSpan(jcas, IdentifiedAnnotation.type, begin,
         end, validNeTypes);
     return (numDrugs > 1);
   }
@@ -2411,7 +2407,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     return span;
   }
   private void findFSMInRange(JCas jcas, int begin, int end) throws Exception {
-		NamedEntity ne = null;
+		IdentifiedAnnotation ne = null;
 		WordToken we = null;
 		// grab iterator over tokens within this chunk
 		Iterator btaItr = FSUtil.getAnnotationsInSpanIterator(jcas,
@@ -2420,7 +2416,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 		// do the same as above for named entities
 		// grab iterator over tokens within this chunk
 		Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
-				NamedEntity.type, begin,
+				IdentifiedAnnotation.type, begin,
 				end+1);
 		// List neTokenList = new ArrayList();
 
@@ -2439,7 +2435,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
 
 		while (neItr.hasNext()) {
-			ne = (NamedEntity) neItr.next();
+			ne = (IdentifiedAnnotation) neItr.next();
 
 			neTokenList.add(ne);
 		}
@@ -2652,9 +2648,9 @@ private int findInPattern(JCas jcas, int begin, int end, int elementType, int[][
      		 }
    	    }
       	 
-      } else if (elementType == NamedEntity.type) {
+      } else if (elementType == IdentifiedAnnotation.type) {
    while (neItr.hasNext()) {
-    	NamedEntity nea = (NamedEntity) neItr.next();
+    	IdentifiedAnnotation nea = (IdentifiedAnnotation) neItr.next();
     		if(nea.getTypeID()==1 || nea.getTypeID()==0) {
     			lastLocation[0]= nea.getBegin();
     			lastLocation[1] = nea.getEnd(); 
