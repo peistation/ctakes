@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/xmlParserAPIs.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

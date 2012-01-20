@@ -45,10 +45,10 @@ import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
 import edu.mayo.bmi.uima.core.ci.TextModification;
 import edu.mayo.bmi.uima.core.ci.TextModifier;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.DocumentID;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.type.Properties;
 import edu.mayo.bmi.uima.core.type.Property;
-import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 
 
 /**
@@ -195,8 +195,9 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
             if(docID != null)
             {
         	DocumentID newDocId = new DocumentID(plaintextView);
-        	newDocId.setBegin(docID.getBegin());
-        	newDocId.setEnd(docID.getEnd());
+//TODO:Moved to Common Type System.
+//        	newDocId.setBegin(docID.getBegin());
+//        	newDocId.setEnd(docID.getEnd());
         	newDocId.setDocumentID(docID.getDocumentID());
         	newDocId.addToIndexes();
             }

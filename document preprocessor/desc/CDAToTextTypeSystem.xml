@@ -5,9 +5,11 @@
 <version>1.0</version>
 <vendor>Mayo Clinic</vendor>
 <imports>
+<!-- 
 <import location="../../core/src/edu/mayo/bmi/uima/core/type/Segment.xml"/>
+<import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>
+-->
 <import location="../../core/src/edu/mayo/bmi/uima/core/type/Properties.xml"/>
 <import location="../../core/src/edu/mayo/bmi/uima/core/type/Property.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>
 </imports>
 </typeSystemDescription>
