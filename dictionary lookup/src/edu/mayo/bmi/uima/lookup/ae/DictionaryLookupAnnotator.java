@@ -36,16 +36,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
@@ -59,12 +55,12 @@ import edu.mayo.bmi.uima.core.resource.FileResource;
  * 
  * @author Mayo Clinic
  */
-public class DictionaryLookupAnnotator extends JTextAnnotator_ImplBase
+public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 {
 	// LOG4J logger based on class name
 	private Logger iv_logger = Logger.getLogger(getClass().getName());
 
-	private AnnotatorContext iv_context;
+	private UimaContext iv_context;
 
 	private Set iv_lookupSpecSet = new HashSet();
 
@@ -75,38 +71,30 @@ public class DictionaryLookupAnnotator extends JTextAnnotator_ImplBase
 	// val = Set of MetaDataHit objects
 	private Map iv_dupMap = new HashMap();
 
-	public void initialize(AnnotatorContext aContext)
-			throws AnnotatorConfigurationException,
-			AnnotatorInitializationException
+	public void initialize(UimaContext aContext)
+			throws ResourceInitializationException
 	{
 		super.initialize(aContext);
 
 		iv_context = aContext;
-		try
-		{
-			configInit();
-		}
-		catch (AnnotatorContextException ace)
-		{
-			throw new AnnotatorConfigurationException(ace);
-		}
+		configInit();
+
 	}
 
 	/**
 	 * Reads configuration parameters.
 	 */
-	private void configInit() throws AnnotatorContextException,
-			AnnotatorConfigurationException
+	private void configInit() throws ResourceInitializationException
 	{
+		try {
 		FileResource fResrc = (FileResource) iv_context.getResourceObject("LookupDescriptor");
 		File descFile = fResrc.getFile();
 
-		try {
 			iv_logger.info("Parsing descriptor: " + descFile.getAbsolutePath());
 			iv_lookupSpecSet = LookupParseUtilities.parseDescriptor(descFile, iv_context);
 		}
 		catch (Exception e) {
-			throw new AnnotatorConfigurationException(e);
+			throw new ResourceInitializationException(e);
 		}
 
 	}
@@ -114,8 +102,8 @@ public class DictionaryLookupAnnotator extends JTextAnnotator_ImplBase
 	/**
 	 * Entry point for processing.
 	 */
-	public void process(JCas jcas, ResultSpecification resultSpec)
-			throws AnnotatorProcessException {
+	public void process(JCas jcas)
+			throws AnalysisEngineProcessException {
 		
 		iv_dupMap.clear();
 		
@@ -145,7 +133,7 @@ public class DictionaryLookupAnnotator extends JTextAnnotator_ImplBase
 
 		}
 		catch (Exception e) {
-			throw new AnnotatorProcessException(e);
+			throw new AnalysisEngineProcessException(e);
 		}
 	}
 

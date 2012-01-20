@@ -36,17 +36,16 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 /**
@@ -74,7 +73,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 	// Added 'MaxListSize'
 	private int iv_maxHits;
 
-	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props, int maxListSize)
+	public OrangeBookFilterConsumerImpl(UimaContext aCtx, Properties props, int maxListSize)
 			throws Exception
 	{
 		// TODO property validation could be done here
@@ -84,7 +83,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		LuceneIndexReaderResource resrc = (LuceneIndexReaderResource) aCtx.getResourceObject(resrcName);
 		iv_searcher = new IndexSearcher(resrc.getIndexReader());
 	}
-	public OrangeBookFilterConsumerImpl(AnnotatorContext aCtx, Properties props)
+	public OrangeBookFilterConsumerImpl(UimaContext aCtx, Properties props)
 	throws Exception
 	{
 		// TODO property validation could be done here
@@ -95,7 +94,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		iv_maxHits = Integer.MAX_VALUE;
 	}
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnnotatorProcessException
+			throws AnalysisEngineProcessException
 	{
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
 		while (hitsByOffsetItr.hasNext())
@@ -136,7 +135,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 			if (validCodeCol.size() > 0)
 			{
 				FSArray ocArr = createOntologyConceptArr(jcas, validCodeCol);
-				NamedEntity neAnnot = new NamedEntity(jcas);
+				IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
 				neAnnot.setTypeID(TypeSystemConst.NE_TYPE_ID_DRUG);
 				neAnnot.setBegin(neBegin);
 				neAnnot.setEnd(neEnd);
@@ -174,7 +173,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 	}
 
 	private boolean isValid(String fieldName, String str)
-			throws AnnotatorProcessException
+			throws AnalysisEngineProcessException
 	{
 		try
 		{
@@ -193,7 +192,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 		}
 		catch (Exception e)
 		{
-			throw new AnnotatorProcessException(e);
+			throw new AnalysisEngineProcessException(e);
 		}
 	}
 }

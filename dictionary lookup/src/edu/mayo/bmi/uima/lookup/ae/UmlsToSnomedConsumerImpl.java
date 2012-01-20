@@ -34,16 +34,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 
 import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 /**
@@ -77,7 +77,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 	protected Properties props;
 
 	
-	public UmlsToSnomedConsumerImpl(AnnotatorContext aCtx, Properties properties)
+	public UmlsToSnomedConsumerImpl(UimaContext aCtx, Properties properties)
 			throws Exception
 	{
 		// TODO property validation could be done here
@@ -106,7 +106,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 	
 
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnnotatorProcessException
+			throws AnalysisEngineProcessException
 	{
 		try
 		{
@@ -191,7 +191,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 							arrIdx++;
 						}
 
-						NamedEntity neAnnot = new NamedEntity(jcas);
+						IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
 						neAnnot.setTypeID(neType.intValue());
 						neAnnot.setBegin(neBegin);
 						neAnnot.setEnd(neEnd);
@@ -204,7 +204,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 			}
 		}
 		catch (Exception e) {
-			throw new AnnotatorProcessException(e);
+			throw new AnalysisEngineProcessException(e);
 		}
 	}
 

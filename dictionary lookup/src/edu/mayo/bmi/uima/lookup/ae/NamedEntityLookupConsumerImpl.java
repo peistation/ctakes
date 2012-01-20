@@ -27,15 +27,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 /**
@@ -55,13 +55,13 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 	
 	private static int iv_maxSize;
 
-	public NamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props, int maxListSize)
+	public NamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props, int maxListSize)
 	{
 		// TODO property validation could be done here
 		iv_props = props;
 		iv_maxSize = maxListSize;
 	}
-	public NamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props)
+	public NamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props)
 	{
 		// TODO property validation could be done here
 		iv_props = props;
@@ -69,7 +69,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 
 	
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnnotatorProcessException
+			throws AnalysisEngineProcessException
 	{
 		String typeId = null;
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
@@ -105,7 +105,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 				ocArrIdx++;
 			}
 
-			NamedEntity neAnnot = new NamedEntity(jcas);
+			IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
 			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
@@ -118,8 +118,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 				
 				neAnnot.setTypeID(tid);
 			}
-			neAnnot.addToIndexes();
-			
+			neAnnot.addToIndexes();			
 		}
 	}
 }
