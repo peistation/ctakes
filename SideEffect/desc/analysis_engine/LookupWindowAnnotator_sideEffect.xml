@@ -54,7 +54,7 @@
           <type allAnnotatorFeatures="true">uima.tt.CNPAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>
