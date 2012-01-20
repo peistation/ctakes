@@ -28,7 +28,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
 
-import edu.mayo.bmi.uima.core.type.DocumentID;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 
 public class DocumentIDAnnotationUtil 
 {

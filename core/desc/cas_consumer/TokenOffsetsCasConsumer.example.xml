@@ -41,7 +41,6 @@ from Knowtator annotations.</description>
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../type_system/CommonTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
