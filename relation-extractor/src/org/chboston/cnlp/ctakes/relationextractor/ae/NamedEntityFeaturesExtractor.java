@@ -11,12 +11,12 @@ import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
 
   private SimpleFeatureExtractor namedEntityType = new TypePathExtractor(
-      NamedEntity.class,
+		  IdentifiedAnnotation.class,
       "typeID");
 
   /**
@@ -36,10 +36,10 @@ public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
   /**
    * Number of named entities between the two mentions
    */
-  private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, NamedEntity.class);
+  private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, IdentifiedAnnotation.class);
 
   @Override
-  public List<Feature> extract(JCas jCas, NamedEntity arg1, NamedEntity arg2)
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
       throws AnalysisEngineProcessException {
 
     List<Feature> features = new ArrayList<Feature>();

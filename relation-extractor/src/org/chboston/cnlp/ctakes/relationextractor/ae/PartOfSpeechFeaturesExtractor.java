@@ -13,8 +13,8 @@ import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class PartOfSpeechFeaturesExtractor implements RelationFeaturesExtractor {
 
@@ -43,7 +43,7 @@ public class PartOfSpeechFeaturesExtractor implements RelationFeaturesExtractor 
       tokenPOS);
 
   @Override
-  public List<Feature> extract(JCas jCas, NamedEntity arg1, NamedEntity arg2)
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
       throws AnalysisEngineProcessException {
     List<Feature> features = new ArrayList<Feature>();
     features.addAll(this.mention1FeaturesExtractor.extract(jCas, arg1));

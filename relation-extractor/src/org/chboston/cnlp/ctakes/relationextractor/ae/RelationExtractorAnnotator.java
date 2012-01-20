@@ -27,7 +27,7 @@ import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
 
@@ -45,13 +45,13 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
     // collect all possible relation arguments from the CAS
-    List<NamedEntity> args = new ArrayList<NamedEntity>(JCasUtil.select(jCas, NamedEntity.class));
+    List<IdentifiedAnnotation> args = new ArrayList<IdentifiedAnnotation>(JCasUtil.select(jCas, IdentifiedAnnotation.class));
 
     // walk through all pairs of arguments
     for (int i = 0; i < args.size(); ++i) {
-      NamedEntity arg1 = args.get(i);
+    	IdentifiedAnnotation arg1 = args.get(i);
       for (int j = i + 1; j < args.size(); ++j) {
-        NamedEntity arg2 = args.get(j);
+    	  IdentifiedAnnotation arg2 = args.get(j);
 
         // apply all the feature extractors to extract the list of features
         List<Feature> features = new ArrayList<Feature>();
