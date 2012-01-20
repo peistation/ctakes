@@ -32,7 +32,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
  * @author m081914

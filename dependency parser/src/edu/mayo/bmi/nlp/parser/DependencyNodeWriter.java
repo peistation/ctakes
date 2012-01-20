@@ -26,7 +26,6 @@ package edu.mayo.bmi.nlp.parser;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.CAS;
@@ -38,7 +37,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 

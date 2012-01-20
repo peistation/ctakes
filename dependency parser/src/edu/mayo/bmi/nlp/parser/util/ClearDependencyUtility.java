@@ -10,8 +10,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 import clear.dep.DepNode;
 import clear.dep.DepTree;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
  * @author m081914

@@ -130,9 +130,9 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
     </typeSystemDescription>
     <typePriorities>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>

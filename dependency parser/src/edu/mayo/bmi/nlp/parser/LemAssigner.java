@@ -37,8 +37,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 public class LemAssigner extends JCasAnnotator_ImplBase{
 

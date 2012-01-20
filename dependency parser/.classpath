@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/liblinear-1.51.jar"/>
 	<classpathentry kind="lib" path="/POS tagger/resources"/>
 	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -49,7 +49,7 @@ import clear.dep.DepParser;
 import clear.dep.DepTree;
 import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 
