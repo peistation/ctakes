@@ -28,8 +28,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.coref.util.AnnotationSelector;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
 import edu.mayo.bmi.uima.coref.type.PronounMarkable;

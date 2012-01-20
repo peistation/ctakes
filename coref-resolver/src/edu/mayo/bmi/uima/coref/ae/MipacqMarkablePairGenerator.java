@@ -17,12 +17,9 @@
 package edu.mayo.bmi.uima.coref.ae;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -30,29 +27,20 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.EmptyFSList;
-import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.jcas.cas.NonEmptyFSList;
-import org.apache.uima.jcas.cas.NonEmptyFloatList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
-import org.chboston.cnlp.ctakes.coref.eval.helpers.Span;
-import org.chboston.cnlp.ctakes.coref.eval.helpers.SpanAlignment;
-import org.chboston.cnlp.ctakes.coref.eval.helpers.SpanOffsetComparator;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
 import edu.mayo.bmi.coref.util.CorefConsts;
 import edu.mayo.bmi.coref.util.FSIteratorToList;
-import edu.mayo.bmi.coref.util.MarkableTreeUtils;
 import edu.mayo.bmi.coref.util.PairAttributeCalculator;
-import edu.mayo.bmi.coref.util.ParentPtrTree;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
-import edu.mayo.bmi.uima.coref.type.MarkablePair;
 import edu.mayo.bmi.uima.coref.type.MarkablePairSet;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
 import edu.mayo.bmi.uima.coref.type.PronounMarkable;
@@ -193,9 +181,9 @@ public class MipacqMarkablePairGenerator extends JCasAnnotator_ImplBase {
 			if (sentdist>CorefConsts.NEDIST) break;
 //			else if (sentdist>PRODIST && m instanceof PronounMarkable) continue;
 			// filter out if both are NEs but of diff types
-			if (m.getContent() instanceof NamedEntity &&
-					a.getContent() instanceof NamedEntity &&
-					((NamedEntity)m.getContent()).getTypeID() != ((NamedEntity)a.getContent()).getTypeID())
+			if (m.getContent() instanceof IdentifiedAnnotation &&
+					a.getContent() instanceof IdentifiedAnnotation &&
+					((IdentifiedAnnotation)m.getContent()).getTypeID() != ((IdentifiedAnnotation)a.getContent()).getTypeID())
 				continue;
 
 			// filter out "which" that crosses sentence boundary

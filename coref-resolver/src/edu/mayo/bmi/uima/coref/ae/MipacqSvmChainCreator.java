@@ -17,19 +17,12 @@
 package edu.mayo.bmi.uima.coref.ae;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -45,34 +38,28 @@ import org.apache.uima.jcas.cas.EmptyFSList;
 import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
 import org.mipacq.annotation.type.CoreferenceRelation;
 import org.mipacq.annotation.type.NonCoreferenceRelation;
 import org.mipacq.annotation.type.RelationArgument;
 import org.mipacq.annotation.type.UnrelationArgument;
 
 import edu.mayo.bmi.coref.util.AbstractClassifier;
-import edu.mayo.bmi.coref.util.AnaphoricityAttributeCalculator;
-import edu.mayo.bmi.coref.util.AttributeCalculator;
 import edu.mayo.bmi.coref.util.CorefConsts;
 import edu.mayo.bmi.coref.util.FSIteratorToList;
 import edu.mayo.bmi.coref.util.FeatureVector;
-import edu.mayo.bmi.coref.util.HobbsTreeNavigator;
 import edu.mayo.bmi.coref.util.MarkableTreeUtils;
-import edu.mayo.bmi.coref.util.PairAttributeCalculator;
 import edu.mayo.bmi.coref.util.ParentPtrTree;
 import edu.mayo.bmi.coref.util.SyntaxAttributeCalculator;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.WordToken;
-import edu.mayo.bmi.uima.coref.type.*;
+import edu.mayo.bmi.uima.coref.type.CoreferenceChain;
+import edu.mayo.bmi.uima.coref.type.DemMarkable;
+import edu.mayo.bmi.uima.coref.type.Markable;
+import edu.mayo.bmi.uima.coref.type.MarkablePairSet;
+import edu.mayo.bmi.uima.coref.type.NEMarkable;
+import edu.mayo.bmi.uima.coref.type.PronounMarkable;
 
 public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 

@@ -18,21 +18,16 @@ package edu.mayo.bmi.coref.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
 
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.coref.type.AnaphoricityVecInstance;
 import edu.mayo.bmi.uima.coref.type.Markable;
-import edu.mayo.bmi.uima.coref.type.VecInstance;
 
 public class SvmVectorCreator {
 	HashSet<String> stopwords = null;

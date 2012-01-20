@@ -27,19 +27,14 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.coref.eval.helpers.Span;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
 import edu.mayo.bmi.coref.util.FSIteratorToList;
 import edu.mayo.bmi.coref.util.MarkableTreeUtils;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
-import edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation;
 
 public class MipacqMarkableExpander extends JCasAnnotator_ImplBase {
 

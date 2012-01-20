@@ -29,11 +29,11 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.chunker.type.Chunk;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 
 // TODO: This class hardcoded all the criteria,
 // which should be replaced by a parser of
@@ -42,9 +42,9 @@ public class AnnotationSelector {
 
 	public static ArrayList<Annotation> selectNE (JCas jcas) {
 		ArrayList<Annotation> ret = new ArrayList<Annotation>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(NamedEntity.type).iterator();
+		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(IdentifiedAnnotation.type).iterator();
 		while (iter.hasNext()) {
-			NamedEntity a = (NamedEntity) iter.next();
+			IdentifiedAnnotation a = (IdentifiedAnnotation) iter.next();
 //			int tid = a.getTypeID();
 //			if (tid == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE ||
 //				tid == TypeSystemConst.NE_TYPE_ID_DISORDER ||

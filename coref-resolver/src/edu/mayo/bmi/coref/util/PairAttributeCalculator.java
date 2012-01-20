@@ -16,35 +16,17 @@
  */
 package edu.mayo.bmi.coref.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.UmlsConcept;
-import edu.mayo.bmi.coref.util.AnnotationSelector;
-import edu.mayo.bmi.uima.coref.type.DemMarkable;
+import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.coref.type.Markable;
-import edu.mayo.bmi.uima.coref.type.NEMarkable;
-import edu.mayo.bmi.uima.coref.type.PronounMarkable;
-import edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
 
 public class PairAttributeCalculator extends AttributeCalculator {
 
@@ -173,10 +155,10 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	//	}
 
 	public String calcWnClassC () {
-		if (m1.getContent() instanceof NamedEntity &&
-				m2.getContent() instanceof NamedEntity) {
-				NamedEntity ne1 = (NamedEntity) m1.getContent();
-				NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				m2.getContent() instanceof IdentifiedAnnotation) {
+				IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+				IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 				if (ne1.getTypeID() == ne2.getTypeID())
 					return "C";
 				else return "N";
@@ -185,10 +167,10 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcWnClassI () {
-		if (m1.getContent() instanceof NamedEntity &&
-				m2.getContent() instanceof NamedEntity) {
-				NamedEntity ne1 = (NamedEntity) m1.getContent();
-				NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				m2.getContent() instanceof IdentifiedAnnotation) {
+				IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+				IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 				if (ne1.getTypeID() != ne2.getTypeID())
 					return "Y";
 				else return "N";
@@ -197,18 +179,18 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcWnClassNA () {
-		if (!(m1.getContent() instanceof NamedEntity) ||
-				!(m2.getContent() instanceof NamedEntity))
+		if (!(m1.getContent() instanceof IdentifiedAnnotation) ||
+				!(m2.getContent() instanceof IdentifiedAnnotation))
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcWnClass () {
-		if (m1.getContent() instanceof NamedEntity &&
-			m2.getContent() instanceof NamedEntity) {
-			NamedEntity ne1 = (NamedEntity) m1.getContent();
-			NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+			m2.getContent() instanceof IdentifiedAnnotation) {
+			IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+			IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 			if (ne1.getTypeID() == ne2.getTypeID())
 				return "C";
 			else return "I";
@@ -217,10 +199,10 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcAlias () {
-		if (m1.getContent() instanceof NamedEntity &&
-			m2.getContent() instanceof NamedEntity) {
-			NamedEntity ne1 = (NamedEntity) m1.getContent();
-			NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+			m2.getContent() instanceof IdentifiedAnnotation) {
+			IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+			IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 
 			ArrayList<String> l = new ArrayList<String>();
 			FSArray fsa = ne1.getOntologyConceptArr();
@@ -445,9 +427,9 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	public String calcClosestComp () {
 		if (calcWnClass().equals("C")) {
 			ArrayList<Annotation> l = AnnotationSelector.selectNE(jcas);
-			int m2type = ((NamedEntity)m2.getContent()).getTypeID();
+			int m2type = ((IdentifiedAnnotation)m2.getContent()).getTypeID();
 			for (Annotation a : l) {
-				if (((NamedEntity)a).getTypeID()==m2type &&
+				if (((IdentifiedAnnotation)a).getTypeID()==m2type &&
 					a.getBegin()>=m1.getEnd() &&
 					a.getEnd()<=m2.getBegin())
 					return "I";

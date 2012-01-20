@@ -28,7 +28,6 @@ import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
 import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.coref.type.Markable;
 
 public class HobbsTreeNavigator {
