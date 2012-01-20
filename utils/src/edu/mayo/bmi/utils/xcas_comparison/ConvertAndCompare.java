@@ -36,7 +36,7 @@ public class ConvertAndCompare {
 		Hashtable<String, String> map = new Hashtable<String, String>();
 		map.put("edu.mayo.bmi.uima.common.type.DocumentID",
 				"edu.mayo.bmi.uima.common.types.DocumentIDAnnotation");
-		map.put("edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation",
+		map.put("edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation",
 				"edu.mayo.bmi.uima.lookup.types.LookupWindowAnnotation");
 //		Specify your mappings here
 /*		map.put("",
@@ -80,11 +80,11 @@ public class ConvertAndCompare {
 				"edu.mayo.bmi.uima.cdt.types.MeasurementAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.PersonTitleAnnotation",
 				"edu.mayo.bmi.uima.cdt.types.PersonTitleAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.Segment",
+		map.put("edu.mayo.bmi.uima.core.type.textspan.Segment",
 				"edu.mayo.bmi.uima.common.types.SegmentAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.Sentence",
+		map.put("edu.mayo.bmi.uima.core.type.textspan.Sentence",
 				"edu.mayo.bmi.uima.common.types.SentenceAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.WordToken",
+		map.put("edu.mayo.bmi.uima.core.type.syntax.WordToken",
 				"edu.mayo.bmi.uima.common.types.WordTokenAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.NumToken",
 				"edu.mayo.bmi.uima.common.types.NumTokenAnnotation");
@@ -94,7 +94,7 @@ public class ConvertAndCompare {
 				"edu.mayo.bmi.uima.common.types.SymbolTokenAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.NewlineToken",
 				"edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.NamedEntity",
+		map.put("edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation",
 				"edu.mayo.bmi.uima.common.types.NamedEntityAnnotation");
 		map.put("edu.mayo.bmi.uima.core.type.UmlsConcept",
 				"edu.mayo.bmi.uima.common.types.UmlsConcept");
