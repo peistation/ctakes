@@ -28,7 +28,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.chunker.type.Chunk;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
 
 /**
  * This chunker creator simply creates annotations of type edu.mayo.bmi.chunker.type.Chunk and
