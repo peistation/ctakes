@@ -23,7 +23,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.smoking.Const;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {

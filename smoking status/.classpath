@@ -19,5 +19,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/document preprocessor"/>
 	<classpathentry kind="lib" path="lib/libsvm-2.91.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

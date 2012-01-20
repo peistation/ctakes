@@ -39,9 +39,9 @@ import edu.mayo.bmi.smoking.type.SmokingDocumentClassification;
 import edu.mayo.bmi.smoking.util.ClassifiableEntry;
 import edu.mayo.bmi.smoking.util.TruthValue;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.DocumentID;
-import edu.mayo.bmi.uima.core.type.Segment;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 /**
