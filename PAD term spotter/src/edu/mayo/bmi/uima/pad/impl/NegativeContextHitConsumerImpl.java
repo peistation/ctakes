@@ -3,7 +3,7 @@ package edu.mayo.bmi.uima.pad.impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.context.ContextHitConsumer;
 import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
 import edu.mayo.bmi.uima.context.ContextHit;
@@ -17,11 +17,11 @@ public class NegativeContextHitConsumerImpl extends NamedEntityContextHitConsume
 	public void consumeHit(JCas jcas, Annotation focusAnnot, int scope,
 			ContextHit ctxHit)
 	{
-		if (focusAnnot instanceof NamedEntity)
+		if (focusAnnot instanceof IdentifiedAnnotation)
 		{
-			NamedEntity neAnnot = (NamedEntity) focusAnnot;
+			IdentifiedAnnotation neAnnot = (IdentifiedAnnotation) focusAnnot;
 			if (neAnnot.getTypeID() != 7 /*&& neAnnot.getTypeID() != 2*/ )
-				neAnnot.setCertainty(-1);
+				neAnnot.setPolarity(-1);
 		}
 
 		createContextAnnot(jcas, focusAnnot, scope, ctxHit).addToIndexes();
