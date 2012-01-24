@@ -32,9 +32,11 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.nlp.preprocessor.ClinicalNotePreProcessor;
@@ -155,11 +157,9 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
         	originalText = originalView.getSofaDataString();
 
                 //used later to copy to plaintextView 
-                Iterator docItr = originalView.getAnnotationIndex(DocumentID.type).iterator();
-                DocumentID docID = null;
-                
-                if(docItr.hasNext())
-            	docID = (DocumentID)docItr.next();
+        	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
+		 	DocumentID docID = (DocumentID) documentIDIterator.next();
         	
             PreProcessor pp = new ClinicalNotePreProcessor(
                     dtdFile,
