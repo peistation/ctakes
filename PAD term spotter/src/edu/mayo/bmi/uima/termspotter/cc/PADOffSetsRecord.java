@@ -15,9 +15,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.collection.CasConsumer_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
@@ -166,9 +168,9 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 			// Not needed for production use - add documentId that was collected
 			// in the CAS initializer
 			// if (isWindows()) {
-			annotItr = indexes.getAnnotationIndex(DocumentID.type).iterator();
-			if (annotItr.hasNext()) {
-				DocumentID did = (DocumentID) annotItr.next();
+		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
+			if (documentIDIterator.hasNext()) {
+				DocumentID did = (DocumentID) documentIDIterator.next();
 				casConsumerOffSetData.append(did.getDocumentID());
 
 			}
