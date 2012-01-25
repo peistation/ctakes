@@ -5,7 +5,6 @@
   <version>1.0</version>
   <vendor>Mayo Clinic</vendor>
   <imports>
-    <import location="../../../NE contexts/src/edu/mayo/bmi/uima/context/type/ContextTypeSystem.xml"/>
   </imports>
   <types>
     <typeDescription>
