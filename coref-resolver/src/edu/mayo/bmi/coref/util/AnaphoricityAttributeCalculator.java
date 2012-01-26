@@ -28,7 +28,7 @@ import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
 
@@ -114,7 +114,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
 	public String calcmIsDrug () {
 		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_DRUG)
+				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_DRUG)
 			return "Y";
 		else
 			return "N";
@@ -122,7 +122,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
 	public String calcmIsDisorder () {
 		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_DISORDER)
+				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_DISORDER)
 			return "Y";
 		else
 			return "N";
@@ -130,7 +130,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
 	public String calcmIsFinding () {
 		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_FINDING)
+				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_FINDING)
 			return "Y";
 		else
 			return "N";
@@ -138,7 +138,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
 	public String calcmIsProcedure () {
 		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_PROCEDURE)
+				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_PROCEDURE)
 			return "Y";
 		else
 			return "N";
@@ -146,7 +146,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 
 	public String calcmIsAnatomicalSite () {
 		if (m.getContent() instanceof IdentifiedAnnotation &&
-				((IdentifiedAnnotation)m.getContent()).getTypeID() == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE)
+				((IdentifiedAnnotation)m.getContent()).getTypeID() == CONST.NE_TYPE_ID_ANATOMICAL_SITE)
 			return "Y";
 		else
 			return "N";
