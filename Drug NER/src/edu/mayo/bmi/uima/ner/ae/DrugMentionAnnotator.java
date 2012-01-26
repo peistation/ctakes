@@ -68,7 +68,7 @@ import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DecimalStrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DosagesAnnotation;
@@ -668,7 +668,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
     List allNEs;
 
     int[] validNeTypes =
-    { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
+    { CONST.NE_TYPE_ID_DRUG, CONST.NE_TYPE_ID_UNKNOWN };
     
     allNEs = 
       FSUtil.getAnnotationsInSpan(jcas, IdentifiedAnnotation.type, begin, end, validNeTypes);
@@ -2341,7 +2341,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
   private boolean hasMultipleDrugsInSpan(JCas jcas, int begin, int end)
   {
     int[] validNeTypes =
-    { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
+    { CONST.NE_TYPE_ID_DRUG, CONST.NE_TYPE_ID_UNKNOWN };
     int numDrugs = FSUtil.countAnnotationsInSpan(jcas, IdentifiedAnnotation.type, begin,
         end, validNeTypes);
     return (numDrugs > 1);
