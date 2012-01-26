@@ -36,7 +36,7 @@ import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 
 /**
  * @author Mayo Clinic
@@ -108,7 +108,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 			IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
-			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
+			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
 			if(typeId != null){
 				int tid=-1;

@@ -46,7 +46,7 @@ import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 
 /**
  * Implementation that takes Rxnorm dictionary lookup hits and stores only the
@@ -136,10 +136,10 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 			{
 				FSArray ocArr = createOntologyConceptArr(jcas, validCodeCol);
 				IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
-				neAnnot.setTypeID(TypeSystemConst.NE_TYPE_ID_DRUG);
+				neAnnot.setTypeID(CONST.NE_TYPE_ID_DRUG);
 				neAnnot.setBegin(neBegin);
 				neAnnot.setEnd(neEnd);
-				neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
+				neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
 				neAnnot.setOntologyConceptArr(ocArr);
 				neAnnot.addToIndexes();
 			}
