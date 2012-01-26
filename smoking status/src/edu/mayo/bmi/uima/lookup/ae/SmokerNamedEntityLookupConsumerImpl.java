@@ -13,7 +13,7 @@ import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 
 /**
  * copied from edu.may.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl in the "Dictionary Lookup" project
@@ -71,7 +71,7 @@ public class SmokerNamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 			SmokerNamedEntityAnnotation neAnnot = new SmokerNamedEntityAnnotation(jcas); //modification
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
-			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
+			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
 			neAnnot.addToIndexes();
 		}
