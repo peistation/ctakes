@@ -1236,7 +1236,12 @@
         <featureDescription>
           <name>nodeTags</name>
           <description/>
-          <rangeTypeName>uima.cas.StringList</rangeTypeName>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>headIndex</name>
+          <description>The head index tracks the index into the word tokens which is the syntactic head of a phrase.</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
