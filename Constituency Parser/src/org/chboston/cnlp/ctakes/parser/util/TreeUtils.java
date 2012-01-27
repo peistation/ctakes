@@ -17,7 +17,8 @@ package org.chboston.cnlp.ctakes.parser.util;
 
 import opennlp.tools.parser.Parse;
 
-import org.chboston.cnlp.ctakes.parser.uima.type.*;
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 import java.util.List;
 import java.util.ArrayList;

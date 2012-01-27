@@ -23,14 +23,14 @@ import java.io.PrintWriter;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.collection.CasConsumer_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
+
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
 
 public class ParserTreeWriterConsumer extends CasConsumer_ImplBase {
 

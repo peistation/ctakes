@@ -31,16 +31,14 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
 import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 
 public class MaxentParserWrapper implements ParserWrapper {
 
