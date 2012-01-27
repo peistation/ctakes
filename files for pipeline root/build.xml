@@ -463,7 +463,7 @@
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_document_preprocessor.type,_dependency_parser.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_constituency_parser.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_document_preprocessor.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_constituency_parser.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
@@ -501,17 +501,6 @@
             <env key="TEMP" value="${env.TEMP}" />
             <arg value="${_document_preprocessor.dir}/${desc.dir}/CDAToTextTypeSystem.xml" />
             <arg value="${_document_preprocessor.dir}/${src.dir}" />
-        </exec>
-    </target>
-
-
-    <target name="_dependency_parser.type">
-        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
-            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
-            <env key="UIMA_HOME" value="${uima.home}" />
-            <env key="TEMP" value="${env.TEMP}" />
-            <arg value="${_dependency_parser.dir}/${desc.dir}/TypeSystem.xml" />
-            <arg value="${_dependency_parser.dir}/${src.dir}" />
         </exec>
     </target>
 
