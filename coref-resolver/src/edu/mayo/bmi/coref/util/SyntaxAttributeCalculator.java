@@ -20,19 +20,17 @@ import java.io.FileNotFoundException;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.StringArray;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.coref.type.Markable;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
+import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
 import edu.mayo.bmi.uima.coref.type.PronounMarkable;
 

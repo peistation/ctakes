@@ -22,7 +22,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
 import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 
 public class MarkableDepUtils {
 
