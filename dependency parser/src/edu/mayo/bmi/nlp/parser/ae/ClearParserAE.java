@@ -40,7 +40,7 @@ import clear.dep.DepNode;
 import clear.dep.DepParser;
 import clear.dep.DepTree;
 import clear.morph.MorphEnAnalyzer;
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;

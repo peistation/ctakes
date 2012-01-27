@@ -37,7 +37,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
@@ -147,7 +147,7 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
 	                }
 	                if ( !inputFormat.contains("tok") ) {
 	                    depNodes.add( new ConllDependencyNode(jCas,sentStart,sentEnd));
-	                    depNodes.get(depNodes.size()-1).setID(0);
+	                    depNodes.get(depNodes.size()-1).setId(0);
 	                    depNodes.get(depNodes.size()-1).addToIndexes(jCas);
 	                }
 
@@ -275,64 +275,64 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
         if ( inputFormat.contains("min") ) {
             for (String aline : lines) {                    
                 String[] tokens = aline.split("\t");
-                depNodes.get(i).setID(Integer.parseInt(tokens[0]));
-                depNodes.get(i).setFORM(tokens[1]);
-                depNodes.get(i).setHEAD(depNodes.get(Integer.parseInt(tokens[2])));
-                depNodes.get(i).setDEPREL(tokens[3]);
-                depNodes.get(i).setLEMMA("_");
-                depNodes.get(i).setCPOSTAG("_");
-                depNodes.get(i).setPOSTAG("_");
-                depNodes.get(i).setFEATS("_");
-                depNodes.get(i).setPHEAD(null);
-                depNodes.get(i).setPDEPREL("_");
+                depNodes.get(i).setId(Integer.parseInt(tokens[0]));
+                depNodes.get(i).setForm(tokens[1]);
+                depNodes.get(i).setHead(depNodes.get(Integer.parseInt(tokens[2])));
+                depNodes.get(i).setDeprel(tokens[3]);
+                depNodes.get(i).setLemma("_");
+                depNodes.get(i).setCpostag("_");
+                depNodes.get(i).setPostag("_");
+                depNodes.get(i).setFeats("_");
+                depNodes.get(i).setPhead(null);
+                depNodes.get(i).setPdeprel("_");
                 depNodes.get(i).addToIndexes(jCas);
                 i++;
             }
         } else if ( inputFormat.contains("mpos")) {
             for (String aline : lines) {                    
                 String[] tokens = aline.split("\t");
-                depNodes.get(i).setID(Integer.parseInt(tokens[0]));
-                depNodes.get(i).setFORM(tokens[1]);
-                depNodes.get(i).setPOSTAG(tokens[2]);
-                depNodes.get(i).setCPOSTAG(tokens[2]);
-                depNodes.get(i).setHEAD(depNodes.get(Integer.parseInt(tokens[3])));
-                depNodes.get(i).setDEPREL(tokens[4]);
-                depNodes.get(i).setLEMMA("_");
-                depNodes.get(i).setFEATS("_");
-                depNodes.get(i).setPHEAD(null);
-                depNodes.get(i).setPDEPREL("_");
+                depNodes.get(i).setId(Integer.parseInt(tokens[0]));
+                depNodes.get(i).setForm(tokens[1]);
+                depNodes.get(i).setPostag(tokens[2]);
+                depNodes.get(i).setCpostag(tokens[2]);
+                depNodes.get(i).setHead(depNodes.get(Integer.parseInt(tokens[3])));
+                depNodes.get(i).setDeprel(tokens[4]);
+                depNodes.get(i).setLemma("_");
+                depNodes.get(i).setFeats("_");
+                depNodes.get(i).setPhead(null);
+                depNodes.get(i).setPdeprel("_");
                 depNodes.get(i).addToIndexes(jCas);
                 i++;
             }
         } else if ( inputFormat.contains("mlem")) {
             for (String aline : lines) {                    
                 String[] tokens = aline.split("\t");
-                depNodes.get(i).setID(Integer.parseInt(tokens[0]));
-                depNodes.get(i).setFORM(tokens[1]);
-                depNodes.get(i).setLEMMA(tokens[2]);
-                depNodes.get(i).setHEAD(depNodes.get(Integer.parseInt(tokens[3])));
-                depNodes.get(i).setDEPREL(tokens[4]);
-                depNodes.get(i).setCPOSTAG("_");
-                depNodes.get(i).setPOSTAG("_");
-                depNodes.get(i).setFEATS("_");
-                depNodes.get(i).setPHEAD(null);
-                depNodes.get(i).setPDEPREL("_");
+                depNodes.get(i).setId(Integer.parseInt(tokens[0]));
+                depNodes.get(i).setForm(tokens[1]);
+                depNodes.get(i).setLemma(tokens[2]);
+                depNodes.get(i).setHead(depNodes.get(Integer.parseInt(tokens[3])));
+                depNodes.get(i).setDeprel(tokens[4]);
+                depNodes.get(i).setCpostag("_");
+                depNodes.get(i).setPostag("_");
+                depNodes.get(i).setFeats("_");
+                depNodes.get(i).setPhead(null);
+                depNodes.get(i).setPdeprel("_");
                 depNodes.get(i).addToIndexes(jCas);
                 i++;
             }
         } else if ( inputFormat.contains("dep")) {
             for (String aline : lines) {                    
                 String[] tokens = aline.split("\t");
-                depNodes.get(i).setID(Integer.parseInt(tokens[0]));
-                depNodes.get(i).setFORM(tokens[1]);
-                depNodes.get(i).setLEMMA(tokens[2]);
-                depNodes.get(i).setPOSTAG(tokens[3]);
-                depNodes.get(i).setCPOSTAG(tokens[3]);
-                depNodes.get(i).setHEAD(depNodes.get(Integer.parseInt(tokens[4])));
-                depNodes.get(i).setDEPREL(tokens[5]);
-                depNodes.get(i).setFEATS("_");
-                depNodes.get(i).setPHEAD(null);
-                depNodes.get(i).setPDEPREL("_");
+                depNodes.get(i).setId(Integer.parseInt(tokens[0]));
+                depNodes.get(i).setForm(tokens[1]);
+                depNodes.get(i).setLemma(tokens[2]);
+                depNodes.get(i).setPostag(tokens[3]);
+                depNodes.get(i).setCpostag(tokens[3]);
+                depNodes.get(i).setHead(depNodes.get(Integer.parseInt(tokens[4])));
+                depNodes.get(i).setDeprel(tokens[5]);
+                depNodes.get(i).setFeats("_");
+                depNodes.get(i).setPhead(null);
+                depNodes.get(i).setPdeprel("_");
                 depNodes.get(i).addToIndexes(jCas);
                 i++;
             }
@@ -340,16 +340,16 @@ public class DependencyFileCollectionReader extends CollectionReader_ImplBase {
             if (!inputFormat.contains("conll")) { System.err.println("Warning: Assuming CONLL-x input format"); }
             for (String aline : lines) {                    
                 String[] tokens = aline.split("\t");
-                depNodes.get(i).setID(Integer.parseInt(tokens[0]));
-                depNodes.get(i).setFORM(tokens[1]);
-                depNodes.get(i).setLEMMA(tokens[2]);
-                depNodes.get(i).setCPOSTAG(tokens[3]);
-                depNodes.get(i).setPOSTAG(tokens[4]);
-                depNodes.get(i).setFEATS(tokens[5]);
-                depNodes.get(i).setHEAD(depNodes.get(Integer.parseInt(tokens[6])));
-                depNodes.get(i).setDEPREL(tokens[7]);
-                depNodes.get(i).setPHEAD(depNodes.get(Integer.parseInt(tokens[8])));
-                depNodes.get(i).setPDEPREL(tokens[9]);
+                depNodes.get(i).setId(Integer.parseInt(tokens[0]));
+                depNodes.get(i).setForm(tokens[1]);
+                depNodes.get(i).setLemma(tokens[2]);
+                depNodes.get(i).setCpostag(tokens[3]);
+                depNodes.get(i).setPostag(tokens[4]);
+                depNodes.get(i).setFeats(tokens[5]);
+                depNodes.get(i).setHead(depNodes.get(Integer.parseInt(tokens[6])));
+                depNodes.get(i).setDeprel(tokens[7]);
+                depNodes.get(i).setPhead(depNodes.get(Integer.parseInt(tokens[8])));
+                depNodes.get(i).setPdeprel(tokens[9]);
                 depNodes.get(i).addToIndexes(jCas);
                 i++;
             }

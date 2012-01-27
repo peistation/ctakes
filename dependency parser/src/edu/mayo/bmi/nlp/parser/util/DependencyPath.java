@@ -2,7 +2,7 @@ package edu.mayo.bmi.nlp.parser.util;
 
 import java.util.LinkedList;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 
 public class DependencyPath extends LinkedList<ConllDependencyNode>{
 	
@@ -22,12 +22,12 @@ public class DependencyPath extends LinkedList<ConllDependencyNode>{
 		for (ConllDependencyNode node : this) {
 			if (isCommonNode(node)) {
 				foundCommon = true;
-				str.append( node.getFORM() );
+				str.append( node.getForm() );
 				continue;
 			}
 			str.append( foundCommon? 
-					">"+node.getDEPREL()+"-"+node.getFORM() : 
-						node.getFORM()+"-"+node.getDEPREL()+"<");
+					">"+node.getDeprel()+"-"+node.getForm() : 
+						node.getForm()+"-"+node.getDeprel()+"<");
 		}
 		return str.toString();
 	}
