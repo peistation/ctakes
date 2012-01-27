@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;

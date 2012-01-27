@@ -26,7 +26,7 @@ import libsvm.svm_node;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.resource.ResourceAccessException;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
 

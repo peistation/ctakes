@@ -24,8 +24,8 @@ import java.util.Scanner;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.StringArray;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;

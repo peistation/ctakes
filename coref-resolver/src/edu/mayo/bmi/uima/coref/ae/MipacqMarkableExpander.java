@@ -27,7 +27,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 import edu.mayo.bmi.coref.util.FSIteratorToList;
 import edu.mayo.bmi.coref.util.MarkableTreeUtils;

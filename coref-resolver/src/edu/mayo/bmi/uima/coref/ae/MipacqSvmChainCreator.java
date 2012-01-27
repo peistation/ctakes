@@ -40,7 +40,7 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 import org.mipacq.annotation.type.CoreferenceRelation;
 import org.mipacq.annotation.type.NonCoreferenceRelation;
 import org.mipacq.annotation.type.RelationArgument;
