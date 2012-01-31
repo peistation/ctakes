@@ -1,0 +1,144 @@
+Investigate
+-----------
+
+Disjoint spans:
+
+  <annotation>
+    <mention id="Relations_Sept21_Schema_Instance_70126" />
+    <annotator id="Relations_Aug18_Schema_Instance_2">CU annotator ,</annotator>
+    <span start="1320" end="1334" />
+    <span start="1348" end="1354" />
+    <spannedText>Blood pressure ... 122/82</spannedText>
+    <creationDate>Wed Mar 16 14:47:04 MDT 2011</creationDate>
+  </annotation>
+
+
+Export to jar
+-------------
+
+java -classpath test.jar:workspaces/mipacq/agreement/lib/jdom.jar runs.AnnotVsAnnot
+
+Misc
+----
+
+Overlap agreement is *agreement on matching arguments*, not agreement on matching entities!
+
+Mapping to coarse relations
+---------------------------
+
+To come with a relation hierarchy, I took James's spreadsheet and:
+
+* deleted a couple of top level relations (such as isa).
+* added causes/brings_about and manages/treats
+* changed "complicates" to "compicates"
+
+A few relations such as isa are still not mappable to the five coarse relations.
+
+Calculations
+------------
+
+To calculate the denominator (called 'total' in the code), I use this logic. 
+The size of the union between two sets is simply the sum of the sizes of each set 
+minus the size of the set of examples that are in both sets.
+
+E.g.
+
+set1: 1,2,3,4,5,6,7,8
+set2: 6,7,8,9,10,11
+union: 1,2,3,4,5,6,7,8,9,10,11 
+
+union size = 8 + 6 - 3 = 11 
+
+Knowtator XML Files
+-------------------
+
+Some examples of how knowtator represents relations and entity types in XML files:
+
+
+********** Categories **********
+
+<annotations textSource="2290848406_2">
+
+  ...
+
+  <annotation>
+    <mention id="Relations_Sept21_Schema_Instance_30340" />
+    <annotator id="annotationSchemaMarch4_Instance_0">james masanz, mayo clinic</annotator>
+    <span start="86" end="97" />
+    <spannedText>sore throat</spannedText>
+    <creationDate>Thu Oct 14 22:39:26 MDT 2010</creationDate>
+  </annotation>
+  <annotation>
+
+  ...
+
+  <classMention id="Relations_Sept21_Schema_Instance_30340">
+    <mentionClass id="Sign_Symptom">Sign_Symptom</mentionClass>
+    <hasSlotMention id="Relations_Sept21_Schema_Instance_30341" />
+  </classMention>
+
+  <stringSlotMention id="Relations_Sept21_Schema_Instance_30341">
+    <mentionSlot id="cui" />
+    <stringSlotMentionValue value="C0242429" />
+  </stringSlotMention>
+
+</annotations>
+
+
+********** Relations **********
+
+E.g. "soar throat" co_occurs_with "headache"
+
+To find relations and their argument, need to find classMention(s)
+that have two hasSlotMention(s), which in turn lead to the actual arguments.
+
+  <annotation>
+    <mention id="Relations_Sept21_Schema_Instance_30340" />
+    <annotator id="annotationSchemaMarch4_Instance_0">james masanz, mayo clinic</annotator>
+    <span start="86" end="97" />
+    <spannedText>sore throat</spannedText>
+    <creationDate>Thu Oct 14 22:39:26 MDT 2010</creationDate>
+  </annotation>
+
+  <annotation>
+    <mention id="Relations_Sept21_Schema_Instance_30350" />
+    <annotator id="annotationSchemaMarch4_Instance_0">james masanz, mayo clinic</annotator>
+    <span start="102" end="110" />
+    <spannedText>headache</spannedText>
+    <creationDate>Thu Oct 14 22:39:28 MDT 2010</creationDate>
+  </annotation>
+
+  ...
+
+  <annotation>
+    <mention id="Relations_Sept21_Schema_Set02_Instance_70014" />
+    <annotator id="Relations_Aug18_Schema_Instance_2">CU annotator ,</annotator>
+    <creationDate>Wed Oct 27 21:45:39 MDT 2010</creationDate>
+  </annotation>
+
+  ...
+
+  <classMention id="Relations_Sept21_Schema_Set02_Instance_70014">
+    <mentionClass id="co_occurs_with">co_occurs_with</mentionClass>
+    <hasSlotMention id="Relations_Sept21_Schema_Set02_Instance_90018" />
+    <hasSlotMention id="Relations_Sept21_Schema_Set02_Instance_90020" />
+  </classMention>  
+
+  ...
+
+  <complexSlotMention id="Relations_Sept21_Schema_Set02_Instance_90018">
+    <mentionSlot id="Related_to" />
+    <complexSlotMentionValue value="Relations_Sept21_Schema_Instance_30350" />
+  </complexSlotMention>
+
+  <complexSlotMention id="Relations_Sept21_Schema_Set02_Instance_90020">
+    <mentionSlot id="Argument" />
+    <complexSlotMentionValue value="Relations_Sept21_Schema_Instance_30340" />
+  </complexSlotMention>
+
+
+*******************************
+
+In the example above, Relations_Sept21_Schema_Instance_30350 and
+Relations_Sept21_Schema_Instance_30340 become relation arguments
+ and the key of the relation index hash table (kid1-kid2).
