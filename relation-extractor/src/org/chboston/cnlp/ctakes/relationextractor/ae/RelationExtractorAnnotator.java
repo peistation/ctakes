@@ -37,7 +37,9 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   private List<RelationFeaturesExtractor> featureExtractors = Arrays.asList(
       new TokenFeaturesExtractor(),
       new PartOfSpeechFeaturesExtractor(),
-      new NamedEntityFeaturesExtractor());
+      new NamedEntityFeaturesExtractor(),
+      new DependencyTreeFeaturesExtractor(),
+      new DependencyPathFeaturesExtractor());
 
   /*
    * Implement the standard UIMA process method.
