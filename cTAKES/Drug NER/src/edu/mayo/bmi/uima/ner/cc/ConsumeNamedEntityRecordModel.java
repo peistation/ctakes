@@ -31,8 +31,8 @@ import edu.mayo.bmi.uima.core.type.BaseToken;
 import edu.mayo.bmi.uima.core.type.DocumentID;
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.Properties;
-import edu.mayo.bmi.uima.core.type.Property;
+import edu.mayo.bmi.uima.core.type.Pairs;
+import edu.mayo.bmi.uima.core.type.Pair;
 import edu.mayo.bmi.uima.core.type.Segment;
 import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.FSUtil;
@@ -105,11 +105,11 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 		try {
 			JCas jcas = cas.getJCas();
 			Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(
-					Properties.type).iterator();
+					Pairs.type).iterator();
 			if (itr == null || !itr.hasNext())
 				return;
 
-			Properties props = (Properties) itr.next();
+			Pairs props = (Pairs) itr.next();
 
 			// create a new property array that is one item bigger
 			FSArray propArr = props.getPropArr();
@@ -118,7 +118,7 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 				newPropArr.set(i, propArr.get(i));
 			}
 
-			Property annotVerProp = new Property(jcas);
+			Pair annotVerProp = new Pair(jcas);
 			annotVerProp.setKey(iv_annotVerPropKey);
 			annotVerProp.setValue(String.valueOf(iv_annotVer));
 
@@ -139,17 +139,17 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 		    //JCas jcas = cas.getJCas();
 		    JCas jcas  = cas.getJCas().getView("plaintext");
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-			Iterator propertiesItr = indexes
-					.getAnnotationIndex(Properties.type).iterator();
+			Iterator pairsItr = indexes
+					.getAnnotationIndex(Pairs.type).iterator();
 
-			while (propertiesItr.hasNext()) {
-				Properties props = (Properties) propertiesItr.next();
+			while (pairsItr.hasNext()) {
+				Pairs props = (Pairs) pairsItr.next();
 				FSArray fsArr = props.getPropArr();
 				for (int i = 0; i < fsArr.size(); i++)
 				{
 					if (fsArr.get(i) != null) 
 					{
-					    Property fs = (Property) fsArr.get(i);
+					    Pair fs = (Pair) fsArr.get(i);
 					    
 					    if (fs.getKey().compareTo("REV_DATE") == 0) 
 					    {
