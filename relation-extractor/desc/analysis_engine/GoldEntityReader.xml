@@ -5,7 +5,7 @@
   <annotatorImplementationName>org.chboston.cnlp.ctakes.relationextractor.cr.GoldEntityReader</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>GoldEntityReader</name>
-    <description/>
+    <description>Descriptor file for a collection reader that reads UMLS entities from Knowtator XML files and adds them to the CAS.</description>
     <version>1.0</version>
     <vendor/>
     <configurationParameters/>

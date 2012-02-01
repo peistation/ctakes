@@ -1,58 +1,7 @@
-Investigate
------------
-
-Disjoint spans:
-
-  <annotation>
-    <mention id="Relations_Sept21_Schema_Instance_70126" />
-    <annotator id="Relations_Aug18_Schema_Instance_2">CU annotator ,</annotator>
-    <span start="1320" end="1334" />
-    <span start="1348" end="1354" />
-    <spannedText>Blood pressure ... 122/82</spannedText>
-    <creationDate>Wed Mar 16 14:47:04 MDT 2011</creationDate>
-  </annotation>
-
-
-Export to jar
--------------
-
-java -classpath test.jar:workspaces/mipacq/agreement/lib/jdom.jar runs.AnnotVsAnnot
-
-Misc
-----
-
-Overlap agreement is *agreement on matching arguments*, not agreement on matching entities!
-
-Mapping to coarse relations
----------------------------
-
-To come with a relation hierarchy, I took James's spreadsheet and:
-
-* deleted a couple of top level relations (such as isa).
-* added causes/brings_about and manages/treats
-* changed "complicates" to "compicates"
-
-A few relations such as isa are still not mappable to the five coarse relations.
-
-Calculations
-------------
-
-To calculate the denominator (called 'total' in the code), I use this logic. 
-The size of the union between two sets is simply the sum of the sizes of each set 
-minus the size of the set of examples that are in both sets.
-
-E.g.
-
-set1: 1,2,3,4,5,6,7,8
-set2: 6,7,8,9,10,11
-union: 1,2,3,4,5,6,7,8,9,10,11 
-
-union size = 8 + 6 - 3 = 11 
-
 Knowtator XML Files
 -------------------
 
-Some examples of how knowtator represents relations and entity types in XML files:
+Some examples of how knowtator represents relations and entity categories in XML files:
 
 
 ********** Categories **********
