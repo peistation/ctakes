@@ -1418,21 +1418,49 @@
       <name>edu.mayo.bmi.uima.core.type.textsem.EntityMention</name>
       <description>A text string (IdentifiedAnnotation) that refers to an Entity.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>entity</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Entity</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.EventMention</name>
       <description>A text string (IdentifiedAnnotation) that refers to an Event.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>event</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Event</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.TimeMention</name>
       <description>A text string (IdentifiedAnnotation) that refers to a Time (i.e., TIMEX3).</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>time</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Time</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.Modifier</name>
       <description>A text string (IdentifiedAnnotation) that refers to an Attribute.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>normalizedForm</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.Paragraph</name>
