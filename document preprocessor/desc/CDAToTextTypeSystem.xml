@@ -9,7 +9,7 @@
 <import location="../../core/src/edu/mayo/bmi/uima/core/type/Segment.xml"/>
 <import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>
 -->
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/Properties.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/Property.xml"/>
+<import location="../../core/src/edu/mayo/bmi/uima/core/type/Pairs.xml"/>
+<import location="../../core/src/edu/mayo/bmi/uima/core/type/Pair.xml"/>
 </imports>
 </typeSystemDescription>
