@@ -26,8 +26,8 @@ import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.Pairs;
-import edu.mayo.bmi.uima.core.type.Pair;
+import edu.mayo.bmi.uima.core.type.Properties;
+import edu.mayo.bmi.uima.core.type.Property;
 import edu.mayo.bmi.uima.core.cc.NonTerminalConsumer;
 import edu.mayo.bmi.uima.core.type.DocumentID;
 import edu.mayo.bmi.uima.pad.type.PADHit;
@@ -113,13 +113,13 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 
 	private void addPatientMetaData(JCas jcas) {
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator<?> annotItr = indexes.getAnnotationIndex(Pairs.type)
+		Iterator<?> annotItr = indexes.getAnnotationIndex(Properties.type)
 				.iterator();
 		if (annotItr.hasNext()) {
-			Pairs props = (Pairs) annotItr.next();
+			Properties props = (Properties) annotItr.next();
 			FSArray fsArr = props.getPropArr();
 			for (int i = 0; i < fsArr.size(); i++) {
-				Pair prop = (Pair) fsArr.get(i);
+				Property prop = (Property) fsArr.get(i);
 				if (prop == null)
 					continue;
 
