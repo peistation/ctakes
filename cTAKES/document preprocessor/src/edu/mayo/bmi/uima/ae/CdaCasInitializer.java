@@ -46,8 +46,8 @@ import edu.mayo.bmi.uima.core.ci.TextModification;
 import edu.mayo.bmi.uima.core.ci.TextModifier;
 import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.type.DocumentID;
-import edu.mayo.bmi.uima.core.type.Pair;
-import edu.mayo.bmi.uima.core.type.Pairs;
+import edu.mayo.bmi.uima.core.type.Properties;
+import edu.mayo.bmi.uima.core.type.Property;
 import edu.mayo.bmi.uima.core.type.Segment;
 
 
@@ -203,7 +203,7 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
             
 
             // Store meta data about the document
-            Pairs propAnnot = new Pairs(plaintextView); 
+            Properties propAnnot = new Properties(plaintextView); 
             Map metaDataMap = dmd.getMetaData();
             FSArray fsArr = new FSArray(plaintextView, metaDataMap.size());
             Iterator keyItr = metaDataMap.keySet().iterator();
@@ -214,7 +214,7 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
                 Object value = metaDataMap.get(key);
 
                 if (value instanceof String) {
-                    Pair prop = new Pair(plaintextView);
+                    Property prop = new Property(plaintextView);
                     prop.setKey(key);
                     prop.setValue((String) value);
                     fsArr.set(pos++, prop);
