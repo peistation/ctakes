@@ -40,11 +40,11 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
+
+import edu.mayo.bmi.uima.core.type.relation.CollectionTextRelation;
+import edu.mayo.bmi.uima.core.type.relation.CoreferenceRelation;
+import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import org.mipacq.annotation.type.CoreferenceRelation;
-import org.mipacq.annotation.type.NonCoreferenceRelation;
-import org.mipacq.annotation.type.RelationArgument;
-import org.mipacq.annotation.type.UnrelationArgument;
 
 import edu.mayo.bmi.coref.util.AbstractClassifier;
 import edu.mayo.bmi.coref.util.CorefConsts;
@@ -54,7 +54,6 @@ import edu.mayo.bmi.coref.util.MarkableTreeUtils;
 import edu.mayo.bmi.coref.util.ParentPtrTree;
 import edu.mayo.bmi.coref.util.SyntaxAttributeCalculator;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.coref.type.CoreferenceChain;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.MarkablePairSet;
@@ -166,15 +165,17 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 				CoreferenceRelation cr = new CoreferenceRelation(jcas);
 				RelationArgument ra1 = new RelationArgument(jcas);
 				ra1.setId(bestAnte.m.getId());
-				ra1.setArgument(bestAnte.m);
+				ra1.setArgument(bestAnte.m.getContent());
 				ra1.setRole("antecedent");
 				RelationArgument ra2 = new RelationArgument(jcas);
 				ra2.setId(anaphor.getId());
-				ra2.setArgument(anaphor);
+				ra2.setArgument(anaphor.getContent());
 				ra2.setRole("anaphor");
 				cr.setArg1(ra1);
 				cr.setArg2(ra2);
-				cr.setCoref_prob(bestAnte.prob);
+				cr.setConfidence(bestAnte.prob);
+//				cr.setCoref_prob(bestAnte.prob);
+				
 				ra1.addToIndexes();
 				ra2.addToIndexes();
 				cr.addToIndexes();
@@ -187,12 +188,13 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		int n = ppt.equivCls(ec); // n holds the number of classes
 		EmptyFSList elist = new EmptyFSList(jcas); // shared tail for all chains
 		FSList[] listhds = new FSList[n]; // keep track of the heads of all chains
-		CoreferenceChain[] chains = new CoreferenceChain[n];
+		CollectionTextRelation[] chains = new CollectionTextRelation[n];
 
 		// Initialize n chains
 		for (int i = 0; i < n; ++i) {
-			chains[i] = new CoreferenceChain(jcas);
+			chains[i] = new CollectionTextRelation(jcas);
 			chains[i].setId(i);
+			chains[i].setCategory("CoreferenceChain");
 			chains[i].addToIndexes();
 			listhds[i] = elist;
 		}
@@ -201,11 +203,11 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		// insert Markables to the head of their chains
 		for (int i = ec.length-1; i >= 0; --i) {
 			NonEmptyFSList l = new NonEmptyFSList(jcas);
-			l.setHead(lm.get(i));
+			l.setHead(((Markable)lm.get(i)).getContent());
 			l.setTail(listhds[ec[i]]);
 			listhds[ec[i]] = l;
 			chains[ec[i]].setMembers(l);
-			chains[ec[i]].setSize(chains[ec[i]].getSize()+1);
+//			chains[ec[i]].setSize(chains[ec[i]].getSize()+1);
 		}
 	}
 
@@ -289,21 +291,21 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 	private void indexNegativeExample(JCas jcas, Markable ante, Markable ana,
 			double d) {
 		if(ante == null) return;
-		UnrelationArgument ra1 = new UnrelationArgument(jcas);
-		ra1.setId(ante.getId());
-		ra1.setArgument(ante);
-		ra1.setRole("non-antecedent");
-		UnrelationArgument ra2 = new UnrelationArgument(jcas);
-		ra2.setId(ana.getId());
-		ra2.setArgument(ana);
-		ra2.setRole("non-anaphor");
-		NonCoreferenceRelation cr = new NonCoreferenceRelation(jcas);
-		cr.setArg1(ra1);
-		cr.setArg2(ra2);
-		cr.setCoref_prob(d);
-		ra1.addToIndexes();
-		ra2.addToIndexes();
-		cr.addToIndexes();
+//		UnrelationArgument ra1 = new UnrelationArgument(jcas);
+//		ra1.setId(ante.getId());
+//		ra1.setArgument(ante);
+//		ra1.setRole("non-antecedent");
+//		UnrelationArgument ra2 = new UnrelationArgument(jcas);
+//		ra2.setId(ana.getId());
+//		ra2.setArgument(ana);
+//		ra2.setRole("non-anaphor");
+//		NonCoreferenceRelation cr = new NonCoreferenceRelation(jcas);
+//		cr.setArg1(ra1);
+//		cr.setArg2(ra2);
+//		cr.setCoref_prob(d);
+//		ra1.addToIndexes();
+//		ra2.addToIndexes();
+//		cr.addToIndexes();
 
 	}
 }

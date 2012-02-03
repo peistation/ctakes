@@ -34,18 +34,6 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.CoreferenceChain</name>
-      <description/>
-      <supertypeName>org.mipacq.annotation.type.CollectionRelation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>size</name>
-          <description/>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-    <typeDescription>
       <name>edu.mayo.bmi.uima.coref.type.PronounMarkable</name>
       <description/>
       <supertypeName>edu.mayo.bmi.uima.coref.type.Markable</supertypeName>

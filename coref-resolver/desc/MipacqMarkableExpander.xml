@@ -12,8 +12,8 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="type-system/CorefTypes.xml"/>
-        <import location="../../Constituency Parser/desc/TypeSystem.xml"/>
+        <import location="/home/tmill/Projects/cNLP/cTakes/sharpn/common-type-system/desc/common_type_system.xml"/>
+        <import location="/home/tmill/Projects/cNLP/cTakes/sharpn/coref-resolver/desc/type-system/CorefTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
