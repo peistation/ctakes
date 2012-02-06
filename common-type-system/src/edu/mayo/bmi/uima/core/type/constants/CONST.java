@@ -37,6 +37,7 @@ public class CONST {
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
 
 	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 1;
+	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 2;
 
 	public static final int NE_CERTAINTY_POSITIVE = 1;
 	public static final int NE_CERTAINTY_NEGATED = -1;	
