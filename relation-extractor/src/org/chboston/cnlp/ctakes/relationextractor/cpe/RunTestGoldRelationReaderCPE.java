@@ -15,11 +15,11 @@ import org.apache.uima.util.XMLInputSource;
  * @author dmitriy dligach
  *
  */
-public class SampleCPEWrapper extends Thread {
+public class RunTestGoldRelationReaderCPE extends Thread {
 
 	private CollectionProcessingEngine mCPE;
 
-	public SampleCPEWrapper() throws Exception {
+	public RunTestGoldRelationReaderCPE() throws Exception {
 
 		String descriptor = "desc/collection_processing_engine/TestGoldRelationReaderCPE.xml";
 
@@ -33,7 +33,7 @@ public class SampleCPEWrapper extends Thread {
 
 	public static void main(String[] args) throws Exception {
 
-		new SampleCPEWrapper();
+		new RunTestGoldRelationReaderCPE();
 	}
 }
 

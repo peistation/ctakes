@@ -1,8 +1,10 @@
 package org.chboston.cnlp.ctakes.relationextractor.cr;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.uima.UimaContext;
@@ -22,6 +24,7 @@ import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
+import org.uimafit.util.JCasUtil;
 
 /**
  * Read named entity annotations from knowtator xml files into the CAS
@@ -35,12 +38,18 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 	public static final String PARAM_INPUTDIR = "InputDirectory";
 	// path to knowtator xml files
 	public static String inputDirectory;
+	// counter for assigning entity ids
+	public int identifiedAnnotationId;
+	// counter for assigning relation ids
+	public int relationId;
 	
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 		
 		inputDirectory = (String)aContext.getConfigParameterValue(PARAM_INPUTDIR);
+		identifiedAnnotationId = 0;
+		relationId = 0;
 	}
 
 	@Override
@@ -52,19 +61,36 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 			
       SAXBuilder builder = new SAXBuilder();
       Document document = builder.build(new File(goldFilePath));
-			
+
+      // map knowtator mention ids to entity offsets
 			HashMap<String, ArrayList<Span>> entityMentions = XMLReader.getEntityMentions(document);
+			// map knowtator mention ids to entity types
 			HashMap<String, String> entityTypes = XMLReader.getEntityTypes(document);
+			// get relations and their arguments
 			ArrayList<RelationInfo> relations = XMLReader.getRelations(document);
+
+			// mention ids of entities that are already added to the CAS
+			HashSet<String> addedEntities = new HashSet<String>();
 			
+			// add relations and relation arguments to the CAS
 			for(RelationInfo relation : relations) {
-				Span span1 = entityMentions.get(relation.id1).get(0);
+				
+				Span span1 = entityMentions.get(relation.id1).get(0); // just the first part of a disjoint span for now
 				EntityMention entityMention1 = new EntityMention(initView, span1.start, span1.end);
+				entityMention1.setTypeID(getTypeId(entityTypes.get(relation.id1)));
+				entityMention1.setId(identifiedAnnotationId++);
+				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention1.addToIndexes();
 				
-				Span span2 = entityMentions.get(relation.id2).get(0);
+				Span span2 = entityMentions.get(relation.id2).get(0); // just the first part of a disjoint span for now
 				EntityMention entityMention2 = new EntityMention(initView, span2.start, span2.end);
+				entityMention2.setTypeID(getTypeId(entityTypes.get(relation.id2)));
+				entityMention2.setId(identifiedAnnotationId++);
+				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention2.addToIndexes();
+
+				addedEntities.add(relation.id1);
+				addedEntities.add(relation.id2);
 				
 				RelationArgument relationArgument1 = new RelationArgument(initView);
 				relationArgument1.setArgument(entityMention1);
@@ -80,8 +106,29 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 				binaryTextRelation.setArg1(relationArgument1);
 				binaryTextRelation.setArg2(relationArgument2);
 				binaryTextRelation.setCategory(relation.relation);
+				binaryTextRelation.setId(relationId++);
 				binaryTextRelation.addToIndexes();
 			}
+			
+			
+			// add the rest of entities to the CAS
+			for(Map.Entry<String, ArrayList<Span>> entry : entityMentions.entrySet()) {
+				if(addedEntities.contains(entry.getKey())) {
+					continue; // this entry is already added
+				}
+				
+				// for now just use the first part of a disjoint span
+				Span span = entry.getValue().get(0); 
+
+				EntityMention entityMention = new EntityMention(initView, span.start, span.end);
+				entityMention.setTypeID(getTypeId(entityTypes.get(entry.getKey())));
+				entityMention.setId(identifiedAnnotationId++);
+				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+				entityMention.setConfidence(1);
+				
+				entityMention.addToIndexes();
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

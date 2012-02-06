@@ -16,4 +16,8 @@ public class Span {
 	
 	public int start;
 	public int end;
+	
+	public String toString() {
+		return String.format("%d -- %d", start, end);
+	}
 }

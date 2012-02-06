@@ -8,8 +8,23 @@
     <description>Descriptor file for a collection reader that reads UMLS entities from Knowtator XML files and adds them to the CAS.</description>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters/>
-    <configurationParameterSettings/>
+    <configurationParameters>
+      <configurationParameter>
+        <name>InputDirectory</name>
+        <description>A directory with knowtator xml files that contain gold standard named entity annotations</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>InputDirectory</name>
+        <value>
+          <string>CHANGEME</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
         <import location="../../../common-type-system/desc/common_type_system.xml"/>

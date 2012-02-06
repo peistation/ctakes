@@ -3,7 +3,7 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="../../../workspaces/ctakes/core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+                <import location="../../../core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>
@@ -18,7 +18,7 @@
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
         <casProcessor deployment="integrated" name="GoldEntityReader">
             <descriptor>
-                <import location="../../../workspaces/ctakes/relation-extractor/desc/analysis_engine/GoldEntityReader.xml"/>
+                <import location="../analysis_engine/GoldEntityReader.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
@@ -27,10 +27,18 @@
                 <timeout max="100000" default="-1"/>
             </errorHandling>
             <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>InputDirectory</name>
+                    <value>
+                        <string>/home/dima/mipacq/iaa/data/for_iaa_only/corpus1_2/gold/xml_c1c2all_gold/</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
         </casProcessor>
         <casProcessor deployment="integrated" name="Write CAS to XML file">
             <descriptor>
-                <import location="../../../workspaces/ctakes/core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>

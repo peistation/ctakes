@@ -1,3 +1,8 @@
+Disjoint spans
+---------------
+
+It looks like about 3% of entities have disjoint spans.
+
 Knowtator XML Files
 -------------------
 
