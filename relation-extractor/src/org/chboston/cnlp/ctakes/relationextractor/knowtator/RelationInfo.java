@@ -9,8 +9,8 @@ package org.chboston.cnlp.ctakes.relationextractor.knowtator;
  */
 public class RelationInfo {
 
-  public String id1; // id of the first argument
-  public String id2; // id of the second argument
+  public String id1;       // id of the first argument
+  public String id2;       // id of the second argument
   public String position1; // position of first arg (e.g. Argument)
   public String position2; // semantic type of second arg (e.g. Related_to)
   public String relation;  // relation type e.g. co_occurs_with

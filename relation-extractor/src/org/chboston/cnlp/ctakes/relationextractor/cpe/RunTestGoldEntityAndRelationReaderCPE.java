@@ -15,13 +15,13 @@ import org.apache.uima.util.XMLInputSource;
  * @author dmitriy dligach
  *
  */
-public class RunTestGoldRelationReaderCPE extends Thread {
+public class RunTestGoldEntityAndRelationReaderCPE extends Thread {
 
 	private CollectionProcessingEngine mCPE;
 
-	public RunTestGoldRelationReaderCPE() throws Exception {
+	public RunTestGoldEntityAndRelationReaderCPE() throws Exception {
 
-		String descriptor = "desc/collection_processing_engine/TestGoldRelationReaderCPE.xml";
+		String descriptor = "desc/collection_processing_engine/TestGoldEntityAndRelationReaderCPE.xml";
 
 		// parse CPE descriptor                                                                                                                                                                                                              
 		CpeDescription cpeDesc = UIMAFramework.getXMLParser().parseCpeDescription(new XMLInputSource(descriptor));
@@ -33,7 +33,7 @@ public class RunTestGoldRelationReaderCPE extends Thread {
 
 	public static void main(String[] args) throws Exception {
 
-		new RunTestGoldRelationReaderCPE();
+		new RunTestGoldEntityAndRelationReaderCPE();
 	}
 }
 

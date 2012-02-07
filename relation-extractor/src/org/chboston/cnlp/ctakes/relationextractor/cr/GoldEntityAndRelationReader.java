@@ -27,12 +27,13 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.util.JCasUtil;
 
 /**
- * Read named entity annotations from knowtator xml files into the CAS
+ * Read named entity annotations and relations between them 
+ * from knowtator xml files into the CAS
  * 
  * @author dmitriy dligach
  *
  */
-public class GoldRelationReader extends JCasAnnotator_ImplBase {
+public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 
 	// paramater that should contain the path to knowtator xml files
 	public static final String PARAM_INPUTDIR = "InputDirectory";
@@ -42,14 +43,18 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 	public int identifiedAnnotationId;
 	// counter for assigning relation ids
 	public int relationId;
+	// counter for assigning relation argument ids
+	public int relationArgumentId;
 	
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 		
 		inputDirectory = (String)aContext.getConfigParameterValue(PARAM_INPUTDIR);
+		
 		identifiedAnnotationId = 0;
 		relationId = 0;
+		relationArgumentId = 0;
 	}
 
 	@Override
@@ -80,6 +85,7 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 				entityMention1.setTypeID(getTypeId(entityTypes.get(relation.id1)));
 				entityMention1.setId(identifiedAnnotationId++);
 				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+				entityMention1.setConfidence(1);
 				entityMention1.addToIndexes();
 				
 				Span span2 = entityMentions.get(relation.id2).get(0); // just the first part of a disjoint span for now
@@ -87,26 +93,29 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 				entityMention2.setTypeID(getTypeId(entityTypes.get(relation.id2)));
 				entityMention2.setId(identifiedAnnotationId++);
 				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+				entityMention2.setConfidence(1);
 				entityMention2.addToIndexes();
 
-				addedEntities.add(relation.id1);
-				addedEntities.add(relation.id2);
+				addedEntities.add(relation.id1); // save to skip later when adding the rest of entities
+				addedEntities.add(relation.id2); // save to skip later when adding the rest of entities
 				
 				RelationArgument relationArgument1 = new RelationArgument(initView);
+				relationArgument1.setId(relationArgumentId++);
 				relationArgument1.setArgument(entityMention1);
 				relationArgument1.setRole(relation.position1);
-				relationArgument1.addToIndexes();
 				
 				RelationArgument relationArgument2 = new RelationArgument(initView);
+				relationArgument2.setId(relationArgumentId++);
 				relationArgument2.setArgument(entityMention2);
 				relationArgument2.setRole(relation.position2);
-				relationArgument2.addToIndexes();
 				
 				BinaryTextRelation binaryTextRelation = new BinaryTextRelation(initView);
 				binaryTextRelation.setArg1(relationArgument1);
 				binaryTextRelation.setArg2(relationArgument2);
-				binaryTextRelation.setCategory(relation.relation);
 				binaryTextRelation.setId(relationId++);
+				binaryTextRelation.setCategory(relation.relation);
+				binaryTextRelation.setDiscoveryTechnique(CONST.REL_DISCOVERY_TECH_GOLD_ANNOTATION);
+				binaryTextRelation.setConfidence(1);
 				binaryTextRelation.addToIndexes();
 			}
 			
@@ -125,7 +134,6 @@ public class GoldRelationReader extends JCasAnnotator_ImplBase {
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention.setConfidence(1);
-				
 				entityMention.addToIndexes();
 			}
 			

@@ -16,9 +16,9 @@
         </collectionIterator>
     </collectionReader>
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-        <casProcessor deployment="integrated" name="GoldRelationReader">
+        <casProcessor deployment="integrated" name="GoldEntityAndRelationReader">
             <descriptor>
-                <import location="../analysis_engine/GoldRelationReader.xml"/>
+                <import location="../analysis_engine/GoldEntityAndRelationReader.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>

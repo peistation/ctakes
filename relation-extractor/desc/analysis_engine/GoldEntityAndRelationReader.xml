@@ -2,7 +2,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>org.chboston.cnlp.ctakes.relationextractor.cr.GoldRelationReader</annotatorImplementationName>
+  <annotatorImplementationName>org.chboston.cnlp.ctakes.relationextractor.cr.GoldEntityAndRelationReader</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>GoldRelationReader</name>
     <description>Descriptor for a collection reader that reads UMLS relation annotations from Knowtator XML files and adds them to the CAS.</description>
