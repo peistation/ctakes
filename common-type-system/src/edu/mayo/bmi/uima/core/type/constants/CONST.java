@@ -28,17 +28,18 @@ package edu.mayo.bmi.uima.core.type.constants;
  * @author Mayo
  */
 public class CONST {
+	
 	public static final int NE_TYPE_ID_UNKNOWN = 0;
 	public static final int NE_TYPE_ID_DRUG = 1;
 	public static final int NE_TYPE_ID_DISORDER = 2;
 	public static final int NE_TYPE_ID_FINDING = 3;
-//	public static final int NE_TYPE_ID_UNUSED  = 4;
+  //	public static final int NE_TYPE_ID_UNUSED  = 4;
 	public static final int NE_TYPE_ID_PROCEDURE = 5;
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
 
-	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 1;
-	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 2;
-
+	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
+	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 2;
+	
 	public static final int NE_CERTAINTY_POSITIVE = 1;
 	public static final int NE_CERTAINTY_NEGATED = -1;	
 	public static final int NE_DIAG_STATUS_CONFIRMED = 0;
@@ -46,15 +47,16 @@ public class CONST {
 	public static final int NE_DIAG_STATUS_FAM_HISTORY_OF = 2;
 	public static final int NE_DIAG_STATUS_PROBABLE = 3;
 	
-    public static final String MED_STATUS_CHAGNE_START = "start";
-    public static final String MED_STATUS_CHAGNE_STOP = "stop";
-    public static final String MED_STATUS_CHAGNE_INCREASEFROM = "increasefrom";
-    public static final String MED_STATUS_CHAGNE_DECREASEFROM = "decreasefrom";
-    public static final String MED_STATUS_CHAGNE_INCREASE = "increase";
-    public static final String MED_STATUS_CHAGNE_DECREASE = "decrease";
-    public static final String MED_STATUS_CHAGNE_NOCHANGE = "noChange";
-    public static final String MED_STATUS_CHAGNE_SUM = "add";
-    public static final String MED_STATUS_CHAGNE_MAX = "maximum";
-    public static final String MED_STATUS_CHAGNE_OTHER = "change";
-
+	public static final int REL_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
+	
+  public static final String MED_STATUS_CHAGNE_START = "start";
+  public static final String MED_STATUS_CHAGNE_STOP = "stop";
+  public static final String MED_STATUS_CHAGNE_INCREASEFROM = "increasefrom";
+  public static final String MED_STATUS_CHAGNE_DECREASEFROM = "decreasefrom";
+  public static final String MED_STATUS_CHAGNE_INCREASE = "increase";
+  public static final String MED_STATUS_CHAGNE_DECREASE = "decrease";
+  public static final String MED_STATUS_CHAGNE_NOCHANGE = "noChange";
+  public static final String MED_STATUS_CHAGNE_SUM = "add";
+  public static final String MED_STATUS_CHAGNE_MAX = "maximum";
+  public static final String MED_STATUS_CHAGNE_OTHER = "change";
 }
