@@ -5,8 +5,6 @@
   <version>1.0</version>
   <vendor>Mayo - NLP</vendor>
   <imports>
-    <import location="../../core/src/edu/mayo/bmi/uima/core/type/Properties.xml"/>
-    <import location="../../core/src/edu/mayo/bmi/uima/core/type/Property.xml"/>
   </imports>
   <types>
     <typeDescription>
