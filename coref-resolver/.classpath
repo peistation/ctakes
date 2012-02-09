@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/libsvm.jar" sourcepath="/home/tmill/Downloads/libsvm-3.1/java"/>
+	<classpathentry kind="lib" path="lib/libsvm.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/knowtator.jar"/>
 	<classpathentry kind="lib" path="lib/protege.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/cTakes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Constituency Parser"/>
