@@ -26,12 +26,14 @@ import opennlp.tools.parser.Parse;
 import opennlp.tools.parser.Parser;
 import opennlp.tools.util.Span;
 
+import org.apache.log4j.Logger;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
 import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
@@ -39,6 +41,7 @@ import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 public class MaxentParserWrapper implements ParserWrapper {
 
@@ -46,6 +49,7 @@ public class MaxentParserWrapper implements ParserWrapper {
 	private boolean useTagDictionary = true;
 	private boolean useCaseSensitiveTagDictionary = true;
 	private String parseStr = "";
+	Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public MaxentParserWrapper(String dataDir) {
 		try {
@@ -60,12 +64,22 @@ public class MaxentParserWrapper implements ParserWrapper {
 		return parseStr;
 	}
 
+	/*
+	 *  (non-Javadoc)
+	 * @see org.chboston.cnlp.ctakes.parser.ParserWrapper#createAnnotations(org.apache.uima.jcas.JCas)
+	 * FIXME - Does not handle the case where a sentence is only numbers. This can happen at the end of a note
+	 * after "real" sentences are done where a line is just a string of numbers (looks like a ZIP code).
+	 * For some reason the built-in tokenizer does not like that.
+	 */
 	@Override
 	public void createAnnotations(JCas jcas) {
+		String docId = DocumentIDAnnotationUtil.getDocumentID(jcas);
+		logger.info("Started processing: " + docId);
 		// iterate over sentences
 		FSIterator iterator = jcas.getAnnotationIndex(Sentence.type).iterator();
 		// Map from indices in the parsed string to indices in the sofa
 		HashMap<Integer,Integer> indexMap = new HashMap<Integer,Integer>();
+		Parse parse = null;
 		
 		while(iterator.hasNext()){
 			Sentence sentAnnot = (Sentence) iterator.next();
@@ -76,19 +90,32 @@ public class MaxentParserWrapper implements ParserWrapper {
 				continue;
 			}
 			indexMap.clear();
+//			if(sentAnnot.getBegin() == 5287){
+//				System.err.println("At the beginning point...");
+//			}
 			FSArray termArray = getTerminals(jcas, sentAnnot);
+//			if(termArray.size() == 0){
+//				System.err.println("Array ofl ength 0");
+//			}
 			String sentStr = getSentence(termArray, indexMap);
-			Parse parse = TreebankParser.parseLine(sentStr, parser, 1)[0];
 			StringBuffer parseBuff = new StringBuffer();
-			parse.show(parseBuff);
+			if(sentStr.length() == 0){
+//				System.err.println("String of length 0");
+				parseBuff.append("");
+				parse = null;
+			}else{
+				parse = TreebankParser.parseLine(sentStr, parser, 1)[0];
+				parse.show(parseBuff);
+			}
+//			Span span = parse.getSpan();
 			parseStr = parseBuff.toString();
-			Span span = parse.getSpan();
 			TopTreebankNode top = new TopTreebankNode(jcas, sentAnnot.getBegin(), sentAnnot.getEnd());
 			top.setTreebankParse(parseBuff.toString());
 			top.setTerminals(termArray);
 			top.setParent(null);
-			recursivelyCreateStructure(jcas, top, parse, top, indexMap);
+			if(parse != null) recursivelyCreateStructure(jcas, top, parse, top, indexMap);
 		}
+		logger.info("Done parsing: " + docId);
 	}
 
 	private void recursivelyCreateStructure(JCas jcas, TreebankNode parent, Parse parse, TopTreebankNode root, Map<Integer,Integer> imap){

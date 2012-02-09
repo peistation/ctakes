@@ -2,87 +2,87 @@
 <CAS version="2">
     <uima.cas.Sofa _indexed="0" _id="6" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="Mr. Johnson is presenting signs of a shark bite.  It occurred last week and has caused immense leg pain.  The pain was so severe that he had begun taking narcotics to relieve it.&#10;&#10;The patient also was concerned about a small lesion in his Broca's area and said the lesion was causing him to lettuce Wednesday baseball applesauce.&#10;&#10;After imaging which was inconclusive, the patient was released to go home and treat his pain himself.&#10;&#10;"/>
     <uima.tcas.DocumentAnnotation _indexed="1" _id="1" _ref_sofa="6" begin="0" end="434" language="en"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Segment _indexed="1" _id="13" _ref_sofa="6" begin="0" end="434" id="SIMPLE_SEGMENT"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="18" _ref_sofa="6" begin="0" end="48" sentenceNumber="0"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="24" _ref_sofa="6" begin="50" end="104" sentenceNumber="1"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="30" _ref_sofa="6" begin="106" end="178" sentenceNumber="2"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="36" _ref_sofa="6" begin="180" end="329" sentenceNumber="3"/>
-    <edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="42" _ref_sofa="6" begin="331" end="432" sentenceNumber="4"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="48" _ref_sofa="6" begin="0" end="2" tokenNumber="0" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="68" _ref_sofa="6" begin="4" end="11" tokenNumber="2" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="80" _ref_sofa="6" begin="12" end="14" tokenNumber="3" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="92" _ref_sofa="6" begin="15" end="25" tokenNumber="4" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="104" _ref_sofa="6" begin="26" end="31" tokenNumber="5" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="116" _ref_sofa="6" begin="32" end="34" tokenNumber="6" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="128" _ref_sofa="6" begin="35" end="36" tokenNumber="7" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="140" _ref_sofa="6" begin="37" end="42" tokenNumber="8" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="152" _ref_sofa="6" begin="43" end="47" tokenNumber="9" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="172" _ref_sofa="6" begin="50" end="52" tokenNumber="11" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="184" _ref_sofa="6" begin="53" end="61" tokenNumber="12" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="196" _ref_sofa="6" begin="62" end="66" tokenNumber="13" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="208" _ref_sofa="6" begin="67" end="71" tokenNumber="14" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="220" _ref_sofa="6" begin="72" end="75" tokenNumber="15" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="232" _ref_sofa="6" begin="76" end="79" tokenNumber="16" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="244" _ref_sofa="6" begin="80" end="86" tokenNumber="17" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="256" _ref_sofa="6" begin="87" end="94" tokenNumber="18" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="268" _ref_sofa="6" begin="95" end="98" tokenNumber="19" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="280" _ref_sofa="6" begin="99" end="103" tokenNumber="20" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="300" _ref_sofa="6" begin="106" end="109" tokenNumber="22" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="312" _ref_sofa="6" begin="110" end="114" tokenNumber="23" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="324" _ref_sofa="6" begin="115" end="118" tokenNumber="24" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="336" _ref_sofa="6" begin="119" end="121" tokenNumber="25" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="348" _ref_sofa="6" begin="122" end="128" tokenNumber="26" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="360" _ref_sofa="6" begin="129" end="133" tokenNumber="27" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="372" _ref_sofa="6" begin="134" end="136" tokenNumber="28" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="384" _ref_sofa="6" begin="137" end="140" tokenNumber="29" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="396" _ref_sofa="6" begin="141" end="146" tokenNumber="30" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="408" _ref_sofa="6" begin="147" end="153" tokenNumber="31" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="420" _ref_sofa="6" begin="154" end="163" tokenNumber="32" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="432" _ref_sofa="6" begin="164" end="166" tokenNumber="33" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="444" _ref_sofa="6" begin="167" end="174" tokenNumber="34" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="456" _ref_sofa="6" begin="175" end="177" tokenNumber="35" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="492" _ref_sofa="6" begin="180" end="183" tokenNumber="39" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="504" _ref_sofa="6" begin="184" end="191" tokenNumber="40" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="516" _ref_sofa="6" begin="192" end="196" tokenNumber="41" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="528" _ref_sofa="6" begin="197" end="200" tokenNumber="42" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="540" _ref_sofa="6" begin="201" end="210" tokenNumber="43" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="552" _ref_sofa="6" begin="211" end="216" tokenNumber="44" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="564" _ref_sofa="6" begin="217" end="218" tokenNumber="45" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="576" _ref_sofa="6" begin="219" end="224" tokenNumber="46" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="588" _ref_sofa="6" begin="225" end="231" tokenNumber="47" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="600" _ref_sofa="6" begin="232" end="234" tokenNumber="48" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="612" _ref_sofa="6" begin="235" end="238" tokenNumber="49" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="624" _ref_sofa="6" begin="239" end="244" tokenNumber="50" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="644" _ref_sofa="6" begin="247" end="251" tokenNumber="52" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="656" _ref_sofa="6" begin="252" end="255" tokenNumber="53" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="668" _ref_sofa="6" begin="256" end="260" tokenNumber="54" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="680" _ref_sofa="6" begin="261" end="264" tokenNumber="55" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="692" _ref_sofa="6" begin="265" end="271" tokenNumber="56" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="704" _ref_sofa="6" begin="272" end="275" tokenNumber="57" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="716" _ref_sofa="6" begin="276" end="283" tokenNumber="58" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="728" _ref_sofa="6" begin="284" end="287" tokenNumber="59" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="740" _ref_sofa="6" begin="288" end="290" tokenNumber="60" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="752" _ref_sofa="6" begin="291" end="298" tokenNumber="61" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="764" _ref_sofa="6" begin="299" end="308" tokenNumber="62" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="776" _ref_sofa="6" begin="309" end="317" tokenNumber="63" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="788" _ref_sofa="6" begin="318" end="328" tokenNumber="64" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="824" _ref_sofa="6" begin="331" end="336" tokenNumber="68" capitalization="1" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="836" _ref_sofa="6" begin="337" end="344" tokenNumber="69" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="848" _ref_sofa="6" begin="345" end="350" tokenNumber="70" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="860" _ref_sofa="6" begin="351" end="354" tokenNumber="71" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="872" _ref_sofa="6" begin="355" end="367" tokenNumber="72" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="892" _ref_sofa="6" begin="369" end="372" tokenNumber="74" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="904" _ref_sofa="6" begin="373" end="380" tokenNumber="75" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="916" _ref_sofa="6" begin="381" end="384" tokenNumber="76" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="928" _ref_sofa="6" begin="385" end="393" tokenNumber="77" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="940" _ref_sofa="6" begin="394" end="396" tokenNumber="78" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="952" _ref_sofa="6" begin="397" end="399" tokenNumber="79" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="964" _ref_sofa="6" begin="400" end="404" tokenNumber="80" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="976" _ref_sofa="6" begin="405" end="408" tokenNumber="81" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="988" _ref_sofa="6" begin="409" end="414" tokenNumber="82" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="1000" _ref_sofa="6" begin="415" end="418" tokenNumber="83" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="1012" _ref_sofa="6" begin="419" end="423" tokenNumber="84" capitalization="0" numPosition="0"/>
-    <edu.mayo.bmi.uima.core.type.syntax.WordToken _indexed="1" _id="1024" _ref_sofa="6" begin="424" end="431" tokenNumber="85" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.Segment _indexed="1" _id="13" _ref_sofa="6" begin="0" end="434" id="SIMPLE_SEGMENT"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="18" _ref_sofa="6" begin="0" end="48" sentenceNumber="0"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="24" _ref_sofa="6" begin="50" end="104" sentenceNumber="1"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="30" _ref_sofa="6" begin="106" end="178" sentenceNumber="2"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="36" _ref_sofa="6" begin="180" end="329" sentenceNumber="3"/>
+    <edu.mayo.bmi.uima.core.type.Sentence _indexed="1" _id="42" _ref_sofa="6" begin="331" end="432" sentenceNumber="4"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="48" _ref_sofa="6" begin="0" end="2" tokenNumber="0" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="68" _ref_sofa="6" begin="4" end="11" tokenNumber="2" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="80" _ref_sofa="6" begin="12" end="14" tokenNumber="3" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="92" _ref_sofa="6" begin="15" end="25" tokenNumber="4" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="104" _ref_sofa="6" begin="26" end="31" tokenNumber="5" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="116" _ref_sofa="6" begin="32" end="34" tokenNumber="6" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="128" _ref_sofa="6" begin="35" end="36" tokenNumber="7" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="140" _ref_sofa="6" begin="37" end="42" tokenNumber="8" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="152" _ref_sofa="6" begin="43" end="47" tokenNumber="9" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="172" _ref_sofa="6" begin="50" end="52" tokenNumber="11" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="184" _ref_sofa="6" begin="53" end="61" tokenNumber="12" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="196" _ref_sofa="6" begin="62" end="66" tokenNumber="13" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="208" _ref_sofa="6" begin="67" end="71" tokenNumber="14" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="220" _ref_sofa="6" begin="72" end="75" tokenNumber="15" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="232" _ref_sofa="6" begin="76" end="79" tokenNumber="16" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="244" _ref_sofa="6" begin="80" end="86" tokenNumber="17" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="256" _ref_sofa="6" begin="87" end="94" tokenNumber="18" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="268" _ref_sofa="6" begin="95" end="98" tokenNumber="19" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="280" _ref_sofa="6" begin="99" end="103" tokenNumber="20" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="300" _ref_sofa="6" begin="106" end="109" tokenNumber="22" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="312" _ref_sofa="6" begin="110" end="114" tokenNumber="23" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="324" _ref_sofa="6" begin="115" end="118" tokenNumber="24" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="336" _ref_sofa="6" begin="119" end="121" tokenNumber="25" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="348" _ref_sofa="6" begin="122" end="128" tokenNumber="26" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="360" _ref_sofa="6" begin="129" end="133" tokenNumber="27" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="372" _ref_sofa="6" begin="134" end="136" tokenNumber="28" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="384" _ref_sofa="6" begin="137" end="140" tokenNumber="29" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="396" _ref_sofa="6" begin="141" end="146" tokenNumber="30" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="408" _ref_sofa="6" begin="147" end="153" tokenNumber="31" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="420" _ref_sofa="6" begin="154" end="163" tokenNumber="32" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="432" _ref_sofa="6" begin="164" end="166" tokenNumber="33" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="444" _ref_sofa="6" begin="167" end="174" tokenNumber="34" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="456" _ref_sofa="6" begin="175" end="177" tokenNumber="35" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="492" _ref_sofa="6" begin="180" end="183" tokenNumber="39" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="504" _ref_sofa="6" begin="184" end="191" tokenNumber="40" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="516" _ref_sofa="6" begin="192" end="196" tokenNumber="41" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="528" _ref_sofa="6" begin="197" end="200" tokenNumber="42" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="540" _ref_sofa="6" begin="201" end="210" tokenNumber="43" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="552" _ref_sofa="6" begin="211" end="216" tokenNumber="44" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="564" _ref_sofa="6" begin="217" end="218" tokenNumber="45" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="576" _ref_sofa="6" begin="219" end="224" tokenNumber="46" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="588" _ref_sofa="6" begin="225" end="231" tokenNumber="47" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="600" _ref_sofa="6" begin="232" end="234" tokenNumber="48" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="612" _ref_sofa="6" begin="235" end="238" tokenNumber="49" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="624" _ref_sofa="6" begin="239" end="244" tokenNumber="50" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="644" _ref_sofa="6" begin="247" end="251" tokenNumber="52" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="656" _ref_sofa="6" begin="252" end="255" tokenNumber="53" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="668" _ref_sofa="6" begin="256" end="260" tokenNumber="54" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="680" _ref_sofa="6" begin="261" end="264" tokenNumber="55" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="692" _ref_sofa="6" begin="265" end="271" tokenNumber="56" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="704" _ref_sofa="6" begin="272" end="275" tokenNumber="57" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="716" _ref_sofa="6" begin="276" end="283" tokenNumber="58" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="728" _ref_sofa="6" begin="284" end="287" tokenNumber="59" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="740" _ref_sofa="6" begin="288" end="290" tokenNumber="60" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="752" _ref_sofa="6" begin="291" end="298" tokenNumber="61" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="764" _ref_sofa="6" begin="299" end="308" tokenNumber="62" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="776" _ref_sofa="6" begin="309" end="317" tokenNumber="63" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="788" _ref_sofa="6" begin="318" end="328" tokenNumber="64" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="824" _ref_sofa="6" begin="331" end="336" tokenNumber="68" capitalization="1" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="836" _ref_sofa="6" begin="337" end="344" tokenNumber="69" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="848" _ref_sofa="6" begin="345" end="350" tokenNumber="70" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="860" _ref_sofa="6" begin="351" end="354" tokenNumber="71" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="872" _ref_sofa="6" begin="355" end="367" tokenNumber="72" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="892" _ref_sofa="6" begin="369" end="372" tokenNumber="74" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="904" _ref_sofa="6" begin="373" end="380" tokenNumber="75" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="916" _ref_sofa="6" begin="381" end="384" tokenNumber="76" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="928" _ref_sofa="6" begin="385" end="393" tokenNumber="77" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="940" _ref_sofa="6" begin="394" end="396" tokenNumber="78" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="952" _ref_sofa="6" begin="397" end="399" tokenNumber="79" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="964" _ref_sofa="6" begin="400" end="404" tokenNumber="80" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="976" _ref_sofa="6" begin="405" end="408" tokenNumber="81" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="988" _ref_sofa="6" begin="409" end="414" tokenNumber="82" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="1000" _ref_sofa="6" begin="415" end="418" tokenNumber="83" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="1012" _ref_sofa="6" begin="419" end="423" tokenNumber="84" capitalization="0" numPosition="0"/>
+    <edu.mayo.bmi.uima.core.type.WordToken _indexed="1" _id="1024" _ref_sofa="6" begin="424" end="431" tokenNumber="85" capitalization="0" numPosition="0"/>
     <edu.mayo.bmi.uima.core.type.PunctuationToken _indexed="1" _id="60" _ref_sofa="6" begin="2" end="3" tokenNumber="1"/>
     <edu.mayo.bmi.uima.core.type.PunctuationToken _indexed="1" _id="164" _ref_sofa="6" begin="47" end="48" tokenNumber="10"/>
     <edu.mayo.bmi.uima.core.type.PunctuationToken _indexed="1" _id="292" _ref_sofa="6" begin="103" end="104" tokenNumber="21"/>

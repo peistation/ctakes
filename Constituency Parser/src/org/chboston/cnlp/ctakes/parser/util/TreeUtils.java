@@ -17,6 +17,8 @@ package org.chboston.cnlp.ctakes.parser.util;
 
 import opennlp.tools.parser.Parse;
 
+import org.chboston.cnlp.util.SimpleTree;
+
 import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
@@ -76,5 +78,50 @@ public class TreeUtils {
 		return buff.toString();
 	}
 
+//	public static boolean contains(TreebankNode n, SimpleTree frag){
+//		if(fragmentMatch(n,frag)) return true;
+//		
+//		for(int i = 0; i < n.getChildren().size(); i++){
+//			if(fragmentMatch(n.getChildren(i), frag)) return true;
+//		}
+//		return false;
+//	}
+//	
+//	private static boolean fragmentMatch(TreebankNode n, SimpleTree frag){
+//		boolean same = false;
+//		if(n.getNodeType().equals(frag.cat) && (frag.children.size() == 0 || n.getChildren().size() == frag.children.size())){
+//			same = true;
+//			for(int i = 0; i < frag.children.size(); i++){
+//				if(!fragmentMatch(n.getChildren(i), frag.children.get(i))){
+//					same = false;
+//					break;
+//				}
+//			}
+//		}
+//		return same;
+//	}
+	
+	public static boolean contains(SimpleTree node, SimpleTree frag){
+		if(fragmentMatch(node,frag)) return true;
+		
+		for(int i = 0; i < node.children.size(); i++){
+			if(fragmentMatch(node.children.get(i), frag)) return true;
+		}
+		return false;
+	}
+
+	private static boolean fragmentMatch(SimpleTree node, SimpleTree frag){
+		boolean same = false;
+		if(node.cat.equals(frag.cat) && (frag.children.size() == 0 || node.children.size() == frag.children.size())){
+			same = true;
+			for(int i = 0; i < frag.children.size(); i++){
+				if(!fragmentMatch(node.children.get(i), frag.children.get(i))){
+					same = false;
+					break;
+				}
+			}
+		}
+		return same;
+	}
 }
 
