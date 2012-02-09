@@ -21,6 +21,9 @@
     <delegateAnalysisEngine key="MipacqMarkableExpander">
       <import location="../MipacqMarkableExpander.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="DictionaryLookupAnnotatorUMLS">
+      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
       <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -38,12 +41,6 @@
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkableCreator">
       <import location="../MipacqMarkableCreator.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="DictionaryLookupAnnotatorUMLS">
-      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkablePairGenerator">
       <import location="../MipacqMarkablePairGenerator.xml"/>
@@ -164,7 +161,6 @@
         <node>DictionaryLookupAnnotatorUMLS</node>
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
-        <node>ExtractionPrepAnnotator</node>
         <node>ConstituencyParserAnnotator</node>
         <node>MipacqMarkableCreator</node>
         <node>MipacqMarkableExpander</node>
