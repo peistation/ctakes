@@ -22,15 +22,15 @@ import java.util.List;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+
+import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.coref.type.Markable;
 
 public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 

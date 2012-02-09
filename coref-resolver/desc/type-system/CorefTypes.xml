@@ -5,10 +5,8 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import location="CoreferenceRelation.xml"/>
-    <import location="CollectionRelation.xml"/>
-    <import location="Pair.xml"/>
-    <import location="BooleanLabeledFS.xml"/>
+    <import location="../../../common/desc/types/Pair.xml"/>
+    <import location="../../../common/desc/types/BooleanLabeledFS.xml"/>
   </imports>
   <types>
     <typeDescription>

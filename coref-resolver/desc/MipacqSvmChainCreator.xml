@@ -2,7 +2,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.coref.ae.MipacqSvmChainCreator</annotatorImplementationName>
+  <annotatorImplementationName>org.chboston.cnlp.ctakes.coref.uima.ae.MipacqSvmChainCreator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>SvmChainCreator</name>
     <description/>
@@ -92,7 +92,7 @@
         <name>svmCorefModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:ne.mayo.rbf.model</fileUrl>
+          <fileUrl>file:models/mayopartbeth/rbf.full.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
       </externalResource>

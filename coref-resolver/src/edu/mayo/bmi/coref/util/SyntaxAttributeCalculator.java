@@ -20,17 +20,19 @@ import java.io.FileNotFoundException;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.StringArray;
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.uima.jcas.tcas.Annotation;
 
 import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.coref.type.DemMarkable;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
 import edu.mayo.bmi.uima.coref.type.Markable;
+import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
 import edu.mayo.bmi.uima.coref.type.PronounMarkable;
 
@@ -56,8 +58,8 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 //	static int[] demSelFeats = {40,50,102,107,114,121,124,272,380,384,636,896,897,898,899,900,901,902,903,904};
 
 	/* These arrays are trained on mayo full training set only: */
-	static int[] selFeats = {3,12,22,40,42,49,60,68,71,72,76,77,124,130,181,184,185,186,189,200,208,209,210,211,212,215,220,221,222,225,242,249,258,309,310,311,314,319,320,321,330,370,378,424,456,475,498,514,516,521,555,556,558,559,560,561,562,617,646,697,701,705,718,720,722,744,763,800,801,822,844,875,884,885,957,959,991,996,1003,1030,1041,1055,1098,1109,1111,1113,1162,1163,1164,1170,1195,1255,1256,1298,1338,1341,1344,1397,1498,1884,1923,2188,2257,2277,2318,2319,2417,2660};
-	static int[] pronSelFeats = {46,156,160,169,173,206,458,462,463,505,508,509,512,552,555};
+//	static int[] selFeats = {3,12,22,40,42,49,60,68,71,72,76,77,124,130,181,184,185,186,189,200,208,209,210,211,212,215,220,221,222,225,242,249,258,309,310,311,314,319,320,321,330,370,378,424,456,475,498,514,516,521,555,556,558,559,560,561,562,617,646,697,701,705,718,720,722,744,763,800,801,822,844,875,884,885,957,959,991,996,1003,1030,1041,1055,1098,1109,1111,1113,1162,1163,1164,1170,1195,1255,1256,1298,1338,1341,1344,1397,1498,1884,1923,2188,2257,2277,2318,2319,2417,2660};
+//	static int[] pronSelFeats = {46,156,160,169,173,206,458,462,463,505,508,509,512,552,555};
 //	static int[] demSelFeats = {40,50,102,107,114,121,124,272,380,384,636,896,897,898,899,900,901,902,903,904};  // not used
 
 	// phrase + dep feats (Mayo-only train/dev split from paths.txt)
@@ -69,7 +71,12 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 //	static int[] selFeats = {17,18,21,27,28,41,48,85,88,94,98,121,128,169,197,272,281,337,343,344,346,349,352,359,360,361,362,363,367,368,369,370,399,443,484,515,559,569,570,572,573,593,597,599,629,660,661,665,672,685,692,754,822,823,860,925,937,939,1161,1164,1172,1628,1640,1641,1653,2115,2135,2136,2167,2168,2169,2171,2247,2355,2368,2505,2694};
 //	static int[] pronSelFeats = {10,27,28,41,47,61,94,95,97,100,445,470,472,510,538,635,805,806,942,1041,1293,1295,1296,1297,2076,2077,2130,2153,2175,2176};
 
+	// not using the feature:
+	static int[] selFeats = {0};
+	static int[] pronSelFeats = {0};
+	
 	static{
+		// TODO initialize feature types...
 		// read in feature files for each classifier type
 		featSet = loadFeatures(selFeats, "ngramids.mayo.txt");
 		pronFeatSet = loadFeatures(pronSelFeats, "pronngramids.mayo.txt");
@@ -117,6 +124,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		}
 		ngrams = new HashMap<String,Integer>();
 		calcFullPath();
+
+//		c1 = MarkableDepUtils.markableNode(jcas, m1.getBegin(), m1.getEnd(), n1);
+//		c2 = MarkableDepUtils.markableNode(jcas, m2.getBegin(), m2.getEnd(), n2);
+//		depLca = getDepLCA(c1,c2);
+//		calcDepPath();
 	}
 
 	public static int getNumNEFeats(){	return numNEFeats;	}
@@ -276,6 +288,74 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		String path = calcFullPath();
 		String[] nodes = path.split("[<>]");
 		return nodes.length;		
+	}
+
+	private ConllDependencyNode getDepLCA(ConllDependencyNode c1, ConllDependencyNode c2) {
+		HashSet<Annotation> ancestors = new HashSet<Annotation>();
+		ConllDependencyNode temp = null;
+		temp = c2.getHead();
+		while(temp != null){
+			ancestors.add(temp);
+			temp = temp.getHead();
+		}
+		temp = c1.getHead();
+		while(temp != null){
+			if(ancestors.contains(temp)){
+				break;
+			}
+			temp = temp.getHead();
+		}
+		return temp;
+	}
+
+	public String calcDepPath(){
+		if(depPath == null){
+			if(c1 == null || c2 == null || c2.getBegin() <= c1.getEnd()){
+				depPath = "";
+			}else{
+				StringBuffer buf = new StringBuffer();
+
+				// first go up from the anaphor to the Lowest common ancestor... (LCA)
+				buf.append(c2.getDeprel());
+				ConllDependencyNode cur = c2.getHead();
+				while(cur != depLca && cur != null){
+					String rel = cur.getDeprel();
+					if(rel == null){
+						cur = null;
+						break;
+					}
+					buf.append("<");
+					buf.append(cur.getDeprel());
+					cur = cur.getHead();
+				}
+
+				// add a "discourse node" if the relation goes between sentences.
+				if(cur == null) buf.append("<TOP");
+
+				// now up from the antecedent to the LCA
+				StringBuffer bwd = new StringBuffer();
+				bwd.append(c1.getDeprel());
+				bwd.insert(0, ">");
+				cur = c1.getHead();
+				while(cur != depLca && cur != null){
+					String rel = cur.getDeprel();
+					if(rel == null){
+						cur = null;
+						break;
+					}
+					bwd.insert(0,cur.getDeprel());
+					bwd.insert(0,">");
+					cur = cur.getHead();
+				}
+
+				buf.append(bwd);
+				depPath = buf.toString();
+				initNGrams(ngrams, depPath, 3);
+				initNGrams(ngrams, depPath, 4);
+				initNGrams(ngrams, depPath, 5);
+			}
+		}
+		return depPath;
 	}
 
 	private void initNGrams(HashMap<String,Integer> ngrams, String path, int n) {

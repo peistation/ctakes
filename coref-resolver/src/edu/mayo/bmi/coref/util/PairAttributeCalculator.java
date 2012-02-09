@@ -16,17 +16,31 @@
  */
 package edu.mayo.bmi.coref.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
+import edu.mayo.bmi.coref.util.AnnotationSelector;
+import edu.mayo.bmi.uima.coref.type.DemMarkable;
+import edu.mayo.bmi.uima.coref.type.Markable;
+import edu.mayo.bmi.uima.coref.type.NEMarkable;
+import edu.mayo.bmi.uima.coref.type.PronounMarkable;
 
 public class PairAttributeCalculator extends AttributeCalculator {
 
@@ -199,6 +213,7 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcAlias () {
+		try{
 		if (m1.getContent() instanceof IdentifiedAnnotation &&
 			m2.getContent() instanceof IdentifiedAnnotation) {
 			IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
@@ -215,6 +230,9 @@ public class PairAttributeCalculator extends AttributeCalculator {
 				if (fsa.get(i) instanceof UmlsConcept &&
 					l.contains(((UmlsConcept)fsa.get(i)).getCui()))
 					return "C";
+		}
+		}catch(Exception e){
+			System.err.println("Error here!");
 		}
 		return "I";
 	}
@@ -452,30 +470,7 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	
-	public static void main(String[] args){
-		// FOR DEBUGGING ONLY!
-		//		PairAttributeCalculator.initTrigrams("NP<PP<UCP<VP<SQ<NP<S<TOP>S>VP>VP");
-
-		// OK MAYBE FOR A LITTLE ANALYSIS TOO
-		try{
-//			trigrams = new HashMap<String,Integer>();
-//			Scanner scanner = new Scanner(new File("/home/tmill/Projects/cNLP/cTakes-Ext/coref-resolver/results/v2/fullpaths.out"));
-//			while(scanner.hasNextLine()){
-//				String line = scanner.nextLine().trim();
-//				PairAttributeCalculator.initTrigrams(line);
-//			}
-//			PrintWriter out = new PrintWriter("/home/tmill/Projects/cNLP/cTakes-Ext/coref-resolver/results/v2/trigramcounts.out");
-//			for(Map.Entry<String,Integer> entry : trigrams.entrySet()){
-//				out.println(entry.getValue()+" " + entry.getKey());
-//			}
-//			out.close();
-		}catch(Exception e){
-			System.err.println(e);
-		}
-	}
-
-	
-
+	// FIXME - Based on gpl'd code so can't be released (marginal to no effect on performance)
 	public double calcPermStrDist () {
 //		StringSim ss = new StringSim(s1, s2);
 //		ss.setStopWords(stopwords);
