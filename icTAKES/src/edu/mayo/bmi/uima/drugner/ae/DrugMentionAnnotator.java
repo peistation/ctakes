@@ -103,18 +103,7 @@ import edu.mayo.bmi.uima.drugner.elements.DrugChangeStatusElement;
  * @author m054274
  *
  */
-/**
- * @author m054274
- *
- */
-/**
- * @author m054274
- *
- */
-/**
- * @author m054274
- *
- */
+
 public class DrugMentionAnnotator extends JTextAnnotator_ImplBase 
 {
   // LOG4J logger based on class name
@@ -2418,19 +2407,19 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 		NamedEntity ne = null;
 		WordToken we = null;
 		// grab iterator over tokens within this chunk
-		Iterator btaItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator btaItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				BaseToken.type, begin,
 				end+1);
 		// do the same as above for named entities
 		// grab iterator over tokens within this chunk
-		Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				NamedEntity.type, begin,
 				end+1);
 		// List neTokenList = new ArrayList();
 
 		// do the same as above for word entities
 		// grab iterator over tokens within this chunk
-		Iterator weItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator weItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				WordToken.type, begin,
 				end+1);
 		List weTokenList = new ArrayList();
@@ -2739,7 +2728,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
  */
 private boolean multipleDrugsInSpan(JCas jcas, int begin, int end) {
 	
-	Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas, NamedEntity.type, begin, end);
+	Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, begin, end);
 
     int numDrugs=0;
 
@@ -2767,7 +2756,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 	Iterator neItr = null;
 	// Iterator neItr= indexes.getAnnotationIndex(elementType).iterator();
 	int numElements = 0;
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			StrengthAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
@@ -2775,7 +2764,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 		numElements++;
 
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			FrequencyAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
@@ -2783,7 +2772,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 		numElements++;
 		// }
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			FrequencyUnitAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr
@@ -2792,35 +2781,35 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 		numElements++;
 		// }
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			DosagesAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
 
 		numElements++;
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas, FormAnnotation.type,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, FormAnnotation.type,
 			begin, end);
 	while (neItr.hasNext()) {
 		FormAnnotation nea = (FormAnnotation) neItr.next();
 
 		numElements++;
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas, RouteAnnotation.type,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, RouteAnnotation.type,
 			begin, end);
 	while (neItr.hasNext()) {
 		RouteAnnotation nea = (RouteAnnotation) neItr.next();
 
 		numElements++;
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			DurationAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		DurationAnnotation nea = (DurationAnnotation) neItr.next();
 
 		numElements++;
 	}
-	neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 			DrugChangeStatusAnnotation.type, begin, end);
 	while (neItr.hasNext()) {
 		DrugChangeStatusAnnotation nea = (DrugChangeStatusAnnotation) neItr
@@ -2842,7 +2831,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
  * The end range value can be overridden by the following cases:  
  *  A) The subsequent drug mention is contained in brackets or parenthesis w/out other drug signature items; e.g. 
  *  	"ibuprofen [Motrin]".   In this case the drug span will end with the right most signature element or EOL 
- *  (which ever is farthest).
+ *  (which ever is farthest, but before a subsequent drug mention).
  *  B)  If there are multiple occurrences of signature elements between mentions find the greatest positive offset 
  *  (right most)
  *   
@@ -2907,10 +2896,12 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 		int typeFoundC = 0;
 		int [][] drugSpanArray = new int [drugSpanLength][2];
 		boolean openParenFound = false;
+		boolean shareAttributes = false;
 		int targetValueInRange = 0;
+		int endPhrase = senSpan[1];
+		int beginPhrase = senSpan[0];
 		if (drugSpanLength > 1) 
 			for (int j = 0; j < drugSpanLength; j++) {
-				
 				Iterator drugListItr = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, drugSpan[j][0], drugSpan[j][1]+1);
 				Iterator drugListItrNext = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, drugSpan[j+1][0], drugSpan[j+1][1]+1);
 				if (drugListItr.hasNext()) {
@@ -2923,8 +2914,6 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 					boolean usingLeftParenthesisInclusive = false;
 					boolean usingRightParenthesisInclusive = false;
 					int endRange = 0;
-					int endPhrase = senSpan[1];
-					int beginPhrase = senSpan[0];
 					int countMultiplePre = 0;
 					char highestInRange = ' ';
 					char lowestPositiveInRange = ' ';
@@ -2935,7 +2924,10 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 					if (drugListItrNext.hasNext()) {
 						NamedEntity neaNext = (NamedEntity) drugListItrNext.next();
 						endPhrase = neaNext.getBegin();
-					} else hasNext = false;
+					} else {
+						hasNext = false;
+						endPhrase = senSpan[1];
+					}
 					int [] testForMultipleElementsInRange = {0,0}; 
 					if (priorDrugEnd == 0)
 						priorDrugEnd = begin;
@@ -3126,18 +3118,28 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 						pattern = pattern + groupDelimiterClose ;
 //					System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
 					if (j > 0 && pattern.endsWith("(D)")) {
-						if (highestValueInRange < typeFoundC)
+						shareAttributes = true;
+						if (highestValueInRange < typeFoundC) {
 							drugSpanArray[j-1][1] = nea.getBegin() + typeFoundC;
-						else 
-							drugSpanArray[j-1][1] = nea.getBegin() + highestValueInRange;
-					} else if (j > 0 && countMultiplePre > 0 && testForMultipleElementsInRange[1] > 0) {
+						}
+						else { 
+							drugSpanArray[j-1][1] = drugSpanArray[j][1] = nea.getBegin() + highestValueInRange;
+						}
+					} else if (j > 0 && (countMultiplePre > 1 || testForMultipleElementsInRange[0] > 2) && testForMultipleElementsInRange[1] > 0 && !shareAttributes && hasNext) {
 						drugSpanArray[j-1][1] = testForMultipleElementsInRange[1];
-					} 
+					} else {
+						shareAttributes = false;
+					}
 					
 					if (postPattern.endsWith("c") || pattern.endsWith("C")) {
 						drugSpanArray[j][1] = nea.getBegin() + typeFoundC;
-					} else {
+					} else if (!shareAttributes){
 						drugSpanArray[j][1] = endPhrase;
+					}
+					if (j > 0 && drugSpanArray[j-1][1] < drugSpanArray[j][0] && typeFoundC < 0 ) {
+						drugSpanArray[j][0] = priorDrugEnd = drugSpanArray[j-1][1];
+					} else {
+						priorDrugEnd = nea.getEnd();
 					}
 					targetValueInRange = highestValueInRange;
 					pattern = pattern + postPattern;
