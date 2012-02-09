@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="lib/libsvm.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/cTakes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
