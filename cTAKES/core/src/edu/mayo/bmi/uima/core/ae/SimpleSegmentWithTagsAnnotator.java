@@ -111,14 +111,14 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 									charPos++;
 									
 									if ((charNum = fileReader.read()) == 'r') {
-										endStartSegment = charPos + 24;
+										endStartSegment = charPos + 22; //Fix positioning of section
 										fileReader.skip(14);
 										
 										fileReader.read(sectIdArr, 0, 5);
 										charPos = charPos +19;
 
 									} else if (charNum == ' ') {
-										beginEndSegment = charPos - 5;
+										beginEndSegment = charPos - 4;//Fix positioning of section
 										Segment sa = new Segment(jcas);
 										sa.setBegin(endStartSegment);
 										sa.setEnd(beginEndSegment);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.uima.ner.cc.ConsumeNamedEntityRecordModel</implementationName>
+  <implementationName>edu.mayo.bmi.uima.drugner.cc.ConsumeNamedEntityRecordModel</implementationName>
   <processingResourceMetaData>
     <name>ConsumeNamedEntityRecord</name>
     <description>Processes a given CAS to identify predetermined list of NER items</description>
@@ -10,7 +10,7 @@
     <configurationParameters>
       <configurationParameter>
         <name>OutputDirectory</name>
-        <description>Directory where the cvs file will be written</description>
+        <description>testdata/drugnertest/testoutput</description>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
@@ -48,7 +48,7 @@
       <nameValuePair>
         <name>OutputDirectory</name>
         <value>
-          <string>R:\Dept\projects\Text\NHGRI\March2010\test\vinod_ctakes_xcas</string>
+          <string>testdata/drugnertest/testoutput/xcas</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -66,8 +66,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../type_system/NERTypeSystem.xml"/>
-        <import location="../../../clinical documents pipeline/desc/CDAToTextTypeSystem.xml"/>
+        <import location="../../typesystem/cTAKESTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
