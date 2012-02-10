@@ -11,6 +11,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Constituency Parser"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/clinical documents pipeline"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/coref-eval"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
