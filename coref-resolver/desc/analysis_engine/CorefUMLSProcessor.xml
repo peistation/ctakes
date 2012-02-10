@@ -19,7 +19,7 @@
       <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DictionaryLookupAnnotatorUMLS">
-      <import location="/home/tmill/Projects/cleanroom/SHARPn-cTAKES/dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
+      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkableExpander">
       <import location="../MipacqMarkableExpander.xml"/>
@@ -41,9 +41,6 @@
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqSvmChainCreator">
       <import location="../MipacqSvmChainCreator.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkablePairGenerator">
       <import location="../MipacqMarkablePairGenerator.xml"/>
