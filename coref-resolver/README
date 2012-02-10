@@ -8,7 +8,6 @@ This module contains a number of references to other cTAKES modules, especially
 the Constituency Parser.  The links inside this project use relative path names
 so they should be portable as long as all modules are placed in the same directory.
 
-
 Types:
 
 Most basically, the output of this module will be several data types added to 
@@ -23,7 +22,7 @@ co-refer.  A CoreferenceRelation has two arguments of type RelationArgument,
 with a role field containing a value of either "anaphor" or "antecedent."  There
 is also an "argument" field which contains the Markable fulfilling the role.
 
-CoreferenceChain - A linked list containing chains of Markables that the classifier
+CollectionRelation - A linked list containing chains of Annotations that the classifier
 says refer to the same entity.  This is derived from the set of CoreferenceRelation
 elements described above.  It contains a list of UIMA type NonEmptyFSList, as well
 as a size field.  For singletons there are lists of length 1.  For actual chains

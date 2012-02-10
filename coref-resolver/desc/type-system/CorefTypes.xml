@@ -5,8 +5,8 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import location="../../../common/desc/types/Pair.xml"/>
-    <import location="../../../common/desc/types/BooleanLabeledFS.xml"/>
+    <import location="Pair.xml"/>
+    <import location="BooleanLabeledFS.xml"/>
   </imports>
   <types>
     <typeDescription>
