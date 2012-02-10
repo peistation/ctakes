@@ -136,8 +136,9 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 	private void generateTokenNormForms(CAS cas)
 			throws ResourceProcessException {
 		try {
-		    //JCas jcas = cas.getJCas();
-		    JCas jcas  = cas.getJCas().getView("plaintext");
+		//   JCas jcas = cas.getJCas();
+			JCas jcas  = cas.getJCas().getView("_InitialView");
+		  //  JCas jcas  = cas.getJCas().getView("plaintext");
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
 			Iterator propertiesItr = indexes
 					.getAnnotationIndex(Properties.type).iterator();
@@ -181,7 +182,7 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 			while (docItr.hasNext()) 
 			{
 			    DocumentID doc = (DocumentID) docItr.next();
-			    if (gotValidDate)
+	//		    if (gotValidDate)
 				clinicNumber = vClinicalNumber;
 			    abbrMap.put(new Integer(doc.getBegin()), doc);
 			}
@@ -207,8 +208,8 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 			throws ResourceProcessException {
 		try {
 			
-	        	//JCas jcas = cas.getCurrentView().getJCas();
-		    JCas jcas  = cas.getJCas().getView("plaintext");
+	        	JCas jcas = cas.getCurrentView().getJCas();
+	//	    JCas jcas  = cas.getJCas().getView("plaintext");
 	                
 	        	//System.err.println("Document Id: "+DocumentIDAnnotationUtil.getDocumentID(jcas));
 	        	

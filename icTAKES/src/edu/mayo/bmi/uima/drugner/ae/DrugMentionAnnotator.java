@@ -2829,11 +2829,12 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
  * signature elements.  Each drug is assigned an span which is used later assign the drug mention elements.  The 
  * range begins with the start of the drug mention and ends with the EOL or beginning of the subsequent drug mention.
  * The end range value can be overridden by the following cases:  
- *  A) The subsequent drug mention is contained in brackets or parenthesis w/out other drug signature items; e.g. 
+ *  A) The subsequent drug mention is contained in brackets or parenthesis w/out other drug signature items and there 
+ *  are no other signature elments that exist between the mentions; e.g. 
  *  	"ibuprofen [Motrin]".   In this case the drug span will end with the right most signature element or EOL 
  *  (which ever is farthest, but before a subsequent drug mention).
- *  B)  If there are multiple occurrences of signature elements between mentions find the greatest positive offset 
- *  (right most)
+ *  B)  If there are multiple occurrences of signature elements between mentions find the second positive offset 
+ *  in the series
  *   
  * Up to 100 of each type of signature item and drug mentions are allowed.  If more than that are available the
  * ArrayIndexOutOfBoundsException is thrown and alternate algorithm is run
@@ -3117,7 +3118,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 					if (openParenFound ) 
 						pattern = pattern + groupDelimiterClose ;
 //					System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
-					if (j > 0 && pattern.endsWith("(D)")) {
+					if (j > 0 && pattern.endsWith("(D)") && countMultiplePre == 0) {
 						shareAttributes = true;
 						if (highestValueInRange < typeFoundC) {
 							drugSpanArray[j-1][1] = nea.getBegin() + typeFoundC;
@@ -3125,7 +3126,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 						else { 
 							drugSpanArray[j-1][1] = drugSpanArray[j][1] = nea.getBegin() + highestValueInRange;
 						}
-					} else if (j > 0 && (countMultiplePre > 1 || testForMultipleElementsInRange[0] > 2) && testForMultipleElementsInRange[1] > 0 && !shareAttributes && hasNext) {
+					} else if (j > 0 && (countMultiplePre > 1 || testForMultipleElementsInRange[0] > 2) && testForMultipleElementsInRange[1] > 0 && (!shareAttributes || hasNext)) {
 						drugSpanArray[j-1][1] = testForMultipleElementsInRange[1];
 					} else {
 						shareAttributes = false;
@@ -3144,7 +3145,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 					targetValueInRange = highestValueInRange;
 					pattern = pattern + postPattern;
 					openParenFound = false;
-					priorDrugEnd = nea.getEnd();
+					//priorDrugEnd = nea.getEnd();
 
 				}
 				postPattern=prePattern="";
@@ -3186,86 +3187,86 @@ private boolean findNextParenRelativeToNE(int spanLength,
 	  int [] lastLocation =  {-1,-1};
 	  int counter = 0;
 	  if (elementType == StrengthAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
 	  } else if (elementType == FrequencyAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }			}
 	  } else if (elementType == FrequencyUnitAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
 	  }    else if (elementType == DosagesAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
 	  }else if (elementType == RouteAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  RouteAnnotation nea = (RouteAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
 	  } else if (elementType == FormAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  FormAnnotation nea = (FormAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
 	  }    
 	  else if (elementType == DurationAnnotation.type) {
-		  int holdBeginElement = 0;
+		  int holdBeginElement = 0, holdEndElement = 0;
 		  while (neItr.hasNext()) {
 			  DurationAnnotation nea = (DurationAnnotation) neItr.next();
 			  lastLocation[0] = nea.getBegin();
 			  lastLocation[1] = nea.getEnd();
-			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
 				  holdBeginElement = location[counter][0]= lastLocation[0];
-				  location[counter][1]= lastLocation[1];
+				  holdEndElement = location[counter][1]= lastLocation[1];
 				  counter++;
 			  }
 		  }
@@ -3379,7 +3380,7 @@ private boolean findNextParenRelativeToNE(int spanLength,
   private int [] findNextDrugEntityPre(int spanLength, int[][] elementSpan,
       NamedEntity nea, int priorDrugEnd)
   {
-    int numElementsInSpan= 0;
+    int numElementsInSpan = 0, targetForNewSpan = 0 ;
     int [] locationPre = {-1,-1};
     for (int l = 0; l < spanLength ; l++)
     {
@@ -3387,8 +3388,10 @@ private boolean findNextParenRelativeToNE(int spanLength,
           && elementSpan[l][0] > priorDrugEnd)
       {
     	numElementsInSpan ++;
-        locationPre[1] = elementSpan[l][0];
-      }
+    	targetForNewSpan = elementSpan[l][0];
+      } 
+      if (l == 2)
+    	  locationPre[1] = targetForNewSpan;
       locationPre[0] = numElementsInSpan;
     }
     return locationPre;
