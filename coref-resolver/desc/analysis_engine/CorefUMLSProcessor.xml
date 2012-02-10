@@ -18,6 +18,9 @@
     <delegateAnalysisEngine key="StatusAnnotator">
       <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="DictionaryLookupAnnotatorUMLS">
+      <import location="/home/tmill/Projects/cleanroom/SHARPn-cTAKES/dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkableExpander">
       <import location="../MipacqMarkableExpander.xml"/>
     </delegateAnalysisEngine>
@@ -36,14 +39,11 @@
     <delegateAnalysisEngine key="MipacqMarkableCreator">
       <import location="../MipacqMarkableCreator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
-      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorDB.xml"/>
+    <delegateAnalysisEngine key="MipacqSvmChainCreator">
+      <import location="../MipacqSvmChainCreator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
       <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="MipacqSvmChainCreator">
-      <import location="../MipacqSvmChainCreator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkablePairGenerator">
       <import location="../MipacqMarkablePairGenerator.xml"/>
@@ -99,10 +99,9 @@
         <node>POSTagger</node>
         <node>Chunker</node>
         <node>LookupWindowAnnotator</node>
-        <node>DictionaryLookupAnnotatorDB</node>
+        <node>DictionaryLookupAnnotatorUMLS</node>
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
-        <node>ExtractionPrepAnnotator</node>
         <node>ConstituencyParserAnnotator</node>
         <node>MipacqMarkableCreator</node>
         <node>MipacqMarkableExpander</node>
@@ -115,13 +114,13 @@
       <description>For subiterator</description>
       <version>1.0</version>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
       </priorityList>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.NamedEntity</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>

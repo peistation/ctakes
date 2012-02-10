@@ -92,7 +92,7 @@
         <name>svmCorefModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:models/mayopartbeth/rbf.full.model</fileUrl>
+          <fileUrl>file:ne.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
       </externalResource>
