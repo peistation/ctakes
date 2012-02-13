@@ -4,8 +4,6 @@
   <description>This is a Common Type System for SHARP NLP. It includes general types necessary to store annotations and interface with clinical element models</description>
   <version>1.0</version>
   <vendor>Mayo - NLP</vendor>
-  <imports>
-  </imports>
   <types>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.WordToken</name>
@@ -1497,7 +1495,7 @@ edu.mayo.bmi.uima.core.type.Properties</description>
         <featureDescription>
           <name>pairs</name>
           <description/>
-          <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
           <elementType>edu.mayo.bmi.uima.core.type.util.Pair</elementType>
         </featureDescription>
       </features>
