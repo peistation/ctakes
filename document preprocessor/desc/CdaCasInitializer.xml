@@ -14,7 +14,6 @@ The CDA must conform to the DTD resource.</description>
 <configurationParameterSettings/>
 <typeSystemDescription>
 <imports>
-<import location="CDAToTextTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -26,8 +25,8 @@ The CDA must conform to the DTD resource.</description>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.type.Property</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.type.Properties</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.type.util.Pair</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.type.util.Pairs</type>
 <type allAnnotatorFeatures="true">uima.tcas.DocumentAnnotation</type>
 </outputs>
 <outputSofas>
