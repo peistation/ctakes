@@ -33,10 +33,11 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.Pairs;
-import edu.mayo.bmi.uima.core.type.Pair;
+import edu.mayo.bmi.uima.core.type.util.Pairs;
+import edu.mayo.bmi.uima.core.type.util.Pair;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
@@ -95,19 +96,23 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 		Pairs props = (Pairs) itr.next(); 
 
 		// create a new property array that is one item bigger
-		FSArray propArr = props.getPropArr();
+		FSArray propArr = props.getPairs();
 		FSArray newPropArr = new FSArray(jcas, propArr.size() + 1);
 		for (int i = 0; i < propArr.size(); i++) {
 			newPropArr.set(i, propArr.get(i));
 		}
 
 		Pair annotVerProp = new Pair(jcas);
-		annotVerProp.setKey(iv_annotVerPropKey);
-		annotVerProp.setValue(String.valueOf(iv_annotVer));
+        StringArray keylist = new StringArray(jcas,1);
+        StringArray valuelist = new StringArray(jcas,1);                    
+        keylist.set(0, iv_annotVerPropKey);
+        valuelist.set(0, String.valueOf(iv_annotVer));       		
+		annotVerProp.setAttribute(keylist);
+		annotVerProp.setValue(valuelist);
 
 		// add annotation version prop as last item in array
 		newPropArr.set(newPropArr.size() - 1, annotVerProp);
-		props.setPropArr(newPropArr);
+		props.setPairs(newPropArr);
 	}
 
 	/**
