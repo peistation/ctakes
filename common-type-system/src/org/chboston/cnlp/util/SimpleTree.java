@@ -1,11 +1,14 @@
 package org.chboston.cnlp.util;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SimpleTree {
 	public String cat;
 	public ArrayList<SimpleTree> children;
 	public SimpleTree parent = null;
+	static Pattern ptPatt = Pattern.compile("\\(([^ (]+) +([^ )]+)\\)");
 	
 	public SimpleTree(String c){
 		this(c,null);
@@ -42,6 +45,52 @@ public class SimpleTree {
 		return buff.toString();
 	}
 	
+	public static SimpleTree fromString(String string){
+		SimpleTree tree = null;
+		
+		// pre-terminal case is the base case:
+		Matcher m = ptPatt.matcher(string);
+		if(m.matches()){
+			tree = new SimpleTree(m.group(1));
+			SimpleTree leaf = new SimpleTree(m.group(2));
+			tree.addChild(leaf);
+			leaf.parent = tree;
+		}else{
+			int firstWS = string.indexOf(' ');
+			tree = new SimpleTree(string.substring(1, firstWS));
+			String[] childStrings = splitChildren(string.substring(firstWS+1, string.length()-1));
+			for(int i = 0; i < childStrings.length; i++){
+				SimpleTree child = fromString(childStrings[i]);
+				child.parent = tree;
+				tree.addChild(child);
+			}
+		}
+		return tree;
+	}
+	
+	private static String[] splitChildren(String s){
+		ArrayList<String> children = new ArrayList<String>();
+		char[] chars = s.toCharArray();
+		int numParens = 0;
+		int startIndex = 0;
+		for(int i = 0; i < chars.length; i++){
+			if(chars[i] == '('){
+				numParens++;
+				if(numParens == 1){
+					startIndex = i;
+				}
+			}else if(chars[i] == ')'){
+				numParens--;
+				if(numParens == 0){
+					children.add(s.substring(startIndex, i+1));
+				}else if(numParens < 0){
+					break;
+				}
+			}
+		}
+		return children.toArray(new String[]{});
+	}
+	
 	public static void main(String[] args){
 		SimpleTree t = new SimpleTree("TOP");
 		t.addChild(new SimpleTree("S"));
@@ -50,5 +99,8 @@ public class SimpleTree {
 		t.children.get(0).children.get(0).addChild(new SimpleTree("i"));
 		t.children.get(0).children.get(1).addChild(new SimpleTree("ran"));
 		System.out.println(t.toString());
+		
+		SimpleTree t2 = SimpleTree.fromString("(S (NP (PRP it)) (VP (VBZ is) (JJ red)))");
+		System.out.println(t2.toString());
 	}
 }
