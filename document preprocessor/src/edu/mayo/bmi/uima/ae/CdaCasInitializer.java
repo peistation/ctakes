@@ -36,7 +36,6 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 
@@ -216,13 +215,9 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
                 Object value = metaDataMap.get(key);
 
                 if (value instanceof String) {
-                    Pair prop = new Pair(plaintextView);
-                    StringArray keylist = new StringArray(plaintextView,1);
-                    StringArray valuelist = new StringArray(plaintextView,1);                    
-                    keylist.set(0, key);
-                    valuelist.set(0, (String) value);                    
-                    prop.setAttribute(keylist);
-                    prop.setValue(valuelist);
+                    Pair prop = new Pair(plaintextView);               
+                    prop.setAttribute(key);
+                    prop.setValue((String) value);
                     fsArr.set(pos++, prop);
                 }
                 else if (value instanceof HashSet) {
