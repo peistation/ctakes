@@ -37,6 +37,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   private List<RelationFeaturesExtractor> featureExtractors = Arrays.asList(
       new TokenFeaturesExtractor(),
       new PartOfSpeechFeaturesExtractor(),
+      new ChunkerExtractor(),
       new NamedEntityFeaturesExtractor(),
       new DependencyTreeFeaturesExtractor(),
       new DependencyPathFeaturesExtractor());
@@ -60,7 +61,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
         for (RelationFeaturesExtractor extractor : this.featureExtractors) {
           features.addAll(extractor.extract(jCas, arg1, arg2));
         }
-
+                
         // during training, feed the features to the data writer
         if (this.isTraining()) {
           // TODO: load the relation label from the CAS
