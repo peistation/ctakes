@@ -32,12 +32,8 @@ public class Splitter {
 	int devSize;
 	int testSize;
 	
-	// file lists 
 	List<String> allFileNames = new ArrayList<String>();
-	List<String> trainFileNames = new ArrayList<String>();
-	List<String> devFileNames = new ArrayList<String>();
-	List<String> testFileNames = new ArrayList<String>();
-	
+		
 	public Splitter(double trainProportion, double devProportion, double testProportion) {
 		
 		this.trainProportion = trainProportion;
@@ -54,13 +50,11 @@ public class Splitter {
 		
 		Collections.shuffle(allFileNames);
 		
-		Stack<String> fileList = new Stack<String>();
-		fileList.addAll(allFileNames);
+		Stack<String> fileDispenser = new Stack<String>();
+		fileDispenser.addAll(allFileNames);
 		
 		for(int i = 0; i < trainSize; i++) {
-			String nextFile = fileList.pop();
-			trainFileNames.add(nextFile);
-
+			String nextFile = fileDispenser.pop();
 			try {
 	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TRAINLOC);
       } catch (IOException e) {
@@ -69,9 +63,7 @@ public class Splitter {
 		}
 		
 		for(int i = 0; i < devSize; i++) {
-			String nextFile = fileList.pop();
-			devFileNames.add(nextFile);
-			
+			String nextFile = fileDispenser.pop();
 			try {
 	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + DEVLOC);
       } catch (IOException e) {
@@ -80,9 +72,7 @@ public class Splitter {
 		}
 		
 		for(int i = 0; i < testSize; i++) {
-			String nextFile = fileList.pop();
-			testFileNames.add(nextFile);
-			
+			String nextFile = fileDispenser.pop();
 			try {
 	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TESTLOC);
       } catch (IOException e) {

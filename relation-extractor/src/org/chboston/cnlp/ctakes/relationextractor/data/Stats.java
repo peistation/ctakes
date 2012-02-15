@@ -29,9 +29,9 @@ public class Stats {
 			}
 			
 			try {
-				String goldFilePath = inputDir + file;
+				String fullPath = inputDir + file;
 				SAXBuilder builder = new SAXBuilder();
-				Document document = builder.build(new File(goldFilePath));
+				Document document = builder.build(new File(fullPath));
 				
 				ArrayList<RelationInfo> relations = XMLReader.getRelations(document);
 				totalRelations = totalRelations + relations.size();
