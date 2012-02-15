@@ -1,25 +1,11 @@
 package org.chboston.cnlp.ctakes.relationextractor.knowtator;
 
-import org.jdom.input.SAXBuilder;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.uimafit.component.JCasAnnotator_ImplBase;
-
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 public class XMLReader {
 
@@ -145,20 +131,22 @@ public class XMLReader {
   		return; // this classMention is not a relation (exactly two args are allowed)                                            
   	}
 
-  	String kid1 = hashComplexSlotMentions.get(ids.get(0)).value; // obtain mention id1                                       
+  	String id1 = hashComplexSlotMentions.get(ids.get(0)).value;          // obtain mention id1                                       
   	String position1 = hashComplexSlotMentions.get(ids.get(0)).position; // e.g. Argument                                                                                             
 
-  	String kid2 = hashComplexSlotMentions.get(ids.get(1)).value; // obtain mention id2                                       
+  	String id2 = hashComplexSlotMentions.get(ids.get(1)).value;          // obtain mention id2                                       
   	String position2 = hashComplexSlotMentions.get(ids.get(1)).position; // e.g. Related_to                                     
 
-  	if(!position1.equals("Argument") || !position1.equals("Related_To")) {
-  		System.out.println("unrecognized position!");
+  	// a quick sanity check (this has failed before)
+  	if(!position1.equals("Argument") && !position1.equals("Related_to")) {
+  		System.out.println("unrecognized position: " + position1);
+  		return;
+  	}
+  	if(!position2.equals("Argument") && !position2.equals("Related_to")) {
+  		System.out.println("unrecognized position: " + position2);
+  		return;
   	}
 
-  	if(!position2.equals("Argument") || !position2.equals("Related_To")) {
-  		System.out.println("unrecognized position!");
-  	}
-
-  	relations.add(new RelationInfo(kid1, kid2, position1, position2, relationType));
+  	relations.add(new RelationInfo(id1, id2, position1, position2, relationType));
   }
 }
