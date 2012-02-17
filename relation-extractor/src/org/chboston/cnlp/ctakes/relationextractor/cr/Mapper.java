@@ -37,6 +37,6 @@ public class Mapper {
 	  else if(entityType.equals("Anatomical_site")) return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
 	  else if(entityType.equals("Genes_and_Molecular_Sequences")) return CONST.NE_TYPE_ID_GENES_AND_MOLECULAR_SEQUENCES;
 	  else if(entityType.equals("Person")) return CONST.NE_TYPE_ID_PERSON;
-	  else {System.out.println("UNKNOWN: " + entityType); return CONST.NE_TYPE_ID_UNKNOWN;}
+	  else return CONST.NE_TYPE_ID_UNKNOWN;
 	}	  
 }
