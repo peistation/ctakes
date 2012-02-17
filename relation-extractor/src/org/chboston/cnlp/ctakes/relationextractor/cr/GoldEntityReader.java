@@ -64,7 +64,7 @@ public class GoldEntityReader extends JCasAnnotator_ImplBase {
 				Span span = entry.getValue().get(0); 
 
 				EntityMention entityMention = new EntityMention(initView, span.start, span.end);
-				entityMention.setTypeID(getTypeId(entityTypes.get(entry.getKey())));
+				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention.setConfidence(1);
@@ -74,18 +74,5 @@ public class GoldEntityReader extends JCasAnnotator_ImplBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Map entity type to its integer id
-	 */
-	public int getTypeId(String entityType) {
-
-		if(entityType.equals("Chemicals_and_drugs")) return CONST.NE_TYPE_ID_DRUG;
-		else if(entityType.equals("Disorders")) return CONST.NE_TYPE_ID_DISORDER;
-		else if(entityType.equals("Finding")) return CONST.NE_TYPE_ID_FINDING;
-		else if(entityType.equals("Procedures")) return CONST.NE_TYPE_ID_PROCEDURE;
-		else if(entityType.equals("Anatomy")) return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
-		else return CONST.NE_TYPE_ID_UNKNOWN;
 	}
 }

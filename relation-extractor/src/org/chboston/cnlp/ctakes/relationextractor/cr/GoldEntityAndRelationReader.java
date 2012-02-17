@@ -82,7 +82,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				
 				Span span1 = entityMentions.get(relation.id1).get(0); // just the first part of a disjoint span for now
 				EntityMention entityMention1 = new EntityMention(initView, span1.start, span1.end);
-				entityMention1.setTypeID(getTypeId(entityTypes.get(relation.id1)));
+				entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id1)));
 				entityMention1.setId(identifiedAnnotationId++);
 				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention1.setConfidence(1);
@@ -90,7 +90,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				
 				Span span2 = entityMentions.get(relation.id2).get(0); // just the first part of a disjoint span for now
 				EntityMention entityMention2 = new EntityMention(initView, span2.start, span2.end);
-				entityMention2.setTypeID(getTypeId(entityTypes.get(relation.id2)));
+				entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id2)));
 				entityMention2.setId(identifiedAnnotationId++);
 				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention2.setConfidence(1);
@@ -130,7 +130,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				Span span = entry.getValue().get(0); 
 
 				EntityMention entityMention = new EntityMention(initView, span.start, span.end);
-				entityMention.setTypeID(getTypeId(entityTypes.get(entry.getKey())));
+				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention.setConfidence(1);
@@ -140,18 +140,5 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Map entity type to its integer id
-	 */
-	public int getTypeId(String entityType) {
-
-		if(entityType.equals("Chemicals_and_drugs")) return CONST.NE_TYPE_ID_DRUG;
-		else if(entityType.equals("Disorders")) return CONST.NE_TYPE_ID_DISORDER;
-		else if(entityType.equals("Finding")) return CONST.NE_TYPE_ID_FINDING;
-		else if(entityType.equals("Procedures")) return CONST.NE_TYPE_ID_PROCEDURE;
-		else if(entityType.equals("Anatomy")) return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
-		else return CONST.NE_TYPE_ID_UNKNOWN;
 	}
 }
