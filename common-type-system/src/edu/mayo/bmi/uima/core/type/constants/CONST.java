@@ -29,6 +29,7 @@ package edu.mayo.bmi.uima.core.type.constants;
  */
 public class CONST {
 	
+	// entity types used for mipacq
 	public static final int NE_TYPE_ID_UNKNOWN = 0;
 	public static final int NE_TYPE_ID_DISEASE_DISORDER = 1;
 	public static final int NE_TYPE_ID_ACTIVITIES_AND_BEHAVIORS = 2;
@@ -52,6 +53,11 @@ public class CONST {
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 20;
 	public static final int NE_TYPE_ID_GENES_AND_MOLECULAR_SEQUENCES = 21;
 	public static final int NE_TYPE_ID_PERSON = 22;
+	
+	// other entity types
+	public static final int NE_TYPE_ID_DISORDER = 23;
+	public static final int NE_TYPE_ID_DRUG = 24;
+	public static final int NE_TYPE_ID_FINDING = 25;
 	
 	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
 	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 2;
