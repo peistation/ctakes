@@ -29,7 +29,7 @@ public class Splitter {
 	
 	List<String> allFileNames = new ArrayList<String>();
 		
-	public Splitter(double trainProportion, double devProportion, double testProportion) {
+	public Splitter(double trainProportion, double devProportion, double testProportion) throws IOException {
 		
 		this.trainProportion = trainProportion;
 		this.devProportion = devProportion;
@@ -50,33 +50,21 @@ public class Splitter {
 		
 		for(int i = 0; i < trainSize; i++) {
 			String nextFile = fileDispenser.pop();
-			try {
-	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TRAINLOC);
-      } catch (IOException e) {
-	      e.printStackTrace();
-      }
+      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TRAINLOC);
 		}
 		
 		for(int i = 0; i < devSize; i++) {
 			String nextFile = fileDispenser.pop();
-			try {
-	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + DEVLOC);
-      } catch (IOException e) {
-	      e.printStackTrace();
-      }
+      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + DEVLOC);
 		}
 		
 		for(int i = 0; i < testSize; i++) {
 			String nextFile = fileDispenser.pop();
-			try {
-	      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TESTLOC);
-      } catch (IOException e) {
-	      e.printStackTrace();
-      }
+      Runtime.getRuntime().exec("cp " + ALLFILELOC + nextFile + " " + TESTLOC);
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		new Splitter(0.8, 0.1, 0.1);
 	}
 }

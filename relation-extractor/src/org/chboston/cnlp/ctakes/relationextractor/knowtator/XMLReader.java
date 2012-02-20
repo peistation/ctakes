@@ -17,7 +17,6 @@ public class XMLReader {
   	// key: mention id, value: list of spans (need a list to handle disjoint spans)
   	HashMap<String, ArrayList<Span>> entityMentions = new HashMap<String, ArrayList<Span>>(); 
 
-    try {
       Element elementRoot = document.getRootElement();
       List<?> annotations = elementRoot.getChildren("annotation");
 
@@ -45,9 +44,6 @@ public class XMLReader {
         
         entityMentions.put(mentionId, spans);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     return entityMentions;
   }
 
@@ -59,7 +55,6 @@ public class XMLReader {
     // key: mention id, value: semantic type of the corresponding entity (e.g. "sign_symptom")                                      
     HashMap<String, String> entityTypes = new HashMap<String, String>();
 
-    try {
       Element root = document.getRootElement();
       List<?> classMentions = root.getChildren("classMention");
 
@@ -69,9 +64,6 @@ public class XMLReader {
         String cl = classMention.getChildText("mentionClass");
         entityTypes.put(id, cl);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     return entityTypes;
   }
   
@@ -79,7 +71,6 @@ public class XMLReader {
 
     ArrayList<RelationInfo> relations = new ArrayList<RelationInfo>();
 
-    try {
       Element root = document.getRootElement();
 
       // key: complexSlotMention id, value: complexSlotMention value                                                           
@@ -108,9 +99,6 @@ public class XMLReader {
           addRelation(relations, hasSlotMentions, hashComplexSlotMentions, relationType);  // save this relation and args
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     return relations;
   }
 
