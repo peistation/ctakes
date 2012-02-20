@@ -110,7 +110,7 @@ public class ContextDependentTokenizerAnnotator extends JCasAnnotator_ImplBase {
 
 		try {
 			
-	    	iv_logger.info(" process(JCas, ResultSpecification)");
+	    	iv_logger.info("process(JCas)");
 
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
 			Iterator<?> sentItr = indexes.getAnnotationIndex(Sentence.type).iterator();
