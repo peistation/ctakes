@@ -68,17 +68,18 @@ public class CONST {
 	public static final int NE_DIAG_STATUS_HISTORY_OF = 1;
 	public static final int NE_DIAG_STATUS_FAM_HISTORY_OF = 2;
 	public static final int NE_DIAG_STATUS_PROBABLE = 3;
-	
+
 	public static final int REL_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
+
+	public static final String MED_STATUS_CHANGE_START = "start";
+	public static final String MED_STATUS_CHANGE_STOP = "stop";
+	public static final String MED_STATUS_CHANGE_INCREASEFROM = "increasefrom";
+	public static final String MED_STATUS_CHANGE_DECREASEFROM = "decreasefrom";
+	public static final String MED_STATUS_CHANGE_INCREASE = "increase";
+	public static final String MED_STATUS_CHANGE_DECREASE = "decrease";
+	public static final String MED_STATUS_CHANGE_NOCHANGE = "noChange";
+	public static final String MED_STATUS_CHANGE_SUM = "add";
+	public static final String MED_STATUS_CHANGE_MAX = "maximum";
+	public static final String MED_STATUS_CHANGE_OTHER = "change";
 	
-  public static final String MED_STATUS_CHAGNE_START = "start";
-  public static final String MED_STATUS_CHAGNE_STOP = "stop";
-  public static final String MED_STATUS_CHAGNE_INCREASEFROM = "increasefrom";
-  public static final String MED_STATUS_CHAGNE_DECREASEFROM = "decreasefrom";
-  public static final String MED_STATUS_CHAGNE_INCREASE = "increase";
-  public static final String MED_STATUS_CHAGNE_DECREASE = "decrease";
-  public static final String MED_STATUS_CHAGNE_NOCHANGE = "noChange";
-  public static final String MED_STATUS_CHAGNE_SUM = "add";
-  public static final String MED_STATUS_CHAGNE_MAX = "maximum";
-  public static final String MED_STATUS_CHAGNE_OTHER = "change";
 }
