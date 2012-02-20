@@ -242,7 +242,7 @@ public class LvgAnnotator extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas)
 			throws AnalysisEngineProcessException {
 
-		logger.info(" process(JCas, ResultSpecification)");
+		logger.info("process(JCas)");
 
 		String text = jcas.getDocumentText();
 
