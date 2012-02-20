@@ -6,7 +6,7 @@
   <vendor>Mayo</vendor>
   <imports>
     <import location="../../../common-type-system/desc/common_type_system.xml"/>
-    <import location="../../src/edu/mayo/bmi/uima/pad/type/SubSection.xml"/>
+    <import location="SubSection.xml"/>
   </imports>
   <types>
     <typeDescription>
