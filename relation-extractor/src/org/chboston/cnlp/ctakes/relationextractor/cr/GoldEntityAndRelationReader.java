@@ -40,7 +40,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 	// paramater that should contain the path to knowtator xml files
 	public static final String PARAM_INPUTDIR = "InputDirectory";
 	// path to knowtator xml files
-	public static String inputDirectory;
+	public static File inputDirectory;
 	// counter for assigning entity ids
 	public int identifiedAnnotationId;
 	// counter for assigning relation ids
@@ -52,7 +52,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 		
-		inputDirectory = (String)aContext.getConfigParameterValue(PARAM_INPUTDIR);
+		inputDirectory = new File((String)aContext.getConfigParameterValue(PARAM_INPUTDIR));
 		
 		identifiedAnnotationId = 0;
 		relationId = 0;
@@ -68,12 +68,12 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
-			String goldFilePath = inputDirectory + DocumentIDAnnotationUtil.getDocumentID(jCas) + ".knowtator.xml";
+			File goldFile = new File(inputDirectory, DocumentIDAnnotationUtil.getDocumentID(jCas) + ".knowtator.xml");
 			
       SAXBuilder builder = new SAXBuilder();
       Document document;
       try {
-        document = builder.build(new File(goldFilePath));
+        document = builder.build(goldFile);
       } catch (JDOMException e) {
         throw new AnalysisEngineProcessException(e);
       } catch (IOException e) {
