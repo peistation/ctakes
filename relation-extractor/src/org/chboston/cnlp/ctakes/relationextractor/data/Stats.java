@@ -2,7 +2,6 @@ package org.chboston.cnlp.ctakes.relationextractor.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.chboston.cnlp.ctakes.relationextractor.knowtator.RelationInfo;
 import org.chboston.cnlp.ctakes.relationextractor.knowtator.XMLReader;

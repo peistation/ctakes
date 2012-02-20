@@ -8,11 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import org.chboston.cnlp.ctakes.relationextractor.knowtator.RelationInfo;
-import org.chboston.cnlp.ctakes.relationextractor.knowtator.XMLReader;
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-
 public class Splitter {
 
 	// public final String ALLFILELOC = "/home/dima/mipacq/iaa/data/for_iaa_only/corpus1_2/gold/xml_c1c2all_gold/";
@@ -82,7 +77,6 @@ public class Splitter {
 	}
 	
 	public static void main(String[] args) {
-		
-		Splitter splitter = new Splitter(0.8, 0.1, 0.1);
+		new Splitter(0.8, 0.1, 0.1);
 	}
 }

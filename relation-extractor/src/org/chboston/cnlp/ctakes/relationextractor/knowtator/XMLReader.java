@@ -19,12 +19,12 @@ public class XMLReader {
 
     try {
       Element elementRoot = document.getRootElement();
-      List annotations = elementRoot.getChildren("annotation");
+      List<?> annotations = elementRoot.getChildren("annotation");
 
       for (int i = 0; i < annotations.size(); i++) {
         Element elementAnnotation = (Element) annotations.get(i);
 
-        List elementSpans = elementAnnotation.getChildren("span");
+        List<?> elementSpans = elementAnnotation.getChildren("span");
 
         if(elementSpans.size() == 0) {
           continue; // spanless annotation, e.g. a relation; there should be no spannedText                                    
@@ -61,7 +61,7 @@ public class XMLReader {
 
     try {
       Element root = document.getRootElement();
-      List classMentions = root.getChildren("classMention");
+      List<?> classMentions = root.getChildren("classMention");
 
       for (int i = 0; i < classMentions.size(); i++) {
         Element classMention = (Element) classMentions.get(i);
@@ -86,7 +86,7 @@ public class XMLReader {
       HashMap<String, ArgumentInfo> hashComplexSlotMentions = new HashMap<String, ArgumentInfo>();
 
       // first read all complexSlotMentions which contain argument positions (Related_to or Argument)                         
-      List complexSlotMentions = root.getChildren("complexSlotMention");
+      List<?> complexSlotMentions = root.getChildren("complexSlotMention");
       for (int i = 0; i < complexSlotMentions.size(); i++) {
         Element complexSlotMention = (Element) complexSlotMentions.get(i);
 
@@ -98,10 +98,10 @@ public class XMLReader {
       }
 
       // now read all classMentions which have relation type and arguments (as hasSlotMention(s))                                 
-      List classMentions = root.getChildren("classMention");
+      List<?> classMentions = root.getChildren("classMention");
       for (int i = 0; i < classMentions.size(); i++) {
         Element classMention = (Element) classMentions.get(i);
-        List hasSlotMentions = classMention.getChildren("hasSlotMention");
+        List<?> hasSlotMentions = classMention.getChildren("hasSlotMention");
 
         if(hasSlotMentions.size() >= 2) {
           String relationType = classMention.getChildText("mentionClass");
@@ -114,7 +114,7 @@ public class XMLReader {
     return relations;
   }
 
-  private static void addRelation(ArrayList<RelationInfo> relations, List hasSlotMentions, 
+  private static void addRelation(ArrayList<RelationInfo> relations, List<?> hasSlotMentions, 
   		HashMap<String, ArgumentInfo> hashComplexSlotMentions, String relationType) {
   	// add relation arguments and other relation information to the list of relations                                                  
 

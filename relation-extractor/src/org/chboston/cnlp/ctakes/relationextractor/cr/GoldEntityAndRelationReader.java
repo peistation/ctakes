@@ -24,7 +24,6 @@ import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
-import org.uimafit.util.JCasUtil;
 
 /**
  * Read named entity annotations and relations between them 
