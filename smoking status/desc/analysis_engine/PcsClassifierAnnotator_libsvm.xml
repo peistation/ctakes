@@ -34,7 +34,7 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.types.BaseTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.types.StringAttributeValue</type>

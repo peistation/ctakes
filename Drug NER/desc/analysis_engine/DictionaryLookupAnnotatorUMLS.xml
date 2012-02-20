@@ -88,7 +88,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseTokenAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
