@@ -18,15 +18,22 @@ package org.chboston.cnlp.ctakes.relationextractor.ae;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.uimafit.util.JCasUtil;
 
+import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
+import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
@@ -48,6 +55,16 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
    */
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
+    // lookup from pair of annotations to binary text relation
+    // note: assumes that there will be at most one relation per pair
+    Map<Set<Annotation>, BinaryTextRelation> relationLookup;
+    relationLookup = new HashMap<Set<Annotation>, BinaryTextRelation>();
+    for (BinaryTextRelation relation: JCasUtil.select(jCas, BinaryTextRelation.class)) {
+      Annotation arg1 = relation.getArg1().getArgument();
+      Annotation arg2 = relation.getArg2().getArgument();
+      Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
+      relationLookup.put(key, relation);
+    }
 
     // walk through each sentence in the text
     for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
@@ -72,9 +89,21 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
                   
           // during training, feed the features to the data writer
           if (this.isTraining()) {
-            // TODO: load the relation label from the CAS
-            String category = "NO_LABEL_FOR_NOW";
-  
+            
+            // load the relation label from the CAS (if there is one)
+            Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
+            String category;
+            if (!relationLookup.containsKey(key)) {
+              category = "-NONE-";
+            } else {
+              BinaryTextRelation relation = relationLookup.get(key);
+              if (relation.getArg1().equals(arg1)) {
+                category = relation.getCategory();
+              } else {
+                category = relation.getCategory() + "-1"; // inverse
+              }
+            }
+
             // create a classification instance and write it to the training data
             this.dataWriter.write(new Instance<String>(category, features));
           }
@@ -83,7 +112,23 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
           else {
             String category = this.classifier.classify(features);
             if (category != null) {
-              // TODO: add relation to CAS
+              if (category.endsWith("-1")) {
+                category = category.substring(0, category.length() - 2);
+                IdentifiedAnnotation temp = arg1;
+                arg1 = arg2;
+                arg2 = temp;
+              }
+              RelationArgument relArg1 = new RelationArgument(jCas);
+              relArg1.setArgument(arg1);
+              relArg1.addToIndexes();
+              RelationArgument relArg2 = new RelationArgument(jCas);
+              relArg2.setArgument(arg2);
+              relArg2.addToIndexes();
+              BinaryTextRelation relation = new BinaryTextRelation(jCas);
+              relation.setArg1(relArg1);
+              relation.setArg2(relArg2);
+              relation.setCategory(category);
+              relation.addToIndexes();
             }
           }
         }
