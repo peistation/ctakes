@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -51,6 +52,9 @@ import edu.mayo.bmi.uima.core.util.ParamUtil;
  */
 public class CopyAnnotator extends JCasAnnotator_ImplBase {
 	private int iv_srcType;
+
+	// LOG4J logger based on class name
+	private Logger logger = Logger.getLogger(getClass().getName());
 
 	// constructor used to create a new instance of the destination
 	// JCas object
@@ -101,7 +105,7 @@ public class CopyAnnotator extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		System.out.println("CopyAnnotator process(JCas ResultSpecification)");
+		logger.info("process(JCas)");
 
 		// iterate over source objects in JCas
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();

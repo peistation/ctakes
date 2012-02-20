@@ -283,7 +283,7 @@ public class OverlapAnnotator extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		iv_logger.info(" process(JCas, ResultSpecification)");
+		iv_logger.info("process(JCas)");
 
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
 

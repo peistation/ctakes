@@ -165,7 +165,7 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-		logger.info("POSTaggerAnnotator process(JCas)");
+		logger.info("process(JCas)");
 
 		List<BaseToken> tokens = new ArrayList<BaseToken>();
 		List<String> words = new ArrayList<String>();

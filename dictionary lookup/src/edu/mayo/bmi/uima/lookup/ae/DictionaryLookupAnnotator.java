@@ -105,6 +105,7 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 	public void process(JCas jcas)
 			throws AnalysisEngineProcessException {
 		
+		iv_logger.info("process(JCas)");
 		iv_dupMap.clear();
 		
 		try {
