@@ -27,6 +27,7 @@ import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.uimafit.util.JCasUtil;
 
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
@@ -47,35 +48,43 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
    */
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
-    // collect all possible relation arguments from the CAS
-    List<IdentifiedAnnotation> args = new ArrayList<IdentifiedAnnotation>(JCasUtil.select(jCas, IdentifiedAnnotation.class));
 
-    // walk through all pairs of arguments
-    for (int i = 0; i < args.size(); ++i) {
-    	IdentifiedAnnotation arg1 = args.get(i);
-      for (int j = i + 1; j < args.size(); ++j) {
-    	  IdentifiedAnnotation arg2 = args.get(j);
-
-        // apply all the feature extractors to extract the list of features
-        List<Feature> features = new ArrayList<Feature>();
-        for (RelationFeaturesExtractor extractor : this.featureExtractors) {
-          features.addAll(extractor.extract(jCas, arg1, arg2));
-        }
-                
-        // during training, feed the features to the data writer
-        if (this.isTraining()) {
-          // TODO: load the relation label from the CAS
-          String category = "NO_LABEL_FOR_NOW";
-
-          // create a classification instance and write it to the training data
-          this.dataWriter.write(new Instance<String>(category, features));
-        }
-
-        // during classification feed the features to the classifier and create annotations
-        else {
-          String category = this.classifier.classify(features);
-          if (category != null) {
-            // TODO: add relation to CAS
+    // walk through each sentence in the text
+    for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+      
+      // collect all possible relation arguments from the sentence
+      List<IdentifiedAnnotation> args = JCasUtil.selectCovered(
+          jCas,
+          IdentifiedAnnotation.class,
+          sentence);
+      
+      // walk through the pairs
+      for (int i = 0; i < args.size(); ++i) {
+      	IdentifiedAnnotation arg1 = args.get(i);
+        for (int j = i + 1; j < args.size(); ++j) {
+      	  IdentifiedAnnotation arg2 = args.get(j);
+  
+          // apply all the feature extractors to extract the list of features
+          List<Feature> features = new ArrayList<Feature>();
+          for (RelationFeaturesExtractor extractor : this.featureExtractors) {
+            features.addAll(extractor.extract(jCas, arg1, arg2));
+          }
+                  
+          // during training, feed the features to the data writer
+          if (this.isTraining()) {
+            // TODO: load the relation label from the CAS
+            String category = "NO_LABEL_FOR_NOW";
+  
+            // create a classification instance and write it to the training data
+            this.dataWriter.write(new Instance<String>(category, features));
+          }
+  
+          // during classification feed the features to the classifier and create annotations
+          else {
+            String category = this.classifier.classify(features);
+            if (category != null) {
+              // TODO: add relation to CAS
+            }
           }
         }
       }
