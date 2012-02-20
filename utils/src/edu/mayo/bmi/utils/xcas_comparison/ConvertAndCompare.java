@@ -68,8 +68,8 @@ public class ConvertAndCompare {
 		map.put("",
 				"uima.tt.VGAnnotation");
 */
-		map.put("edu.mayo.bmi.uima.cdt.type.RomanNumberalAnnotation",
-				"edu.mayo.bmi.uima.cdt.types.RomanNumberalAnnotation");
+		map.put("edu.mayo.bmi.uima.cdt.type.RomanNumeralAnnotation",
+				"edu.mayo.bmi.uima.cdt.types.RomanNumeralAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.FractionAnnotation",
 				"edu.mayo.bmi.uima.cdt.types.FractionAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.DateAnnotation",
