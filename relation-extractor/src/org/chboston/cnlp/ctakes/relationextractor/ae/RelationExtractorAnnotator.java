@@ -147,7 +147,19 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
           // during classification feed the features to the classifier and create annotations
           else {
             String category = this.classifier.classify(features);
-            if (category != null && !category.equals(NO_RELATION_CATEGORY)) {
+            
+//            // play with classification threshold because of skew in data
+//            List<ScoredOutcome<String>> scoredOutcomes = this.classifier.score(features, 2);
+//            ScoredOutcome<String> top = scoredOutcomes.get(0);
+//            String category;
+//            if (top.getOutcome().equals(NO_RELATION_CATEGORY) && top.getScore() < 0.99) {
+//              category = scoredOutcomes.get(1).getOutcome();
+//            } else {
+//              category = top.getOutcome();
+//            }
+            
+            // add a relation annotation if a true relation was predicted
+            if (!category.equals(NO_RELATION_CATEGORY)) {
               if (category.endsWith("-1")) {
                 category = category.substring(0, category.length() - 2);
                 EntityMention temp = arg1;
