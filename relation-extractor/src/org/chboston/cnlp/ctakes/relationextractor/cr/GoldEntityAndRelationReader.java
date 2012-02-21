@@ -10,8 +10,6 @@ import java.util.Map;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.relationextractor.knowtator.RelationInfo;
@@ -62,12 +60,6 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-			JCas initView;
-      try {
-        initView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
-      } catch (CASException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
 			File goldFile = new File(inputDirectory, DocumentIDAnnotationUtil.getDocumentID(jCas) + ".knowtator.xml");
 			
       SAXBuilder builder = new SAXBuilder();
@@ -94,7 +86,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			for(RelationInfo relation : relations) {
 				
 				Span span1 = entityMentions.get(relation.id1).get(0); // just the first part of a disjoint span for now
-				EntityMention entityMention1 = new EntityMention(initView, span1.start, span1.end);
+				EntityMention entityMention1 = new EntityMention(jCas, span1.start, span1.end);
 				entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id1)));
 				entityMention1.setId(identifiedAnnotationId++);
 				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
@@ -102,7 +94,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				entityMention1.addToIndexes();
 				
 				Span span2 = entityMentions.get(relation.id2).get(0); // just the first part of a disjoint span for now
-				EntityMention entityMention2 = new EntityMention(initView, span2.start, span2.end);
+				EntityMention entityMention2 = new EntityMention(jCas, span2.start, span2.end);
 				entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id2)));
 				entityMention2.setId(identifiedAnnotationId++);
 				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
@@ -112,17 +104,17 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				addedEntities.add(relation.id1); // save to skip later when adding the rest of entities
 				addedEntities.add(relation.id2); // save to skip later when adding the rest of entities
 				
-				RelationArgument relationArgument1 = new RelationArgument(initView);
+				RelationArgument relationArgument1 = new RelationArgument(jCas);
 				relationArgument1.setId(relationArgumentId++);
 				relationArgument1.setArgument(entityMention1);
 				relationArgument1.setRole(relation.position1);
 				
-				RelationArgument relationArgument2 = new RelationArgument(initView);
+				RelationArgument relationArgument2 = new RelationArgument(jCas);
 				relationArgument2.setId(relationArgumentId++);
 				relationArgument2.setArgument(entityMention2);
 				relationArgument2.setRole(relation.position2);
 				
-				BinaryTextRelation binaryTextRelation = new BinaryTextRelation(initView);
+				BinaryTextRelation binaryTextRelation = new BinaryTextRelation(jCas);
 				binaryTextRelation.setArg1(relationArgument1);
 				binaryTextRelation.setArg2(relationArgument2);
 				binaryTextRelation.setId(relationId++);
@@ -142,7 +134,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				// for now just use the first part of a disjoint span
 				Span span = entry.getValue().get(0); 
 
-				EntityMention entityMention = new EntityMention(initView, span.start, span.end);
+				EntityMention entityMention = new EntityMention(jCas, span.start, span.end);
 				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
