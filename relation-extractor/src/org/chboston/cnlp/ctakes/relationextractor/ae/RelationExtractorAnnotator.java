@@ -24,20 +24,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
+  
+  public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
+  
+  private static final String NO_RELATION_CATEGORY = "-NONE-";
+  
+  @ConfigurationParameter(
+      name = PARAM_GOLD_VIEW_NAME,
+      mandatory = false,
+      description = "view containing the manual relation annotations; needed for training")
+  private String goldViewName;
 
   /**
    * The list of feature extractors used by the classifier.
@@ -50,36 +64,58 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
       new DependencyTreeFeaturesExtractor(),
       new DependencyPathFeaturesExtractor());
 
+  @Override
+  public void initialize(UimaContext context) throws ResourceInitializationException {
+    super.initialize(context);
+    if (this.isTraining() && this.goldViewName == null) {
+      throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
+    }
+  }
+
   /*
    * Implement the standard UIMA process method.
    */
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
+    // during training, pull entity and relation annotations from the manual annotation view
+    JCas entityMentionView, relationView;
+    if (this.isTraining()) {
+      try {
+        entityMentionView = relationView = jCas.getView(this.goldViewName);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    } else {
+      entityMentionView = relationView = jCas;
+    }
+    
     // lookup from pair of annotations to binary text relation
     // note: assumes that there will be at most one relation per pair
     Map<Set<Annotation>, BinaryTextRelation> relationLookup;
     relationLookup = new HashMap<Set<Annotation>, BinaryTextRelation>();
-    for (BinaryTextRelation relation: JCasUtil.select(jCas, BinaryTextRelation.class)) {
-      Annotation arg1 = relation.getArg1().getArgument();
-      Annotation arg2 = relation.getArg2().getArgument();
-      Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
-      relationLookup.put(key, relation);
+    if (this.isTraining()) {
+      for (BinaryTextRelation relation: JCasUtil.select(relationView, BinaryTextRelation.class)) {
+        Annotation arg1 = relation.getArg1().getArgument();
+        Annotation arg2 = relation.getArg2().getArgument();
+        Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
+        relationLookup.put(key, relation);
+      }
     }
 
     // walk through each sentence in the text
     for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
       
       // collect all possible relation arguments from the sentence
-      List<IdentifiedAnnotation> args = JCasUtil.selectCovered(
-          jCas,
-          IdentifiedAnnotation.class,
+      List<EntityMention> args = JCasUtil.selectCovered(
+          entityMentionView,
+          EntityMention.class,
           sentence);
       
       // walk through the pairs
       for (int i = 0; i < args.size(); ++i) {
-      	IdentifiedAnnotation arg1 = args.get(i);
+        EntityMention arg1 = args.get(i);
         for (int j = i + 1; j < args.size(); ++j) {
-      	  IdentifiedAnnotation arg2 = args.get(j);
+          EntityMention arg2 = args.get(j);
   
           // apply all the feature extractors to extract the list of features
           List<Feature> features = new ArrayList<Feature>();
@@ -94,7 +130,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
             Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
             String category;
             if (!relationLookup.containsKey(key)) {
-              category = "-NONE-";
+              category = NO_RELATION_CATEGORY;
             } else {
               BinaryTextRelation relation = relationLookup.get(key);
               if (relation.getArg1().equals(arg1)) {
@@ -111,20 +147,20 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
           // during classification feed the features to the classifier and create annotations
           else {
             String category = this.classifier.classify(features);
-            if (category != null) {
+            if (category != null && !category.equals(NO_RELATION_CATEGORY)) {
               if (category.endsWith("-1")) {
                 category = category.substring(0, category.length() - 2);
-                IdentifiedAnnotation temp = arg1;
+                EntityMention temp = arg1;
                 arg1 = arg2;
                 arg2 = temp;
               }
-              RelationArgument relArg1 = new RelationArgument(jCas);
+              RelationArgument relArg1 = new RelationArgument(relationView);
               relArg1.setArgument(arg1);
               relArg1.addToIndexes();
-              RelationArgument relArg2 = new RelationArgument(jCas);
+              RelationArgument relArg2 = new RelationArgument(relationView);
               relArg2.setArgument(arg2);
               relArg2.addToIndexes();
-              BinaryTextRelation relation = new BinaryTextRelation(jCas);
+              BinaryTextRelation relation = new BinaryTextRelation(relationView);
               relation.setArg1(relArg1);
               relation.setArg2(relArg2);
               relation.setCategory(category);
