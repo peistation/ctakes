@@ -28,39 +28,42 @@ package edu.mayo.bmi.uima.core.type.constants;
  * @author Mayo
  */
 public class CONST {
-	
-	// entity types used for mipacq
+
 	public static final int NE_TYPE_ID_UNKNOWN = 0;
-	public static final int NE_TYPE_ID_DISEASE_DISORDER = 1;
-	public static final int NE_TYPE_ID_ACTIVITIES_AND_BEHAVIORS = 2;
-	public static final int NE_TYPE_ID_ORGANIZATIONS = 3;
-	public static final int NE_TYPE_ID_OBJECTS = 4;
-	public static final int NE_TYPE_ID_DEVICES = 5;
-	public static final int NE_TYPE_ID_PHYSIOLOGY = 6;
-	public static final int NE_TYPE_ID_GEOGRAPHIC_AREAS = 7;
-	public static final int NE_TYPE_ID_PHENOMENA = 8;
-	public static final int NE_TYPE_ID_PROCEDURE = 9;
-	public static final int NE_TYPE_ID_MEDICATIONS_DRUGS = 10;
-	public static final int NE_TYPE_ID_EVENT_UMLS = 11;
-	public static final int NE_TYPE_ID_CONCEPTS_AND_IDEAS = 12;
-	public static final int NE_TYPE_ID_LIVING_BEINGS = 13;
-	public static final int NE_TYPE_ID_CLASSIFICATION = 14;
-	public static final int NE_TYPE_ID_SIGN_SYMPTOM = 15;
-	public static final int NE_TYPE_ID_TIMEX3 = 16;
-	public static final int NE_TYPE_ID_LANGUAGE = 17;
-	public static final int NE_TYPE_ID_OCCUPATIONS = 18;
-	public static final int NE_TYPE_ID_LABORATORY_OR_TEST_PROCEDURE = 19;
-	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 20;
-	public static final int NE_TYPE_ID_GENES_AND_MOLECULAR_SEQUENCES = 21;
-	public static final int NE_TYPE_ID_PERSON = 22;
+	public static final int NE_TYPE_ID_DRUG = 1;
+	public static final int NE_TYPE_ID_DISORDER = 2;
+	public static final int NE_TYPE_ID_FINDING = 3;
+
+	public static final int NE_TYPE_ID_PROCEDURE = 5;
+	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
+
+	// entity types used for mipacq
+	public static final int NE_TYPE_ID_DISEASE_DISORDER = 101;
+	public static final int NE_TYPE_ID_ACTIVITIES_AND_BEHAVIORS = 102;
+	public static final int NE_TYPE_ID_ORGANIZATIONS = 103;
+	public static final int NE_TYPE_ID_OBJECTS = 104;
+	public static final int NE_TYPE_ID_DEVICES = 105;
+	public static final int NE_TYPE_ID_PHYSIOLOGY = 106;
+	public static final int NE_TYPE_ID_GEOGRAPHIC_AREAS = 107;
+	public static final int NE_TYPE_ID_PHENOMENA = 108;
+
+	public static final int NE_TYPE_ID_MEDICATIONS_DRUGS = 110;
+	public static final int NE_TYPE_ID_EVENT_UMLS = 111;
+	public static final int NE_TYPE_ID_CONCEPTS_AND_IDEAS = 112;
+	public static final int NE_TYPE_ID_LIVING_BEINGS = 113;
+	public static final int NE_TYPE_ID_CLASSIFICATION = 114;
+	public static final int NE_TYPE_ID_SIGN_SYMPTOM = 115;
+	public static final int NE_TYPE_ID_TIMEX3 = 116;
+	public static final int NE_TYPE_ID_LANGUAGE = 117;
+	public static final int NE_TYPE_ID_OCCUPATIONS = 118;
+	public static final int NE_TYPE_ID_LABORATORY_OR_TEST_PROCEDURE = 119;
+
+	public static final int NE_TYPE_ID_GENES_AND_MOLECULAR_SEQUENCES = 121;
+	public static final int NE_TYPE_ID_PERSON = 122;
 	
-	// other entity types
-	public static final int NE_TYPE_ID_DISORDER = 23;
-	public static final int NE_TYPE_ID_DRUG = 24;
-	public static final int NE_TYPE_ID_FINDING = 25;
 	
-	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
-	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 2;
+	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 1;
+	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 2;
 	
 	public static final int NE_CERTAINTY_POSITIVE = 1;
 	public static final int NE_CERTAINTY_NEGATED = -1;	
