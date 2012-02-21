@@ -60,7 +60,11 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-			File goldFile = new File(inputDirectory, DocumentIDAnnotationUtil.getDocumentID(jCas) + ".knowtator.xml");
+	    String documentID = DocumentIDAnnotationUtil.getDocumentID(jCas);
+	    if (documentID == null) {
+	      throw new IllegalArgumentException("DocumentID must be present in CAS");
+	    }
+			File goldFile = new File(inputDirectory, documentID + ".knowtator.xml");
 			
       SAXBuilder builder = new SAXBuilder();
       Document document;
