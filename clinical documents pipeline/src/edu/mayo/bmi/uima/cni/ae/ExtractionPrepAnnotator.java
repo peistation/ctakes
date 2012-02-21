@@ -30,9 +30,11 @@ import java.util.Set;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
@@ -88,7 +90,7 @@ public class ExtractionPrepAnnotator extends JCasAnnotator_ImplBase {
 	 * @param jcas
 	 */
 	private void storeAnnotationVersion(JCas jcas) {
-		Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(Pairs.type).iterator();
+	 	FSIterator<TOP> itr = jcas.getJFSIndexRepository().getAllIndexedFS(Pairs.type);
 		if (itr == null || !itr.hasNext())
 			return;
 
