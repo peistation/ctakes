@@ -43,6 +43,8 @@ import edu.mayo.bmi.dictionary.DictionaryException;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.EventMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 
@@ -191,7 +193,14 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
 							arrIdx++;
 						}
 
-						IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
+						IdentifiedAnnotation neAnnot;
+						if (neType.intValue() == CONST.NE_TYPE_ID_DRUG) {
+							neAnnot = new EventMention(jcas);	
+						} else {
+							neAnnot = new EntityMention(jcas);	
+						
+						}
+
 						neAnnot.setTypeID(neType.intValue());
 						neAnnot.setBegin(neBegin);
 						neAnnot.setEnd(neEnd);

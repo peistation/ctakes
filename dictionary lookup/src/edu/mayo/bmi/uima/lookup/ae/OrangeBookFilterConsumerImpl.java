@@ -45,6 +45,7 @@ import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.textsem.EventMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 
@@ -135,7 +136,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 			if (validCodeCol.size() > 0)
 			{
 				FSArray ocArr = createOntologyConceptArr(jcas, validCodeCol);
-				IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
+				IdentifiedAnnotation neAnnot = new EventMention(jcas); // medication NEs are EventMention
 				neAnnot.setTypeID(CONST.NE_TYPE_ID_DRUG);
 				neAnnot.setBegin(neBegin);
 				neAnnot.setEnd(neEnd);

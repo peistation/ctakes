@@ -35,6 +35,8 @@ import org.apache.uima.jcas.cas.FSArray;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.EventMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 
@@ -105,19 +107,29 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 				ocArrIdx++;
 			}
 
-			IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
+			int tid=CONST.NE_TYPE_ID_UNKNOWN;
+			if(typeId != null){
+				try { 
+					tid = Integer.parseInt(typeId);
+				} catch ( NumberFormatException nfe ) {
+					tid = CONST.NE_TYPE_ID_UNKNOWN;
+				}
+				
+			}
+
+			IdentifiedAnnotation neAnnot;
+			if (tid == CONST.NE_TYPE_ID_DRUG || tid == CONST.NE_TYPE_ID_UNKNOWN) {
+				neAnnot = new EventMention(jcas);	
+			} else {
+				neAnnot = new EntityMention(jcas);	
+			
+			}
+			
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
 			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
-			if(typeId != null){
-				int tid=-1;
-				try{ tid = Integer.parseInt(typeId);
-				}catch( NumberFormatException nfe )
-				{ tid = -1; }
-				
-				neAnnot.setTypeID(tid);
-			}
+			neAnnot.setTypeID(tid);
 			neAnnot.addToIndexes();			
 		}
 	}
