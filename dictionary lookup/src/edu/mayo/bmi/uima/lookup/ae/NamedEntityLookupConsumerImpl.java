@@ -24,8 +24,10 @@
 package edu.mayo.bmi.uima.lookup.ae;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -69,17 +71,42 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 		iv_props = props;
 	}
 
+	private int countUniqueCodes(Collection hitsAtOffset) {
+		Iterator lhAtOffsetItr = hitsAtOffset.iterator();
+		Set<String> codes = new HashSet<String>();
+		while (lhAtOffsetItr.hasNext())
+		{
+			LookupHit lh = (LookupHit) lhAtOffsetItr.next();
+
+			MetaDataHit mdh = lh.getDictMetaDataHit();
+
+			String code = mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY));
+			if (codes.contains(code)) {
+				// don't create a second entry in the array for a code already seen, including null 
+			} else {
+				
+				codes.add(code);
+
+			}
+		}
+		
+		return codes.size();
+	}
+
 	
 	public void consumeHits(JCas jcas, Iterator lhItr)
 			throws AnalysisEngineProcessException
 	{
+
 		String typeId = null;
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
 		while (hitsByOffsetItr.hasNext())
 		{
 			Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
 
-			FSArray ocArr = new FSArray(jcas, hitsAtOffsetCol.size());
+			
+			FSArray ocArr = new FSArray(jcas, countUniqueCodes(hitsAtOffsetCol));
+			
 			int ocArrIdx = 0;
 
 			// iterate over the LookupHit objects and create
@@ -88,6 +115,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 			Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
 			int neBegin = -1;
 			int neEnd = -1;
+			Set<String> codes = new HashSet<String>();
 			while (lhAtOffsetItr.hasNext())
 			{
 				LookupHit lh = (LookupHit) lhAtOffsetItr.next();
@@ -96,15 +124,25 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 
 				MetaDataHit mdh = lh.getDictMetaDataHit();
 
-				OntologyConcept oc = new OntologyConcept(jcas);
-				oc.setCode(mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY)));
-				oc.setCodingScheme(iv_props.getProperty(CODING_SCHEME_PRP_KEY));
+				String code = mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY));
+				if (codes.contains(code)) {
+					// don't create a second entry in the array for a code already seen, including null 
+				} else {
+					
+					OntologyConcept oc = new OntologyConcept(jcas);
+					oc.setCode(code);
+					oc.setCodingScheme(iv_props.getProperty(CODING_SCHEME_PRP_KEY));
 
-				if(iv_props.getProperty(TYPE_ID_FIELD) != null)
-					typeId = mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
-				
-				ocArr.set(ocArrIdx, oc);
-				ocArrIdx++;
+					if(iv_props.getProperty(TYPE_ID_FIELD) != null) {
+						typeId = mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
+					}
+					
+					ocArr.set(ocArrIdx, oc);
+					ocArrIdx++;
+
+					codes.add(code);
+
+				}
 			}
 
 			int tid=CONST.NE_TYPE_ID_UNKNOWN;

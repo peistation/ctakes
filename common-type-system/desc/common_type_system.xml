@@ -326,7 +326,7 @@
       <features>
         <featureDescription>
           <name>value</name>
-          <description/>
+          <description>Means by which the medication was taken or administered.</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
@@ -355,7 +355,7 @@
         </featureDescription>
         <featureDescription>
           <name>unit</name>
-          <description/>
+          <description>the unit of measurement</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
@@ -396,7 +396,7 @@
         </featureDescription>
         <featureDescription>
           <name>unit</name>
-          <description/>
+          <description>The periodic unit used, e.g day, month, hour, etc.</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
@@ -408,7 +408,7 @@
       <features>
         <featureDescription>
           <name>value</name>
-          <description/>
+          <description>Indicates the change status of 'stop', 'start', 'increase', 'decrease', or 'noChange'.</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
@@ -547,6 +547,58 @@
       <name>edu.mayo.bmi.uima.core.type.refsem.Medication</name>
       <description/>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
+      <features>
+        <featureDescription>
+          <name>medicationFrequency</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationFrequency</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationDuration</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationDuration</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationRoute</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationRoute</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationStatusChange</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationStatusChange</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationDosage</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationDosage</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationStrength</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationStrength</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationForm</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationForm</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>startDate</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>endDate</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>relativeTemporalContext</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.relation.TemporalRelation</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Procedure</name>

@@ -26,6 +26,7 @@ package edu.mayo.bmi.uima.core.ae;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
+import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -45,6 +46,8 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 public class SimpleSegmentWithTagsAnnotator extends JCasAnnotator_ImplBase {
 	private String segmentId;
 
+	private Logger logger = Logger.getLogger(getClass().getName());
+	
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -59,6 +62,7 @@ public class SimpleSegmentWithTagsAnnotator extends JCasAnnotator_ImplBase {
 	 * Entry point for processing.
 	 */
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		logger.info("process(JCas)");
 		// sa.setBegin(0);
 		String text = jcas.getDocumentText();
 		if (text == null) {
