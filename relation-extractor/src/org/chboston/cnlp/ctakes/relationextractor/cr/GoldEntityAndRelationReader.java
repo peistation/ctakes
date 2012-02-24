@@ -35,6 +35,8 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  */
 public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 
+	// read all the relations in the data or just the SHARP ones?
+	public final boolean readOnlySharpRelations = true;
 	// paramater that should contain the path to knowtator xml files
 	public static final String PARAM_INPUTDIR = "InputDirectory";
 	// path to knowtator xml files
@@ -88,6 +90,12 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			
 			// add relations and relation arguments to the CAS
 			for(RelationInfo relation : relations) {
+
+				if(readOnlySharpRelations) {
+					if(! Constants.sharpRelations.contains(relation.relation)) {
+						continue; // only load SHARP relations
+					}
+				}
 				
 				Span span1 = entityMentions.get(relation.id1).get(0); // just the first part of a disjoint span for now
 				EntityMention entityMention1 = new EntityMention(jCas, span1.start, span1.end);
