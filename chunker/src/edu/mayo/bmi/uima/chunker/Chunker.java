@@ -142,14 +142,20 @@ public class Chunker extends JCasAnnotator_ImplBase {
 			// TreebankChunker.validOutcome()
 			// This code was directly modified from TreebankChunker.main()
 			for (int i = 0; i < chunks.length; i++) {
-				if (i > 0 && !chunks[i].startsWith("I-") && !chunks[i - 1].equals("O")) {
-					chunkEnd = tokens.get(i - 1).getEnd();
-					chunkerCreator.createChunk(jCas, chunkBegin, chunkEnd, chunkType);
-				}
-				if (chunks[i].startsWith("B-")) {
-					chunkBegin = tokens.get(i).getBegin();
-					chunkType = chunks[i].substring(2);
-				}
+			    
+			    if (i > 0 && !chunks[i].startsWith("I-")) { // && !chunks[i - 1].equals("O")) {
+				chunkEnd = tokens.get(i - 1).getEnd();
+				chunkerCreator.createChunk(jCas, chunkBegin, chunkEnd, chunkType);
+			    }
+			    
+			    if (chunks[i].startsWith("B-")) {
+				chunkBegin = tokens.get(i).getBegin();
+				chunkType = chunks[i].substring(2);
+			    } else if (chunks[i].equals("O")) { // O found  (her_PRP$ ear_O)
+				chunkBegin = tokens.get(i).getBegin();
+				chunkType = chunks[i];
+			    
+			    }
 			}
 			if (chunks.length > 0 && !chunks[chunks.length - 1].equals("O")) {
 				chunkEnd = tokens.get(chunks.length - 1).getEnd();

@@ -263,6 +263,11 @@
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
+      <name>edu.mayo.bmi.uima.core.type.syntax.O</name>
+      <description></description>
+      <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
+    </typeDescription>
+    <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation</name>
       <description>Equivalent to cTAKES: edu.mayo.bmi.uima.cdt.type.RomanNumeralAnnotation</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>

@@ -72,6 +72,14 @@ public class FSUtil {
 	    return annotsInSpanItr;
 	}
 	
+	/**
+	 * For correct behavior, requires types to be listed in TypePriorities so that the subiterator works as expected
+	 * @param jcas
+	 * @param type
+	 * @param beginSpan
+	 * @param endSpan
+	 * @return
+	 */
 	public static FSIterator getAnnotationsIteratorInSpan(JCas jcas, int type, int beginSpan, int endSpan)
 	{
 	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);

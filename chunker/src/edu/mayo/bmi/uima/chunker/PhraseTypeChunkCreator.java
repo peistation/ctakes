@@ -34,6 +34,7 @@ import edu.mayo.bmi.uima.core.type.syntax.CONJP;
 import edu.mayo.bmi.uima.core.type.syntax.INTJ;
 import edu.mayo.bmi.uima.core.type.syntax.LST;
 import edu.mayo.bmi.uima.core.type.syntax.NP;
+import edu.mayo.bmi.uima.core.type.syntax.O;
 import edu.mayo.bmi.uima.core.type.syntax.PP;
 import edu.mayo.bmi.uima.core.type.syntax.PRT;
 import edu.mayo.bmi.uima.core.type.syntax.SBAR;
@@ -80,6 +81,8 @@ public class PhraseTypeChunkCreator implements ChunkCreator {
 			chunk = new UCP(jCas, start, end);
 		} else if(chunkType.equals("VP")) {
 			chunk = new VP(jCas, start, end);
+		} else if(chunkType.equals("O")) {
+			chunk = new O(jCas, start, end);
 		} else {
 			chunk = new Chunk(jCas, start, end);
 		}
