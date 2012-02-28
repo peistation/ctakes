@@ -136,7 +136,6 @@ public class DateParser {
 	public static int getIndexAfterLastNonDigit(String s) {
 		for (int i=s.length(); i>0 ;) {
 			i--;
-			System.out.println(i + "  " + s.charAt(i) + " " + Character.isDigit(s.charAt(i)));
 			if (!Character.isDigit(s.charAt(i))) {
 				return i+1;
 			}
