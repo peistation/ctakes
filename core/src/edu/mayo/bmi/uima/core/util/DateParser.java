@@ -47,6 +47,11 @@ public class DateParser {
 		monthShortNames.add("oct");
 		monthShortNames.add("nov");
 		monthShortNames.add("dec");
+		if (monthShortNames.get(11).equals("dec")) {
+			// good, do nothing, order is correct
+		} else {
+			throw new RuntimeException("Check initialization of monthShortNames");
+		}
 
 	}
 
@@ -98,7 +103,7 @@ public class DateParser {
 			// look for year as yy
 			
 			// look for year as yyyy at end
-			int yearPosition = getIndexFirstNonLetter(dateString);
+			int yearPosition = getIndexAfterLastNonDigit(dateString);
 			if (yearPosition+4==dateString.length()) {
 				date.setYear(dateString.substring(yearPosition));
 			}
@@ -122,16 +127,18 @@ public class DateParser {
 		}
 		return s.length();
 	}
+
 	/**
 	 * 
 	 * @param s
 	 * @return if entire string is letters, returns 0
 	 */
-	public static int getIndexLastNonDigit(String s) {
+	public static int getIndexAfterLastNonDigit(String s) {
 		for (int i=s.length(); i>0 ;) {
 			i--;
+			System.out.println(i + "  " + s.charAt(i) + " " + Character.isDigit(s.charAt(i)));
 			if (!Character.isDigit(s.charAt(i))) {
-				return i;
+				return i+1;
 			}
 		}
 		return 0;
