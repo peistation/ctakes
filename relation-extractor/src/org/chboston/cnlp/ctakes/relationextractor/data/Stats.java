@@ -13,8 +13,6 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import org.chboston.cnlp.ctakes.relationextractor.cr.Constants;
-
 public class Stats {
 	
 	public static final String ALLFILELOC = "/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/";
@@ -43,14 +41,13 @@ public class Stats {
 		
 		for(String file : dir.list(filter)) {
 
-			String fullPath = inputDir + file;
 			SAXBuilder builder = new SAXBuilder();
-			Document document = builder.build(new File(fullPath));
+			Document document = builder.build(new File(inputDir, file));
 
 			for(RelationInfo relationInfo : XMLReader.getRelations(document)) {
 	    	
 				if(readOnlySharpRelations) {
-	    		if(! Constants.sharpRelations.contains(relationInfo.relation)) {
+	    		if(! Constants.sharpRelationsSelected.contains(relationInfo.relation)) {
 	    			continue; // ignore this relation
 	    		}
 	    	}

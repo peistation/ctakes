@@ -92,7 +92,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			for(RelationInfo relation : relations) {
 
 				if(readOnlySharpRelations) {
-					if(! Constants.sharpRelations.contains(relation.relation)) {
+					if(! Constants.sharpRelations1.contains(relation.relation)) {
 						continue; // only load SHARP relations
 					}
 				}

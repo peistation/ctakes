@@ -2,7 +2,6 @@ package org.chboston.cnlp.ctakes.relationextractor.cr;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Various global settings.
@@ -12,6 +11,7 @@ import java.util.List;
  */
 public class Constants {
 	
-	public static final HashSet<String> sharpRelations = 
+	// high priority sharp relations
+	public static final HashSet<String> sharpRelations1 = 
 			new HashSet<String>(Arrays.asList("location_of", "degree_of", "prevents", "compicates", "disrupts"));
 }
