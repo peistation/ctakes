@@ -80,8 +80,8 @@ public class Stats {
 		
 		Stats.compute(Stats.ALLFILELOC);
 		
-		// Stats.compute(Stats.TRAINLOC);
-		// Stats.compute(Stats.DEVLOC);
-		// Stats.compute(Stats.TESTLOC);
+		Stats.compute(Stats.TRAINLOC);
+		Stats.compute(Stats.DEVLOC);
+		Stats.compute(Stats.TESTLOC);
 	}
 }
