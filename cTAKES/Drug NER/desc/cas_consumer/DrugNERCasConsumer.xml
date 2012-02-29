@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.uima.drugner.cc.ConsumeNamedEntityRecordModel</implementationName>
+  <implementationName>edu.mayo.bmi.uima.ner.cc.ConsumeNamedEntityRecordModel</implementationName>
   <processingResourceMetaData>
     <name>ConsumeNamedEntityRecord</name>
     <description>Processes a given CAS to identify predetermined list of NER items</description>
@@ -64,11 +64,7 @@
         </value>
       </nameValuePair>
     </configurationParameterSettings>
-    <typeSystemDescription>
-      <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
-      </imports>
-    </typeSystemDescription>
+    <typeSystemDescription/>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>

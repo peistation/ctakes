@@ -23,6 +23,7 @@ import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import edu.mayo.bmi.fsm.ner.elements.conditions.ContainsSetTextValueCondition;
 import edu.mayo.bmi.fsm.ner.machines.elements.DecimalStrengthFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.DosagesFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.DrugChangeStatusFSM;
@@ -34,6 +35,7 @@ import edu.mayo.bmi.fsm.ner.machines.elements.FrequencyUnitFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.RangeStrengthFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.RouteFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.StrengthFSM;
+import edu.mayo.bmi.fsm.ner.machines.elements.StrengthUnitFSM;
 import edu.mayo.bmi.fsm.ner.machines.util.SubSectionIndicatorFSM;
 import edu.mayo.bmi.fsm.ner.machines.util.SuffixStrengthFSM;
 import edu.mayo.bmi.fsm.ner.output.elements.BaseTokenImpl;
@@ -45,10 +47,10 @@ import edu.mayo.bmi.fsm.ner.output.elements.FrequencyToken;
 import edu.mayo.bmi.fsm.ner.output.elements.FrequencyUnitToken;
 import edu.mayo.bmi.fsm.ner.output.elements.RouteToken;
 import edu.mayo.bmi.fsm.ner.output.elements.StrengthToken;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitToken;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitCombinedToken;
 import edu.mayo.bmi.fsm.ner.output.util.SubSectionIndicator;
 import edu.mayo.bmi.fsm.ner.output.util.SuffixStrengthToken;
-import edu.mayo.bmi.lookup.algorithms.FirstTokenPermutationImpl;
-import edu.mayo.bmi.lookup.vo.LookupToken;
 import edu.mayo.bmi.uima.cdt.type.DateAnnotation;
 import edu.mayo.bmi.uima.core.ae.TokenizerAnnotator;
 import edu.mayo.bmi.uima.core.fsm.adapters.ContractionTokenAdapter;
@@ -86,6 +88,7 @@ import edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RangeStrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RouteAnnotation;
 import edu.mayo.bmi.uima.drugner.type.StrengthAnnotation;
+import edu.mayo.bmi.uima.drugner.type.StrengthUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SuffixStrengthAnnotation;
 import edu.mayo.bmi.uima.lookup.ae.LookupAnnotationToJCasAdapter;
@@ -99,6 +102,11 @@ import edu.mayo.bmi.uima.ner.elements.DrugChangeStatusElement;
  * 
  * @author Mayo Clinic
  */
+/**
+ * @author m054274
+ *
+ */
+
 public class DrugMentionAnnotator extends JTextAnnotator_ImplBase 
 {
   // LOG4J logger based on class name
@@ -109,24 +117,6 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
    */
   public static final String PARAM_SEGMENTS_MEDICATION_RELATED = "medicationRelatedSection";
 
-  private FractionStrengthFSM iv_fractionFSM;
-  private RangeStrengthFSM iv_rangeFSM;
-  private SubSectionIndicatorFSM iv_subMedSectionFSM;
-  private DosagesFSM iv_dosagesFSM;
-  private SuffixStrengthFSM iv_suffixFSM;
-  private DurationFSM iv_durationFSM;
-  private RouteFSM iv_routeFSM;
-  private FrequencyFSM iv_frequencyFSM;
-  private DrugChangeStatusFSM iv_statusFSM;
-  private DecimalStrengthFSM iv_decimalFSM;
-  private StrengthFSM iv_strengthFSM;
-  private FrequencyUnitFSM iv_frequencyUnitFSM;
-  private FormFSM iv_formFSM;
-  private static final int NERTypeIdentifier = 1;
-  private static boolean handledRanges;
-  private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
-  private Set<String> iv_exclusionTagSet = null;
-  private Set<String> iv_medicationRelatedSections = new HashSet<String>();
 
   public void initialize(AnnotatorContext annotCtx)
       throws AnnotatorInitializationException, AnnotatorConfigurationException
@@ -151,6 +141,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     iv_statusFSM = new DrugChangeStatusFSM();
     iv_decimalFSM = new DecimalStrengthFSM();
     iv_strengthFSM = new StrengthFSM();
+    iv_strengthUnitFSM = new StrengthUnitFSM();
     iv_frequencyUnitFSM = new FrequencyUnitFSM();
     iv_formFSM = new FormFSM();
     iv_subMedSectionFSM = new SubSectionIndicatorFSM();
@@ -181,8 +172,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       {
         Segment seg = (Segment) segmentItr.next();
         if (iv_medicationRelatedSections.contains(seg.getId()))
-          generateDrugMentions(jcas, seg);
-      }
+          generateDrugMentions(jcas, seg, false);
+        else 
+          generateDrugMentions(jcas, seg, true);
+      } 
 
       generateUidValues(jcas);
     } 
@@ -433,7 +426,45 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         ann.addToIndexes();
     }
   }
-  
+	/**
+	 * Finds offset of string the represents end of numeric portion
+	 */
+	private int findTextualStringOffset(String text) {
+
+			String subText = "";
+			boolean containsNums = false;
+			boolean doneHere = false;
+			int textSize = text.length();
+			int pos = 0;
+			Integer posInt = null;
+			while (!doneHere && (textSize > pos) && (textSize > 1)) {
+				try {
+					String numString = text.substring(pos, pos + 1);
+
+					Integer posNum = posInt.decode(numString);
+					int checkInt = posNum.intValue();
+
+					if ((checkInt >= 0) && (checkInt <= 9)) {
+						containsNums = true;
+						subText = text.substring(pos + 1, textSize);
+						pos++;
+					} else
+						return pos;
+				}
+
+				catch (NullPointerException npe) {
+					return 0;
+				} catch (NumberFormatException nfe) {
+					if (!containsNums)
+						return 0;
+					else
+						doneHere = true;
+
+				}
+			}
+		return pos;
+	}
+ 
   //TODO: review the executeFSMs method
   /**
    * The namedE consists of a list of the Named Entities (NE) found in the prior
@@ -468,9 +499,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       Set rangeTokenSet = iv_rangeFSM.execute(baseTokenList);
 
       addAnnotations(jcas, decimalTokenSet, RangeStrengthAnnotation.type);
-
-      Set strengthTokenSet = iv_strengthFSM.execute(baseTokenList, rangeTokenSet);
-      
+    //Mayo SPM 2/20/2012 Changed due to separation of strength tokens
+      Set strengthTokenSet = iv_strengthUnitFSM.execute(baseTokenList, rangeTokenSet);
       Iterator measurementTokenItr = strengthTokenSet.iterator();
       int begin = 0, previous = 0;
       while (measurementTokenItr.hasNext())
@@ -480,31 +510,39 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         boolean neFound = false;
         NamedEntity ne = null;
         WordToken we = null;
-
-        StrengthToken mt = (StrengthToken) measurementTokenItr.next();
-        int begSeg = mt.getStartOffset(), endSeg = mt.getEndOffset();
-        StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
-        ma.addToIndexes();
+        Object mt = (Object)  measurementTokenItr.next();
+        if (mt instanceof  StrengthUnitToken) {
+        	// StrengthUnitToken mt = (StrengthUnitToken) measurementTokenItr.next();
+        	int begSeg = ((StrengthUnitToken) mt).getStartOffset(), endSeg = ((StrengthUnitToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.addToIndexes();
+        } else {
+        	int begSeg = ((StrengthUnitCombinedToken) mt).getStartOffset(), endSeg = ((StrengthUnitCombinedToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.setBegin(findTextualStringOffset(ma.getCoveredText()) + begSeg);
+        	ma.addToIndexes();
+        }
+ 
         //TODO: Does this need to be commented out? Created Strength        
       }
       
-      Set decTokenSet = null;
-      {
-        decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
-            fractionTokenSet);
-        Iterator decTokenItr = decTokenSet.iterator();
-
-        while (decTokenItr.hasNext())
-        {
-          StrengthToken mt = (StrengthToken) decTokenItr.next();
-          StrengthAnnotation ma = new StrengthAnnotation(jcas, mt
-              .getStartOffset(), mt.getEndOffset());
-          ma.addToIndexes();
-          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
-          // true);
-
-        }
-      }
+//      Set decTokenSet = null;
+//      {
+//        decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
+//            fractionTokenSet);
+//        Iterator decTokenItr = decTokenSet.iterator();
+//
+//        while (decTokenItr.hasNext())
+//        {
+//          StrengthToken mt = (StrengthToken) decTokenItr.next();
+//          StrengthAnnotation ma = new StrengthAnnotation(jcas, mt
+//              .getStartOffset(), mt.getEndOffset());
+//          ma.addToIndexes();
+//          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
+//          // true);
+//
+//        }
+//      }
       
       Set formTokenSet = iv_formFSM.execute(baseTokenList,
       /* decimalTokenSet */new HashSet());
@@ -526,22 +564,25 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       // info and see how we align w/ the ne if they exist to determine
       // confidence factoring
 //      if (!doseConfidence && decTokenSet != null)
-      {
-        Set preTokenSet = iv_strengthFSM.execute(baseTokenList, decTokenSet);
+//      {
+        Set preTokenSet = iv_strengthFSM.execute(baseTokenList, strengthTokenSet, fractionTokenSet);
         Iterator preTokenItr = preTokenSet.iterator();
 
         while (preTokenItr.hasNext())
         {
           StrengthToken mt = (StrengthToken) preTokenItr.next();
-          int begSeg = mt.getStartOffset();
-          int endSeg = mt.getEndOffset();
-          StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
+          int begOff = mt.getStartOffset();
+          int endOff = mt.getEndOffset();
+          StrengthAnnotation ma = new StrengthAnnotation(jcas, begOff, endOff);
+          Iterator subStrengthItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthUnitAnnotation.type, begOff, endOff);
+          if (subStrengthItr.hasNext() )
+            	  ma.setEnd(((StrengthUnitAnnotation)subStrengthItr.next()).getBegin());
           ma.addToIndexes();
           // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
           // true);
 
         }
-      }
+//      }
       Set doseTokenSet = iv_dosagesFSM.execute(baseTokenList, formTokenSet,
           strengthTokenSet);
       Iterator dosTokenItr = doseTokenSet.iterator();
@@ -664,164 +705,220 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
    * would apply to the entire group) The end of a SubSection or Section
    */
 
-  private void generateDrugMentions(JCas jcas, Segment seg) throws Exception
+  private void generateDrugMentions(JCas jcas, Segment seg, boolean narrativeType) throws Exception
   {
-    int begin = seg.getBegin(), end = seg.getEnd() + 1;
-    NamedEntity nextNER = null;
-    int nextNERPosition = 0;
-    List uniqueNEs;
-    List allNEs;
+	  int begin = seg.getBegin(), end = seg.getEnd() + 1;
+	  NamedEntity nextNER = null;
+	  int nextNERPosition = 0;
+	  List uniqueNEs;
+	  List allNEs;
 
-    int[] validNeTypes =
-    { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
-    
-    allNEs = 
-      FSUtil.getAnnotationsInSpan(jcas, NamedEntity.type, begin, end, validNeTypes);
-    
-    uniqueNEs = findUniqueMentions(allNEs.toArray());
+	  int[] validNeTypes =
+	  { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
+	  try {
+		 
+		  uniqueNEs = findUniqueMentions( FSUtil.getAnnotationsInSpan(jcas, NamedEntity.type, begin, end, validNeTypes).toArray());
+		  // FIX ID: 3476114, ID: 3476113, and ID: 3476110
+		  int globalArraySize = uniqueNEs.size()*3;
+		  int [][] windowSpans =  new int [globalArraySize][2];
+		  int globalWindowSize = 0;
+		  if (narrativeType) {
+			  for (int neCount = 0; neCount < uniqueNEs.size() ; neCount ++ ) {
+				  boolean processedSpan = false;
+				  NamedEntity neNarrative = (NamedEntity) uniqueNEs.get(neCount);
+				  for (int spanCheck = 0 ; spanCheck < windowSpans.length && !processedSpan && windowSpans[spanCheck][0] != 0; spanCheck ++ ) {
+					  if (windowSpans[spanCheck][0] ==  neNarrative.getBegin()) 
+						  processedSpan = true;
+				  }
+				  if (!processedSpan) {
+					  int [][] narrativeSpans =  getWindowSpan(jcas, "narrative", NamedEntity.type, neNarrative.getBegin(), neNarrative.getEnd(),  false, globalArraySize);
+					  for (int elementCount = 0; elementCount < narrativeSpans.length; elementCount ++ ) {
+						  windowSpans[globalWindowSize] = narrativeSpans[elementCount];
+						  globalWindowSize++;
+					  }
+				  }
+			  }
+		  } else {
+			  windowSpans = getWindowSpan(jcas, "list", NamedEntity.type, begin, end,  false, globalArraySize);
+			  if (windowSpans.length > 0 && windowSpans[0][0] == -1) {
+				  windowSpans[0][0] = begin;
+				  windowSpans[0][1] = end;
+			  }
+		  }
+		  for (int count= 0; count < windowSpans.length; count++) {
+			  List neTokenUpdatedList = getAnnotationsInSpan(jcas,
+					  NamedEntity.type, windowSpans[count][0], windowSpans[count][1]);
 
-    int lastNL = seg.getEnd();
-    boolean lastOne = false;
-    Iterator newLineItr = 
-      FSUtil.getAnnotationsIteratorInSpan(jcas, NewlineToken.type, begin, end);
-    
-    for (int i = 0; i < uniqueNEs.size(); i++)
-    {
-      NamedEntity thisNER = (NamedEntity) uniqueNEs.get(i);
-      boolean hasNext = false;
-      if (uniqueNEs.size() > i + 1)
-      {
-        nextNER = (NamedEntity) uniqueNEs.get(i + 1);
-        nextNERPosition = nextNER.getBegin();
-        if (nextNER != null)
-          hasNext = true;
-      } else if (!uniqueNEs.isEmpty())
-      {
-        nextNER = (NamedEntity) uniqueNEs.get(i);
-        nextNERPosition = nextNER.getBegin();
-        lastOne = true;
-      }
-      boolean foundLeftParen = false;
-      boolean foundRightParen = false;
+			  if (!neTokenUpdatedList.isEmpty())
+			  {
+				  List globalDrugNERList = new ArrayList();
+				  try
+				  {
+					  generateDrugMentionsAndAnnotations(jcas, neTokenUpdatedList,
+							  windowSpans[count][0], windowSpans[count][1], null, null, 0, globalDrugNERList);
+				  } catch (NumberFormatException nfe)
+				  {
+					  iv_logger.info(nfe.getMessage());
+				  } catch (Exception e)
+				  {
+					  iv_logger.info(e.getMessage());
+				  }
 
-      foundRightParen = findCoveredTextInSpan(jcas, PunctuationToken.type, thisNER.getEnd(), thisNER.getEnd()+3, (new String[]{")","/"}));
-      
-      
-      if (hasNext && !lastOne)
-        end = nextNERPosition;
-      else
-        end = seg.getEnd();
+				  globalDrugNERList.clear();
+			  }
+		  }
+	  } catch (ArrayIndexOutOfBoundsException aioobe) { 
+		  allNEs = 
+			  FSUtil.getAnnotationsInSpan(jcas, NamedEntity.type, begin, end, validNeTypes);
 
-      boolean hasNLEnd = true;
-      boolean wrapItUp = false;
+		  uniqueNEs = findUniqueMentions(allNEs.toArray());
 
-      while (hasNLEnd && !wrapItUp && end <= seg.getEnd()
-          && ((begin < end) || (!hasNext && begin <= end) || foundLeftParen))
-      {
+		  int lastNL = seg.getEnd();
+		  boolean lastOne = false;
+		  Iterator newLineItr = 
+			  FSUtil.getAnnotationsIteratorInSpan(jcas, NewlineToken.type, begin, end);
 
-        if (begin == end) {
-          foundLeftParen = false;
-          end = end+1;
-        }
-        NewlineToken nl = null;
-        if (hasNLEnd && newLineItr.hasNext())
-        {
-          nl = (NewlineToken) newLineItr.next();
-          hasNLEnd = true;
-        }
-        if ((!hasNext && begin <= end) || (nextNERPosition < end))
-          wrapItUp = true;
-        boolean findNextNL = false;
+		  for (int i = 0; i < uniqueNEs.size(); i++)
+		  {
+			  NamedEntity thisNER = (NamedEntity) uniqueNEs.get(i);
+			  boolean hasNext = false;
+			  if (uniqueNEs.size() > i + 1)
+			  {
+				  nextNER = (NamedEntity) uniqueNEs.get(i + 1);
+				  nextNERPosition = nextNER.getBegin();
+				  if (nextNER != null)
+					  hasNext = true;
+			  } else if (!uniqueNEs.isEmpty())
+			  {
+				  nextNER = (NamedEntity) uniqueNEs.get(i);
+				  nextNERPosition = nextNER.getBegin();
+				  lastOne = true;
+			  }
+			  boolean foundLeftParen = false;
+			  boolean foundRightParen = false;
 
-        if (lastNL <= thisNER.getBegin())
-        {
-          begin = thisNER.getBegin();
-        }
+			  foundRightParen = findCoveredTextInSpan(jcas, PunctuationToken.type, thisNER.getEnd(), thisNER.getEnd()+3, (new String[]{")","/"}));
 
-        if ((nl != null) && (thisNER.getBegin() >= nl.getEnd()))
-        {
-          findNextNL = true;
 
-        } else if (nl != null)
-        {
-          lastNL = nl.getEnd();
-        }
+			  if (hasNext && !lastOne)
+				  end = nextNERPosition;
+			  else
+				  end = seg.getEnd();
 
-        if (!hasNext)
-        {
-          findNextNL = false;
-          end = seg.getEnd();
-        }
-        if (!findNextNL)
-        {
-          if ((nextNER != null)
-              && (((nextNER.getCoveredText().compareToIgnoreCase(
-                  thisNER.getCoveredText()) == 0) || ((foundRightParen) || nextNER
-                  .getBegin() == thisNER.getEnd() + 2))))
-          {
-            if (nl == null)
-            {
-              if (!hasNext)
-                end = seg.getEnd();
-            } else if (nextNER.getBegin() >= nl.getEnd() && hasNext)
-            {
-              end = nextNERPosition;
-            } 
-          } else if (hasNLEnd && hasNext)
-          {
+			  boolean hasNLEnd = true;
+			  boolean wrapItUp = false;
 
-            foundLeftParen = findCoveredTextInSpan(jcas, PunctuationToken.type, nextNER.getBegin()-1, nextNER.getBegin()+1, (new String[]{"(","/"}));
-            
-           /* if (nl == null && foundLeftParen && !hasNext)
+			  while (hasNLEnd && !wrapItUp && end <= seg.getEnd()
+					  && ((begin < end) || (!hasNext && begin <= end) || foundLeftParen))
+			  {
+
+				  if (begin == end) {
+					  foundLeftParen = false;
+					  end = end+1;
+				  }
+				  NewlineToken nl = null;
+				  if (hasNLEnd && newLineItr.hasNext())
+				  {
+					  nl = (NewlineToken) newLineItr.next();
+					  hasNLEnd = true;
+				  }
+				  if ((!hasNext && begin <= end) || (nextNERPosition < end))
+					  wrapItUp = true;
+				  boolean findNextNL = false;
+
+				  if (lastNL <= thisNER.getBegin())
+				  {
+					  begin = thisNER.getBegin();
+				  }
+
+				  if ((nl != null) && (thisNER.getBegin() >= nl.getEnd()))
+				  {
+					  findNextNL = true;
+
+				  } else if (nl != null)
+				  {
+					  lastNL = nl.getEnd();
+				  }
+
+				  if (!hasNext)
+				  {
+					  findNextNL = false;
+					  end = seg.getEnd();
+				  }
+				  if (!findNextNL)
+				  {
+					  if ((nextNER != null)
+							  && (((nextNER.getCoveredText().compareToIgnoreCase(
+									  thisNER.getCoveredText()) == 0) || ((foundRightParen) || nextNER
+											  .getBegin() == thisNER.getEnd() + 2))))
+					  {
+						  if (nl == null)
+						  {
+							  if (!hasNext)
+								  end = seg.getEnd();
+						  } else if (nextNER.getBegin() >= nl.getEnd() && hasNext)
+						  {
+							  end = nextNERPosition;
+						  } 
+					  } else if (hasNLEnd && hasNext)
+					  {
+
+						  foundLeftParen = findCoveredTextInSpan(jcas, PunctuationToken.type, nextNER.getBegin()-1, nextNER.getBegin()+1, (new String[]{"(","/"}));
+
+						  /* if (nl == null && foundLeftParen && !hasNext)
             {
               end = seg.getEnd();
             } else */if (nl != null && nl.getEnd() > nextNER.getBegin()
-                && !foundLeftParen)
+            		&& !foundLeftParen)
             {
-              end = nextNERPosition;
+            	end = nextNERPosition;
             } /*else if (foundLeftParen && nl != null)
             {
               end = nl.getEnd();
             } */else
             {
-              end = nextNER.getBegin();
+            	end = nextNER.getBegin();
             }
-          } else if (hasNext)
-          {
-            end = nextNERPosition;
-          } else
-            end = seg.getEnd();
+					  } else if (hasNext)
+					  {
+						  end = nextNERPosition;
+					  } else
+						  end = seg.getEnd();
 
-          if (begin <  end)
-          {
-            findDrugAttributesInRange(jcas, begin, end);
-//TODO: need to fix - use the list above - uniqueNEs and subset that list instead of getting new list of annotations
-            List neTokenUpdatedList = getAnnotationsInSpan(jcas,
-                NamedEntity.type, begin, end + 1);
-//TODO: 10/28/2010 -- exception
-// it seems that this can still happen triggered by either from FSM or a case where the array exceeds the length            
-            if (!neTokenUpdatedList.isEmpty())
-            {
-              List globalDrugNERList = new ArrayList();
-              try
-              {
-                generateDrugMentionsAndAnnotations(jcas, neTokenUpdatedList,
-                    begin, end, null, null, 0, globalDrugNERList);
-              } catch (NumberFormatException nfe)
-              {
-            	  iv_logger.info(nfe.getMessage());
-              } catch (Exception e)
-              {
-            	  iv_logger.info(e.getMessage());
-              }
+					  if (begin <  end)
+					  {
+						  findDrugAttributesInRange(jcas, begin, end);
+						  //TODO: need to fix - use the list above - uniqueNEs and subset that list instead of getting new list of annotations
+						  List neTokenUpdatedList = getAnnotationsInSpan(jcas,
+								  NamedEntity.type, begin, end + 1);
+						  //TODO: 10/28/2010 -- exception
+						  // it seems that this can still happen triggered by either from FSM or a case where the array exceeds the length            
+						  if (!neTokenUpdatedList.isEmpty())
+						  {
+							  List globalDrugNERList = new ArrayList();
+							  try
+							  {
+								  generateDrugMentionsAndAnnotations(jcas, neTokenUpdatedList,
+										  begin, end, null, null, 0, globalDrugNERList);
+							  } catch (NumberFormatException nfe)
+							  {
+								  iv_logger.info(nfe.getMessage());
+							  } catch (Exception e)
+							  {
+								  iv_logger.info(e.getMessage());
+							  }
 
-              globalDrugNERList.clear();
-            }
-          }
-          begin = end;
-        }
-      }
-    }
+							  globalDrugNERList.clear();
+						  }
+					  }
+					  begin = end;
+				  }
+			  }
+		  }
+
+		  aioobe.printStackTrace();
+
+	  }
   }
 
   private boolean findCoveredTextInSpan(JCas jcas, int annotationType, int beginOffset, int endOffset, String[] searchStrs)
@@ -1576,16 +1673,25 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         drugTokenAnt.setStrength(strengthText);
         drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
       } else if (recurseNER != null && recurseNER.getStrength() != null)
       {
         drugTokenAnt.setStrength(recurseNER.getStrength());
         drugTokenAnt.setStrengthBegin(recurseNER.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(recurseNER.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(recurseNER.getStrengthUnit());
+        drugTokenAnt.setSuBegin(recurseNER.getSuBegin());
+        drugTokenAnt.setSuEnd(recurseNER.getSuEnd());
       } else if (dm.getStrengthElement() != null && dm.strength != null)
       {
         drugTokenAnt.setStrength(dm.getStrengthElement());
         drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
       }
       if ((dm.getDosageElement() != null && dm.getDosageElement().compareTo(
           "null") != 0)
@@ -1848,6 +1954,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 		  }
 		  if (priorDM.frequency != null) {
 			  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -1889,6 +1998,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -1918,6 +2030,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (priorDM.frequency != null) {
 				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -1949,6 +2064,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -1983,6 +2101,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 			  }
 			  if (priorDM.frequency != null) {
 				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -2017,6 +2138,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2085,6 +2209,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
+			  
 		  } else if (tokenDrugNER.getStrength() != null
 				  && tokenDrugNER.getStrength().compareTo("") != 0
 				  && tokenDrugNER.getStrength().length() > 0)
@@ -2273,35 +2401,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 //    return iv_exclusionTagSet.contains(tag.toLowerCase());
 //  }
 
-  private boolean findNextDrugEntityPost(int spanLength, int[][] elementSpan,
-      NamedEntity nea, int endPhrase)
-  {
-    boolean patternFound = false;
-    for (int l = 0; l < spanLength && !patternFound; l++)
-    {
-      if (elementSpan[l][0] != -1 && elementSpan[l][0] > nea.getBegin()
-          && elementSpan[l][0] < endPhrase)
-      {
-        patternFound = true;
-      }
-    }
-    return patternFound;
-  }
 
-  private boolean findNextDrugEntityPre(int spanLength, int[][] elementSpan,
-      NamedEntity nea, int priorDrugEnd)
-  {
-    boolean patternFound = false;
-    for (int l = 0; l < spanLength && !patternFound; l++)
-    {
-      if (elementSpan[l][0] != -1 && elementSpan[l][1] < nea.getBegin()
-          && elementSpan[l][0] > priorDrugEnd)
-      {
-        patternFound = true;
-      }
-    }
-    return patternFound;
-  }
 
   private boolean findNextParenRelativeToNE(int spanLength,
       int[][] elementSpan, NamedEntity nea, int priorDrugEnd, int startOffset)
@@ -2410,23 +2510,54 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
     return span;
   }
+  /**
+   * 
+   * @param jcas
+   * @param begin
+   * @param end
+   * @return int[] - int[0] is begin offset and int[1] is end offset of subsequent sentence end (if available)
+   */
+private int[] getSentenceSpansContainingGivenSpan(JCas jcas, int begin)
+{
+  JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+  Iterator iter = indexes.getAnnotationIndex(Sentence.type).iterator();
+  int[] span = new int[2];
+  boolean foundFirstSentence = false;
+  boolean foundSecondSentence = false;
+  while (iter.hasNext() && !foundSecondSentence)
+  {
+    Sentence sa = (Sentence) iter.next();
+    if (begin >= sa.getBegin() && begin <= sa.getEnd())
+    {
+    	span[0] = sa.getBegin();
+      	span[1] = sa.getEnd();
+      	foundFirstSentence = true;
+      // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
+    } else if (foundFirstSentence) {
+    	foundSecondSentence = true;
+    	span[1] = sa.getEnd();
+    }
+  }
+
+  return span;
+}
   private void findFSMInRange(JCas jcas, int begin, int end) throws Exception {
 		NamedEntity ne = null;
 		WordToken we = null;
 		// grab iterator over tokens within this chunk
-		Iterator btaItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator btaItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				BaseToken.type, begin,
 				end+1);
 		// do the same as above for named entities
 		// grab iterator over tokens within this chunk
-		Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				NamedEntity.type, begin,
 				end+1);
 		// List neTokenList = new ArrayList();
 
 		// do the same as above for word entities
 		// grab iterator over tokens within this chunk
-		Iterator weItr = FSUtil.getAnnotationsInSpanIterator(jcas,
+		Iterator weItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
 				WordToken.type, begin,
 				end+1);
 		List weTokenList = new ArrayList();
@@ -2688,6 +2819,755 @@ private int findInPattern(JCas jcas, int begin, int end, int elementType, int[][
     return counter;
 }
 
+
+private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation, int begin, int end, boolean useBegin, int sizeArrays) throws Exception {
+	int[] senSpan = {begin, end };
+	int[][] spanSoloTerm = {{-1, -1,}};
+	int lastLineNum=0;
+	boolean haveNarrative = sectionType.compareTo("narrative") == 0;
+	if (haveNarrative) {
+		senSpan = getSentenceSpansContainingGivenSpan(jcas, begin);
+		if (senSpan[0] < begin) senSpan[0] = begin;
+	}
+	boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
+	boolean hasFSMrun = multipleElementsInSpan(jcas, senSpan[0], senSpan[1]);
+
+	if (!hasFSMrun) {
+		if (haveNarrative) {
+			if (!useBegin)
+				findFSMInRange(jcas, senSpan[0], senSpan[1]);
+			else
+				findFSMInRange(jcas, begin, senSpan[1]);
+		} else {
+			findFSMInRange(jcas, begin, end);
+		}
+	}
+	spanSoloTerm[0] =  senSpan ;
+	//for a given span if exist more than one drug and signature elements do the following
+	if(hasMultipleDrugs) {
+
+		return sortSignatureElements(jcas, begin, end, typeAnnotation, senSpan, sizeArrays);
+
+	}
+	return spanSoloTerm;
+}
+
+/**
+ * Return true if exists more than one drug and reason within the span, otherwise return false
+ * @param jcas
+ * @param begin
+ * @param end
+ * @return
+ */
+private boolean multipleDrugsInSpan(JCas jcas, int begin, int end) {
+	
+	Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, begin, end);
+
+    int numDrugs=0;
+
+    	 while (neItr.hasNext()) {
+ 	    	NamedEntity nea = (NamedEntity) neItr.next();
+ 	
+ 	    		if(nea.getTypeID()==1  || nea.getTypeID()==0)   
+ 	    			numDrugs++;
+ 	    }
+	    if(numDrugs>1) return true;
+    else return false;       	
+}
+
+/**
+ * Return true if exists more than one drug and reason within the span,
+ * otherwise return false
+ * 
+ * @param jcas
+ * @param begin
+ * @param end
+ * @return
+ */
+private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
+	// JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+	Iterator neItr = null;
+	// Iterator neItr= indexes.getAnnotationIndex(elementType).iterator();
+	int numElements = 0;
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			StrengthAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+		// if(nea.getBegin()>=begin && nea.getEnd()<=end) {
+		numElements++;
+
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			FrequencyAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
+		// if (nea.getBegin() >= begin && nea.getEnd() <= end) {
+		numElements++;
+		// }
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			FrequencyUnitAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr
+				.next();
+		// if (nea.getBegin() >= begin && nea.getEnd() <= end) {
+		numElements++;
+		// }
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			DosagesAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
+
+		numElements++;
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, FormAnnotation.type,
+			begin, end);
+	while (neItr.hasNext()) {
+		FormAnnotation nea = (FormAnnotation) neItr.next();
+
+		numElements++;
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, RouteAnnotation.type,
+			begin, end);
+	while (neItr.hasNext()) {
+		RouteAnnotation nea = (RouteAnnotation) neItr.next();
+
+		numElements++;
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			DurationAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		DurationAnnotation nea = (DurationAnnotation) neItr.next();
+
+		numElements++;
+	}
+	neItr = FSUtil.getAnnotationsIteratorInSpan(jcas,
+			DrugChangeStatusAnnotation.type, begin, end);
+	while (neItr.hasNext()) {
+		DrugChangeStatusAnnotation nea = (DrugChangeStatusAnnotation) neItr
+				.next();
+
+		numElements++;
+	}
+
+	if (numElements > 1)
+		return true;
+	else
+		return false;
+}
+
+/**
+ * The range defined by the begin and end is searched all discovered drugs, newline locations and related drug 
+ * signature elements.  Each drug is assigned an span which is used later assign the drug mention elements.  The 
+ * range begins with the start of the drug mention and ends with the EOL or beginning of the subsequent drug mention.
+ * The end range value can be overridden by the following cases:  
+ *  A) The subsequent drug mention is contained in brackets or parenthesis w/out other drug signature items and there 
+ *  are no other signature elements that exist between the mentions; e.g. 
+ *  	"ibuprofen [Motrin]".   In this case the drug span will end with the right most signature element or EOL 
+ *  (which ever is farthest, but before a subsequent drug mention).
+ *  B)  If there are multiple occurrences of signature elements between mentions find the second positive offset 
+ *  in the series
+ *   
+ * Up to 100 of each type of signature item and drug mentions are allowed.  If more than that are available the
+ * ArrayIndexOutOfBoundsException is thrown and alternate algorithm is run
+ * @param jcas
+ * @param begin
+ * @param end
+ * @param typeAnnotation
+ * @param senSpan
+ * @return
+ */
+	private int [][] sortSignatureElements(JCas jcas, int begin, int end, int typeAnnotation, int [] senSpan, int sizeArray) 
+	{
+
+		String prePattern = "";
+		String pattern = "";
+		String postPattern = "";
+
+//		int sizeArray = 100;
+		String groupDelimiterOpen = "(";
+		String groupDelimiterClose = ")";
+		int[][] drugSpan = new int [sizeArray][2];
+		int[][] strengthSpan = new int [sizeArray][2];
+		int[][] freqSpan = new int [sizeArray][2];
+		int[][] doseSpan = new int [sizeArray][2];
+		int[][] freqUSpan = new int [sizeArray][2];
+		int[][] routeSpan = new int [sizeArray][2];
+		int[][] formSpan= new int [sizeArray][2];
+		int[][] durationSpan = new int [sizeArray][2];
+		int[][] parenthesisSpan = new int [sizeArray][2];
+		int[][] statusSpan =new int [sizeArray*2][2];
+
+		for (int a = 0 ; a < sizeArray ; a++) {
+			for (int b = 0 ; b < 2 ; b ++) {
+				drugSpan[a][b] = strengthSpan[a][b] = freqSpan[a][b] = doseSpan[a][b] = freqUSpan[a][b] = routeSpan[a][b] = formSpan[a][b] = durationSpan[a][b] = parenthesisSpan[a][b] = statusSpan[a][b] = -1;
+		}
+		}
+		int drugSpanLength = 0, strengthSpanLength = 0, freqSpanLength = 0 , doseSpanLength = 0 , 
+		freqUSpanLength = 0, formSpanLength = 0, routeSpanLength = 0, durationSpanLength = 0, newLineSpanLength = 0;       
+
+		int  beginSpan = senSpan[0], endSpan = senSpan[1];
+
+		drugSpanLength = lastInPattern(jcas, begin, endSpan, typeAnnotation, drugSpan);
+		strengthSpanLength = lastInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan);
+		freqSpanLength = lastInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
+		doseSpanLength = lastInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan);
+		freqUSpanLength = lastInPattern(jcas, beginSpan, endSpan, FrequencyUnitAnnotation.type, freqUSpan);
+		formSpanLength = lastInPattern(jcas, beginSpan, endSpan, FormAnnotation.type, formSpan);
+		routeSpanLength = lastInPattern(jcas, beginSpan, endSpan, RouteAnnotation.type, routeSpan);
+		durationSpanLength = lastInPattern(jcas, beginSpan, endSpan, DurationAnnotation.type, durationSpan);
+		newLineSpanLength = lastInPattern(jcas, beginSpan, endSpan, NewlineToken.type, statusSpan);
+		int parenthesisSpanLength = lastInPattern(jcas, beginSpan, endSpan, PunctuationToken.type, parenthesisSpan);
+		int priorDrugEnd = 0;
+		int [] typeFoundS = {0,0};
+		int [] typeFoundF = {0,0};
+		int [] typeFoundN = {0,0};
+		int [] typeFoundU = {0,0};
+		int [] typeFoundR = {0,0};
+		int [] typeFoundM = {0,0};
+		int [] typeFoundL = {0,0};
+		int typeFoundC = 0;
+		int [][] drugSpanArray = new int [drugSpanLength][2];
+		boolean openParenFound = false;
+		boolean shareAttributes = false;
+		int targetValueInRange = 0;
+		int endPhrase = senSpan[1];
+		int beginPhrase = senSpan[0];
+		if (drugSpanLength > 1) 
+			for (int j = 0; j < drugSpanLength; j++) {
+				Iterator drugListItr = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, drugSpan[j][0], drugSpan[j][1]+1);
+				Iterator drugListItrNext = FSUtil.getAnnotationsIteratorInSpan(jcas, NamedEntity.type, drugSpan[j+1][0], drugSpan[j+1][1]+1);
+				if (drugListItr.hasNext()) {
+					NamedEntity nea = (NamedEntity) drugListItr.next();
+					drugSpanArray[j][0] = nea.getBegin();
+					boolean patternFound = false;
+					boolean hasNext = true;
+					boolean isPairedDrug = false;
+					boolean usingLeftParenthesisExclusive = false;
+					boolean usingLeftParenthesisInclusive = false;
+					boolean usingRightParenthesisInclusive = false;
+					int endRange = 0;
+					int countMultiplePre = 0;
+					char highestInRange = ' ';
+					char lowestPositiveInRange = ' ';
+					char lowestInRange = ' ';
+					int highestValueInRange = 0;
+					int lowestValueInRange = 0;
+					int lowestPositiveValueInRange = endPhrase;
+					if (drugListItrNext.hasNext()) {
+						NamedEntity neaNext = (NamedEntity) drugListItrNext.next();
+						endPhrase = neaNext.getBegin();
+					} else {
+						hasNext = false;
+						endPhrase = senSpan[1];
+					}
+					int [] testForMultipleElementsInRange = {0,0}; 
+					if (priorDrugEnd == 0)
+						priorDrugEnd = begin;
+					if (findNextParenRelativeToNE(parenthesisSpanLength-1, parenthesisSpan,
+							nea, nea.getEnd()) ) {
+						openParenFound = true;
+						pattern = pattern + "(D";
+					}  else 
+						pattern = pattern + "D";
+					// For the pattern recognition the following uppercase characters are used to represent the following mentions:
+					//  'D' drug; 'S' strength; 'F' frequency; 'N' dosage; 'U' frequency unit; 'R' route; 'M' form; 'L' duration; 'C' newline
+					char [] signCharElements = {'S','F','N','U','R','M','L','C'};
+					for (int x = 0; x < signCharElements.length; x ++ ) {
+						switch (x) {
+						case 0:  typeFoundS  =  findElementRelativeToNE(  strengthSpan, parenthesisSpan, strengthSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundS[0] > 1) countMultiplePre++;
+						if (typeFoundS[1] > 0 ) {
+							if (typeFoundS[1] > highestValueInRange){
+								highestValueInRange = typeFoundS[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundS[0] > 1 &&  typeFoundS[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundS[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(strengthSpanLength, strengthSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundS[1] == 1 )
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundS[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundS[1] < lowestValueInRange && typeFoundS[0] > 1){
+								lowestValueInRange = typeFoundS[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 1:  typeFoundF  =  findElementRelativeToNE(  freqSpan, parenthesisSpan, freqSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundF[0] > 1) countMultiplePre++;
+						if (typeFoundF[1] > 0 ) {
+							if (typeFoundF[1] > highestValueInRange){
+								highestValueInRange = typeFoundF[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundF[0] > 1 && typeFoundF[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundS[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(freqSpanLength, freqSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundF[1] == 1 )
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundF[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundF[1] < lowestValueInRange && typeFoundF[0] > 1){
+								lowestValueInRange = typeFoundF[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 2:  typeFoundN  =  findElementRelativeToNE(  doseSpan, parenthesisSpan, doseSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundN[0] > 1) countMultiplePre++;
+						if (typeFoundN[1] > 0 ) {
+							if (typeFoundN[1] > highestValueInRange){
+								highestValueInRange = typeFoundN[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundN[0] > 1 && typeFoundN[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundN[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(doseSpanLength, doseSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundN[1] == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundN[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundN[1] < lowestValueInRange && typeFoundN[0] > 1){
+								lowestValueInRange = typeFoundN[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 3:  typeFoundU  =  findElementRelativeToNE(  freqUSpan, parenthesisSpan, freqUSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundU[0] > 1) countMultiplePre++;
+						if (typeFoundU[1] > 0 ) {
+							if (typeFoundU[1] > highestValueInRange){
+								highestValueInRange = typeFoundU[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundU[0] > 1 && typeFoundU[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundU[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(freqUSpanLength, freqUSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundU[1] == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundU[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundU[1] < lowestValueInRange && typeFoundU[0] > 1){
+								lowestValueInRange = typeFoundU[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 4:  typeFoundR  =  findElementRelativeToNE(  routeSpan, parenthesisSpan, routeSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundR[0] > 1) countMultiplePre++;
+						if (typeFoundR[1] > 0 ) {
+							if (typeFoundR[1] > highestValueInRange){
+								highestValueInRange = typeFoundR[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundR[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundR[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(routeSpanLength, routeSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundR[1] == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundR[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundR[1] < lowestValueInRange && typeFoundR[0] > 1){
+								lowestValueInRange = typeFoundR[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 5:  typeFoundM  =  findElementRelativeToNE(  formSpan, parenthesisSpan, formSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundM[0] > 1 ) countMultiplePre++;
+						if (typeFoundM[1] > 0 ) {
+							if (typeFoundM[1] > highestValueInRange){
+								highestValueInRange = typeFoundM[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundM[0] > 1 && typeFoundM[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundM[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(formSpanLength, formSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundM[1] == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundM[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundM[1] < lowestValueInRange && typeFoundM[0] > 1){
+								lowestValueInRange = typeFoundM[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 6:  typeFoundL  =  findElementRelativeToNE(  durationSpan, parenthesisSpan, durationSpanLength,  parenthesisSpanLength, priorDrugEnd, 0, endPhrase, nea);
+						if (typeFoundL[0] > 1) countMultiplePre++;
+						if (typeFoundL[1] > 0 ) {
+							if (typeFoundL[1] > highestValueInRange){
+								highestValueInRange = typeFoundL[1];
+								highestInRange = signCharElements[x];
+							}
+							if (typeFoundL[0] > 1 && typeFoundL[1] < lowestPositiveValueInRange){
+								lowestPositiveValueInRange = typeFoundL[1];
+								lowestPositiveInRange = signCharElements[x];
+								testForMultipleElementsInRange = findNextDrugEntityPre(durationSpanLength, durationSpan, nea, priorDrugEnd);
+							}
+							if (typeFoundL[1] == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} else if (typeFoundL[1] < 0) {
+							prePattern = prePattern + signCharElements[x];
+							if (typeFoundL[1] < lowestValueInRange && typeFoundL[0] > 1){
+								lowestValueInRange = typeFoundL[1];
+								lowestInRange = signCharElements[x];
+							}
+						}
+						break;
+						case 7:  typeFoundC =  anchorEndofline(  statusSpan, newLineSpanLength,  endPhrase, nea);
+						if (typeFoundC > 0 ) {
+							if (typeFoundC == 1 ) 
+								pattern = pattern + signCharElements[x];
+							else postPattern = postPattern + (char)(Byte.valueOf((byte) signCharElements[x]).intValue()+32);
+						} 
+						break;
+						}
+					}
+					// Since eol may not exist the needs to be an alternate means to see if a missing drug NER is causing post signature items to bleed into prior mentions.  Therefore,  
+
+					if (openParenFound ) 
+						pattern = pattern + groupDelimiterClose ;
+					if (j > 0 && pattern.endsWith("(D)") && countMultiplePre == 0) {
+						shareAttributes = true;
+						if (highestValueInRange < typeFoundC) {
+							drugSpanArray[j-1][1] = nea.getBegin() + typeFoundC;
+						}
+						else { 
+							drugSpanArray[j-1][1] = drugSpanArray[j][1] = nea.getBegin() + highestValueInRange;
+						}
+					} else if (j > 0 && (countMultiplePre > 1 || testForMultipleElementsInRange[0] > 2) && testForMultipleElementsInRange[1] > 0 && (!shareAttributes || hasNext)) {
+						drugSpanArray[j-1][1] = testForMultipleElementsInRange[1];
+					} else {
+						shareAttributes = false;
+					}
+					
+					if (postPattern.endsWith("c") || pattern.endsWith("C")) {
+						drugSpanArray[j][1] = nea.getBegin() + typeFoundC;
+					} else if (!shareAttributes){
+						drugSpanArray[j][1] = endPhrase;
+					}
+					if (j > 0 && drugSpanArray[j-1][1] < drugSpanArray[j][0] && typeFoundC < 0 ) {
+						drugSpanArray[j][0] = priorDrugEnd = drugSpanArray[j-1][1];
+					} else {
+						priorDrugEnd = nea.getEnd();
+					}
+					targetValueInRange = highestValueInRange;
+					pattern = pattern + postPattern;
+					openParenFound = false;
+					//priorDrugEnd = nea.getEnd();
+
+				}
+				postPattern=prePattern="";
+				typeFoundM[1] = typeFoundL[1]  =  typeFoundN[1] = typeFoundU[1] = typeFoundR[1] = typeFoundC = typeFoundF[1] = typeFoundS[1] = 0;
+			}
+
+
+		if (pattern.lastIndexOf(groupDelimiterOpen) > pattern.lastIndexOf(groupDelimiterClose))
+			pattern = pattern + groupDelimiterClose;
+		System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
+  		return drugSpanArray;
+	}
+
+private boolean findNextParenRelativeToNE(int spanLength,
+      int[][] elementSpan, NamedEntity nea, int priorDrugEnd)
+  {
+    boolean patternFound = false;
+    for (int l = 0; l <= spanLength && !patternFound; l++)
+    {
+      if (elementSpan[l][0] != -1 && elementSpan[l][0] < nea.getBegin()
+          && elementSpan[l][1] > priorDrugEnd)
+      {
+        patternFound = true;
+      }
+    }
+    return patternFound;
+  }
+
+/**
+   * 
+   * @param jcas
+   * @param begin
+   * @param end
+   * @return
+   */
+  private int lastInPattern(JCas jcas, int begin, int end, int elementType, int[][] location) {
+	  JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+	  Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();
+	  int [] lastLocation =  {-1,-1};
+	  int counter = 0;
+	  if (elementType == StrengthAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+	  } else if (elementType == FrequencyAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }			}
+	  } else if (elementType == FrequencyUnitAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+	  }    else if (elementType == DosagesAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+	  }else if (elementType == RouteAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  RouteAnnotation nea = (RouteAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+	  } else if (elementType == FormAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  FormAnnotation nea = (FormAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+	  }    
+	  else if (elementType == DurationAnnotation.type) {
+		  int holdBeginElement = 0, holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  DurationAnnotation nea = (DurationAnnotation) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && nea.getEnd() > holdEndElement) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  holdEndElement = location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+
+	  } 
+	  else if (elementType == NewlineToken.type) {
+		  int holdBeginElement = 0;
+		  while (neItr.hasNext()) {
+			  NewlineToken nea = (NewlineToken) neItr.next();
+			  lastLocation[0] = nea.getBegin();
+			  lastLocation[1] = nea.getEnd();
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end) {
+				  holdBeginElement = location[counter][0]= lastLocation[0];
+				  location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+
+	  } else if (elementType == NamedEntity.type) {
+		  int holdEndElement = 0;
+		  while (neItr.hasNext()) {
+			  NamedEntity nea = (NamedEntity) neItr.next();
+			  if(nea.getTypeID()==1 || nea.getTypeID()==0) {
+				  lastLocation[0]= nea.getBegin();
+				  lastLocation[1] = nea.getEnd(); 
+				  if ((counter == 0 || lastLocation[0] != location[counter-1][0]) && (nea.getBegin()>=begin && nea.getEnd() <= end)) {
+					  location[counter][0]= lastLocation[0];
+					  holdEndElement = location[counter][1] = lastLocation[1];
+					  counter++;
+				  } else if (counter > 0 && holdEndElement > lastLocation[1]) {
+					  holdEndElement = location[counter-1][1] = lastLocation[1];
+				  }
+
+			  }
+		  }
+	  } else if (elementType == PunctuationToken.type) {
+		  while (neItr.hasNext()) {
+			  int holdBeginElement = 0;
+			  boolean foundPair = false;
+			  PunctuationToken nea = (PunctuationToken) neItr.next();
+			  if (nea.getCoveredText().compareTo("(")==0 || nea.getCoveredText().compareTo("[")==0)
+					  lastLocation[0] = nea.getBegin();
+			  else if (nea.getCoveredText().compareTo(")")==0 || nea.getCoveredText().compareTo("]")==0) {
+				  lastLocation[1] = nea.getEnd();
+				  foundPair = true;
+			  }
+			  if (holdBeginElement < nea.getBegin() && nea.getBegin()>=begin && nea.getEnd() <= end && foundPair) {
+				  location[counter][0]= lastLocation[0];
+				  location[counter][1]= lastLocation[1];
+				  counter++;
+			  }
+		  }
+
+	  }
+
+	  return counter;
+  }
+/*
+ * First 'int' value returned indicates the number of signature elements of this type that exist in the provided range.
+ * The second 'int' value can equal:
+ * 								   0 = no change (default),
+ *		 						   1 = found post element within parenthesis where element is closer from drug then close parenthesis <drugB + [signChar] + ) >
+ * 								   + number = found post element (number represents right distance from beginning of mention) 
+ * 								   - number = found pre element (between mentions - number represents left distance from beginning of mention) <drugA + [signChar] + [drugB]>
+ */
+  private int [] findElementRelativeToNE (int [][] elementSpan, int [][] parenthesisSpan, int elementSpanLength, int parenthesisSpanLength, int priorDrugEnd, int startWithParenNum, int endPhrase, NamedEntity nea) 
+  {
+	  int [] caseType = {0,0};
+	  int [] endLocationPreSpan =  findNextDrugEntityPre(	elementSpanLength, elementSpan,
+			  nea, priorDrugEnd);
+	  int [] endLocationPostSpan = {0,0};
+	  int [] emptyState = {-1,-1};
+	  boolean patternFoundPost = false;
+	  if (-1 != (endLocationPostSpan[1] = findNextDrugEntityPost(
+			  elementSpanLength, elementSpan,
+			  nea, endPhrase)[1])) {
+		  patternFoundPost = true;
+		  caseType[1] = endLocationPostSpan[1] - nea.getBegin();
+	  } else 	if (emptyState[1] != (endLocationPreSpan)[1]) {
+		  caseType[1] = endLocationPreSpan[1] - nea.getBegin();
+	  }
+	  if (patternFoundPost && findNextClosestRightParenRelativeToElement(
+			  parenthesisSpanLength, parenthesisSpan,
+			  nea, endLocationPostSpan[1], startWithParenNum)) {
+		  caseType[1] = 1;
+	  }
+	  caseType[0] = endLocationPreSpan[0];
+	  return caseType;
+  }
+
+
+  private int [] findNextDrugEntityPost(int spanLength, int[][] elementSpan,
+      NamedEntity nea, int endPhrase)
+  {
+    boolean patternFound = false;
+    int [] locationPre = {-1,-1};
+    for (int l = 0; l < spanLength && !patternFound; l++)
+    {
+      if (elementSpan[l][0] != -1 && elementSpan[l][0] > nea.getBegin()
+          && elementSpan[l][0] < endPhrase)
+      {
+        patternFound = true;
+        locationPre = elementSpan[l];
+      }
+    }
+    return locationPre;
+  }
+/*
+ * The first value represents the number of elements available in the span and the range token is the second field in the 'int' array 
+ */
+  private int [] findNextDrugEntityPre(int spanLength, int[][] elementSpan,
+      NamedEntity nea, int priorDrugEnd)
+  {
+    int numElementsInSpan = 0, targetForNewSpan = 0 ;
+    int [] locationPre = {-1,-1};
+    for (int l = 0; l < spanLength ; l++)
+    {
+      if (elementSpan[l][0] != -1 && elementSpan[l][1] < nea.getBegin()
+          && elementSpan[l][0] > priorDrugEnd)
+      {
+    	numElementsInSpan ++;
+    	targetForNewSpan = elementSpan[l][0];
+      } 
+      if (l == 2)
+    	  locationPre[1] = targetForNewSpan;
+      locationPre[0] = numElementsInSpan;
+    }
+    return locationPre;
+  }
+
+private int anchorEndofline (int [][] elementSpan,  int elementSpanLength, int endPhrase, NamedEntity nea) 
+{
+	return findNextDrugEntityPost(
+				elementSpanLength, elementSpan,
+			nea, endPhrase)[1] - nea.getBegin(); 
+}
+
+private boolean findNextClosestRightParenRelativeToElement(int spanLength,
+      int[][] elementSpan, Annotation nea, int beginSpan, int startOffset)
+  {
+    boolean elementClosest = false;
+    for (int l = startOffset; l < spanLength && !elementClosest; l++)
+    {
+      if (elementSpan[l][0] != -1 && elementSpan[l][0] < nea.getBegin() && nea.getEnd() < elementSpan[l][1] && (elementSpan[l][1]  > beginSpan))
+      {
+        elementClosest = true;
+      }
+    }
+    return elementClosest;
+  }
+private FractionStrengthFSM iv_fractionFSM;
+private RangeStrengthFSM iv_rangeFSM;
+private SubSectionIndicatorFSM iv_subMedSectionFSM;
+private DosagesFSM iv_dosagesFSM;
+private SuffixStrengthFSM iv_suffixFSM;
+private DurationFSM iv_durationFSM;
+private RouteFSM iv_routeFSM;
+private FrequencyFSM iv_frequencyFSM;
+private DrugChangeStatusFSM iv_statusFSM;
+private DecimalStrengthFSM iv_decimalFSM;
+private StrengthFSM iv_strengthFSM;
+private StrengthUnitFSM iv_strengthUnitFSM;
+private FrequencyUnitFSM iv_frequencyUnitFSM;
+private FormFSM iv_formFSM;
+private static final int NERTypeIdentifier = 1;
+private static boolean handledRanges;
+private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
+private Set<String> iv_exclusionTagSet = null;
+private Set<String> iv_medicationRelatedSections = new HashSet<String>();
 
 }
 

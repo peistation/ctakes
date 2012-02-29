@@ -89,11 +89,14 @@ public class FractionStrengthFSM
 	    endState.setEndStateFlag(true);
 	
 	    Machine m = new Machine(startState);
-	    State numeratorNumState = new NamedState("NUMERATOR_NUM");
+	    State numeratorLeftState = new NamedState("NUMERATOR_LEFT");
+	    State remainderRightState = new NamedState("REMAINDER_RIGHT");
+	    State numeratorRightState = new NamedState("NUMERATOR_RIGHT");
 	    State decPartNumState = new NamedState("DECIMAL_NUM");
 	    State fslashState = new NamedState("FORWARD-SLASH");
-	    State dotState = new NamedState("DOT");
-	    
+	    State hypenState = new NamedState("HYPHEN");
+	    State dotLeftState = new NamedState("DOT_LEFT");
+	    State dotRightState = new NamedState("DOT_RIGHT");
 	    Condition intNumeratorCondition = new NumberCondition();
 	    Condition decPartInt = new NumberCondition();
 	    Condition fslashCondition = new PunctuationValueCondition('/');
@@ -104,19 +107,30 @@ public class FractionStrengthFSM
 	    Condition leftContainsShortDose = new ContainsSetTextValueCondition(
 				iv_textNumeratorSet, false);
 		
-	    startState.addTransition(intNumeratorCondition, numeratorNumState);
-	    startState.addTransition(leftContainsShortDose, numeratorNumState);
-	    startState.addTransition(new DecimalCondition(), numeratorNumState);
+	    startState.addTransition(intNumeratorCondition, numeratorLeftState);
+	    startState.addTransition(leftContainsShortDose, numeratorLeftState);
+	    startState.addTransition(new DecimalCondition(), numeratorLeftState);
 	    startState.addTransition(new AnyCondition(), startState);
 	    
-	    numeratorNumState.addTransition(containsdotCondition, dotState);
-	    numeratorNumState.addTransition(fslashCondition, fslashState);
-	    numeratorNumState.addTransition(new AnyCondition(), startState);
+	    numeratorLeftState.addTransition(containsdotCondition, dotLeftState);
+	    numeratorLeftState.addTransition(fslashCondition, fslashState);
+	    numeratorLeftState.addTransition(new PunctuationValueCondition('-'), numeratorRightState);
+	    numeratorLeftState.addTransition(new AnyCondition(), startState);
 	    
-	    dotState.addTransition(decPartInt, endState);
-	    dotState.addTransition(decDenominatorCondition, endState);
-	    dotState.addTransition(new AnyCondition(), startState);
+	    dotLeftState.addTransition(decPartInt, hypenState);
+	    dotLeftState.addTransition(decDenominatorCondition, hypenState);
+	    dotLeftState.addTransition(new AnyCondition(), startState);
 		
+	    hypenState.addTransition(new PunctuationValueCondition('-'), numeratorRightState);
+	    hypenState.addTransition(new AnyCondition(), startState);
+	    
+	    numeratorRightState.addTransition(new NumberCondition(), endState);
+	    numeratorRightState.addTransition(new DecimalCondition(), endState);
+	    numeratorRightState.addTransition(new AnyCondition(), startState);
+	    
+	    dotRightState.addTransition(new PunctuationValueCondition('.'), fslashState);
+	    dotRightState.addTransition(new AnyCondition(), startState);
+	    
 	    decPartNumState.addTransition(fslashCondition, fslashState);
 	    decPartNumState.addTransition(new AnyCondition(), startState);
 	    
@@ -202,40 +216,40 @@ public class FractionStrengthFSM
             Iterator machineItr = iv_machineSet.iterator();
             while (machineItr.hasNext())
             {
-                Machine fsm = (Machine) machineItr.next();
+            	Machine fsm = (Machine) machineItr.next();
 
-                fsm.input(token);
+            	fsm.input(token);
 
-                State currentState = fsm.getCurrentState();
-                if (currentState.getStartStateFlag())
-                {
-                    tokenStartMap.put(fsm, Integer.valueOf(i));
-                }
-                if (currentState.getEndStateFlag())
-                {
-                    Object o = tokenStartMap.get(fsm);
-                    int tokenStartIndex;
-                    if (o == null)
-                    {
-			// By default, all machines start with token zero.
-			tokenStartIndex = 0;
-                    }
-                    else
-                    {
-                	tokenStartIndex = ((Integer) o).intValue();
-			// skip ahead over single token we don't want
-			tokenStartIndex++;						
-                    }
-                    BaseToken startToken =
-                        (BaseToken) tokens.get(tokenStartIndex);
-                    BaseToken endToken = token;
-                    FractionStrengthToken fractionToken =
-                        new FractionStrengthToken(
-                            startToken.getStartOffset(),
-                            endToken.getEndOffset());
-                    fractionSet.add(fractionToken);
-                    fsm.reset();
-                }
+            	State currentState = fsm.getCurrentState();
+            	if (currentState.getStartStateFlag())
+            	{
+            		tokenStartMap.put(fsm, Integer.valueOf(i));
+            	}
+            	if (currentState.getEndStateFlag())
+            	{
+            		Object o = tokenStartMap.get(fsm);
+            		int tokenStartIndex;
+            		if (o == null)
+            		{
+            			// By default, all machines start with token zero.
+            			tokenStartIndex = 0;
+            		}
+            		else
+            		{
+            			tokenStartIndex = ((Integer) o).intValue();
+            			// skip ahead over single token we don't want
+            			tokenStartIndex++;						
+            		}
+            		BaseToken startToken =
+            			(BaseToken) tokens.get(tokenStartIndex);
+            		BaseToken endToken = token;
+            		FractionStrengthToken fractionToken =
+            			new FractionStrengthToken(
+            					startToken.getStartOffset(),
+            					endToken.getEndOffset());
+            		fractionSet.add(fractionToken);
+            		fsm.reset();
+            	}
             }
         }
 

@@ -19,6 +19,7 @@ public interface DrugModel {
 	public String getRouteElement();
 	public String getDrugChangeStatusElement();
 	public String getStrengthElement();
+	public String getStrengthUnitElement();
 	public double getConfidenceScoreElement();
 
 	
@@ -33,6 +34,7 @@ public interface DrugModel {
 	public void setDurationElement(String name, int beginOffset, int endOffset);
 	public void setRouteElement(String name, int beginOffset, int endOffset);
 	public void setStrengthElement(String name, int beginOffset, int endOffset);
+	public void setStrengthUnitElement(String name, int beginOffset, int endOffset);
 	public void setDrugChangeStatusElement(String name, int beginOffset, int endOffset);
 	public void setConfidenceScoreElement(double score, int beginOffset, int endOffset);
 	

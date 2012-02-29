@@ -20,6 +20,7 @@ import edu.mayo.bmi.uima.drugner.type.FrequencyAnnotation;
 import edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RouteAnnotation;
 import edu.mayo.bmi.uima.drugner.type.StrengthAnnotation;
+import edu.mayo.bmi.uima.drugner.type.StrengthUnitAnnotation;
 import edu.mayo.bmi.uima.ner.elements.AssociatedPrimaryCodeElement;
 import edu.mayo.bmi.uima.ner.elements.ConfidenceScoreElement;
 import edu.mayo.bmi.uima.ner.elements.DosageElement;
@@ -31,6 +32,7 @@ import edu.mayo.bmi.uima.ner.elements.FrequencyUnitElement;
 import edu.mayo.bmi.uima.ner.elements.RouteElement;
 import edu.mayo.bmi.uima.ner.elements.StartDateElement;
 import edu.mayo.bmi.uima.ner.elements.StrengthElement;
+import edu.mayo.bmi.uima.ner.elements.StrengthUnitElement;
 import edu.mayo.bmi.uima.ner.elements.TextMentionElement;
 
 /**
@@ -96,6 +98,17 @@ public class DrugMention implements DrugModel {
 	public RouteElement route;
 
 	public StrengthElement strength;
+
+	/**
+	 * Span the drug form, if available. The spanned mention needs to be mapped
+	 * to the standard form available in the dropdown menu. In general don't
+	 * infer. However, for a medication described in terms of cc or mL, the
+	 * number of cc's or mL's is usually not a strength - for example "5 cc
+	 * 0.5%" (or 5 mL 0.5%), indicates a strength of 0.5% -- for those, create a
+	 * Form, with "cc" or "mL" spanned, and mapped to liquid, so that we capture
+	 * the unit such as cc or mL.
+	 */
+	public StrengthUnitElement strengthUnit;
 
 	/**
 	 * Span the drug form, if available. The spanned mention needs to be mapped
@@ -233,9 +246,15 @@ public class DrugMention implements DrugModel {
 							focusToken.getEnd());
 				}
 			}
-			Iterator dosageTokenItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthAnnotation.type, beginPos, endPos);
-			while (dosageTokenItr.hasNext()){
-				StrengthAnnotation focusToken = (StrengthAnnotation) dosageTokenItr.next();
+			Iterator strengthUnitTokenItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthUnitAnnotation.type, beginPos, endPos);
+			while (strengthUnitTokenItr.hasNext()){
+				StrengthUnitAnnotation focusToken = (StrengthUnitAnnotation) strengthUnitTokenItr.next();
+				setStrengthUnitElement(focusToken.getCoveredText(),
+						focusToken.getBegin(), focusToken.getEnd());
+			}
+			Iterator strengthTokenItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthAnnotation.type, beginPos, endPos);
+			while (strengthTokenItr.hasNext()){
+				StrengthAnnotation focusToken = (StrengthAnnotation) strengthTokenItr.next();
 				 
 
 						String localStrength = null;
@@ -424,7 +443,21 @@ public class DrugMention implements DrugModel {
 	public void setStrengthElement(String name, int beginOffset, int endOffset) {
 		strength = new StrengthElement(name, beginOffset, endOffset);
 	}
+	@Override
+	public String getStrengthUnitElement() {
+		// TODO Auto-generated method stub
+		if (strengthUnit != null)
+			return strengthUnit.getStrengthMention();
+		else
+			return null;
+	}
 
+	@Override
+	public void setStrengthUnitElement(String name, int beginOffset, int endOffset) {
+		// TODO Auto-generated method stub
+		strengthUnit = new StrengthUnitElement(name, beginOffset, endOffset);
+		
+	}
 	public String getPrimaryAssociatedCodeElement() {
 		if (associatedCodePrimary != null)
 			return associatedCodePrimary.getCuiCode();
@@ -1115,11 +1148,11 @@ public class DrugMention implements DrugModel {
 		while (firItr.hasNext()) {
 			StrengthAnnotation dcsa = (StrengthAnnotation) firItr.next();
 			String strength = dcsa.getCoveredText();
-    /*        int findHyph = strength.indexOf('-');
+            int findHyph = strength.indexOf('-');
             if (findHyph > 0){
             	// large value in the range
             	strength = strength.substring(findHyph+1);
-            } */
+            } 
 			if (dcsa.getBegin() == beginOffset) {
 
 				return parseRegex(strength);
@@ -1405,7 +1438,17 @@ public class DrugMention implements DrugModel {
 	public int getRouteEnd() {
 		return route.getEndOffset();
 	}
+	public int getStrengthUnitBegin() {
+		
+		return strengthUnit.getBeginOffset();
+	
+}
 
+public int getStrengthUnitEnd() {
+	
+		return strengthUnit.getEndOffset();
+	
+}
 
 
 	public int getStrengthBegin() {
@@ -1452,4 +1495,6 @@ public class DrugMention implements DrugModel {
 	}
 	
 private double holdLargestPeriod = -1;
+
+
 }

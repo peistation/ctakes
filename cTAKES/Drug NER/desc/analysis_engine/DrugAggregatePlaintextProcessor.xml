@@ -24,14 +24,14 @@
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
       <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="DictionaryLookupAnnotator">
-      <import location="DictionaryLookupAnnotator.xml"/>
+    <delegateAnalysisEngine key="DictionaryLookupAnnotator_2010AB">
+      <import location="DictionaryLookupAnnotator_2010AB.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DrugLookupWindowAnnotator">
       <import location="DrugLookupWindowAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
@@ -84,7 +84,7 @@
         <node>POSTagger</node>
         <node>Chunker</node>
         <node>DrugLookupWindowAnnotator</node>
-        <node>DictionaryLookupAnnotator</node>
+        <node>DictionaryLookupAnnotator_2010AB</node>
         <node>DrugMentionAnnotator</node>
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
