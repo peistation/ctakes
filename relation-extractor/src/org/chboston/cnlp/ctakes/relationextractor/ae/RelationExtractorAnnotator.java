@@ -59,7 +59,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   private List<RelationFeaturesExtractor> featureExtractors = Arrays.asList(
       new TokenFeaturesExtractor(),
       new PartOfSpeechFeaturesExtractor(),
-      new ChunkerExtractor(),
+      new PhraseChunkingExtractor(),
       new NamedEntityFeaturesExtractor(),
       new DependencyTreeFeaturesExtractor(),
       new DependencyPathFeaturesExtractor());
