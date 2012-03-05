@@ -99,7 +99,7 @@
     <property name="_uima.lib" value="${uima.home}/lib/uima-core.jar:${uima.home}/lib/uima-document-annotation.jar:${uima.home}/lib/uima-tools.jar:${uima.home}/lib/uima-cpe.jar" />
     <property name="_junit.lib" value="core/lib/junit.jar" />
     <path id="_chunker.cp">
-        <pathelement path="${_chunker.dir}/${src.dir}/java" />
+        <pathelement path="${_chunker.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
@@ -153,6 +153,7 @@
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
+        <pathelement location="${_common_type_system.dir}/${lib.dir}/libsvm.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>	
@@ -561,7 +562,7 @@
     <target name="_chunker.build" depends="generate_types,_core.build,_POS_tagger.build">
         <mkdir dir="${_chunker.dir}/${bin.dir}" />
         <javac destdir="${_chunker.dir}/${bin.dir}">
-            <src path="${_chunker.dir}/${src.dir}/java" />
+            <src path="${_chunker.dir}/${src.dir}" />
             <src path="${_chunker.dir}/scripts/java" />
             <src path="${_chunker.dir}/test/src" />
             <classpath refid="_chunker.cp" />
@@ -639,7 +640,7 @@
     <target name="_POS_tagger.build" depends="generate_types,_core.build">
         <mkdir dir="${_POS_tagger.dir}/${bin.dir}" />
         <javac destdir="${_POS_tagger.dir}/${bin.dir}">
-            <src path="${_POS_tagger.dir}/${src.dir}/java" />
+            <src path="${_POS_tagger.dir}/${src.dir}" />
             <src path="${_POS_tagger.dir}/scripts/java" />
             <src path="${_POS_tagger.dir}/test/src" />
             <classpath refid="_POS_tagger.cp" />
@@ -713,7 +714,7 @@
         <javadoc destdir="${docs.dir}/api" windowtitle="Clinical Text Analysis and Knowledge Extraction System API">
             <doctitle><![CDATA[<h1>cTAKES ${pipeline.version} Java API Documentation</h1>]]></doctitle>
             <bottom><![CDATA[Copyright &copy; 2009 Mayo Foundation for Medical Education and Research. All Rights Reserved.]]></bottom>
-            <packageset dir="${_chunker.dir}/${src.dir}/java" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_chunker.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_clinical_documents_pipeline.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_context_dependent_tokenizer.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_core.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />     	
@@ -721,7 +722,7 @@
             <packageset dir="${_document_preprocessor.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_LVG.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_NE_contexts.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
-            <packageset dir="${_POS_tagger.dir}/${src.dir}/java" defaultexcludes="yes" excludes="**/type" />
+            <packageset dir="${_POS_tagger.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_dependency_parser.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_pad_termspotter.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_drug_ner.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />     	
