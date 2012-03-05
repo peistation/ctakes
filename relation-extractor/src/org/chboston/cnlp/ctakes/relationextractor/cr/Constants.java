@@ -12,6 +12,6 @@ import java.util.HashSet;
 public class Constants {
 	
 	// high priority sharp relations
-	public static final HashSet<String> sharpRelations1 = 
-			new HashSet<String>(Arrays.asList("location_of", "degree_of", "prevents", "compicates", "disrupts"));
+	public static final HashSet<String> sharpRelations = 
+			new HashSet<String>(Arrays.asList("manages/treats", "degree_of", "causes/brings_about", "location_of", "indicates"));
 }

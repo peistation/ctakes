@@ -9,6 +9,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+/**
+ * Randomly split a set of files in a directory into three sets: train, dev, and test.
+ * 
+ * @author dmitriy dligach
+ *
+ */
 public class Splitter {
 
 	public final String ALLFILELOC = "/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/";
@@ -25,6 +31,13 @@ public class Splitter {
 	
 	List<String> allFileNames = new ArrayList<String>();
 		
+	/**
+	 * Specify percentages of the split.
+	 * 
+	 * @param trainProportion
+	 * @param devProportion
+	 * @param testProportion
+	 */
 	public Splitter(double trainProportion, double devProportion, double testProportion) {
 
 		File dir = new File(ALLFILELOC);
@@ -45,6 +58,13 @@ public class Splitter {
 
 	}
 	
+	/**
+	 * Specify the size of each set.
+	 * 
+	 * @param trainSize
+	 * @param devSize
+	 * @param testSize
+	 */
 	public Splitter(int trainSize, int devSize, int testSize) {
 
 		File dir = new File(ALLFILELOC);

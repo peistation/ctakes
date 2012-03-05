@@ -13,6 +13,12 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+/**
+ * Calculate relation frequencies in a data set that consists of XML files exported from Knowtator.
+ * 
+ * @author dmitriy dligach
+ *
+ */
 public class Stats {
 	
 	public static final String ALLFILELOC = "/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/";

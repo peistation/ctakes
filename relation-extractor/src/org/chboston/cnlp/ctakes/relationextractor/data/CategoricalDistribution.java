@@ -2,9 +2,12 @@ package org.chboston.cnlp.ctakes.relationextractor.data;
 
 import java.util.Random;
 
-/*
- * Class for generating samples from three dimensional Categorical distribution. 
+/**
+ * Class for generating samples from a three dimensional Categorical distribution. 
  * Can be useful for splitting data into train/dev/test.
+ * 
+ * @author dmitriy dligach
+ *
  */
 public class CategoricalDistribution {
 
