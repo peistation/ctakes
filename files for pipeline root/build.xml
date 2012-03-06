@@ -398,13 +398,16 @@
         <delete dir="${_side_effects.dir}/${bin.dir}" />
         <delete dir="${_constituency_parser.dir}/${bin.dir}" />
         <delete dir="${_coref_resolver.dir}/${bin.dir}" />
-        <delete dir="${_relation_extractor.dir}/${bin.dir}" />    	
+        <delete dir="${_relation_extractor.dir}/${bin.dir}" />
+   		<echo message="Now deleting filesets for gen'd types"/>
         <delete>
             <fileset dir="${_chunker.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/core/type/*/*.java" />
+            <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/core/type/*.java" /> <!-- any old types -->
             <fileset dir="${_context_dependent_tokenizer.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_core.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_coref_resolver.dir}/${src.dir}" includes="**/uima/coref/type/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/*/*.java" />
             <fileset dir="${_dictionary_lookup.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_document_preprocessor.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_LVG.dir}/${src.dir}" includes="**/type/*.java" />
@@ -412,17 +415,21 @@
             <fileset dir="${_POS_tagger.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_dependency_parser.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/core/type/*/*.java" />
+            <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/core/type/*.java" /> <!-- any old types -->
             <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/pad/type/*.java" />
             <fileset dir="${_drug_ner.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_smoking_status.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_smoking_status.dir}/${src.dir}" includes="**/type/*.java" />       <!-- any old types -->
+            <fileset dir="${_smoking_status.dir}/${src.dir}" includes="**/type/*/*.java" />
+            <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*.java" />         <!-- any old types -->
+            <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*/*.java" />
             <fileset dir="${_constituency_parser.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_coref_resolver.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_relation_extractor.dir}/${src.dir}" includes="**/type/*.java" />        	
         </delete>
+   		<echo message="Done deleting filesets for gen'd types"/>
         <delete dir="${docs.dir}/api" />
         <delete quiet="true" failonerror="false" includeemptydirs="true">
-            <fileset dir="." includes="**/.project **/.classpath **/resources/launch/" />
+            <fileset dir="." includes="**/.classpath **/resources/launch/" />
         </delete>
     </target>
 
@@ -465,7 +472,7 @@
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_pad_subsection.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_pad_subsection.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project that has types.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
