@@ -97,10 +97,11 @@
     <!-- Project build classpaths  -->
     <!-- - - - - - - - - - - - - - -->
     <property name="_uima.lib" value="${uima.home}/lib/uima-core.jar:${uima.home}/lib/uima-document-annotation.jar:${uima.home}/lib/uima-tools.jar:${uima.home}/lib/uima-cpe.jar" />
-    <property name="_junit.lib" value="core/lib/junit.jar" />
+    <property name="_junit.lib" value="${_core.dir}/${lib.dir}/junit.jar" />
     <path id="_chunker.cp">
         <pathelement path="${_chunker.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
+        <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
@@ -134,6 +135,8 @@
     </path>
     <path id="_core.cp">
         <pathelement path="${_core.dir}/${src.dir}" />
+        <pathelement path="${_common_type_system.dir}/${bin.dir}" />
+        <pathelement path="${_junit.lib}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
@@ -142,7 +145,6 @@
         <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
         <pathelement path="${_uima.lib}" />
-        <pathelement path="${_junit.lib}" />
     </path>
     <path id="_common_type_system.cp">
         <pathelement path="${_core.dir}/${src.dir}" />
@@ -288,7 +290,6 @@
     <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
     <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
     <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-
     <pathelement path="${_core.dir}/${bin.dir}" />
     <pathelement path="${_common_type_system.dir}/${bin.dir}" />
     <pathelement path="${_uima.lib}" />
@@ -317,11 +318,10 @@
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-svmlight-1.0.2.jar" />     	
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-
         <pathelement path="${_core.dir}/${bin.dir}" />
+    	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_chunker.dir}/${bin.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
-    	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_uima.lib}" />
@@ -336,6 +336,7 @@
         <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
+    	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_document_preprocessor.dir}/${bin.dir}" />
         <pathelement path="${_LVG.dir}/${bin.dir}" />
@@ -345,7 +346,6 @@
         <pathelement path="${_clinical_documents_pipeline.dir}/${res.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${res.dir}" />
         <pathelement path="${_core.dir}/${res.dir}" />
-        <pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_dictionary_lookup.dir}/${res.dir}" />
         <pathelement path="${_document_preprocessor.dir}/${res.dir}" />
         <pathelement path="${_LVG.dir}/${res.dir}" />
@@ -411,7 +411,8 @@
             <fileset dir="${_NE_contexts.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_POS_tagger.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_dependency_parser.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/type/*.java" />
+            <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/core/type/*/*.java" />
+            <fileset dir="${_pad_termspotter.dir}/${src.dir}" includes="**/pad/type/*.java" />
             <fileset dir="${_drug_ner.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_smoking_status.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*.java" />
@@ -427,7 +428,7 @@
 
 
     <!-- - - - - - - - - - - - - - - - -->
-    <!-- DEFAULT: build all projects.  -->
+    <!-- Build all projects.           -->
     <!-- - - - - - - - - - - - - - - - -->
     <target name="all" depends="generate_types,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
 
@@ -464,7 +465,7 @@
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
+    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_pad_subsection.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
@@ -501,6 +502,16 @@
             <env key="UIMA_HOME" value="${uima.home}" />
             <env key="TEMP" value="${env.TEMP}" />
             <arg value="${_pad_termspotter.dir}/${desc.dir}/type_system/PADSiteAndTerm.xml" />
+            <arg value="${_pad_termspotter.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_pad_subsection.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_pad_termspotter.dir}/${desc.dir}/type_system/SubSection.xml" />
             <arg value="${_pad_termspotter.dir}/${src.dir}" />
         </exec>
     </target>
@@ -585,9 +596,11 @@
         </javac>
     </target>
 
-    <target name="_core.build" depends="generate_types">
+    <target name="_core.build" depends="generate_types">  
+	   	<!-- <property name="myuimahome" refid="uima.home"/> -->
+   		<echo message="uima.home=${uima.home}"/>
         <mkdir dir="${_core.dir}/${bin.dir}" />
-        <javac destdir="${_core.dir}/${bin.dir}">
+        <javac destdir="${_core.dir}/${bin.dir}"  includeantruntime="false">
             <src path="${_core.dir}/${src.dir}" />
             <src path="${_core.dir}/test" />
             <classpath refid="_core.cp" />
@@ -595,6 +608,8 @@
     </target>
 
     <target name="_common_type_system.build" depends="generate_types">
+	   	<!-- <property name="myclasspath" refid="_common_type_system.cp"/> -->
+   		<!-- <echo message="classpath= ${myclasspath}"/> -->
         <mkdir dir="${_common_type_system.dir}/${bin.dir}" />
         <javac destdir="${_common_type_system.dir}/${bin.dir}">
             <src path="${_common_type_system.dir}/${src.dir}" />
