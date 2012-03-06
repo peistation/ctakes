@@ -161,6 +161,7 @@
     </path>	
     <path id="_dictionary_lookup.cp">
         <pathelement path="${_dictionary_lookup.dir}/${src.dir}" />
+        <pathelement path="${_dictionary_lookup.dir}/scripts/java" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
