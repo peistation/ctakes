@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 
 <project name="cTAKES" default="generate_types" basedir=".">
-    <description>
-        Compile cTAKES. Default target is generate_types.
-    	The target named all generates type system, compiles all projects, and generates javadoc.
-    </description>
+  <description>
+    Generate types and optionally compile cTAKES. 
+    Default target is generate_types.
+    The target named all generates type system, compiles all projects, and generates javadoc.
+  </description>
 
 
 <!-- ==================================================================================== -->
@@ -267,6 +268,7 @@
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_document_preprocessor.dir}/${bin.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
@@ -279,9 +281,10 @@
         <pathelement path="${_side_effects.dir}/${src.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_side_effects}/${lib.dir}/libsvm-2.91.jar" />
+        <pathelement location="${_side_effects.dir}/${lib.dir}/libsvm-2.91.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
+        <pathelement location="${_drug_ner.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_uima.lib}" />
     </path>
@@ -302,7 +305,7 @@
         <pathelement location="${_coref_resolver.dir}/${lib.dir}/libsvm.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_side_effects}/${lib.dir}/libsvm-2.91.jar" />
+        <pathelement location="${_side_effects.dir}/${lib.dir}/libsvm-2.91.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_constituency_parser.dir}/${bin.dir}" />
@@ -448,7 +451,7 @@
     <target name="all" depends="generate_types,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
 
     <target name="build_all" depends="build_base, build_extensions, build_other" description="Compiles all source files." />
-    <target name="build_base" depends="_common_type_system.build,_chunker.build,_clinical_documents_pipeline.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build,_dependency_parser.build" description="Compiles ." />
+    <target name="build_base" depends="_common_type_system.build,_core.build,_document_preprocessor.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build,_LVG.build,_dictionary_lookup.build,_NE_contexts.build,_clinical_documents_pipeline.build,_dependency_parser.build" description="Gens types (xml to .java) and Compiles .java to .class." />
     <target name="build_extensions" depends="_pad_termspotter.build,_drug_ner.build,_smoking_status.build,_side_effects.build,_constituency_parser.build,_coref_resolver.build,_relation_extractor.build" description="Compiles optional parts of cTAKES." />
     <target name="build_other" depends="comparexcas.build" description="Compiles Utilities such as CompareXcas." />
 
