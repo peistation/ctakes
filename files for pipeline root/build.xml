@@ -407,7 +407,14 @@
             <fileset dir="${_context_dependent_tokenizer.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_core.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_coref_resolver.dir}/${src.dir}" includes="**/uima/coref/type/*.java" />
-            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/*/*.java" />
+        	<!-- don't delete what's in core/type/constants -->
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/refsem/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/relation/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/structured/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/syntax/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/textsem/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/textspan/*.java" />
+            <fileset dir="${_common_type_system.dir}/${src.dir}" includes="**/core/type/util/*.java" />
             <fileset dir="${_dictionary_lookup.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_document_preprocessor.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_LVG.dir}/${src.dir}" includes="**/type/*.java" />
