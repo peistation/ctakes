@@ -92,8 +92,8 @@ public class PreprocessAndWriteXmi {
 	    AnalysisEngine goldAnnotator = createGoldAnnotator(xmlRoot);
 	    
 	    AnalysisEngine serializer = AnalysisEngineFactory.createPrimitive(
-				SerializeDocumentToXMI.class, 
-				SerializeDocumentToXMI.PARAM_OUTPUT_DIRECTORY_NAME, 
+				PreprocessAndWriteXmi.SerializeDocumentToXMI.class, 
+				PreprocessAndWriteXmi.SerializeDocumentToXMI.PARAM_OUTPUT_DIRECTORY_NAME, 
 				outputRoot.getPath());
 				
 	    SimplePipeline.runPipeline(reader, preprocessing, goldAnnotator, serializer);
@@ -130,7 +130,7 @@ public class PreprocessAndWriteXmi {
 	      return goldAnnotator;
 	}
 	
-	private static class SerializeDocumentToXMI extends JCasAnnotator_ImplBase {
+	public static class SerializeDocumentToXMI extends JCasAnnotator_ImplBase {
 		public static final String PARAM_OUTPUT_DIRECTORY_NAME = ConfigurationParameterFactory
 		.createConfigurationParameterName(SerializeDocumentToXMI.class, "outputDirectoryName");
 
