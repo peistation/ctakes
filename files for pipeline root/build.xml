@@ -312,15 +312,28 @@
         <pathelement path="${_constituency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
 
     <path id="_relation_extractor.cp" >
         <pathelement path="${_relation_extractor.dir}/${src.dir}" />
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/uimafit-1.2.0.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-1.0.1.jar" />
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-util-0.8.1.jar" />    	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-svmlight-1.0.2.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-svmlight-1.0.2.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-libsvm-1.0.1.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-opennlp-maxent-1.0.2.jar" /> 
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-chunker-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-eval-0.8.1.jar" />    	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-test-util-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/args4j-2.0.16.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/guava-10.0.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/hppc-0.4.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-io-2.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-lang-2.4.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-logging-1.1.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/spring-core-3.0.3.RELEASE.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
