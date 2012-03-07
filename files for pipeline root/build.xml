@@ -334,7 +334,7 @@
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-lang-2.4.jar" />
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-logging-1.1.1.jar" />
         <pathelement location="${_relation_extractor.dir}/${lib.dir}/spring-core-3.0.3.RELEASE.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
     	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
