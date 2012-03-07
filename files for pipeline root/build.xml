@@ -296,6 +296,7 @@
     <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
     <pathelement path="${_core.dir}/${bin.dir}" />
     <pathelement path="${_common_type_system.dir}/${bin.dir}" />
+    <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.0.jar" />
     <pathelement path="${_uima.lib}" />
     </path>
 
