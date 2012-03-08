@@ -4,16 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.UIMAFramework;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.collection.CollectionReader;
@@ -28,13 +27,13 @@ import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluati
 import org.cleartk.util.Options_ImplBase;
 import org.cleartk.util.cr.FilesCollectionReader;
 import org.kohsuke.args4j.Option;
+import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.ViewCreatorAnnotator;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -54,17 +53,20 @@ public class PreprocessAndWriteXmi {
 
 		@Option(name = "-t", 
 				aliases = "--textRoot", 
-				usage = "specify the directory contraining the textFiles (for example /Volumes/sharp/NLP/Corpus/MiPACQ/Text/")
-		public File textRoot = new File("/Volumes/sharp/NLP/Corpus/MiPACQ/Text/");
+				usage = "specify the directory contraining the textFiles (for example /NLP/Corpus/Relations/mipacq/text/train",
+				required = true)
+		public File textRoot;
 
 		@Option(name = "-x",
 				aliases = "--xmlRoot",
-				usage = "specify the directory containing the knowtator xml files (for example: /Volumes/sharp/NLP/Corpus/MiPACQ/UMLS/XML_exported_corpus_1_2_show_all/")
-		public File xmlRoot = new File("/Volumes/sharp/NLP/Corpus/MiPACQ/UMLS/XML_exported_corpus_1_2_show_all/");
+				usage = "specify the directory containing the knowtator xml files (for example: /NLP/Corpus/Relations/mipacq/xml/train",
+        required = true)
+		public File xmlRoot;
 		
 		@Option(name = "-o",
 				aliases = "--outputRoot",
-				usage = "specify the directory to write out CAS XMI files")
+				usage = "specify the directory to write out CAS XMI files",
+				required = true)
 		public File outputRoot;
 	}
 	
@@ -93,7 +95,7 @@ public class PreprocessAndWriteXmi {
 	    
 	    AnalysisEngine serializer = AnalysisEngineFactory.createPrimitive(
 				PreprocessAndWriteXmi.SerializeDocumentToXMI.class, 
-				PreprocessAndWriteXmi.SerializeDocumentToXMI.PARAM_OUTPUT_DIRECTORY_NAME, 
+				PreprocessAndWriteXmi.SerializeDocumentToXMI.PARAM_OUTPUT_DIRECTORY, 
 				outputRoot.getPath());
 				
 	    SimplePipeline.runPipeline(reader, preprocessing, goldAnnotator, serializer);
@@ -131,17 +133,29 @@ public class PreprocessAndWriteXmi {
 	}
 	
 	public static class SerializeDocumentToXMI extends JCasAnnotator_ImplBase {
-		public static final String PARAM_OUTPUT_DIRECTORY_NAME = ConfigurationParameterFactory
-		.createConfigurationParameterName(SerializeDocumentToXMI.class, "outputDirectoryName");
+		public static final String PARAM_OUTPUT_DIRECTORY = ConfigurationParameterFactory
+		.createConfigurationParameterName(SerializeDocumentToXMI.class, "outputDirectory");
 
 		@ConfigurationParameter(mandatory = true, description = "Specifies the output directory in which to write xmi files")
-		private String outputDirectoryName;
+		private File outputDirectory;
 
 		@Override
+    public void initialize(UimaContext context) throws ResourceInitializationException {
+      super.initialize(context);
+      if (!this.outputDirectory.exists()) {
+        this.outputDirectory.mkdirs();
+      }
+    }
+
+    @Override
 		public void process(JCas jCas) throws AnalysisEngineProcessException {
 			try {
-			  String documentID = DocumentIDAnnotationUtil.getDocumentID(jCas);
-			   File outFile = new File(this.outputDirectoryName, documentID + ".xmi");
+			  JCas goldView = jCas.getView(RelationExtractorEvaluation.GOLD_VIEW_NAME);
+			  String documentID = DocumentIDAnnotationUtil.getDocumentID(goldView);
+			  if (documentID == null) {
+			    throw new IllegalArgumentException("No documentID for CAS:\n" + jCas);
+			  }
+			   File outFile = new File(this.outputDirectory, documentID + ".xmi");
 			   ContentHandler handler = new XMLSerializer(new FileOutputStream(outFile)).getContentHandler();
 				new XmiCasSerializer(jCas.getTypeSystem()).serialize(jCas.getCas(), handler);
 			} catch (CASRuntimeException e) {
@@ -150,7 +164,9 @@ public class PreprocessAndWriteXmi {
 				throw new AnalysisEngineProcessException(e);
 			} catch (FileNotFoundException e) {
 				throw new AnalysisEngineProcessException(e);
-			}	
+			} catch (CASException e) {
+			  throw new AnalysisEngineProcessException(e);
+      }	
 		}
 		
 	}
