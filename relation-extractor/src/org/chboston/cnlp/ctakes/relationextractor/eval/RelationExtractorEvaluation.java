@@ -1,47 +1,52 @@
 package org.chboston.cnlp.ctakes.relationextractor.eval;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.uima.UIMAException;
-import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.impl.XmiCasDeserializer;
+import org.apache.uima.collection.CollectionException;
+import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.util.XMLInputSource;
-import org.apache.uima.util.XMLParser;
+import org.apache.uima.util.Progress;
+import org.apache.uima.util.ProgressImpl;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.chboston.cnlp.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
+import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
+import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.jar.JarClassifierFactory;
 import org.cleartk.classifier.libsvm.DefaultMultiClassLIBSVMDataWriterFactory;
 import org.cleartk.eval.Evaluation;
 import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
 import org.cleartk.eval.provider.CleartkPipelineProvider_ImplBase;
 import org.cleartk.eval.provider.CorpusReaderProvider;
 import org.cleartk.eval.provider.EvaluationPipelineProvider;
-import org.cleartk.eval.provider.FilesCollectionReaderProvider;
+import org.cleartk.util.Options_ImplBase;
 import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.cr.FilesCollectionReader;
+import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.component.ViewCreatorAnnotator;
-import org.uimafit.factory.AggregateBuilder;
+import org.uimafit.component.JCasCollectionReader_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.CollectionReaderFactory;
+import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.util.JCasUtil;
+import org.xml.sax.SAXException;
 
 import com.google.common.base.Objects;
 
@@ -52,41 +57,43 @@ import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class RelationExtractorEvaluation {
 
-  public static final String GOLD_VIEW_NAME = "GoldView";
-  
-  public static void main(String[] args) throws Exception {
-    // check command-line arguments
-    if (args.length != 2) {
-      String className = RelationExtractorEvaluation.class.getName();
-      System.err.printf("usage: java %s text-dir xml-dir\n", className);
-      System.exit(1);
-    }
-    
-    // Something like /Volumes/sharp/NLP/Corpus/MiPACQ/Text/
-    File textRoot = new File(args[0]);
-    // Something like /Volumes/sharp/NLP/Corpus/MiPACQ/UMLS/XML_exported_corpus_1_2_show_all/
-    File xmlRoot = new File(args[1]);
-    // the pre-processor descriptor file
-    File preprocessDescFile = new File("desc/analysis_engine/RelationExtractorPreprocessor.xml");
+  public static class Options extends Options_ImplBase {
 
-    // randomized selection of train/text, should be replaced with an official train and test set
-    List<String> textFileNames = Arrays.asList(textRoot.list());
-    Collections.shuffle(textFileNames, new Random(42L));
-    int nFiles = Math.min(20, textFileNames.size()); // FIXME: use whole set
-    List<String> trainFileNames = textFileNames.subList(0, nFiles / 2);
-    List<String> testFileNames = textFileNames.subList(nFiles / 2, nFiles);
+    @Option(
+        name = "--train-dir",
+        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
+        required = true)
+    public File trainDirectory;
+  }
+
+  public static final String GOLD_VIEW_NAME = "GoldView";
+
+  public static void main(String[] args) throws Exception {
+    Options options = new Options();
+    options.parseOptions(args);
+    List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
+    List<File> testFiles = Arrays.asList(); // TODO: add a --test-dir option
 
     // defines train and test corpora
-    CorpusReaderProvider readerProvider = new FilesCollectionReaderProvider(
-        textRoot,
-        trainFileNames,
-        testFileNames);
+    CorpusReaderProvider readerProvider;
+    readerProvider = new CorpusReaderProvider_ImplBase<File>(trainFiles, testFiles) {
+      @Override
+      protected CollectionReader getReader(List<File> files) throws UIMAException {
+        String[] paths = new String[files.size()];
+        for (int i = 0; i < paths.length; ++i) {
+          paths[i] = files.get(i).getPath();
+        }
+        return CollectionReaderFactory.createCollectionReader(
+            XMIReader.class,
+            TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml"),
+            XMIReader.PARAM_FILES,
+            paths);
+      }
+    };
     readerProvider.setNumberOfFolds(2);
 
-    // defines pipelines that load training data and train a classifier
+    // defines pipelines that train a classifier and classify with it
     PipelineProvider pipelineProvider = new PipelineProvider(
-        preprocessDescFile,
-        xmlRoot,
         new File("models"),
         DefaultMultiClassLIBSVMDataWriterFactory.class);
 
@@ -97,6 +104,57 @@ public class RelationExtractorEvaluation {
     // runs the evaluation
     Evaluation evaluation = new Evaluation();
     evaluation.runCrossValidation(readerProvider, pipelineProvider, evaluationProvider);
+  }
+
+  /**
+   * UIMA CollectionReader that reads in CASes from XMI files.
+   */
+  public static class XMIReader extends JCasCollectionReader_ImplBase {
+
+    public static final String PARAM_FILES = "files";
+
+    @ConfigurationParameter(
+        name = PARAM_FILES,
+        mandatory = true,
+        description = "The XMI files to be loaded")
+    private List<File> files;
+
+    private Iterator<File> filesIter;
+
+    private int completed;
+
+    @Override
+    public void initialize(UimaContext context) throws ResourceInitializationException {
+      super.initialize(context);
+      this.filesIter = files.iterator();
+      this.completed = 0;
+    }
+
+    @Override
+    public Progress[] getProgress() {
+      return new Progress[] { new ProgressImpl(
+          this.completed,
+          this.files.size(),
+          Progress.ENTITIES) };
+    }
+
+    @Override
+    public boolean hasNext() throws IOException, CollectionException {
+      return this.filesIter.hasNext();
+    }
+
+    @Override
+    public void getNext(JCas jCas) throws IOException, CollectionException {
+      FileInputStream inputStream = new FileInputStream(this.filesIter.next());
+      try {
+        XmiCasDeserializer.deserialize(new BufferedInputStream(inputStream), jCas.getCas());
+      } catch (SAXException e) {
+        throw new CollectionException(e);
+      }
+      inputStream.close();
+      this.completed += 1;
+    }
+
   }
 
   /**
@@ -117,10 +175,10 @@ public class RelationExtractorEvaluation {
     }
 
   }
-  
+
   /**
-   * Class that copies {@link EntityMention} annotations from the CAS with the manual annotations
-   * to the CAS that will be used by the system.
+   * Class that copies {@link EntityMention} annotations from the CAS with the manual annotations to
+   * the CAS that will be used by the system.
    */
   public static class EntityMentionCopier extends JCasAnnotator_ImplBase {
 
@@ -133,7 +191,10 @@ public class RelationExtractorEvaluation {
         throw new AnalysisEngineProcessException(e);
       }
       for (EntityMention goldMention : JCasUtil.select(goldView, EntityMention.class)) {
-        EntityMention mention = new EntityMention(jCas, goldMention.getBegin(), goldMention.getEnd());
+        EntityMention mention = new EntityMention(
+            jCas,
+            goldMention.getBegin(),
+            goldMention.getEnd());
         mention.setTypeID(goldMention.getTypeID());
         mention.setId(goldMention.getId());
         mention.setDiscoveryTechnique(goldMention.getDiscoveryTechnique());
@@ -141,85 +202,48 @@ public class RelationExtractorEvaluation {
         mention.addToIndexes();
       }
     }
-    
+
   }
 
   /**
    * Defines how to write training data, train a classifier, and apply the classifier to new data.
    */
   public static class PipelineProvider extends CleartkPipelineProvider_ImplBase {
-    
-    private File knowtatorXMLDirectory;
 
     private File modelsDirectory;
 
     private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
 
-    private final AnalysisEngine preprocessing;
-
-    private AnalysisEngine goldAnnotator;
-
     public PipelineProvider(
-        File preprocessDescFile,
-        File knowtatorXMLDirectory,
         File modelsDirectory,
         Class<? extends DataWriterFactory<String>> dataWriterFactoryClass) throws UIMAException,
         IOException {
-      this.knowtatorXMLDirectory = knowtatorXMLDirectory;
       this.modelsDirectory = modelsDirectory;
       this.dataWriterFactoryClass = dataWriterFactoryClass;
-      
-      // create the pre-processing pipeline
-      XMLParser parser = UIMAFramework.getXMLParser();
-      XMLInputSource source = new XMLInputSource(preprocessDescFile);
-      AnalysisEngineDescription desc = parser.parseAnalysisEngineDescription(source);
-      this.preprocessing = UIMAFramework.produceAnalysisEngine(desc);
-
-      // pipeline to read manual annotations into the gold view, not the default view
-      AggregateBuilder goldAnnotatorBuilder = new AggregateBuilder();
-      goldAnnotatorBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
-          ViewCreatorAnnotator.class,
-          ViewCreatorAnnotator.PARAM_VIEW_NAME,
-          GOLD_VIEW_NAME));
-      goldAnnotatorBuilder.add(
-          AnalysisEngineFactory.createPrimitiveDescription(DocumentIDAnnotator.class),
-          CAS.NAME_DEFAULT_SOFA, GOLD_VIEW_NAME);
-      goldAnnotatorBuilder.add(
-          AnalysisEngineFactory.createPrimitiveDescription(
-            GoldEntityAndRelationReader.class,
-            GoldEntityAndRelationReader.PARAM_INPUTDIR,
-            this.knowtatorXMLDirectory.getPath()),
-          CAS.NAME_DEFAULT_SOFA, GOLD_VIEW_NAME);
-      this.goldAnnotator = goldAnnotatorBuilder.createAggregate();
     }
 
     @Override
     public List<AnalysisEngine> getTrainingPipeline(String name) throws UIMAException {
-      // run the pre-processor, the gold reader, and the relation extractor in training mode
-      return Arrays.asList(
-          this.preprocessing,
-          this.goldAnnotator,
-          AnalysisEngineFactory.createPrimitive(
-              RelationExtractorAnnotator.class,
-              RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
-              GOLD_VIEW_NAME,
-              RelationExtractorAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-              this.dataWriterFactoryClass.getName(),
-              DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-              this.getDir(name).getPath()));
+      // run the relation extractor in training mode
+      return Arrays.asList(AnalysisEngineFactory.createPrimitive(
+          RelationExtractorAnnotator.class,
+          RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
+          GOLD_VIEW_NAME,
+          CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+          this.dataWriterFactoryClass.getName(),
+          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+          this.getDir(name).getPath()));
     }
 
     @Override
     public List<AnalysisEngine> getClassifyingPipeline(String name) throws UIMAException {
-      // run the pre-processor, the gold reader, an annotator that copies over the entity mentions,
+      // run an annotator that copies over the entity mentions,
       // and the relation extractor in classification mode
       return Arrays.asList(
-          this.preprocessing,
-          this.goldAnnotator,
           AnalysisEngineFactory.createPrimitive(EntityMentionCopier.class),
           AnalysisEngineFactory.createPrimitive(
               RelationExtractorAnnotator.class,
-              JarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+              GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
               new File(this.getDir(name), "model.jar").getPath()));
     }
 
@@ -233,12 +257,12 @@ public class RelationExtractorEvaluation {
       return new File(this.modelsDirectory, name);
     }
   }
-  
+
   /**
    * Annotator that compares system-predicted relations to manually-annotated relations.
    */
   public static class RelationEvaluator extends JCasAnnotator_ImplBase {
-    
+
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
       JCas goldView;
@@ -247,7 +271,7 @@ public class RelationExtractorEvaluation {
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
-      
+
       // collect the manually annotated relations
       List<HashableRelation> goldRelations = new ArrayList<HashableRelation>();
       for (BinaryTextRelation relation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
@@ -259,17 +283,18 @@ public class RelationExtractorEvaluation {
       for (BinaryTextRelation relation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
         systemRelations.add(new HashableRelation(relation));
       }
-      
+
       // determine precision and recall
       Set<HashableRelation> intersection = new HashSet<HashableRelation>(goldRelations);
       intersection.retainAll(systemRelations);
-      
+
       // update stats
       this.batchStats.update(goldRelations.size(), systemRelations.size(), intersection.size());
       this.collectionStats.update(goldRelations.size(), systemRelations.size(), intersection.size());
     }
-    
+
     private Stats batchStats;
+
     private Stats collectionStats;
 
     @Override
@@ -295,29 +320,31 @@ public class RelationExtractorEvaluation {
 
     private static class Stats {
       public int gold = 0;
+
       public int system = 0;
+
       public int correct = 0;
-      
+
       public void update(int gold, int system, int correct) {
         this.gold += gold;
         this.system += system;
         this.correct += correct;
       }
-      
+
       public double precision() {
-        return ((double)this.correct) / this.system;
+        return ((double) this.correct) / this.system;
       }
-      
+
       public double recall() {
-        return ((double)this.correct) / this.gold;
+        return ((double) this.correct) / this.gold;
       }
-      
+
       public double f1() {
         double p = this.precision();
         double r = this.recall();
         return (2 * p * r) / (p + r);
       }
-      
+
       @Override
       public String toString() {
         return String.format(
@@ -330,19 +357,28 @@ public class RelationExtractorEvaluation {
             this.correct);
       }
     }
-    
+
     /**
      * Wrapper for relations that makes two relations with the same spans and category label have
      * the same hash and compare equal.
      */
     private static class HashableRelation {
       private int arg1begin;
+
       private int arg1end;
+
       private int arg2begin;
+
       private int arg2end;
+
       private String category;
 
-      public HashableRelation(int arg1begin, int arg1end, int arg2begin, int arg2end, String category) {
+      public HashableRelation(
+          int arg1begin,
+          int arg1end,
+          int arg2begin,
+          int arg2end,
+          String category) {
         this.arg1begin = arg1begin;
         this.arg1end = arg1end;
         this.arg2begin = arg2begin;
@@ -358,7 +394,7 @@ public class RelationExtractorEvaluation {
             relation.getArg2().getArgument().getEnd(),
             relation.getCategory());
       }
-      
+
       @Override
       public boolean equals(Object thatObject) {
         if (thatObject instanceof HashableRelation) {
