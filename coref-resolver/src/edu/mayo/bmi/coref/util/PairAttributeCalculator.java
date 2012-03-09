@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
@@ -34,8 +36,10 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.coref.util.AnnotationSelector;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
@@ -53,6 +57,35 @@ public class PairAttributeCalculator extends AttributeCalculator {
 		this.m2 = m2;
 		s1 = m1.getCoveredText();
 		s2 = m2.getCoveredText();
+	}
+	
+	/**
+	 * Determine whether the markables are located within the same section
+	 * @author andreea bodnari
+	 * @return
+	 */
+	public String calcSameSection(){
+//		ArrayList<Segment> ret = new ArrayList<Segment>();
+//		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(Segment.type).iterator();
+//		while (iter.hasNext())
+//			ret.add((Segment)iter.next());
+//		java.util.Collections.sort(ret, new AnnotOffsetComparator());
+//		
+//		Segment seg1 = null;
+//		Segment seg2 = null;
+//		
+//		for (Segment a : ret){
+//			if(a.getStart() <= m1.getStart() && a.getEnd() >= m1.getEnd())
+//				seg1 = a;
+//			if(a.getStart() <= m2.getStart() && a.getEnd() >= m2.getEnd())
+//				seg2 = a;	
+//		}
+		boolean sameSection = false;
+		
+//		if(seg1 != null && seg2 != null)
+//			sameSection = seg1.getId().equals(seg2.getId());
+			
+		return sameSection ? "yes" : "no";
 	}
 
 	public double calcTokenDistance () {

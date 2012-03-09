@@ -37,6 +37,7 @@ public class FeatureVector {
 	};
 
 	final static String[] ne_coref_feats = {
+			"SameSection",  // {yes, no}
 			"TokenDistance"   , // numeric    1
 			"SentenceDistance", // numeric
 			"ExactMatch"      , // {yes,no}
