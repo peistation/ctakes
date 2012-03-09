@@ -45,6 +45,12 @@
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ClearParserAE">
+      <import location="../../../dependency parser/desc/analysis_engine/ClearParserAE.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ConstituencyParser">
+      <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>RelationExtractorPreprocessor</name>
@@ -79,6 +85,12 @@
           <string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
         </value>
       </nameValuePair>
+      <!--<nameValuePair>
+        <name>modelFilename</name>
+        <value>
+          <string>parsermodel</string>
+        </value>
+      </nameValuePair>-->
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
@@ -88,6 +100,8 @@
         <node>LvgAnnotator</node>
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
+        <node>ConstituencyParser</node>
+        <node>ClearParserAE</node>
         <node>Chunker</node>
         <node>AdjustNounPhraseToIncludeFollowingNP</node>
         <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
