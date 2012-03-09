@@ -93,6 +93,7 @@
     <property name="lib.dir" value="lib" />
     <property name="desc.dir" value="desc" />
     <property name="res.dir" value="resources" />
+    <property name="compile.debug" value="true" />
 
     <!-- - - - - - - - - - - - - - -->
     <!-- Project build classpaths  -->
@@ -350,25 +351,34 @@
     <!-- - - - - - - - - - -->
     <path id="testrun.cp">
         <pathelement path="${_uima.lib}" />
+        <!-- binary (.class) directories -->
         <pathelement path="${_chunker.dir}/${bin.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
+        <pathelement path="${_constituency_parser.dir}/${bin.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
     	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
+        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_document_preprocessor.dir}/${bin.dir}" />
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
+        <pathelement path="${_relation_extractor.dir}/${bin.dir}" />
+        <!-- resource directories -->
         <pathelement path="${_chunker.dir}/${res.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${res.dir}" />
+        <pathelement path="${_constituency_parser.dir}/${res.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${res.dir}" />
         <pathelement path="${_core.dir}/${res.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${res.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${res.dir}" />
         <pathelement path="${_document_preprocessor.dir}/${res.dir}" />
         <pathelement path="${_LVG.dir}/${res.dir}" />
         <pathelement path="${_NE_contexts.dir}/${res.dir}" />
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
+        <pathelement path="${_relation_extractor.dir}/${res.dir}" />
+        <!-- library jars directories -->
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
@@ -381,6 +391,26 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
         <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/uimafit-1.2.0.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-util-0.8.1.jar" />    	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-svmlight-1.0.2.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-libsvm-1.0.1.jar" />     	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-opennlp-maxent-1.0.2.jar" /> 
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-chunker-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-eval-0.8.1.jar" />    	
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-test-util-1.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/args4j-2.0.16.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/guava-10.0.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/hppc-0.4.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-io-2.0.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-lang-2.4.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-logging-1.1.1.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/spring-core-3.0.3.RELEASE.jar" />
+        <pathelement location="${_relation_extractor.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" />
+ 
+
 	<!--
             <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
             <pathelement path="${_dependency_parser.dir}/${res.dir}" />
@@ -604,7 +634,7 @@
     <!-- - - - - - -->
     <target name="_chunker.build" depends="generate_types,_core.build,_POS_tagger.build">
         <mkdir dir="${_chunker.dir}/${bin.dir}" />
-        <javac destdir="${_chunker.dir}/${bin.dir}">
+        <javac destdir="${_chunker.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_chunker.dir}/${src.dir}" />
             <src path="${_chunker.dir}/scripts/java" />
             <src path="${_chunker.dir}/test/src" />
@@ -614,7 +644,7 @@
 
     <target name="_clinical_documents_pipeline.build" depends="generate_types,_chunker.build,_context_dependent_tokenizer.build,_core.build,_dictionary_lookup.build,_document_preprocessor.build,_LVG.build,_NE_contexts.build,_POS_tagger.build">
         <mkdir dir="${_clinical_documents_pipeline.dir}/${bin.dir}" />
-        <javac destdir="${_clinical_documents_pipeline.dir}/${bin.dir}">
+        <javac destdir="${_clinical_documents_pipeline.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_clinical_documents_pipeline.dir}/${src.dir}" />
             <classpath refid="_clinical_documents_pipeline.cp" />
         </javac>
@@ -622,7 +652,7 @@
 
     <target name="_context_dependent_tokenizer.build" depends="generate_types,_core.build">
         <mkdir dir="${_context_dependent_tokenizer.dir}/${bin.dir}" />
-        <javac destdir="${_context_dependent_tokenizer.dir}/${bin.dir}">
+        <javac destdir="${_context_dependent_tokenizer.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_context_dependent_tokenizer.dir}/${src.dir}" />
             <classpath refid="_context_dependent_tokenizer.cp" />
         </javac>
@@ -632,7 +662,7 @@
 	   	<!-- <property name="myuimahome" refid="uima.home"/> -->
    		<echo message="uima.home=${uima.home}"/>
         <mkdir dir="${_core.dir}/${bin.dir}" />
-        <javac destdir="${_core.dir}/${bin.dir}"  includeantruntime="false">
+        <javac destdir="${_core.dir}/${bin.dir}"  includeantruntime="false" debug="${compile.debug}">
             <src path="${_core.dir}/${src.dir}" />
             <src path="${_core.dir}/test" />
             <classpath refid="_core.cp" />
@@ -643,7 +673,7 @@
 	   	<!-- <property name="myclasspath" refid="_common_type_system.cp"/> -->
    		<!-- <echo message="classpath= ${myclasspath}"/> -->
         <mkdir dir="${_common_type_system.dir}/${bin.dir}" />
-        <javac destdir="${_common_type_system.dir}/${bin.dir}">
+        <javac destdir="${_common_type_system.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_common_type_system.dir}/${src.dir}" />
             <classpath refid="_common_type_system.cp" />
         </javac>
@@ -651,7 +681,7 @@
 	
     <target name="_dictionary_lookup.build" depends="generate_types,_core.build">
         <mkdir dir="${_dictionary_lookup.dir}/${bin.dir}" />
-        <javac destdir="${_dictionary_lookup.dir}/${bin.dir}">
+        <javac destdir="${_dictionary_lookup.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_dictionary_lookup.dir}/${src.dir}" />
             <src path="${_dictionary_lookup.dir}/scripts/java" />
             <classpath refid="_dictionary_lookup.cp" />
@@ -660,7 +690,7 @@
 
     <target name="_document_preprocessor.build" depends="generate_types,_core.build">
         <mkdir dir="${_document_preprocessor.dir}/${bin.dir}" />
-        <javac destdir="${_document_preprocessor.dir}/${bin.dir}">
+        <javac destdir="${_document_preprocessor.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_document_preprocessor.dir}/${src.dir}" />
             <src path="${_document_preprocessor.dir}/test" />
             <classpath refid="_document_preprocessor.cp" />
@@ -669,7 +699,7 @@
 
     <target name="_LVG.build" depends="generate_types,_chunker.build,_core.build">
         <mkdir dir="${_LVG.dir}/${bin.dir}" />
-        <javac destdir="${_LVG.dir}/${bin.dir}">
+        <javac destdir="${_LVG.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_LVG.dir}/${src.dir}" />
             <classpath refid="_LVG.cp" />
         </javac>
@@ -677,7 +707,7 @@
 
     <target name="_NE_contexts.build" depends="generate_types,_core.build">
         <mkdir dir="${_NE_contexts.dir}/${bin.dir}" />
-        <javac destdir="${_NE_contexts.dir}/${bin.dir}">
+        <javac destdir="${_NE_contexts.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_NE_contexts.dir}/${src.dir}" />
             <src path="${_NE_contexts.dir}/test/src" />
             <classpath refid="_NE_contexts.cp" />
@@ -686,7 +716,7 @@
 
     <target name="_POS_tagger.build" depends="generate_types,_core.build">
         <mkdir dir="${_POS_tagger.dir}/${bin.dir}" />
-        <javac destdir="${_POS_tagger.dir}/${bin.dir}">
+        <javac destdir="${_POS_tagger.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_POS_tagger.dir}/${src.dir}" />
             <src path="${_POS_tagger.dir}/scripts/java" />
             <src path="${_POS_tagger.dir}/test/src" />
@@ -696,7 +726,7 @@
 
     <target name="_dependency_parser.build" depends="generate_types,_core.build,_LVG.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build">
         <mkdir dir="${_dependency_parser.dir}/${bin.dir}" />
-        <javac destdir="${_dependency_parser.dir}/${bin.dir}">
+        <javac destdir="${_dependency_parser.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_dependency_parser.dir}/${src.dir}" />
             <classpath refid="_dependency_parser.cp" />
         </javac>
@@ -704,53 +734,59 @@
 
     <target name="_pad_termspotter.build" depends="generate_types,build_base" >
         <mkdir dir="${_pad_termspotter.dir}/${bin.dir}" />
-        <javac destdir="${_pad_termspotter.dir}/${bin.dir}">
+        <javac destdir="${_pad_termspotter.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_pad_termspotter.dir}/${src.dir}" />
             <classpath refid="_pad_termspotter.cp" />
         </javac>
     </target>
     <target name="_drug_ner.build" depends="generate_types,build_base" >
         <mkdir dir="${_drug_ner.dir}/${bin.dir}" />
-        <javac destdir="${_drug_ner.dir}/${bin.dir}">
+        <javac destdir="${_drug_ner.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_drug_ner.dir}/${src.dir}" />
             <classpath refid="_drug_ner.cp" />
         </javac>
     </target>
     <target name="_smoking_status.build" depends="generate_types,build_base" >
         <mkdir dir="${_smoking_status.dir}/${bin.dir}" />
-        <javac destdir="${_smoking_status.dir}/${bin.dir}">
+        <javac destdir="${_smoking_status.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_smoking_status.dir}/${src.dir}" />
             <classpath refid="_smoking_status.cp" />
         </javac>
     </target>
     <target name="_side_effects.build" depends="generate_types,build_base" >
         <mkdir dir="${_side_effects.dir}/${bin.dir}" />
-        <javac destdir="${_side_effects.dir}/${bin.dir}">
+        <javac destdir="${_side_effects.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_side_effects.dir}/${src.dir}" />
             <classpath refid="_side_effects.cp" />
         </javac>
     </target>
     <target name="_constituency_parser.build" depends="generate_types,build_base" >
         <mkdir dir="${_constituency_parser.dir}/${bin.dir}" />
-        <javac destdir="${_constituency_parser.dir}/${bin.dir}">
+        <javac destdir="${_constituency_parser.dir}/${bin.dir}" srcdir="${_constituency_parser.dir}/${src.dir}" debug="${compile.debug}">
             <src path="${_constituency_parser.dir}/${src.dir}" />
             <classpath refid="_constituency_parser.cp" />
         </javac>
     </target>
     <target name="_coref_resolver.build" depends="generate_types,build_base,_constituency_parser.build" >
         <mkdir dir="${_coref_resolver.dir}/${bin.dir}" />
-        <javac destdir="${_coref_resolver.dir}/${bin.dir}">
+        <javac destdir="${_coref_resolver.dir}/${bin.dir}" debug="${compile.debug}">
             <src path="${_coref_resolver.dir}/${src.dir}" />
             <classpath refid="_coref_resolver.cp" />
         </javac>
     </target>
     <target name="_relation_extractor.build" depends="generate_types,build_base" >
         <mkdir dir="${_relation_extractor.dir}/${bin.dir}" />
-        <javac destdir="${_relation_extractor.dir}/${bin.dir}">
+        <javac destdir="${_relation_extractor.dir}/${bin.dir}" srcdir="${_relation_extractor.dir}/${src.dir}" debug="${compile.debug}">
             <src path="${_relation_extractor.dir}/${src.dir}" />
             <classpath refid="_relation_extractor.cp" />
         </javac>
     </target>
+
+    <target name="build_runtime_classpath">
+        <property name="testrun_classpath" refid="testrun.cp"/>
+        <echo message="export CLASSPATH=&quot;${testrun_classpath}&quot;" file="runtime_classpath.txt"/>
+    </target>
+	
 	<!-- - - - - - - - - - - -->
     <!-- Javadoc generators  -->
     <!-- - - - - - - - - - - -->
@@ -795,7 +831,7 @@
     <!-- - - - - - - - - - -->
     <target name="comparexcas.build" description="Build CompareXcas, which can compare two XCAS files without reading a type system file.">
         <mkdir dir="${_utils_project.dir}/${bin.dir}" />
-        <javac srcdir="${_utils_project.dir}/${src.dir}" destdir="${_utils_project.dir}/${bin.dir}" />
+        <javac srcdir="${_utils_project.dir}/${src.dir}" destdir="${_utils_project.dir}/${bin.dir}" debug="${compile.debug}"/>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - -->
