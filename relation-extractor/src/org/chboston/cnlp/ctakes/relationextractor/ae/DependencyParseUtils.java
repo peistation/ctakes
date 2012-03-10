@@ -22,18 +22,27 @@ public class DependencyParseUtils {
 		List<LinkedList<ConllDependencyNode>> paths = new ArrayList<LinkedList<ConllDependencyNode>>(2);
 		LinkedList<ConllDependencyNode> node1ToHeadPath = DependencyParseUtils.getPathToSentenceHead(node1);
 		LinkedList<ConllDependencyNode> node2ToHeadPath = DependencyParseUtils.getPathToSentenceHead(node2);
+		
+		// We will remove the last item in each path until they diverge
+		ConllDependencyNode ancestor = null;
+		while (!node1ToHeadPath.isEmpty() && !node2ToHeadPath.isEmpty()) {
+			if (node1ToHeadPath.getLast() == node2ToHeadPath.getLast()) {
+				node1ToHeadPath.removeLast();
+				ancestor = node2ToHeadPath.removeLast();
+			} else {
+				break;
+			}
+		}
+		
+		// Put the common ancestor back on both paths
+		if (ancestor != null) {
+	    	 node1ToHeadPath.add(ancestor);
+	    	 node2ToHeadPath.add(ancestor);
+		}
 	     
-	     while (!node1ToHeadPath.isEmpty() && !node2ToHeadPath.isEmpty()) {
-	    	 if (node1ToHeadPath.getLast() == node2ToHeadPath.getLast()) {
-	    		 break;
-	    	 }
-	    	 node1ToHeadPath.pop();
-	    	 node2ToHeadPath.pop();
-	     }
-	
-	     paths.add(node1ToHeadPath);
-	     paths.add(node2ToHeadPath);
-	     return paths;
+		paths.add(node1ToHeadPath);
+		paths.add(node2ToHeadPath);
+		return paths;
 	}
 
 	/**
@@ -46,31 +55,31 @@ public class DependencyParseUtils {
 	
 	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
 	    	
-	    	System.out.println(depNode);
-	    	System.out.printf("DepNode %d %d\n", depNode.getBegin(), depNode.getEnd());
 	    	ConllDependencyNode head = depNode.getHead();
-	    	System.out.println(head);
-	    	System.out.printf("Head %d %d\n", head.getBegin(), head.getEnd());
-	
-	    	if (head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
-	    		return head;
+	    	if (head == null || head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
+	    		// The head is outside the bounds of the annotation, so this node must be the annotation's head
+	    		return depNode;
 	    	}
 	    }
+	    // Can this happen?
 	    return null;
 	}
 
 	public static LinkedList<ConllDependencyNode> getPathToSentenceHead(ConllDependencyNode node) {
 	     LinkedList<ConllDependencyNode> path = new LinkedList<ConllDependencyNode>();
 	     ConllDependencyNode currNode = node;
-	     while (currNode != null) {
+	     while (currNode.getHead() != null) { 
 	         path.add(currNode);
 	         currNode = currNode.getHead();
 	     }
 	     return path;
 	}
 
-	/*
-	 * 
+	/**
+	 * Finds the path between two dependency nodes
+	 * @param srcNode
+	 * @param tgtNode
+	 * @return
 	 */
 	public static LinkedList<ConllDependencyNode> getPathBetweenNodes(ConllDependencyNode srcNode, ConllDependencyNode tgtNode) {
 		LinkedList<ConllDependencyNode> path = new LinkedList<ConllDependencyNode>();
@@ -78,20 +87,29 @@ public class DependencyParseUtils {
 		LinkedList<ConllDependencyNode> srcToAncestorPath = paths.get(0);
 		LinkedList<ConllDependencyNode> tgtToAncestorPath = paths.get(1);
 		
+		if (srcNode == tgtNode) {
+			return path;
+		}
+		
 		// Join the two paths
-		srcToAncestorPath.pop();
+		if (!srcToAncestorPath.isEmpty()) {
+			srcToAncestorPath.removeLast();
+		}
 		path = srcToAncestorPath;
 		while (!tgtToAncestorPath.isEmpty()) {
-			path.add(path.removeFirst());
+			path.add(tgtToAncestorPath.removeLast());
 		}
+		
 		return path;
 	}
+	
 
 	/**
 	 * This will convert a path into a string lexicalized at the end points with arc labels and POS tags in between
 	 * @param path
 	 * @return
 	 */
+	
 	public static String pathToString(LinkedList<ConllDependencyNode> path) {
 		
 		StringBuilder builder = new StringBuilder();
@@ -104,9 +122,25 @@ public class DependencyParseUtils {
 			
 			builder.append("-");
 			builder.append(node.getDeprel());
-			builder.append(">");
+			if (node != path.getLast()) {
+				builder.append("/");
+			}
 		}
 		return builder.toString();
+	}
+	
+
+	
+
+	public static String dumpDependencyRelations(JCas jcas, Annotation annotation) {
+		StringBuilder builder = new StringBuilder();
+	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
+	    	if (depNode.getHead() != null) {
+	    		builder.append(String.format("%s(%s,%s)\n", depNode.getDeprel(), depNode.getCoveredText(), depNode.getHead().getCoveredText()));
+	    	}
+	    }
+	    return builder.toString();
+		
 	}
 
 }

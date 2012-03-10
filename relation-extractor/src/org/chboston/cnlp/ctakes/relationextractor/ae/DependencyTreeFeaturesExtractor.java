@@ -37,7 +37,7 @@ public class DependencyTreeFeaturesExtractor implements RelationFeaturesExtracto
 	    		// H1DW1: combination of the head word and the dependent word for M1 
 	    		features.add(new Feature(ftrPrefix + "_HEAD_WORD-GOVERNING_WORD", String.format("%s-%s", mentionHeadNode.getCoveredText(), dependsOn.getCoveredText())));
 	    		features.add(new Feature(ftrPrefix + "_TYPE-GOVERNING_POS", String.format("%d-%s", mention.getTypeID(), dependsOn.getPostag())));
-	    		features.add(new Feature(ftrPrefix + "_HEAD_POS-GOVERNING_POS", String.format("%d-%s", mentionHeadNode.getPostag(), dependsOn.getPostag())));
+	    		features.add(new Feature(ftrPrefix + "_HEAD_POS-GOVERNING_POS", String.format("%s-%s", mentionHeadNode.getPostag(), dependsOn.getPostag())));
 	    	}
 	    }
 	    return features;
