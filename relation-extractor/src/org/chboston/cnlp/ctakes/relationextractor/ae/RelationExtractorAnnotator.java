@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.uima.UimaContext;
@@ -46,6 +47,10 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
   
   private static final String NO_RELATION_CATEGORY = "-NONE-";
+  
+  private static final double PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE = 0.05;
+  
+  private Random coin = new Random(); 
   
   @ConfigurationParameter(
       name = PARAM_GOLD_VIEW_NAME,
@@ -130,6 +135,11 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
             Set<Annotation> key = new HashSet<Annotation>(Arrays.asList(arg1, arg2));
             String category;
             if (!relationLookup.containsKey(key)) {
+            	
+            	if (coin.nextDouble() > PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE) {
+            		continue; // ignore this negative example
+            	}
+            	
               category = NO_RELATION_CATEGORY;
             } else {
               BinaryTextRelation relation = relationLookup.get(key);
