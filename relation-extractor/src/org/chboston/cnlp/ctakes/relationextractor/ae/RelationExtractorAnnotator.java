@@ -43,20 +43,26 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
-  
-  public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
-  
+
   private static final String NO_RELATION_CATEGORY = "-NONE-";
-  
-  private static final double PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE = 0.05;
-  
-  private Random coin = new Random(); 
-  
+
+  public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
+
   @ConfigurationParameter(
       name = PARAM_GOLD_VIEW_NAME,
       mandatory = false,
       description = "view containing the manual relation annotations; needed for training")
   private String goldViewName;
+
+  public static final String PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE = "ProbabilityOfKeepingANegativeExample";
+
+  @ConfigurationParameter(
+      name = PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+      mandatory = false,
+      description = "probability that a negative example should be retained for training")
+  private double probabilityOfKeepingANegativeExample = 1.0;
+
+  private Random coin = new Random();
 
   /**
    * The list of feature extractors used by the classifier.
@@ -136,7 +142,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
             String category;
             if (!relationLookup.containsKey(key)) {
             	
-            	if (coin.nextDouble() > PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE) {
+            	if (coin.nextDouble() > this.probabilityOfKeepingANegativeExample) {
             		continue; // ignore this negative example
             	}
             	

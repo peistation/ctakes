@@ -93,9 +93,11 @@ public class RelationExtractorEvaluation {
     readerProvider.setNumberOfFolds(2);
 
     // defines pipelines that train a classifier and classify with it
+    float probabilityOfKeepingANegativeExample = 0.05f;
     PipelineProvider pipelineProvider = new PipelineProvider(
         new File("models"),
-        DefaultMultiClassLIBSVMDataWriterFactory.class);
+        DefaultMultiClassLIBSVMDataWriterFactory.class,
+        probabilityOfKeepingANegativeExample);
 
     // defines how to evaluate
     EvaluationPipelineProvider evaluationProvider = new BatchBasedEvaluationPipelineProvider(
@@ -103,7 +105,7 @@ public class RelationExtractorEvaluation {
 
     // runs the evaluation
     Evaluation evaluation = new Evaluation();
-    evaluation.runCrossValidation(readerProvider, pipelineProvider, evaluationProvider);
+    evaluation.runCrossValidation(readerProvider, pipelineProvider, evaluationProvider, "-t", "2", "-c", "1", "-g", "100");
   }
 
   /**
@@ -214,12 +216,15 @@ public class RelationExtractorEvaluation {
 
     private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
 
+    private float probabilityOfKeepingANegativeExample;
+
     public PipelineProvider(
         File modelsDirectory,
-        Class<? extends DataWriterFactory<String>> dataWriterFactoryClass) throws UIMAException,
-        IOException {
+        Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
+        float probabilityOfKeepingANegativeExample) throws UIMAException, IOException {
       this.modelsDirectory = modelsDirectory;
       this.dataWriterFactoryClass = dataWriterFactoryClass;
+      this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
     }
 
     @Override
@@ -232,7 +237,9 @@ public class RelationExtractorEvaluation {
           CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
           this.dataWriterFactoryClass.getName(),
           DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-          this.getDir(name).getPath()));
+          this.getDir(name).getPath(),
+          RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+          this.probabilityOfKeepingANegativeExample));
     }
 
     @Override
