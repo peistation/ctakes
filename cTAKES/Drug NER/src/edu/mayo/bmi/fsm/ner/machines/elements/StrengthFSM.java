@@ -12,11 +12,10 @@ import net.openai.util.fsm.Machine;
 import net.openai.util.fsm.State;
 import edu.mayo.bmi.fsm.condition.DecimalCondition;
 import edu.mayo.bmi.fsm.condition.IntegerCondition;
+import edu.mayo.bmi.fsm.condition.NegateCondition;
 import edu.mayo.bmi.fsm.condition.NumberCondition;
 import edu.mayo.bmi.fsm.condition.PunctuationValueCondition;
-import edu.mayo.bmi.fsm.condition.SymbolValueCondition;
 import edu.mayo.bmi.fsm.condition.WordSetCondition;
-import edu.mayo.bmi.fsm.ner.elements.conditions.ContainsSetTextValueCondition;
 import edu.mayo.bmi.fsm.ner.elements.conditions.FractionStrengthCondition;
 import edu.mayo.bmi.fsm.ner.elements.conditions.RangeStrengthCondition;
 import edu.mayo.bmi.fsm.ner.elements.conditions.StrengthUnitCombinedCondition;
@@ -65,79 +64,7 @@ public class StrengthFSM {
 
 
 	}
-	/**
-	 * Handles a complex range of strength representations for the discovery of the combined 
-	 * quantity and unit value for this element. The following represents the range of strength
-	 * types which are discovered:
-	 *  <ol>
-	 * 		<li>250-mg</li>
-	 * 		<li>two-puffs</li>
-	 * 		<li>1-cc</li>
-	 * 	 	<li>0.4mg</li>
-	 * 		<li>0.51milligrams</li>
-	 *      <li>25.7/30.4mg</li>
-	 * 		<li>15.5 mg</li>
-	 * 		<li>25.7-30.2 mg</li>
-	 * 		<li>two-3.5mg</li>
-	 *  </ol>
-	 */
-	private Machine getStrengthOriginalMachine(){
-		State startState = new NamedState("START");
-		State endState = new NamedState("END");
-		State connectState = new NamedState("CONNECT");
-		State unitState = new NamedState("UNIT");
-		State decimalState = new NamedState("DOT");
-		State complexState = new NamedState("COMPLEX");
-		State hyphenState = new NamedState("HYPHEN");
-		State ntEndState = new NonTerminalEndState("NON TERMINAL END");
-		State ntEndHyphState = new NonTerminalEndState("NON TERMINAL HYPH END");
-		endState.setEndStateFlag(true);
-		ntEndState.setEndStateFlag(true);
-		ntEndHyphState.setEndStateFlag(true);
 
-		startState.addTransition(new RangeStrengthCondition(), connectState);
-		startState.addTransition(new FractionStrengthCondition(), connectState);
-		startState.addTransition(new NumberCondition(), connectState);
-		startState.addTransition(new IntegerCondition(), connectState);
-		startState.addTransition(new DecimalCondition(), connectState);
-		startState.addTransition(new WordSetCondition(iv_numberTextSet, false), connectState);
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		startState.addTransition(new StrengthUnitCondition(), ntEndState);
-		startState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		startState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		connectState.addTransition(new StrengthUnitCondition(), ntEndState);
-		connectState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		connectState.addTransition(new PunctuationValueCondition('-'), unitState);
-		connectState.addTransition(new PunctuationValueCondition('.'), decimalState);
-		connectState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		decimalState.addTransition(new StrengthUnitCondition(), ntEndState);
-		decimalState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		decimalState.addTransition(new PunctuationValueCondition('-'), unitState);
-		decimalState.addTransition(new NumberCondition(), complexState);
-		decimalState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		unitState.addTransition(new StrengthUnitCondition(), ntEndHyphState);
-		unitState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		unitState.addTransition(new AnyCondition(), startState);
-		
-		complexState.addTransition(new PunctuationValueCondition('-'), hyphenState);
-		complexState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		hyphenState.addTransition(new StrengthUnitCondition(), ntEndHyphState);
-		hyphenState.addTransition(new AnyCondition() , startState);
-		
-		ntEndHyphState.addTransition(new AnyCondition(), startState);
-		ntEndState.addTransition(new AnyCondition(), startState);
-		endState.addTransition(new AnyCondition(), startState);
-		Machine m = new Machine(startState);
-		return m;
-	}
 	/**
 	 * Handles a complex range of strength representations for the discovery of the combined 
 	 * quantity and unit value for this element. The following represents the range of strength
@@ -162,6 +89,7 @@ public class StrengthFSM {
 		State decimalState = new NamedState("DOT");
 		State complexState = new NamedState("COMPLEX");
 		State hyphenState = new NamedState("HYPHEN");
+		State dateState = new NamedState("DATE");
 		State ntEndState = new NonTerminalEndState("NON TERMINAL END");
 		State ntEndHyphState = new NonTerminalEndState("NON TERMINAL HYPH END");
 		endState.setEndStateFlag(true);
@@ -169,7 +97,7 @@ public class StrengthFSM {
 		ntEndHyphState.setEndStateFlag(true);
 
 		startState.addTransition(new RangeStrengthCondition(), endState);
-		startState.addTransition(new FractionStrengthCondition(), endState);
+		startState.addTransition(new FractionStrengthCondition(), dateState);
 		startState.addTransition(new NumberCondition(), connectState);
 		startState.addTransition(new IntegerCondition(), connectState);
 		startState.addTransition(new DecimalCondition(), connectState);
@@ -178,6 +106,9 @@ public class StrengthFSM {
 //		startState.addTransition(new StrengthUnitCondition(), ntEndState);
 		startState.addTransition(new StrengthUnitCombinedCondition(), endState);
 		startState.addTransition(new AnyCondition(), startState);
+		
+		dateState.addTransition(new NegateCondition( new PunctuationValueCondition('/')), endState);
+		dateState.addTransition(new AnyCondition(), startState);
 		
 		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
 		connectState.addTransition(new StrengthUnitCondition(), ntEndState);

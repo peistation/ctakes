@@ -75,6 +75,7 @@ import edu.mayo.bmi.uima.core.type.WordToken;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.util.JCasUtil;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DecimalStrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DosagesAnnotation;
@@ -116,8 +117,18 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
    * This identifies the section ids that will be considered in generating DrugMentionAnnotaitons
    */
   public static final String PARAM_SEGMENTS_MEDICATION_RELATED = "medicationRelatedSection";
-
-
+  public static String DISTANCE = "DISTANCE";  
+  /**
+   * Annotation type that is used to count the distance.
+   */
+  public static String DISTANCE_ANN_TYPE = "DISTANCE_ANN_TYPE";
+  
+  /**
+   * Annotation type that defines the boundary within which the dictionary hits should be present. 
+   */
+  public static String BOUNDARY_ANN_TYPE = "BOUNDARY_ANN_TYPE";
+  public static int NO_WINDOW_SIZE_SPECIFIED = -1;
+  public static int NO_ANNOTATION_TYPE_SPECIFIED = -1;
   public void initialize(AnnotatorContext annotCtx)
       throws AnnotatorInitializationException, AnnotatorConfigurationException
   {
@@ -146,6 +157,25 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     iv_formFSM = new FormFSM();
     iv_subMedSectionFSM = new SubSectionIndicatorFSM();
     iv_logger.info("Finite state machines loaded.");
+    
+
+    try {
+        //gather window size and annotation type
+        String windowSize = (String)annotCtx.getConfigParameterValue(DISTANCE);
+        String annotationTypeName = (String)annotCtx.getConfigParameterValue(DISTANCE_ANN_TYPE);
+		String boundaryAnnTypeName = (String)annotCtx.getConfigParameterValue(BOUNDARY_ANN_TYPE);
+	      if(windowSize != null)
+	          iWindowSize = Integer.parseInt(windowSize);
+
+	        if(annotationTypeName != null)
+	          iAnnotationType = JCasUtil.getType(annotationTypeName);
+	        
+	        if(boundaryAnnTypeName != null)
+	          iBoundaryAnnType  = JCasUtil.getType(boundaryAnnTypeName);
+	} catch (AnnotatorContextException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 
   public void process(JCas jcas, ResultSpecification rs)
@@ -2517,26 +2547,29 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
    * @param end
    * @return int[] - int[0] is begin offset and int[1] is end offset of subsequent sentence end (if available)
    */
-private int[] getSentenceSpansContainingGivenSpan(JCas jcas, int begin)
+private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 {
   JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-  Iterator iter = indexes.getAnnotationIndex(Sentence.type).iterator();
+  Iterator iter = indexes.getAnnotationIndex(iAnnotationType).iterator();
   int[] span = new int[2];
-  boolean foundFirstSentence = false;
-  boolean foundSecondSentence = false;
-  while (iter.hasNext() && !foundSecondSentence)
+  boolean foundFirstTypeSpan = false;
+  boolean foundSecondTypeSpan = false;
+  int spanSizeCount = 0;
+  while (iter.hasNext() && !foundSecondTypeSpan)
   {
-    Sentence sa = (Sentence) iter.next();
+    Annotation sa = (Annotation) iter.next();
     if (begin >= sa.getBegin() && begin <= sa.getEnd())
     {
     	span[0] = sa.getBegin();
       	span[1] = sa.getEnd();
-      	foundFirstSentence = true;
+      	foundFirstTypeSpan = true;
       // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
-    } else if (foundFirstSentence) {
-    	foundSecondSentence = true;
+    } else if (foundFirstTypeSpan && spanSizeCount >= iWindowSize) {
+    	foundSecondTypeSpan = true;
     	span[1] = sa.getEnd();
     }
+    if (foundFirstTypeSpan) 
+    	spanSizeCount++;
   }
 
   return span;
@@ -2826,7 +2859,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 	int lastLineNum=0;
 	boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 	if (haveNarrative) {
-		senSpan = getSentenceSpansContainingGivenSpan(jcas, begin);
+		senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin);
 		if (senSpan[0] < begin) senSpan[0] = begin;
 	}
 	boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
@@ -3287,7 +3320,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 
 		if (pattern.lastIndexOf(groupDelimiterOpen) > pattern.lastIndexOf(groupDelimiterClose))
 			pattern = pattern + groupDelimiterClose;
-		System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
+//		System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
   		return drugSpanArray;
 	}
 
@@ -3549,6 +3582,10 @@ private boolean findNextClosestRightParenRelativeToElement(int spanLength,
     }
     return elementClosest;
   }
+
+private int iWindowSize = NO_WINDOW_SIZE_SPECIFIED;   //window size to identify pair of annotations as related
+private int iAnnotationType = NO_ANNOTATION_TYPE_SPECIFIED; //type used to define a window
+private int iBoundaryAnnType = NO_ANNOTATION_TYPE_SPECIFIED; //type used to define boundary across which pairs cannot exist.
 private FractionStrengthFSM iv_fractionFSM;
 private RangeStrengthFSM iv_rangeFSM;
 private SubSectionIndicatorFSM iv_subMedSectionFSM;
