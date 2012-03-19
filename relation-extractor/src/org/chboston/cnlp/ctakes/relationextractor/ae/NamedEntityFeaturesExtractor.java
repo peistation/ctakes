@@ -30,7 +30,7 @@ public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
    * All extractors for mention 2, with features named to distinguish them from mention 1
    */
   private SimpleFeatureExtractor mention2FeaturesExtractor = new NamingExtractor(
-      "mention1",
+      "mention2",
       namedEntityType);
 
   /**
