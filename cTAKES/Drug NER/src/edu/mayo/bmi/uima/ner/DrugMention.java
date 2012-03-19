@@ -443,7 +443,7 @@ public class DrugMention implements DrugModel {
 	public void setStrengthElement(String name, int beginOffset, int endOffset) {
 		strength = new StrengthElement(name, beginOffset, endOffset);
 	}
-	@Override
+
 	public String getStrengthUnitElement() {
 		// TODO Auto-generated method stub
 		if (strengthUnit != null)
@@ -452,7 +452,7 @@ public class DrugMention implements DrugModel {
 			return null;
 	}
 
-	@Override
+
 	public void setStrengthUnitElement(String name, int beginOffset, int endOffset) {
 		// TODO Auto-generated method stub
 		strengthUnit = new StrengthUnitElement(name, beginOffset, endOffset);
