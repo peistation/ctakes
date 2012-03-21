@@ -83,54 +83,60 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			// map knowtator mention ids to entity types
 			HashMap<String, String> entityTypes = XMLReader.getEntityTypes(document);
 			// get relations and their arguments
-			ArrayList<RelationInfo> relations = XMLReader.getRelations(document);
+			ArrayList<RelationInfo> relationInfos = XMLReader.getRelations(document);
 
 			// mention ids of entities that are already added to the CAS
 			HashSet<String> addedEntities = new HashSet<String>();
 			
 			// add relations and relation arguments to the CAS
-			for(RelationInfo relation : relations) {
+			for(RelationInfo relationInfo : relationInfos) {
 
 				if(readOnlySharpRelations) {
-					if(! Constants.sharpRelations.contains(relation.relation)) {
+					if(! Constants.sharpRelations.contains(relationInfo.relation)) {
 						continue; // only load SHARP relations
 					}
 				}
 				
-				Span span1 = entityMentions.get(relation.id1).get(0); // just the first part of a disjoint span for now
-				EntityMention entityMention1 = new EntityMention(jCas, span1.start, span1.end);
-				entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id1)));
+				// for disjoint spans, just ignore the gap
+				Span first1 = entityMentions.get(relationInfo.id1).get(0);
+				Span last1 = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
+				
+				EntityMention entityMention1 = new EntityMention(jCas, first1.start, last1.end);
+				entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)));
 				entityMention1.setId(identifiedAnnotationId++);
 				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention1.setConfidence(1);
 				entityMention1.addToIndexes();
 				
-				Span span2 = entityMentions.get(relation.id2).get(0); // just the first part of a disjoint span for now
-				EntityMention entityMention2 = new EntityMention(jCas, span2.start, span2.end);
-				entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relation.id2)));
+				// again, rememeber that some entities have disjoint spans that need to be handled
+				Span first2 = entityMentions.get(relationInfo.id2).get(0);
+				Span last2 = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
+				
+				EntityMention entityMention2 = new EntityMention(jCas, first2.start, last2.end);
+				entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)));
 				entityMention2.setId(identifiedAnnotationId++);
 				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention2.setConfidence(1);
 				entityMention2.addToIndexes();
 
-				addedEntities.add(relation.id1); // save to skip later when adding the rest of entities
-				addedEntities.add(relation.id2); // save to skip later when adding the rest of entities
+				addedEntities.add(relationInfo.id1); // save to skip later when adding the rest of entities
+				addedEntities.add(relationInfo.id2); // save to skip later when adding the rest of entities
 				
 				RelationArgument relationArgument1 = new RelationArgument(jCas);
 				relationArgument1.setId(relationArgumentId++);
 				relationArgument1.setArgument(entityMention1);
-				relationArgument1.setRole(relation.position1);
+				relationArgument1.setRole(relationInfo.position1);
 				
 				RelationArgument relationArgument2 = new RelationArgument(jCas);
 				relationArgument2.setId(relationArgumentId++);
 				relationArgument2.setArgument(entityMention2);
-				relationArgument2.setRole(relation.position2);
+				relationArgument2.setRole(relationInfo.position2);
 				
 				BinaryTextRelation binaryTextRelation = new BinaryTextRelation(jCas);
 				binaryTextRelation.setArg1(relationArgument1);
 				binaryTextRelation.setArg2(relationArgument2);
 				binaryTextRelation.setId(relationId++);
-				binaryTextRelation.setCategory(relation.relation);
+				binaryTextRelation.setCategory(relationInfo.relation);
 				binaryTextRelation.setDiscoveryTechnique(CONST.REL_DISCOVERY_TECH_GOLD_ANNOTATION);
 				binaryTextRelation.setConfidence(1);
 				binaryTextRelation.addToIndexes();
@@ -143,10 +149,10 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 					continue; // this entry is already added
 				}
 				
-				// for now just use the first part of a disjoint span
-				Span span = entry.getValue().get(0); 
-
-				EntityMention entityMention = new EntityMention(jCas, span.start, span.end);
+				Span first = entry.getValue().get(0);
+				Span last = entry.getValue().get(entry.getValue().size() - 1);
+				
+				EntityMention entityMention = new EntityMention(jCas, first.start, last.end);
 				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);

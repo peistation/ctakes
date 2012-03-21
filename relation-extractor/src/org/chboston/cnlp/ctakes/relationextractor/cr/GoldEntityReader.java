@@ -73,11 +73,12 @@ public class GoldEntityReader extends JCasAnnotator_ImplBase {
 			HashMap<String, String> entityTypes = XMLReader.getEntityTypes(document);
 			
 			for(Map.Entry<String, ArrayList<Span>> entry : entityMentions.entrySet()) {
-				
-				// for now just use the first part of a disjoint span
-				Span span = entry.getValue().get(0); 
 
-				EntityMention entityMention = new EntityMention(initView, span.start, span.end);
+				// for disjoint spans, just ignore the gap
+				Span first = entry.getValue().get(0);
+				Span last = entry.getValue().get(entry.getValue().size() - 1);
+				
+				EntityMention entityMention = new EntityMention(initView, first.start, last.end);
 				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
