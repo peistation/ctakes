@@ -87,7 +87,7 @@ public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
 				String getterMethName = (String) getterItr.next();
 				String setterMethName = (String) m.get(getterMethName);
 
-				Method getterMeth = srcClass.getMethod(getterMethName, null);
+				Method getterMeth = srcClass.getMethod(getterMethName, (Class []) null);
 
 				// get corresponding setter that has compatible args
 				Class[] setterArgs = { getterMeth.getReturnType() };
@@ -145,7 +145,7 @@ public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
 					Method getterMeth = (Method) getterItr.next();
 					Method setterMeth = (Method) iv_getSetMap.get(getterMeth);
 
-					Object val = getterMeth.invoke(srcObj, null);
+					Object val = getterMeth.invoke(srcObj, (Object []) null);
 					Object[] setterArgs = { val };
 					setterMeth.invoke(destObj, setterArgs);
 					
