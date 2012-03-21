@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/home/dima/mipacq/iaa/data-before-02-16-2011-cleanup/for_iaa_only/corpus1_2/gold/text_c1c2all_gold/</string>
+                        <string>/home/dima/sharp/cloud/mipacq/text/train/</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -31,7 +31,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/</string>
+                        <string>/home/dima/sharp/cloud/mipacq/xml/train/</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
