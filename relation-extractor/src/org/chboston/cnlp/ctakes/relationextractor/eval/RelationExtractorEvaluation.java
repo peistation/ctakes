@@ -312,78 +312,52 @@ public class RelationExtractorEvaluation {
         systemRelations.add(new HashableRelation(relation));
       }
 
-      // determine precision and recall
+      // determine which system relations were also in the gold relations
       Set<HashableRelation> intersection = new HashSet<HashableRelation>(goldRelations);
       intersection.retainAll(systemRelations);
 
       // update stats
-      this.batchStats.update(goldRelations.size(), systemRelations.size(), intersection.size());
-      this.collectionStats.update(goldRelations.size(), systemRelations.size(), intersection.size());
+      this.batchStats.update(
+          categories(goldRelations),
+          categories(systemRelations),
+          categories(intersection));
+      this.collectionStats.update(
+          categories(goldRelations),
+          categories(systemRelations),
+          categories(intersection));
+    }
+    
+    private static List<String> categories(Collection<HashableRelation> relations) {
+      List<String> categories = new ArrayList<String>();
+      for (HashableRelation relation: relations) {
+        categories.add(relation.category);
+      }
+      return categories;
     }
 
-    private Stats batchStats;
+    private EvaluationStatistics<String> batchStats;
 
-    private Stats collectionStats;
+    private EvaluationStatistics<String> collectionStats;
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
       super.initialize(context);
-      this.batchStats = new Stats();
-      this.collectionStats = new Stats();
+      this.batchStats = new EvaluationStatistics<String>();
+      this.collectionStats = new EvaluationStatistics<String>();
     }
 
     @Override
     public void batchProcessComplete() throws AnalysisEngineProcessException {
       super.batchProcessComplete();
       System.err.printf("Batch: %s\n", this.batchStats);
-      this.batchStats = new Stats();
+      this.batchStats = new EvaluationStatistics<String>();
     }
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
       super.collectionProcessComplete();
       System.err.printf("Collection: %s\n", this.collectionStats);
-      this.collectionStats = new Stats();
-    }
-
-    private static class Stats {
-      public int gold = 0;
-
-      public int system = 0;
-
-      public int correct = 0;
-
-      public void update(int gold, int system, int correct) {
-        this.gold += gold;
-        this.system += system;
-        this.correct += correct;
-      }
-
-      public double precision() {
-        return ((double) this.correct) / this.system;
-      }
-
-      public double recall() {
-        return ((double) this.correct) / this.gold;
-      }
-
-      public double f1() {
-        double p = this.precision();
-        double r = this.recall();
-        return (2 * p * r) / (p + r);
-      }
-
-      @Override
-      public String toString() {
-        return String.format(
-            "P=%.3f R=%.3f F1=%.3f gold=%d system=%d correct=%d",
-            this.precision(),
-            this.recall(),
-            this.f1(),
-            this.gold,
-            this.system,
-            this.correct);
-      }
+      this.collectionStats = new EvaluationStatistics<String>();
     }
 
     /**
