@@ -56,7 +56,6 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	private StructFinder structureFinder;
 	private InputStream templateContent;
 
-	private String modelPath;
 	private String templatePath;
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -79,12 +78,8 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 
 		try {
 			logger.info("Initializing section parser...");
-			File checkFile = new File(modelPath);
-
-			if(! checkFile.exists())
-				throw new FileNotFoundException();
-
-			checkFile = new File(templatePath);
+			
+			File checkFile = new File(templatePath);
 			if(! checkFile.exists())
 				throw new FileNotFoundException();
 
