@@ -23,15 +23,12 @@
  */
 package edu.mayo.bmi.uima.core.ae;
 
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -39,13 +36,12 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.DocumentSection;
+import findstruct.Section;
+import findstruct.StructFinder;
 
 /**
  * Creates a single segment annotation that spans the entire document. This is
@@ -56,8 +52,9 @@ import edu.mayo.bmi.uima.core.util.DocumentSection;
  */
 public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	private String segmentId;
-	private final String modelName = "sectionParser";
 	private final String templateName = "parserTemplate";
+	private StructFinder structureFinder;
+	private InputStream templateContent;
 
 	private String modelPath;
 	private String templatePath;
@@ -68,8 +65,17 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
 		super.initialize(aContext);
-		modelPath = (String) aContext.getConfigParameterValue(modelName);
+		structureFinder = new StructFinder();
+
 		templatePath = (String) aContext.getConfigParameterValue(templateName);
+
+		try {
+			File in = new File(templatePath);
+			templateContent = new FileInputStream(in);;
+
+		}catch(Exception e ){
+			logger.error("Error reading template file: " + e.getMessage());
+		}
 
 		try {
 			logger.info("Initializing section parser...");
@@ -138,101 +144,55 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	 * @return the identified sections
 	 */
 	private HashMap<Integer, DocumentSection> sectionIdentifier(String text) {
-		String tmpFilePath = this.storeContent(text);
-		if (tmpFilePath == null) return null;
 
-		HashMap<Integer, DocumentSection> cSections = null;
+		HashMap<Integer, DocumentSection> cSections = 
+				new HashMap<Integer, DocumentSection>();
 
-		Runtime rt = Runtime.getRuntime();
 		try {
-			String command = "java -jar " + this.modelPath ;
-			command += " -t " + this.templatePath ;
-			command += " -x " + tmpFilePath ;
-			command += " " + tmpFilePath;
+			ArrayList<Section> foundSections = 
+					structureFinder.execute(text, templateContent);
 
-			Process pr = rt.exec(command);
-			pr.waitFor();
+			cSections = this.identifySections(foundSections);
 
-			cSections = this.xmlImporter(tmpFilePath  + ".xml");
-
-			// when done destroy the process
-			pr.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error creating tmp file: " + e.getMessage());
+			logger.error("Error finding sections: " + e.getMessage());
 		}	
 
 		return cSections;
 	}
 
 	/**
-	 * Write the content of the document to a temp file
 	 * @author andreea bodnari
-	 * @param text
-	 * @return the absolute path of the file
+	 * @param foundSections
 	 */
-	private String storeContent(String text) {
-		try {
-			File temp = File.createTempFile("sectionsRaw", ".txt");
-			temp.deleteOnExit();
-
-			BufferedWriter out = new BufferedWriter(new FileWriter(temp));
-			out.write(text);
-			out.close();
-
-			return temp.getAbsolutePath();
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error("Error creating tmp file: " + e.getMessage());
-		}		
-
-		return null;
-	}
-
-	/**
-	 * @author andreea bodnari
-	 * @param filePath
-	 */
-	private HashMap<Integer, DocumentSection> xmlImporter(String filePath){
-		File givenFile = new File(filePath);
-
-		if(! givenFile.exists()) return null;
+	private HashMap<Integer, DocumentSection> identifySections(
+			ArrayList<Section> foundSections){
 
 		HashMap<Integer, DocumentSection> sections = 
 				new HashMap<Integer, DocumentSection>();
 
 		try{
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(givenFile);
-			doc.getDocumentElement().normalize();
-			NodeList children = doc.getChildNodes();
+
 			int startLine = 0;
 
-			for (int s = 0; s < children.getLength(); s++) {
-				Node fstNode = children.item(s);
+			for (Section sct : foundSections) {
+				String nodeName = sct.getHeader();
+				String content  = sct.getContent();
 
-				NodeList subChildren  = fstNode.getChildNodes();
+				if(nodeName== null || nodeName.trim().isEmpty() || 
+						content == null || content.trim().isEmpty())
+					continue;
 
-				for (int s1 = 0; s1 < subChildren.getLength(); s1 ++) {
-					Node sndNode = subChildren.item(s1);
-					String nodeName = sndNode.getNodeName();
-					String content  = sndNode.getTextContent();
+				String[] splitContent = content.split("\n");
+				int endLine = startLine + splitContent.length;
 
-					if(nodeName== null || nodeName.trim().isEmpty() || 
-							content == null || content.trim().isEmpty())
-						continue;
-					String[] splitContent = content.split("\n");
-					int endLine = startLine + splitContent.length;
+				DocumentSection section = 
+						new DocumentSection(startLine, endLine, content);
+				section.setSectionName(nodeName);
+				sections.put(startLine, section);
 
-					DocumentSection section = 
-							new DocumentSection(startLine, endLine, content);
-					section.setSectionName(nodeName);
-					sections.put(startLine, section);
-
-					startLine = endLine ;
-				}
-
+				startLine = endLine ;
 			}
 
 		}catch(Exception e){

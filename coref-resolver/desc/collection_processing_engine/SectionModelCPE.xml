@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/Users/ab/Documents/cTakes/data/dataset/tr/test/</string>
+                        <string>/Users/ab/Documents/cTakes/data/i2b2/</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -18,7 +18,7 @@
     <casProcessors casPoolSize="3" processingUnitThreadCount="1">
         <casProcessor deployment="integrated" name="Section SVM Vector Creator">
             <descriptor>
-                <import location="../analysis_engine/SectionVectorCreator.xml"/>
+                <import location="../analysis_engine/ODIESvmVectorCreator_wSection.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
