@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -182,7 +183,7 @@ public class RelationExtractorEvaluation {
    * Class that copies {@link EntityMention} annotations from the CAS with the manual annotations to
    * the CAS that will be used by the system.
    */
-  public static class EntityMentionCopier extends JCasAnnotator_ImplBase {
+  public static class GoldEntityMentionCopier extends JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
@@ -205,6 +206,21 @@ public class RelationExtractorEvaluation {
       }
     }
 
+  }
+  
+  
+  /**
+   * Class that removes {@link EntityMention} annotations from the CAS's default view
+   */
+  public static class EntityMentionRemover extends JCasAnnotator_ImplBase {
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      Collection<EntityMention> mentions = JCasUtil.select(jCas, EntityMention.class);
+      // iterate over copy of collection so that we can delete mentions
+      for (EntityMention mention : new ArrayList<EntityMention>(mentions)) {
+        mention.removeFromIndexes();
+      }
+    }
   }
 
   /**
@@ -229,17 +245,22 @@ public class RelationExtractorEvaluation {
 
     @Override
     public List<AnalysisEngine> getTrainingPipeline(String name) throws UIMAException {
-      // run the relation extractor in training mode
-      return Arrays.asList(AnalysisEngineFactory.createPrimitive(
-          RelationExtractorAnnotator.class,
-          RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
-          GOLD_VIEW_NAME,
-          CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-          this.dataWriterFactoryClass.getName(),
-          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-          this.getDir(name).getPath(),
-          RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-          this.probabilityOfKeepingANegativeExample));
+
+      return Arrays.asList(
+          // use gold entities during training (removing cTAKES entities) 
+          AnalysisEngineFactory.createPrimitive(EntityMentionRemover.class),
+          AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
+          // run the relation extractor in training mode
+          AnalysisEngineFactory.createPrimitive(
+              RelationExtractorAnnotator.class,
+              RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
+              GOLD_VIEW_NAME,
+              CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+              this.dataWriterFactoryClass.getName(),
+              DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+              this.getDir(name).getPath(),
+              RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+              this.probabilityOfKeepingANegativeExample));
     }
 
     @Override
@@ -247,7 +268,7 @@ public class RelationExtractorEvaluation {
       // run an annotator that copies over the entity mentions,
       // and the relation extractor in classification mode
       return Arrays.asList(
-          AnalysisEngineFactory.createPrimitive(EntityMentionCopier.class),
+          AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
           AnalysisEngineFactory.createPrimitive(
               RelationExtractorAnnotator.class,
               GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
