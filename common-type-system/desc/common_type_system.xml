@@ -264,7 +264,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.O</name>
-      <description></description>
+      <description/>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -1488,6 +1488,58 @@
           <name>event</name>
           <description/>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Event</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention</name>
+      <description>A text string (EventMention and therefore IdentifiedAnnotation) that refers to a (Medication) Event.</description>
+      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.EventMention</supertypeName>
+      <features>
+        <featureDescription>
+          <name>medicationFrequency</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationFrequency</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationDuration</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationDuration</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationRoute</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationRoute</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationStatusChange</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationStatusChange</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationDosage</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationDosage</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationStrength</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationStrength</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>medicationForm</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.MedicationForm</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>startDate</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>endDate</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
