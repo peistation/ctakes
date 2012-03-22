@@ -1,5 +1,6 @@
 package org.chboston.cnlp.ctakes.relationextractor.eval;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +9,10 @@ import java.util.List;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
-class EvaluationStatistics<OUTCOME_TYPE extends Comparable<? super OUTCOME_TYPE>> {
+class EvaluationStatistics<OUTCOME_TYPE extends Comparable<? super OUTCOME_TYPE>> implements
+    Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private Multiset<OUTCOME_TYPE> gold = HashMultiset.create();
 
@@ -61,7 +65,7 @@ class EvaluationStatistics<OUTCOME_TYPE extends Comparable<? super OUTCOME_TYPE>
 
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder("\n");
+    StringBuilder result = new StringBuilder();
     result.append("P\tR\tF1\t#gold\t#system\t#correct\n");
     result.append(String.format(
         "%.3f\t%.3f\t%.3f\t%d\t%d\t%d\tOVERALL\n",

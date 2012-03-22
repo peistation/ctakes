@@ -3,6 +3,7 @@ package org.chboston.cnlp.ctakes.relationextractor.eval;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -50,6 +52,7 @@ import org.uimafit.util.JCasUtil;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
 
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
@@ -65,6 +68,11 @@ public class RelationExtractorEvaluation {
         usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
         required = true)
     public File trainDirectory;
+
+    @Option(
+        name = "--grid-search",
+        usage = "run a grid search to select the best parameters")
+    public boolean gridSearch = false;
   }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
@@ -93,20 +101,103 @@ public class RelationExtractorEvaluation {
     };
     readerProvider.setNumberOfFolds(2);
 
-    // defines pipelines that train a classifier and classify with it
-    float probabilityOfKeepingANegativeExample = 0.05f;
-    PipelineProvider pipelineProvider = new PipelineProvider(
-        new File("models"),
-        DefaultMultiClassLIBSVMDataWriterFactory.class,
-        probabilityOfKeepingANegativeExample);
+    // define the grid of parameters over which we will search
+    List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
+    if (options.gridSearch) { 
+      for (float probabilityOfKeepingANegativeExample : new float[] { 0.01f, 0.05f, 0.1f, 0.5f }) {
+        for (double svmCost : new double[] { 1, 10, 100, 1000 }) {
+          for (double svmGamma : new double[] { 1, 10, 100, 1000 }) {
+            possibleParams.add(new ParameterSettings(
+                probabilityOfKeepingANegativeExample,
+                svmCost,
+                svmGamma));
+          }
+        }
+      }
+    } else {
+      possibleParams.add(new ParameterSettings(0.05f, 1, 100));
+    }
 
-    // defines how to evaluate
-    EvaluationPipelineProvider evaluationProvider = new BatchBasedEvaluationPipelineProvider(
-        AnalysisEngineFactory.createPrimitive(RelationEvaluator.class));
+    // run an evaluation for each set of parameters
+    double maxF1 = Double.MIN_VALUE;
+    ParameterSettings maxParams = null;
+    EvaluationStatistics<?> maxStats = null;
+    for (ParameterSettings params : possibleParams) {
 
-    // runs the evaluation
-    Evaluation evaluation = new Evaluation();
-    evaluation.runCrossValidation(readerProvider, pipelineProvider, evaluationProvider, "-t", "2", "-c", "1", "-g", "100");
+      // defines pipelines that train a classifier and classify with it
+      PipelineProvider pipelineProvider = new PipelineProvider(
+          new File("models"),
+          DefaultMultiClassLIBSVMDataWriterFactory.class,
+          params.probabilityOfKeepingANegativeExample);
+
+      // defines how to evaluate
+      File statisticsFile = new File("models", "collection.statistics");
+      EvaluationPipelineProvider evaluationProvider = new BatchBasedEvaluationPipelineProvider(
+          AnalysisEngineFactory.createPrimitive(
+              RelationEvaluator.class,
+              RelationEvaluator.PARAM_STATISTICS_FILE,
+              statisticsFile.getPath()));
+
+      // runs the evaluation
+      Evaluation evaluation = new Evaluation();
+      evaluation.runCrossValidation(
+          readerProvider,
+          pipelineProvider,
+          evaluationProvider,
+          "-t",
+          "2",
+          "-c",
+          String.valueOf(params.svmCost),
+          "-g",
+          String.valueOf(params.svmGamma));
+
+      // collect the statistics from the evaluation
+      FileInputStream stream = new FileInputStream(statisticsFile);
+      EvaluationStatistics<?> stats;
+      stats = (EvaluationStatistics<?>) SerializationUtils.deserialize(stream);
+      stream.close();
+      System.err.println(params);
+      System.err.println(stats);
+      
+      // determine if these parameter settings are better than the current best
+      if (stats.f1() > maxF1) {
+        maxF1 = stats.f1();
+        maxParams = params;
+        maxStats = stats;
+      }
+    }
+    
+    // find the parameters that had the highest F1
+    System.err.println("Best model:");
+    System.err.println(maxParams);
+    System.err.println(maxStats);
+  }
+  
+  private static class ParameterSettings {
+    public float probabilityOfKeepingANegativeExample;
+
+    public double svmCost;
+
+    public double svmGamma;
+    
+    public ParameterSettings(
+        float probabilityOfKeepingANegativeExample,
+        double svmCost,
+        double svmGamma) {
+      super();
+      this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
+      this.svmCost = svmCost;
+      this.svmGamma = svmGamma;
+    }
+
+    @Override
+    public String toString() {
+      ToStringHelper helper = Objects.toStringHelper(this);
+      helper.add("probabilityOfKeepingANegativeExample", this.probabilityOfKeepingANegativeExample);
+      helper.add("svmCost", this.svmCost);
+      helper.add("svmGamma", this.svmGamma);
+      return helper.toString();
+    }
   }
 
   /**
@@ -291,6 +382,14 @@ public class RelationExtractorEvaluation {
    */
   public static class RelationEvaluator extends JCasAnnotator_ImplBase {
 
+    public static final String PARAM_STATISTICS_FILE = "StatisticsFile";
+
+    @ConfigurationParameter(
+        name = PARAM_STATISTICS_FILE,
+        mandatory = true,
+        description = "The file where overall evaluation statistics should be written")
+    private File statisticsFile;
+
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
       JCas goldView;
@@ -349,14 +448,21 @@ public class RelationExtractorEvaluation {
     @Override
     public void batchProcessComplete() throws AnalysisEngineProcessException {
       super.batchProcessComplete();
-      System.err.printf("Batch: %s\n", this.batchStats);
+      System.err.println("Batch:");
+      System.err.println(this.batchStats);
       this.batchStats = new EvaluationStatistics<String>();
     }
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
       super.collectionProcessComplete();
-      System.err.printf("Collection: %s\n", this.collectionStats);
+      try {
+        FileOutputStream stream = new FileOutputStream(this.statisticsFile);
+        SerializationUtils.serialize(this.collectionStats, stream);
+        stream.close();
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
       this.collectionStats = new EvaluationStatistics<String>();
     }
 
