@@ -1396,11 +1396,6 @@
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.core.type.syntax.SemanticRole</name>
-      <description>Semantic roles according to the PropBank standard.  The "category" as used here can be any of 7 numbered arguments or 15 modifier labels.</description>
-      <supertypeName>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</supertypeName>
-    </typeDescription>
-    <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</name>
       <description>More generalized from cTAKES: edu.mayo.bmi.uima.core.type.IdentifiedAnnotation. Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -1564,6 +1559,57 @@
           <name>normalizedForm</name>
           <description/>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.mayo.bmi.uima.core.type.textsem.Predicate</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>relations</name>
+          <description/>
+          <rangeTypeName>uima.cas.FSList</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>frameSet</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.mayo.bmi.uima.core.type.textsem.SemanticArgument</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>relation</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>label</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation</name>
+      <description/>
+      <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>predicate</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.Predicate</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>argument</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.SemanticArgument</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
