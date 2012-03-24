@@ -22,6 +22,7 @@
 			<lookupField fieldName="first_word"/>
 			<metaFields>
 				<metaField fieldName="code"/>
+				<metaField fieldName="codeRxNorm"/>
 				<metaField fieldName="preferred_designation"/>
 				<metaField fieldName="other_designation"/>
 			</metaFields>
@@ -71,7 +72,7 @@
 			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.OrangeBookFilterConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
-					<property key="codeMetaField" value="code"/>
+					<property key="codeMetaField" value="codeRxNorm"/> <!-- Use value="code" for UMLS CUIs -->
 					<property key="luceneFilterExtResrcKey" value="OrangeBookIndexReader"/>
 				</properties>
 			</lookupConsumer>
