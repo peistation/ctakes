@@ -40,6 +40,7 @@ import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.EventMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 
 /**
@@ -157,7 +158,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 
 			IdentifiedAnnotation neAnnot;
 			if (tid == CONST.NE_TYPE_ID_DRUG || tid == CONST.NE_TYPE_ID_UNKNOWN) {
-				neAnnot = new EventMention(jcas);	
+				neAnnot = new MedicationEventMention(jcas);	
 			} else {
 				neAnnot = new EntityMention(jcas);	
 			

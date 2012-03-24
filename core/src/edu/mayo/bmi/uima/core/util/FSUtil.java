@@ -40,7 +40,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class FSUtil {
 	
@@ -106,9 +106,9 @@ public class FSUtil {
 	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
-	    EntityMention ne = (EntityMention)itr.next();
-		if(isValidNE(ne.getTypeID(), validNeTypes))
-		    count++;
+	    	IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next();
+	    	if(isValidNE(ne.getTypeID(), validNeTypes))
+	    		count++;
 	    }
 	    return count;
 	}
@@ -128,9 +128,9 @@ public class FSUtil {
 	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
-	    EntityMention ne = (EntityMention)itr.next();
-		if(isValidNE(ne.getTypeID(), validNeTypes))
-		    list.add(ne);
+    		IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next(); // might be an EventMention or an EntityMention
+	    	if(isValidNE(ne.getTypeID(), validNeTypes))
+	    		list.add(ne);
 	    }
 	    return list;
 	}

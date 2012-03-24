@@ -10,19 +10,14 @@ import java.util.Set;
 import net.openai.util.fsm.AnyCondition;
 import net.openai.util.fsm.Machine;
 import net.openai.util.fsm.State;
-import edu.mayo.bmi.fsm.condition.DecimalCondition;
-import edu.mayo.bmi.fsm.condition.IntegerCondition;
-import edu.mayo.bmi.fsm.condition.NegateCondition;
-import edu.mayo.bmi.fsm.condition.NumberCondition;
 import edu.mayo.bmi.fsm.condition.PunctuationValueCondition;
+import edu.mayo.bmi.fsm.condition.SymbolValueCondition;
 import edu.mayo.bmi.fsm.condition.WordSetCondition;
-import edu.mayo.bmi.fsm.ner.elements.conditions.FractionStrengthCondition;
-import edu.mayo.bmi.fsm.ner.elements.conditions.RangeStrengthCondition;
-import edu.mayo.bmi.fsm.ner.elements.conditions.StrengthUnitCombinedCondition;
-import edu.mayo.bmi.fsm.ner.elements.conditions.StrengthUnitCondition;
-import edu.mayo.bmi.fsm.ner.output.elements.StrengthToken;
+import edu.mayo.bmi.fsm.ner.elements.conditions.ContainsSetTextValueCondition;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitCombinedToken;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitToken;
+import edu.mayo.bmi.fsm.ner.states.util.IndentStartState;
 import edu.mayo.bmi.fsm.state.NamedState;
-import edu.mayo.bmi.fsm.state.NonTerminalEndState;
 import edu.mayo.bmi.fsm.token.BaseToken;
 
 /**
@@ -30,14 +25,13 @@ import edu.mayo.bmi.fsm.token.BaseToken;
  * input of tokens.
  * @author Mayo Clinic
  */
-public class StrengthFSM {
+public class StrengthUnitFSM {
 	// text fractions
-	//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-	//Set iv_fullTextSet = new HashSet();
-	Set iv_numberTextSet = new HashSet();
-//	Set iv_oneOfTwoTextSet = new HashSet();
-//	Set iv_twoOfTwoTextSet = new HashSet();
+	Set<String> iv_fullTextSet = new HashSet();
+	Set iv_oneOfTwoTextSet = new HashSet();
+	Set iv_twoOfTwoTextSet = new HashSet();
 	private Machine iv_strengthMachine;
+	private Machine iv_strengthCombinedMachine;
 	private Set iv_machineSet = new HashSet();
 
 	/**
@@ -45,26 +39,50 @@ public class StrengthFSM {
 	 * Constructor
 	 *
 	 */
-	public StrengthFSM() {
+	public StrengthUnitFSM() {
 
-		iv_numberTextSet.add("one");
-		iv_numberTextSet.add("two");
-		iv_numberTextSet.add("three");
-		iv_numberTextSet.add("four");
-		iv_numberTextSet.add("five");
-		iv_numberTextSet.add("six");
-		iv_numberTextSet.add("seven");
-		iv_numberTextSet.add("eight");
-		iv_numberTextSet.add("nine");
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens	
+		iv_oneOfTwoTextSet.add("international");
+		
+		iv_twoOfTwoTextSet.add("units");
+		iv_fullTextSet.add("micrograms");
+		iv_fullTextSet.add("microgram");
+		iv_fullTextSet.add("teaspoon");
+		iv_fullTextSet.add("teaspoons");
+		iv_fullTextSet.add("tablespoon");
+		iv_fullTextSet.add("tablespoons");
+		iv_fullTextSet.add("gram");
+		iv_fullTextSet.add("grams");
+		iv_fullTextSet.add("centigram");
+		iv_fullTextSet.add("centigrams");
+		iv_fullTextSet.add("milligram");
+		iv_fullTextSet.add("milligrams");
+		iv_fullTextSet.add("grain");
+		iv_fullTextSet.add("grains");
+		iv_fullTextSet.add("puffs");
+		iv_fullTextSet.add("puff");
+		iv_fullTextSet.add("unit");
+		iv_fullTextSet.add("units");
 
+		iv_fullTextSet.add("gtts");
+		iv_fullTextSet.add("ui");
+		iv_fullTextSet.add("iu");
+		iv_fullTextSet.add("meq");
+		iv_fullTextSet.add("mcg");
+		iv_fullTextSet.add("gr");
+		iv_fullTextSet.add("gm");
+		iv_fullTextSet.add("tsp");
+		iv_fullTextSet.add("tbsp");
+		iv_fullTextSet.add("g");
+		iv_fullTextSet.add("mg");
+		iv_fullTextSet.add("ou");
 		
 		iv_strengthMachine = getStrengthMachine();
+		iv_strengthCombinedMachine = getStrengthCombinedMachine();
+		iv_machineSet.add(iv_strengthCombinedMachine);
 		iv_machineSet.add(iv_strengthMachine);
 
 
 	}
-
 	/**
 	 * Handles a complex range of strength representations for the discovery of the combined 
 	 * quantity and unit value for this element. The following represents the range of strength
@@ -73,71 +91,71 @@ public class StrengthFSM {
 	 * 		<li>250-mg</li>
 	 * 		<li>two-puffs</li>
 	 * 		<li>1-cc</li>
-	 * 	 	<li>0.4mg</li>
-	 * 		<li>0.51milligrams</li>
-	 *      <li>25.7/30.4mg</li>
 	 * 		<li>15.5 mg</li>
 	 * 		<li>25.7-30.2 mg</li>
-	 * 		<li>two-3.5mg</li>
 	 *  </ol>
 	 */
 	private Machine getStrengthMachine(){
 		State startState = new NamedState("START");
 		State endState = new NamedState("END");
-		State connectState = new NamedState("CONNECT");
 		State unitState = new NamedState("UNIT");
-		State decimalState = new NamedState("DOT");
-		State complexState = new NamedState("COMPLEX");
-		State hyphenState = new NamedState("HYPHEN");
-		State dateState = new NamedState("DATE");
-		State ntEndState = new NonTerminalEndState("NON TERMINAL END");
-		State ntEndHyphState = new NonTerminalEndState("NON TERMINAL HYPH END");
+		State ntFalseTermState = new IndentStartState("NON TERMINAL START");
 		endState.setEndStateFlag(true);
-		ntEndState.setEndStateFlag(true);
-		ntEndHyphState.setEndStateFlag(true);
+		ntFalseTermState.setEndStateFlag(true);
 
-		startState.addTransition(new RangeStrengthCondition(), endState);
-		startState.addTransition(new FractionStrengthCondition(), dateState);
-		startState.addTransition(new NumberCondition(), connectState);
-		startState.addTransition(new IntegerCondition(), connectState);
-		startState.addTransition(new DecimalCondition(), connectState);
-		startState.addTransition(new WordSetCondition(iv_numberTextSet, false), connectState);
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-//		startState.addTransition(new StrengthUnitCondition(), ntEndState);
-		startState.addTransition(new StrengthUnitCombinedCondition(), endState);
+//		startState.addTransition(new ContainsSetTextValueCondition(
+//				iv_fullTextSet, false), endState);
+//		startState.addTransition(new WordSetCondition(
+//				iv_fullTextSet, false), endState);
+		
+		startState.addTransition(new WordSetCondition(iv_fullTextSet, false), endState);
+		startState.addTransition(new PunctuationValueCondition('-'), unitState);
+		startState.addTransition(new SymbolValueCondition('%'), endState);
 		startState.addTransition(new AnyCondition(), startState);
 		
-		dateState.addTransition(new NegateCondition( new PunctuationValueCondition('/')), endState);
-		dateState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		connectState.addTransition(new StrengthUnitCondition(), ntEndState);
-		connectState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		connectState.addTransition(new PunctuationValueCondition('-'), unitState);
-		connectState.addTransition(new PunctuationValueCondition('.'), decimalState);
-		connectState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		decimalState.addTransition(new StrengthUnitCondition(), ntEndState);
-		decimalState.addTransition(new StrengthUnitCombinedCondition(), endState);
-		decimalState.addTransition(new PunctuationValueCondition('-'), unitState);
-		decimalState.addTransition(new NumberCondition(), complexState);
-		decimalState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		unitState.addTransition(new StrengthUnitCondition(), ntEndHyphState);
-		unitState.addTransition(new StrengthUnitCombinedCondition(), endState);
+		unitState.addTransition(new WordSetCondition(iv_fullTextSet, false), ntFalseTermState);
+		unitState.addTransition(new SymbolValueCondition('%'), endState);
 		unitState.addTransition(new AnyCondition(), startState);
+
+		ntFalseTermState.addTransition(new AnyCondition(), startState);
+		endState.addTransition(new AnyCondition(), startState);
+		Machine m = new Machine(startState);
+		return m;
+	}
+	/**
+	 * Handles a complex range of strength representations for the discovery of the combined 
+	 * quantity and unit value for this element. The following represents the range of strength
+	 * types which are discovered:
+	 *  <ol>
+	 * 		<li>250mg</li>
+	 * 		<li>1-cc</li>
+	 * 	 	<li>0.4mg</li>
+	 * 		<li>two-3.5mg</li>
+	 *  </ol>
+	 */
+	private Machine getStrengthCombinedMachine(){
+		State startState = new NamedState("START");
+		State endState = new NamedState("END");
+		State unitState = new NamedState("UNIT");
+		State ntFalseTermState = new IndentStartState("NON TERMINAL START");
+		endState.setEndStateFlag(true);
+		ntFalseTermState.setEndStateFlag(true);
+
+		startState.addTransition(new ContainsSetTextValueCondition(
+				iv_fullTextSet, false), endState);
+//		startState.addTransition(new WordSetCondition(
+//				iv_fullTextSet, false), endState);
+//		
+//		startState.addTransition(new WordSetCondition(iv_fullTextSet, false), endState);
+		startState.addTransition(new PunctuationValueCondition('-'), unitState);
+		startState.addTransition(new SymbolValueCondition('%'), endState);
+		startState.addTransition(new AnyCondition(), startState);
 		
-		complexState.addTransition(new PunctuationValueCondition('-'), hyphenState);
-		complexState.addTransition(new AnyCondition(), startState);
-		
-		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens
-		hyphenState.addTransition(new StrengthUnitCondition(), ntEndHyphState);
-		hyphenState.addTransition(new AnyCondition() , startState);
-		
-		ntEndHyphState.addTransition(new AnyCondition(), startState);
-		ntEndState.addTransition(new AnyCondition(), startState);
+		unitState.addTransition(new ContainsSetTextValueCondition(iv_fullTextSet, false), ntFalseTermState);
+		unitState.addTransition(new SymbolValueCondition('%'), endState);
+		unitState.addTransition(new AnyCondition(), startState);
+
+		ntFalseTermState.addTransition(new AnyCondition(), startState);
 		endState.addTransition(new AnyCondition(), startState);
 		Machine m = new Machine(startState);
 		return m;
@@ -275,24 +293,30 @@ public class StrengthFSM {
 						tokenStartIndex++;
 					}
 					
-					BaseToken startToken = (BaseToken) tokens.get(tokenStartIndex);
-					BaseToken endToken = null;
-					if (currentState instanceof NonTerminalEndState && i > 0) {
-						if (!currentState.getName().contentEquals("NON TERMINAL HYPH END"))
-							endToken = (BaseToken) tokens.get(i - 1);
-						else if (i > 1)
-							endToken = (BaseToken) tokens.get(i - 2);
+					BaseToken startToken = null;
+					BaseToken endToken = token;
+					if (currentState instanceof IndentStartState) {
+						startToken = (BaseToken) tokens
+								.get(tokenStartIndex + 1);
+
 					} else {
-						endToken = token;
+						startToken = (BaseToken) tokens.get(tokenStartIndex);
+
 					}
-					/*if (fsm.equals(iv_strengthMachine)){
-						startToken = (BaseToken) tokens	.get(tokenStartIndex+1);
-					} else {*/
-				//	    startToken = (BaseToken) tokens.get(tokenStartIndex);	
-					//}
-					StrengthToken measurementToken = new StrengthToken(startToken
-							.getStartOffset(), endToken.getEndOffset());
-					measurementSet.add(measurementToken);
+					StrengthUnitToken measurementToken = null;
+					StrengthUnitCombinedToken measurementCombinedToken = null;
+					if (fsm.equals(iv_strengthCombinedMachine)) {
+						measurementCombinedToken = new StrengthUnitCombinedToken(startToken
+								.getStartOffset(), endToken.getEndOffset());
+						measurementSet.add(measurementCombinedToken);
+						
+					}
+					else {
+						measurementToken = new StrengthUnitToken(startToken
+								.getStartOffset(), endToken.getEndOffset());
+						measurementSet.add(measurementToken);
+						
+					}
 					fsm.reset();
 				}
 			}
@@ -400,116 +424,31 @@ public class StrengthFSM {
 						// skip ahead over single token we don't want
 						tokenStartIndex++;
 					}
-					BaseToken startToken = (BaseToken) tokens
-							.get(tokenStartIndex);
-					BaseToken endToken = null;
-					if (currentState instanceof NonTerminalEndState && i > 0) {
-						if (!currentState.getName().contentEquals("NON TERMINAL HYPH END"))
-							endToken = (BaseToken) tokens.get(i - 1);
-						else if (i > 0)
-							endToken = (BaseToken) tokens.get(i - 2);
+					BaseToken startToken = null;
+					BaseToken endToken = token;
+					if (currentState instanceof IndentStartState) {
+						startToken = (BaseToken) tokens
+								.get(tokenStartIndex + 1);
+
 					} else {
-						endToken = token;
+						startToken = (BaseToken) tokens.get(tokenStartIndex);
+
 					}
-					/*if (fsm.equals(iv_strengthMachine)){
-						startToken = (BaseToken) tokens	.get(tokenStartIndex+1);
-					} else {*/
-					//    startToken = (BaseToken) tokens.get(tokenStartIndex);	
-					//}
-					StrengthToken measurementToken = new StrengthToken(startToken
+					StrengthUnitToken measurementToken = null;
+					StrengthUnitCombinedToken measurementCombinedToken = null;
+					if (fsm.equals(iv_strengthCombinedMachine)) {
+						measurementCombinedToken = new StrengthUnitCombinedToken(startToken
 								.getStartOffset(), endToken.getEndOffset());
-					measurementSet.add(measurementToken);
-			
-					fsm.reset();
-					
-				}
-			}
-		}
-
-		// cleanup
-		tokenStartMap.clear();
-
-		// reset machines
-		Iterator itr = iv_machineSet.iterator();
-		while (itr.hasNext()) {
-			Machine fsm = (Machine) itr.next();
-			fsm.reset();
-		}
-
-		return measurementSet;
-	}
-
-	/**
-	 * Executes the finite state machines.
-	 * @param tokens
-	 * @return Set of RangeToken objects.
-	 * @throws Exception
-	 */
-	public Set execute(List tokens) throws Exception {
-		Set measurementSet = new HashSet();
-
-		// maps a fsm to a token start index
-		// key = fsm , value = token start index
-		Map tokenStartMap = new HashMap();
-
-
-		int tokenOffset = 0;
-		int anchorKey = 0;
-		
-		for (int i = 0; i < tokens.size(); i++) {
-			BaseToken token = (BaseToken) tokens.get(i);
-
-			Integer key = new Integer(token.getStartOffset());
-
-
-			Iterator machineItr = iv_machineSet.iterator();
-			while (machineItr.hasNext()) {
-				Machine fsm = (Machine) machineItr.next();
-
-				fsm.input(token);
-
-				State currentState = fsm.getCurrentState();
-				if (currentState.getStartStateFlag()) {
-					tokenStartMap.put(fsm, new Integer(i));
-					tokenOffset = 0;
-				}
-				if (currentState.getEndStateFlag()) {
-					Object o = tokenStartMap.get(fsm);
-					int tokenStartIndex;
-					if (o == null) {
-						// By default, all machines start with
-						// token zero.
-						tokenStartIndex = 0;
-					} else {
-						Integer tokenMap = new Integer(0);
-											
-						BaseToken lookUpOffset = (BaseToken) tokens.get(((Integer) o).intValue());
-							
+						measurementSet.add(measurementCombinedToken);
 						
-						tokenStartIndex = ((Integer) o).intValue() + tokenMap.intValue();
-						// skip ahead over single token we don't want
-						tokenStartIndex++;
 					}
-					BaseToken startToken = (BaseToken) tokens
-							.get(tokenStartIndex);
-					BaseToken endToken = null;
-					if (currentState instanceof NonTerminalEndState && i > 0) {
-						if (!currentState.getName().contentEquals("NON TERMINAL HYPH END"))
-							endToken = (BaseToken) tokens.get(i - 1);
-						else if (i > 0)
-							endToken = (BaseToken) tokens.get(i - 2);
-					} else {
-						endToken = token;
-					}
-					/*if (fsm.equals(iv_strengthMachine)){
-						startToken = (BaseToken) tokens	.get(tokenStartIndex+1);
-					} else {*/
-					//    startToken = (BaseToken) tokens.get(tokenStartIndex);	
-					//}
-					StrengthToken measurementToken = new StrengthToken(startToken
+					else {
+						measurementToken = new StrengthUnitToken(startToken
 								.getStartOffset(), endToken.getEndOffset());
-					measurementSet.add(measurementToken);
-			
+						measurementSet.add(measurementToken);
+						
+					}
+					
 					fsm.reset();
 					
 				}
@@ -528,6 +467,7 @@ public class StrengthFSM {
 
 		return measurementSet;
 	}
+
 
 	  
 }

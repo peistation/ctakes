@@ -40,6 +40,7 @@ import edu.mayo.bmi.fsm.ner.machines.elements.FrequencyUnitFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.RangeStrengthFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.RouteFSM;
 import edu.mayo.bmi.fsm.ner.machines.elements.StrengthFSM;
+import edu.mayo.bmi.fsm.ner.machines.elements.StrengthUnitFSM;
 import edu.mayo.bmi.fsm.ner.machines.util.SubSectionIndicatorFSM;
 import edu.mayo.bmi.fsm.ner.machines.util.SuffixStrengthFSM;
 import edu.mayo.bmi.fsm.ner.output.elements.BaseTokenImpl;
@@ -51,6 +52,8 @@ import edu.mayo.bmi.fsm.ner.output.elements.FrequencyToken;
 import edu.mayo.bmi.fsm.ner.output.elements.FrequencyUnitToken;
 import edu.mayo.bmi.fsm.ner.output.elements.RouteToken;
 import edu.mayo.bmi.fsm.ner.output.elements.StrengthToken;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitToken;
+import edu.mayo.bmi.fsm.ner.output.elements.StrengthUnitCombinedToken;
 import edu.mayo.bmi.fsm.ner.output.util.SubSectionIndicator;
 import edu.mayo.bmi.fsm.ner.output.util.SuffixStrengthToken;
 import edu.mayo.bmi.uima.core.ae.TokenizerAnnotator;
@@ -79,11 +82,12 @@ import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
 import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.core.type.textsem.DateAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.EventMention;
+import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.DateParser;
 import edu.mayo.bmi.uima.core.util.FSUtil;
+import edu.mayo.bmi.uima.core.util.JCasUtil;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
@@ -99,6 +103,7 @@ import edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RangeStrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RouteAnnotation;
 import edu.mayo.bmi.uima.drugner.type.StrengthAnnotation;
+import edu.mayo.bmi.uima.drugner.type.StrengthUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SuffixStrengthAnnotation;
 import edu.mayo.bmi.uima.ner.DrugMention;
@@ -106,7 +111,6 @@ import edu.mayo.bmi.uima.ner.elements.DrugChangeStatusElement;
 
 import static edu.mayo.bmi.uima.core.type.constants.CONST.*;
 
-import edu.mayo.bmi.uima.core.type.refsem.Medication;
 
 /**
  * Finds tokens based on context. There are two major groupings or ranges that
@@ -125,7 +129,22 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 */
 	public static final String PARAM_SEGMENTS_MEDICATION_RELATED = "medicationRelatedSection";
 
-	private Map<DrugMentionAnnotation, EventMention> mapDrugMentionAnnotationsToNamedEntities = new HashMap<DrugMentionAnnotation, EventMention>();
+	public static String DISTANCE = "DISTANCE";  
+	/**
+	 * Annotation type that is used to count the distance.
+	 */
+	public static String DISTANCE_ANN_TYPE = "DISTANCE_ANN_TYPE";
+  
+  	/**
+  	 * Annotation type that defines the boundary within which the dictionary hits should be present. 
+  	 */
+  	public static String BOUNDARY_ANN_TYPE = "BOUNDARY_ANN_TYPE";
+  	public static int NO_WINDOW_SIZE_SPECIFIED = -1;
+  	public static int NO_ANNOTATION_TYPE_SPECIFIED = -1;
+
+  	private int iWindowSize = NO_WINDOW_SIZE_SPECIFIED;   //window size to identify pair of annotations as related
+  	private int iAnnotationType = NO_ANNOTATION_TYPE_SPECIFIED; //type used to define a window
+  	private int iBoundaryAnnType = NO_ANNOTATION_TYPE_SPECIFIED; //type used to define boundary across which pairs cannot exist.
 
 	private FractionStrengthFSM iv_fractionFSM;
 	private RangeStrengthFSM iv_rangeFSM;
@@ -138,13 +157,14 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	private DrugChangeStatusFSM iv_statusFSM;
 	private DecimalStrengthFSM iv_decimalFSM;
 	private StrengthFSM iv_strengthFSM;
+	private StrengthUnitFSM iv_strengthUnitFSM;
 	private FrequencyUnitFSM iv_frequencyUnitFSM;
 	private FormFSM iv_formFSM;
 	private static final int NERTypeIdentifier = 1;
 	private static boolean handledRanges;
-	private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
 	private Set<String> iv_exclusionTagSet = null;
 	private Set<String> iv_medicationRelatedSections = new HashSet<String>();
+
 
 	public void initialize(UimaContext annotCtx)
 	throws ResourceInitializationException
@@ -169,10 +189,29 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		iv_statusFSM = new DrugChangeStatusFSM();
 		iv_decimalFSM = new DecimalStrengthFSM();
 		iv_strengthFSM = new StrengthFSM();
+		iv_strengthUnitFSM = new StrengthUnitFSM();
 		iv_frequencyUnitFSM = new FrequencyUnitFSM();
 		iv_formFSM = new FormFSM();
 		iv_subMedSectionFSM = new SubSectionIndicatorFSM();
 		iv_logger.info("Finite state machines loaded.");
+		
+		try {
+			//gather window size and annotation type
+			String windowSize = (String)annotCtx.getConfigParameterValue(DISTANCE);
+			String annotationTypeName = (String)annotCtx.getConfigParameterValue(DISTANCE_ANN_TYPE);
+			String boundaryAnnTypeName = (String)annotCtx.getConfigParameterValue(BOUNDARY_ANN_TYPE);
+			if(windowSize != null)
+				iWindowSize = Integer.parseInt(windowSize);
+
+			if(annotationTypeName != null)
+				iAnnotationType = JCasUtil.getType(annotationTypeName);
+
+			if(boundaryAnnTypeName != null)
+				iBoundaryAnnType  = JCasUtil.getType(boundaryAnnTypeName);
+		} catch (ClassCastException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void process(JCas jcas)
@@ -201,12 +240,12 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			{
 				Segment seg = (Segment) segmentItr.next();
 				if (iv_medicationRelatedSections.contains(seg.getId()))
-					generateDrugMentions(jcas, seg);
+					generateDrugMentions(jcas, seg, false);
+				else 
+					generateDrugMentions(jcas, seg, true);
 			}
 
 			generateUidValues(jcas);
-
-			createCommonTypeSystemMedicationAnnotations(jcas);
 
 			removeDrugNerTypes(jcas, intermediateTypesToRemove); // remove the types that were specific to this annotator.
 
@@ -229,6 +268,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			edu.mayo.bmi.uima.drugner.type.DrugChangeStatusAnnotation.type,
 			edu.mayo.bmi.uima.drugner.type.DosagesAnnotation.type,
 			edu.mayo.bmi.uima.drugner.type.StrengthAnnotation.type,
+			edu.mayo.bmi.uima.drugner.type.StrengthUnitAnnotation.type,
 			edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation.type,
 			edu.mayo.bmi.uima.drugner.type.FormAnnotation.type,
 			//edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation.type, // keep annotations of this type (by keeping commented out here) for downstream users
@@ -239,7 +279,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 
 	/**
-	 * Remote most extra annotation types that we created here but not all
+	 * Remove most extra annotation types that we created here but not all
 	 * as downstream annotators might want to use some such as SubSectionAnnotation
 	 * @param jcas
 	 */
@@ -266,77 +306,36 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 	}
 
-	private void createCommonTypeSystemMedicationAnnotations(JCas jcas) {
-		int id = 0;
-		FSIterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(DrugMentionAnnotation.type).iterator();
-		while (itr.hasNext()) {
-			DrugMentionAnnotation dma = (DrugMentionAnnotation) itr.next();
-			id = createMedAnnotationsForOneDma(jcas, dma, id);
-		}
-	}
+	private void addMedicationSpecificAttributes(JCas jcas, DrugMentionAnnotation fromAnnotation, MedicationEventMention medicationMention) {
 
-	/**
-	 * 
-	 * @param jcas
-	 * @param fromAnnotation
-	 * @param id
-	 * @return the id to use for the next annotation created. one more than the last is used by this method
-	 */
-	private int createMedAnnotationsForOneDma(JCas jcas, DrugMentionAnnotation fromAnnotation, int id) {
-
-		EventMention eventMention = mapDrugMentionAnnotationsToNamedEntities.get(fromAnnotation);
-		Medication medAnnotation = null;
-		if (eventMention.getOntologyConceptArr()==null) {
-			medAnnotation = createMedicationAnnotation(jcas, fromAnnotation, null, id++, eventMention);
-		} else {
-			for (int i=0; i < eventMention.getOntologyConceptArr().size(); i++) {
-				OntologyConcept oc = (OntologyConcept)eventMention.getOntologyConceptArr().get(i);
-				medAnnotation = createMedicationAnnotation(jcas, fromAnnotation, oc, id++, eventMention);
-			}
-		}
-
-		eventMention.setEvent(medAnnotation);
-		return id;
-
-	}
-
-	private Medication createMedicationAnnotation(JCas jcas, DrugMentionAnnotation fromAnnotation, OntologyConcept oc, int id, EventMention eventMention) {
-
-		Medication med = new Medication(jcas);
-
-		// These CEM inspired types don't care about the offsets so we don't do things like fromAnnotation.getDosageBegin();
-		// The offsets are in the EventMention
-
-		if (oc!=null) {
-			med.setOntologyConcept(oc);
-		}
+		// These CEM inspired types such as MedicationDosage don't care about the offsets so we don't do things like fromAnnotation.getDosageBegin();
 
 		if (fromAnnotation.getDosage()!=null) {
 			MedicationDosage dosage = new MedicationDosage(jcas);
 			dosage.setValue(fromAnnotation.getDosage());
 			//dosage.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationDosage(dosage);
+			medicationMention.setMedicationDosage(dosage);
 		}
 
 		if (fromAnnotation.getDuration()!=null) {
 			MedicationDuration duration = new MedicationDuration(jcas);
 			duration.setValue(fromAnnotation.getDuration());
 			// duration.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationDuration(duration);
+			medicationMention.setMedicationDuration(duration);
 		}
 
 		if (fromAnnotation.getDrugChangeStatus()!=null) {
 			MedicationStatusChange sc = new MedicationStatusChange(jcas);
 			sc.setValue(fromAnnotation.getDrugChangeStatus());
 			//sc.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationStatusChange(sc);
+			medicationMention.setMedicationStatusChange(sc);
 		}
 
 		if (fromAnnotation.getForm()!=null) {
 			MedicationForm form = new MedicationForm(jcas);
 			form.setValue(fromAnnotation.getForm());
 			//form.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationForm(form);
+			medicationMention.setMedicationForm(form);
 		}
 
 		if (fromAnnotation.getFrequencyUnit()!=null || fromAnnotation.getFrequency()!=null) {
@@ -344,22 +343,22 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			freq.setNumber(fromAnnotation.getFrequency());
 			freq.setUnit(fromAnnotation.getFrequencyUnit());
 			//freq.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationFrequency(freq);
+			medicationMention.setMedicationFrequency(freq);
 		}
 
 		if (fromAnnotation.getRoute()!=null) {
 			MedicationRoute route = new MedicationRoute(jcas);
 			route.setValue(fromAnnotation.getRoute());
 			//route.addToIndexes(jcas); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationRoute(route);
+			medicationMention.setMedicationRoute(route);
 		}
 
-		if (fromAnnotation.getStrength()!=null || fromAnnotation.getStrength()!=null) { // TODO update once strength is split into 2 parts
+		if (fromAnnotation.getStrength()!=null || fromAnnotation.getStrengthUnit()!=null) {
 			MedicationStrength strength = new MedicationStrength(jcas);
-			strength.setNumber(fromAnnotation.getStrength()); // TODO update once strength is split into 2 parts
-			strength.setUnit(fromAnnotation.getStrength()); // TODO update once strength is split into 2 parts
+			strength.setNumber(fromAnnotation.getStrength());
+			strength.setUnit(fromAnnotation.getStrengthUnit());
 			//strength.addToIndexes(); // don't need to be able to get these directly from the AnnotationIndex
-			med.setMedicationStrength(strength);
+			medicationMention.setMedicationStrength(strength);
 		}
 
 		if (fromAnnotation.getStartDate()!=null) {
@@ -367,7 +366,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			Date d = DateParser.parse(jcas, fromAnnotation.getStartDate());
 			
 			// if (d!=null) d.addToIndexes(); // don't need to be able to get these directly from the AnnotationIndex
-			if (d!=null) med.setStartDate(d);
+			if (d!=null) medicationMention.setStartDate(d);
 		}
 
 		// There currently is no endDate in DrugMentionAnnotation 
@@ -377,42 +376,29 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		//	if (d!=null) med.setEndDate(d);
 		//}
 		
-		med.setId(id);
-		FSArray mentions = new FSArray(jcas, 1);
-		mentions.set(0, eventMention);
-
-		//mentions.addToIndexes(); // don't need to be able to get these directly from the AnnotationIndex
-
-		med.setMentions(mentions);
-
-		med.addToIndexes(jcas);
-
-		return med;
-
-
 	}
 
 	
 	/**
-	 * Generates UID values for all EventMention objects.
+	 * Generates UID values for all MedicationEventMention objects.
 	 */
 	private void generateUidValues(JCas jcas) {
-		int count = generateUidValues(jcas, EventMention.type, 0);
+		int count = generateUidValues(jcas, MedicationEventMention.type, 0);
 		//generateUidValues(jcas, EntityMention.type, count);
 	}
 
 
 	/**
-	 * Generates UID values for all EventMention
+	 * Generates UID values for all MedicationEventMention
 	 *  objects.
 	 */
 	private int generateUidValues(JCas jcas, int type, int firstId)
 	{
-		int id = 0;
+		int id = firstId;
 		FSIterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(type).iterator();
 		while (itr.hasNext())
 		{
-			EventMention idAnnot = (EventMention) itr.next();
+			MedicationEventMention idAnnot = (MedicationEventMention) itr.next();
 			idAnnot.setId(id);
 			id++;
 		}
@@ -643,7 +629,45 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				ann.addToIndexes();
 		}
 	}
+	/**
+	 * Finds offset of string the represents end of numeric portion
+	 */
+	private int findTextualStringOffset(String text) {
 
+			String subText = "";
+			boolean containsNums = false;
+			boolean doneHere = false;
+			int textSize = text.length();
+			int pos = 0;
+			Integer posInt = null;
+			while (!doneHere && (textSize > pos) && (textSize > 1)) {
+				try {
+					String numString = text.substring(pos, pos + 1);
+
+					Integer posNum = posInt.decode(numString);
+					int checkInt = posNum.intValue();
+
+					if ((checkInt >= 0) && (checkInt <= 9)) {
+						containsNums = true;
+						subText = text.substring(pos + 1, textSize);
+						pos++;
+					} else
+						return pos;
+				}
+
+				catch (NullPointerException npe) {
+					return 0;
+				} catch (NumberFormatException nfe) {
+					if (!containsNums)
+						return 0;
+					else
+						doneHere = true;
+
+				}
+			}
+		return pos;
+	}
+ 
 	//TODO: review the executeFSMs method
 	/**
 	 * The namedE consists of a list of the Named Entities (NE) found in the prior
@@ -677,39 +701,51 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 			Set rangeTokenSet = iv_rangeFSM.execute(baseTokenList);
 
-			addAnnotations(jcas, decimalTokenSet, RangeStrengthAnnotation.type);
-
-			Set strengthTokenSet = iv_strengthFSM.execute(baseTokenList, rangeTokenSet);
-
-			Iterator measurementTokenItr = strengthTokenSet.iterator();
-			while (measurementTokenItr.hasNext())
-			{
-				Iterator chkNE = namedE.iterator();
-				Iterator newNE = wordTokenList.iterator();
-
-				StrengthToken mt = (StrengthToken) measurementTokenItr.next();
-				int begSeg = mt.getStartOffset(), endSeg = mt.getEndOffset();
-				StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
-				ma.addToIndexes();
+      addAnnotations(jcas, decimalTokenSet, RangeStrengthAnnotation.type);
+      //Mayo SPM 2/20/2012 Changed due to separation of strength tokens
+      Set strengthTokenSet = iv_strengthUnitFSM.execute(baseTokenList, rangeTokenSet);
+      Iterator measurementTokenItr = strengthTokenSet.iterator();
+      int begin = 0, previous = 0;
+      while (measurementTokenItr.hasNext())
+      {
+        Iterator chkNE = namedE.iterator();
+        Iterator newNE = wordTokenList.iterator();
+        boolean neFound = false;
+        MedicationEventMention ne = null;
+        WordToken we = null;
+        Object mt = (Object)  measurementTokenItr.next();
+        if (mt instanceof  StrengthUnitToken) {
+        	// StrengthUnitToken mt = (StrengthUnitToken) measurementTokenItr.next();
+        	int begSeg = ((StrengthUnitToken) mt).getStartOffset(), endSeg = ((StrengthUnitToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.addToIndexes();
+        } else {
+        	int begSeg = ((StrengthUnitCombinedToken) mt).getStartOffset(), endSeg = ((StrengthUnitCombinedToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.setBegin(findTextualStringOffset(ma.getCoveredText()) + begSeg);
+        	ma.addToIndexes();
+        }
+ 
 				//TODO: Does this need to be commented out? Created Strength        
 			}
 
-			Set decTokenSet = null;
-			{
-				decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
-						fractionTokenSet);
-				Iterator decTokenItr = decTokenSet.iterator();
-
-				while (decTokenItr.hasNext())
-				{
-					StrengthToken mt = (StrengthToken) decTokenItr.next();
-					StrengthAnnotation ma = new StrengthAnnotation(jcas, mt.getStartOffset(), mt.getEndOffset());
-					ma.addToIndexes();
-					// loadandAppend("./strengthTable.csv", ma.getCoveredText(),
-					// true);
-
-				}
-			}
+//      Set decTokenSet = null;
+//      {
+//        decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
+//            fractionTokenSet);
+//        Iterator decTokenItr = decTokenSet.iterator();
+//
+//        while (decTokenItr.hasNext())
+//        {
+//          StrengthToken mt = (StrengthToken) decTokenItr.next();
+//          StrengthAnnotation ma = new StrengthAnnotation(jcas, mt
+//              .getStartOffset(), mt.getEndOffset());
+//          ma.addToIndexes();
+//          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
+//          // true);
+//
+//        }
+//      }
 
 			Set formTokenSet = iv_formFSM.execute(baseTokenList,
 					/* decimalTokenSet */new HashSet());
@@ -730,22 +766,25 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			// info and see how we align w/ the ne if they exist to determine
 			// confidence factoring
 			//      if (!doseConfidence && decTokenSet != null)
-			{
-				Set preTokenSet = iv_strengthFSM.execute(baseTokenList, decTokenSet);
-				Iterator preTokenItr = preTokenSet.iterator();
+//      {
+        Set preTokenSet = iv_strengthFSM.execute(baseTokenList, strengthTokenSet, fractionTokenSet);
+        Iterator preTokenItr = preTokenSet.iterator();
 
-				while (preTokenItr.hasNext())
-				{
-					StrengthToken mt = (StrengthToken) preTokenItr.next();
-					int begSeg = mt.getStartOffset();
-					int endSeg = mt.getEndOffset();
-					StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
-					ma.addToIndexes();
-					// loadandAppend("./strengthTable.csv", ma.getCoveredText(),
-					// true);
+        while (preTokenItr.hasNext())
+        {
+          StrengthToken mt = (StrengthToken) preTokenItr.next();
+          int begOff = mt.getStartOffset();
+          int endOff = mt.getEndOffset();
+          StrengthAnnotation ma = new StrengthAnnotation(jcas, begOff, endOff);
+          Iterator subStrengthItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthUnitAnnotation.type, begOff, endOff);
+          if (subStrengthItr.hasNext() )
+            	  ma.setEnd(((StrengthUnitAnnotation)subStrengthItr.next()).getBegin());
+          ma.addToIndexes();
+          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
+          // true);
 
-				}
-			}
+        }
+//      }
 			Set doseTokenSet = iv_dosagesFSM.execute(baseTokenList, formTokenSet,
 					strengthTokenSet);
 			Iterator dosTokenItr = doseTokenSet.iterator();
@@ -864,27 +903,48 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 * would apply to the entire group) The end of a SubSection or Section
 	 */
 
-	private void generateDrugMentions(JCas jcas, Segment seg) throws Exception
+  private void generateDrugMentions(JCas jcas, Segment seg, boolean narrativeType) throws Exception
 	{
 		int begin = seg.getBegin(), end = seg.getEnd() + 1;
-		EventMention nextNER = null;
+		MedicationEventMention nextNER = null;
 		int nextNERPosition = 0;
 		List uniqueNEs;
 		List allNEs;
 
-		int[] validNeTypes =
-		{ CONST.NE_TYPE_ID_DRUG, CONST.NE_TYPE_ID_UNKNOWN };
+		int[] validNeTypes = { CONST.NE_TYPE_ID_DRUG, CONST.NE_TYPE_ID_UNKNOWN };
+		
 		try {
+		  uniqueNEs = findUniqueMentions( FSUtil.getAnnotationsInSpan(jcas, MedicationEventMention.type, begin, end, validNeTypes).toArray());
 			// FIX ID: 3476114, ID: 3476113, and ID: 3476110
-			int [][] windowSpans = getWindowSpan(jcas, "list", EventMention.type, begin, end,  false);
-			if (windowSpans[0][0] == -1) {
-				windowSpans[0][0] = begin;
-				windowSpans[0][1] = end;
-			}
-
+		  int globalArraySize = uniqueNEs.size()*3;
+		  int [][] windowSpans =  new int [globalArraySize][2];
+		  int globalWindowSize = 0;
+		  if (narrativeType) {
+			  for (int neCount = 0; neCount < uniqueNEs.size() ; neCount ++ ) {
+				  boolean processedSpan = false;
+				  MedicationEventMention neNarrative = (MedicationEventMention) uniqueNEs.get(neCount);
+				  for (int spanCheck = 0 ; spanCheck < windowSpans.length && !processedSpan && windowSpans[spanCheck][0] != 0; spanCheck ++ ) {
+					  if (windowSpans[spanCheck][0] ==  neNarrative.getBegin()) 
+						  processedSpan = true;
+				  }
+				  if (!processedSpan) {
+					  int [][] narrativeSpans =  getWindowSpan(jcas, "narrative", MedicationEventMention.type, neNarrative.getBegin(), neNarrative.getEnd(),  false, globalArraySize);
+					  for (int elementCount = 0; elementCount < narrativeSpans.length; elementCount ++ ) {
+						  windowSpans[globalWindowSize] = narrativeSpans[elementCount];
+						  globalWindowSize++;
+					  }
+				  }
+			  }
+		  } else {
+			  windowSpans = getWindowSpan(jcas, "list", MedicationEventMention.type, begin, end,  false, globalArraySize);
+			  if (windowSpans.length > 0 && windowSpans[0][0] == -1) {
+				  windowSpans[0][0] = begin;
+				  windowSpans[0][1] = end;
+			  }
+		  }
 			for (int count= 0; count < windowSpans.length; count++) {
 				List neTokenUpdatedList = getAnnotationsInSpan(jcas,
-						EventMention.type, windowSpans[count][0], windowSpans[count][1]);
+						MedicationEventMention.type, windowSpans[count][0], windowSpans[count][1]);
 
 				if (!neTokenUpdatedList.isEmpty())
 				{
@@ -917,17 +977,17 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 			for (int i = 0; i < uniqueNEs.size(); i++)
 			{
-				EventMention thisNER = (EventMention) uniqueNEs.get(i);
+				MedicationEventMention thisNER = (MedicationEventMention) uniqueNEs.get(i);
 				boolean hasNext = false;
 				if (uniqueNEs.size() > i + 1)
 				{
-					nextNER = (EventMention) uniqueNEs.get(i + 1);
+					nextNER = (MedicationEventMention) uniqueNEs.get(i + 1);
 					nextNERPosition = nextNER.getBegin();
 					if (nextNER != null)
 						hasNext = true;
 				} else if (!uniqueNEs.isEmpty())
 				{
-					nextNER = (EventMention) uniqueNEs.get(i);
+					nextNER = (MedicationEventMention) uniqueNEs.get(i);
 					nextNERPosition = nextNER.getBegin();
 					lastOne = true;
 				}
@@ -1025,7 +1085,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 						{
 							findDrugAttributesInRange(jcas, begin, end);
 							//TODO: need to fix - use the list above - uniqueNEs and subset that list instead of getting new list of annotations
-							List neTokenUpdatedList = getAnnotationsInSpan(jcas, EventMention.type, begin, end + 1);
+							List neTokenUpdatedList = getAnnotationsInSpan(jcas, MedicationEventMention.type, begin, end + 1);
 							//TODO: 10/28/2010 -- exception
 							// it seems that this can still happen triggered by either from FSM or a case where the array exceeds the length            
 							if (!neTokenUpdatedList.isEmpty())
@@ -1105,28 +1165,28 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	throws Exception
 	{
 		List baseTokenList = getAnnotationsInSpanWithAdaptToBaseTokenFSM(jcas, BaseToken.type, begin, end + 1);
-		List<Annotation> neTokenList = getAnnotationsInSpan(jcas, EventMention.type, begin, end + 1);
+		List<Annotation> neTokenList = getAnnotationsInSpan(jcas, MedicationEventMention.type, begin, end + 1);
 		List<Annotation> weTokenList = getAnnotationsInSpan(jcas, WordToken.type, begin, end + 1);
 
 		// execute FSM logic
 		executeFSMs(jcas, baseTokenList, neTokenList, weTokenList);
 	}
 
-	private void generateDrugMentionsAndAnnotations(JCas jcas, List<EventMention> nerTokenList,
+	private void generateDrugMentionsAndAnnotations(JCas jcas, List<MedicationEventMention> nerTokenList,
 			int begin, int end, DrugMentionAnnotation recurseNER,
 			String [] relatedStatus, int countNER, List<DrugMentionAnnotation> globalDrugNER) throws Exception
 			{
 
-		Iterator<EventMention> uniqueNER = nerTokenList.iterator();
+		Iterator<MedicationEventMention> uniqueNER = nerTokenList.iterator();
 		DrugMentionAnnotation drugTokenAnt = null;
-		EventMention tokenAnt = null;
+		MedicationEventMention tokenAnt = null;
 
 		List<DrugMentionAnnotation> holdDrugNERArr = new ArrayList<DrugMentionAnnotation>();
 
 		while (uniqueNER.hasNext())
 		{
 
-			tokenAnt = (EventMention) uniqueNER.next();
+			tokenAnt = (MedicationEventMention) uniqueNER.next();
 			boolean isDrugNER = false;
 			FSArray ocArr = tokenAnt.getOntologyConceptArr();
 			if (ocArr != null)
@@ -1754,7 +1814,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				for (int i = 0; i < countNER; i++)
 				{
 					drugNERArr.set(i, (FeatureStructure) globalDrugNER.get(i));
-					mapDrugMentionAnnotationsToNamedEntities.put(globalDrugNER.get(i), tokenAnt); 
+					
+					addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
+
 				}
 			}
 		}
@@ -1773,16 +1835,25 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			drugTokenAnt.setStrength(strengthText);
 			drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
 			drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
 		} else if (recurseNER != null && recurseNER.getStrength() != null)
 		{
 			drugTokenAnt.setStrength(recurseNER.getStrength());
 			drugTokenAnt.setStrengthBegin(recurseNER.getStrengthBegin());
 			drugTokenAnt.setStrengthEnd(recurseNER.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(recurseNER.getStrengthUnit());
+        drugTokenAnt.setSuBegin(recurseNER.getSuBegin());
+        drugTokenAnt.setSuEnd(recurseNER.getSuEnd());
 		} else if (dm.getStrengthElement() != null && dm.strength != null)
 		{
 			drugTokenAnt.setStrength(dm.getStrengthElement());
 			drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
 			drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
 		}
 		if ((dm.getDosageElement() != null && dm.getDosageElement().compareTo(
 		"null") != 0)
@@ -2009,7 +2080,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		boolean noPostMention = false;
 		int originalEndSpan = endSpan;
 		int originalBeginSpan = beginSpan;
-		EventMention neAnnot = new EventMention(jcas, tokenDrugNER.getBegin(),
+		MedicationEventMention neAnnot = new MedicationEventMention(jcas, tokenDrugNER.getBegin(),
 				tokenDrugNER.getEnd());
 		int beginChunk = drugChangeStatus.getEnd();
 		DrugMention compareDM = new DrugMention(jcas, beginChunk, endSpan);
@@ -2029,6 +2100,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 			}
 			if (priorDM.frequency != null) {
 				tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -2039,7 +2113,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		neAnnot.setTypeID(NERTypeIdentifier);
 		int [] updatedSpan = {beginSpan, endSpan};
 
-		List<EventMention> buildNewNER = new ArrayList<EventMention>();
+		List<MedicationEventMention> buildNewNER = new ArrayList<MedicationEventMention>();
 
 		buildNewNER.add(neAnnot);
 
@@ -2070,6 +2144,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					tokenDrugNER.setStrength(compareDM.getStrengthElement());
 					tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 					tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 				}
 				if (compareDM.frequency != null) {
 					tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2099,6 +2176,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					tokenDrugNER.setStrength(priorDM.getStrengthElement());
 					tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 					tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 				}
 				if (priorDM.frequency != null) {
 					tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -2130,6 +2210,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					tokenDrugNER.setStrength(compareDM.getStrengthElement());
 					tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 					tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 				}
 				if (compareDM.frequency != null) {
 					tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2164,6 +2247,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					tokenDrugNER.setStrength(priorDM.getStrengthElement());
 					tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 					tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 				}
 				if (priorDM.frequency != null) {
 					tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -2198,6 +2284,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					tokenDrugNER.setStrength(compareDM.getStrengthElement());
 					tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 					tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 				}
 				if (compareDM.frequency != null) {
 					tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2258,6 +2347,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 			} else if (tokenDrugNER.getStrength() != null
 					&& tokenDrugNER.getStrength().compareTo("") != 0
 					&& tokenDrugNER.getStrength().length() > 0)
@@ -2386,7 +2478,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	}
 
 	private int [] findNextDrugEntityPost(int spanLength, int[][] elementSpan,
-			EventMention nea, int endPhrase)
+			MedicationEventMention nea, int endPhrase)
 	{
 		boolean patternFound = false;
 		int [] locationPre = {-1,-1};
@@ -2406,7 +2498,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 * The first value represents the number of elements available in the span and the range token is the second field in the 'int' array 
 	 */
 	private int [] findNextDrugEntityPre(int spanLength, int[][] elementSpan,
-			EventMention nea, int priorDrugEnd)
+			MedicationEventMention nea, int priorDrugEnd)
 	{
 		int numElementsInSpan = 0, targetForNewSpan = 0 ;
 		int [] locationPre = {-1,-1};
@@ -2426,7 +2518,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	}
 
 	private boolean findNextParenRelativeToNE(int spanLength,
-			int[][] elementSpan, EventMention nea, int priorDrugEnd, int startOffset)
+			int[][] elementSpan, MedicationEventMention nea, int priorDrugEnd, int startOffset)
 	{
 		boolean patternFound = false;
 		for (int l = startOffset; l < spanLength && !patternFound; l++)
@@ -2468,7 +2560,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	{
 		int[] validNeTypes =
 		{ CONST.NE_TYPE_ID_DRUG, CONST.NE_TYPE_ID_UNKNOWN };
-		int numDrugs = FSUtil.countAnnotationsInSpan(jcas, EntityMention.type, begin,
+		int numDrugs = FSUtil.countAnnotationsInSpan(jcas, MedicationEventMention.type, begin,
 				end, validNeTypes);
 		return (numDrugs > 1);
 	}
@@ -2532,8 +2624,42 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 		return span;
 	}
+  /**
+   * 
+   * @param jcas
+   * @param begin
+   * @param end
+   * @return int[] - int[0] is begin offset and int[1] is end offset of subsequent sentence end (if available)
+   */
+private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
+{
+  JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+  Iterator iter = indexes.getAnnotationIndex(iAnnotationType).iterator();
+  int[] span = new int[2];
+  boolean foundFirstTypeSpan = false;
+  boolean foundSecondTypeSpan = false;
+  int spanSizeCount = 0;
+  while (iter.hasNext() && !foundSecondTypeSpan)
+  {
+    Annotation sa = (Annotation) iter.next();
+    if (begin >= sa.getBegin() && begin <= sa.getEnd())
+    {
+    	span[0] = sa.getBegin();
+      	span[1] = sa.getEnd();
+      	foundFirstTypeSpan = true;
+      // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
+    } else if (foundFirstTypeSpan && spanSizeCount >= iWindowSize) {
+    	foundSecondTypeSpan = true;
+    	span[1] = sa.getEnd();
+    }
+    if (foundFirstTypeSpan) 
+    	spanSizeCount++;
+  }
+
+  return span;
+}
 	private void findFSMInRange(JCas jcas, int begin, int end) throws Exception {
-		EventMention ne = null;
+		MedicationEventMention ne = null;
 		WordToken we = null;
 		// grab iterator over tokens within this chunk
 		Iterator btaItr = FSUtil.getAnnotationsInSpanIterator(jcas,
@@ -2542,7 +2668,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		// do the same as above for named entities
 		// grab iterator over tokens within this chunk
 		Iterator neItr = FSUtil.getAnnotationsInSpanIterator(jcas,
-				EventMention.type, begin,
+				MedicationEventMention.type, begin,
 				end+1);
 		// List neTokenList = new ArrayList();
 
@@ -2561,7 +2687,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 
 		while (neItr.hasNext()) {
-			ne = (EventMention) neItr.next();
+			ne = (MedicationEventMention) neItr.next();
 
 			neTokenList.add(ne);
 		}
@@ -2773,9 +2899,9 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				}
 			}
 
-		} else if (elementType == EventMention.type) {
+		} else if (elementType == MedicationEventMention.type) {
 			while (neItr.hasNext()) {
-				EventMention nea = (EventMention) neItr.next();
+				MedicationEventMention nea = (MedicationEventMention) neItr.next();
 				if(nea.getTypeID()==1 || nea.getTypeID()==0) {
 					lastLocation[0]= nea.getBegin();
 					lastLocation[1] = nea.getEnd(); 
@@ -2809,18 +2935,16 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		return counter;
 	}
 
-	private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation, int begin, int end, boolean useBegin) throws Exception {
+private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation, int begin, int end, boolean useBegin, int sizeArrays) throws Exception {
 		int[] senSpan = {begin, end };
-		int[] span = {-1, -1};
-		int[][] spanNull = {{-1, -1,}};
-		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator iter = indexes.getAnnotationIndex(NewlineToken.type).iterator();
+		int[][] spanSoloTerm = {{-1, -1,}};
+		//JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+		//Iterator iter = indexes.getAnnotationIndex(NewlineToken.type).iterator();
 
 		int lastLineNum=0;
 		boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 		if (haveNarrative) {
-			senSpan = getSentenceSpanContainingGivenSpan(jcas, begin,
-					end);
+			senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin);
 			if (senSpan[0] < begin) senSpan[0] = begin;
 		}
 		boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
@@ -2836,14 +2960,14 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				findFSMInRange(jcas, begin, end);
 			}
 		}
-		span = senSpan;
+		spanSoloTerm[0] =  senSpan ;
 		//for a given span if exist more than one drug and signature elements do the following
 		if(hasMultipleDrugs) {
 
-			return sortSignatureElements(jcas, begin, end, typeAnnotation, span);
+			return sortSignatureElements(jcas, begin, end, typeAnnotation, senSpan, sizeArrays);
 
 		}
-		return spanNull;
+		return spanSoloTerm;
 	}
 
 	/**
@@ -2855,12 +2979,12 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 */
 	private boolean multipleDrugsInSpan(JCas jcas, int begin, int end) {
 
-		Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, EventMention.type, begin, end);
+		Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, MedicationEventMention.type, begin, end);
 
 		int numDrugs=0;
 
 		while (neItr.hasNext()) {
-			EventMention nea = (EventMention) neItr.next();
+			MedicationEventMention nea = (MedicationEventMention) neItr.next();
 
 			if(nea.getTypeID()==1  || nea.getTypeID()==0)   
 				numDrugs++;
@@ -2970,14 +3094,14 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 * @param senSpan
 	 * @return
 	 */
-	private int [][] sortSignatureElements(JCas jcas, int begin, int end, int typeAnnotation, int [] senSpan) 
+	private int [][] sortSignatureElements(JCas jcas, int begin, int end, int typeAnnotation, int [] senSpan, int sizeArray) 
 	{
 
 		String prePattern = "";
 		String pattern = "";
 		String postPattern = "";
 
-		int sizeArray = 100;
+//		int sizeArray = 100;
 		String groupDelimiterOpen = "(";
 		String groupDelimiterClose = ")";
 		int[][] drugSpan = new int [sizeArray][2];
@@ -2989,7 +3113,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		int[][] formSpan= new int [sizeArray][2];
 		int[][] durationSpan = new int [sizeArray][2];
 		int[][] parenthesisSpan = new int [sizeArray][2];
-		int[][] statusSpan =new int [sizeArray][2];
+		int[][] statusSpan =new int [sizeArray*2][2];
 
 		for (int a = 0 ; a < sizeArray ; a++) {
 			for (int b = 0 ; b < 2 ; b ++) {
@@ -3028,10 +3152,10 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		int beginPhrase = senSpan[0];
 		if (drugSpanLength > 1) 
 			for (int j = 0; j < drugSpanLength; j++) {
-				Iterator drugListItr = FSUtil.getAnnotationsIteratorInSpan(jcas, EventMention.type, drugSpan[j][0], drugSpan[j][1]+1);
-				Iterator drugListItrNext = FSUtil.getAnnotationsIteratorInSpan(jcas, EventMention.type, drugSpan[j+1][0], drugSpan[j+1][1]+1);
+				Iterator drugListItr = FSUtil.getAnnotationsIteratorInSpan(jcas, MedicationEventMention.type, drugSpan[j][0], drugSpan[j][1]+1);
+				Iterator drugListItrNext = FSUtil.getAnnotationsIteratorInSpan(jcas, MedicationEventMention.type, drugSpan[j+1][0], drugSpan[j+1][1]+1);
 				if (drugListItr.hasNext()) {
-					EventMention nea = (EventMention) drugListItr.next();
+					MedicationEventMention nea = (MedicationEventMention) drugListItr.next();
 					drugSpanArray[j][0] = nea.getBegin();
 					boolean patternFound = false;
 					boolean hasNext = true;
@@ -3048,7 +3172,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					int lowestValueInRange = 0;
 					int lowestPositiveValueInRange = endPhrase;
 					if (drugListItrNext.hasNext()) {
-						EventMention neaNext = (EventMention) drugListItrNext.next();
+						MedicationEventMention neaNext = (MedicationEventMention) drugListItrNext.next();
 						endPhrase = neaNext.getBegin();
 					} else {
 						hasNext = false;
@@ -3242,7 +3366,6 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 					if (openParenFound ) 
 						pattern = pattern + groupDelimiterClose ;
-					//					System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
 					if (j > 0 && pattern.endsWith("(D)") && countMultiplePre == 0) {
 						shareAttributes = true;
 						if (highestValueInRange < typeFoundC) {
@@ -3285,7 +3408,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	}
 
 	private boolean findNextParenRelativeToNE(int spanLength,
-			int[][] elementSpan, EventMention nea, int priorDrugEnd)
+			int[][] elementSpan, MedicationEventMention nea, int priorDrugEnd)
 	{
 		boolean patternFound = false;
 		for (int l = 0; l <= spanLength && !patternFound; l++)
@@ -3410,10 +3533,10 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				}
 			}
 
-		} else if (elementType == EventMention.type) {
+		} else if (elementType == MedicationEventMention.type) {
 			int holdEndElement = 0;
 			while (neItr.hasNext()) {
-				EventMention nea = (EventMention) neItr.next();
+				MedicationEventMention nea = (MedicationEventMention) neItr.next();
 				if(nea.getTypeID()==1 || nea.getTypeID()==0) {
 					lastLocation[0]= nea.getBegin();
 					lastLocation[1] = nea.getEnd(); 
@@ -3457,7 +3580,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 *		+ number = found post element (number represents right distance from beginning of mention) 
 	 *		- number = found pre element (between mentions - number represents left distance from beginning of mention) <drugA + [signChar] + [drugB]>
 	 */
-	private int [] findElementRelativeToNE (int [][] elementSpan, int [][] parenthesisSpan, int elementSpanLength, int parenthesisSpanLength, int priorDrugEnd, int startWithParenNum, int endPhrase, EventMention nea) 
+	private int [] findElementRelativeToNE (int [][] elementSpan, int [][] parenthesisSpan, int elementSpanLength, int parenthesisSpanLength, int priorDrugEnd, int startWithParenNum, int endPhrase, MedicationEventMention nea) 
 	{
 		int [] caseType = {0,0};
 		int [] endLocationPreSpan =  findNextDrugEntityPre(	elementSpanLength, elementSpan,
@@ -3483,7 +3606,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	}
 
 
-	private int anchorEndofline (int [][] elementSpan,  int elementSpanLength, int endPhrase, EventMention nea) 
+	private int anchorEndofline (int [][] elementSpan,  int elementSpanLength, int endPhrase, MedicationEventMention nea) 
 	{
 		return findNextDrugEntityPost(
 				elementSpanLength, elementSpan,

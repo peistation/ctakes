@@ -76,12 +76,12 @@ public class DateParser {
 
 		} catch (ParseException e) {
 			
-			// Some exception while parsing the date using java.util.Date
+			// An exception while parsing the date using java.util.Date
 			// Try to get just month and year or month and day etc
 
 			// possibilities to consider just for US dates
-			// m dd  (ambiguous pattern with m yy for at least some values)
-			// m yy  (ambiguous pattern with m dd for at least some values)
+			// m dd  (ambiguous pattern with m yy, for at least some values)
+			// m yy  (ambiguous pattern with m dd, for at least some values)
 			// m yyyy
 			// m dd yy
 			// m dd yyyy
