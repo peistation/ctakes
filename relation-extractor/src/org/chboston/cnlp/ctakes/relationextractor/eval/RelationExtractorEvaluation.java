@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -48,11 +51,15 @@ import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
+import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.collect.Ordering;
 
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
@@ -104,9 +111,9 @@ public class RelationExtractorEvaluation {
     // define the grid of parameters over which we will search
     List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
     if (options.gridSearch) { 
-      for (float probabilityOfKeepingANegativeExample : new float[] { 0.01f, 0.05f, 0.1f, 0.5f }) {
-        for (double svmCost : new double[] { 1, 10, 100, 1000 }) {
-          for (double svmGamma : new double[] { 1, 10, 100, 1000 }) {
+      for (float probabilityOfKeepingANegativeExample : new float[] { 0.01f, 0.05f, 0.1f }) {
+        for (double svmCost : new double[] { 1, 10, 100 }) {
+          for (double svmGamma : new double[] { 10, 100, 1000 }) {
             possibleParams.add(new ParameterSettings(
                 probabilityOfKeepingANegativeExample,
                 svmCost,
@@ -119,9 +126,7 @@ public class RelationExtractorEvaluation {
     }
 
     // run an evaluation for each set of parameters
-    double maxF1 = Double.MIN_VALUE;
-    ParameterSettings maxParams = null;
-    EvaluationStatistics<?> maxStats = null;
+    Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
     for (ParameterSettings params : possibleParams) {
 
       // defines pipelines that train a classifier and classify with it
@@ -153,32 +158,47 @@ public class RelationExtractorEvaluation {
 
       // collect the statistics from the evaluation
       FileInputStream stream = new FileInputStream(statisticsFile);
-      EvaluationStatistics<?> stats;
-      stats = (EvaluationStatistics<?>) SerializationUtils.deserialize(stream);
+      params.stats = (EvaluationStatistics<?>) SerializationUtils.deserialize(stream);
       stream.close();
       System.err.println(params);
-      System.err.println(stats);
+      System.err.println(params.stats);
       
-      // determine if these parameter settings are better than the current best
-      if (stats.f1() > maxF1) {
-        maxF1 = stats.f1();
-        maxParams = params;
-        maxStats = stats;
-      }
+      // store these parameter settings
+      scoredParams.put(params, params.stats.f1());
     }
     
-    // find the parameters that had the highest F1
-    System.err.println("Best model:");
-    System.err.println(maxParams);
-    System.err.println(maxStats);
+    // print parameters sorted by F1
+    List<ParameterSettings> list = new ArrayList<ParameterSettings>(scoredParams.keySet());
+    Function<ParameterSettings, Double> getCount = Functions.forMap(scoredParams);
+    Collections.sort(list, Ordering.natural().onResultOf(getCount));
+
+    System.err.println("Summary:");
+    ParameterSettings lastParams = null;
+    for (ParameterSettings params : list) {
+      System.err.printf(
+          "F1=%.3f P=%.3f R=%.3f %s\n",
+          params.stats.f1(),
+          params.stats.precision(),
+          params.stats.recall(),
+          params);
+      lastParams = params;
+    }
+    if (lastParams != null) {
+      System.err.println();
+      System.err.println("Best model:");
+      System.err.println(lastParams);
+      System.err.println(lastParams.stats);
+    }
   }
   
   private static class ParameterSettings {
     public float probabilityOfKeepingANegativeExample;
-
+    
     public double svmCost;
 
     public double svmGamma;
+    
+    public EvaluationStatistics<?> stats;
     
     public ParameterSettings(
         float probabilityOfKeepingANegativeExample,
@@ -198,6 +218,26 @@ public class RelationExtractorEvaluation {
       helper.add("svmGamma", this.svmGamma);
       return helper.toString();
     }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(
+          this.probabilityOfKeepingANegativeExample,
+          this.svmCost,
+          this.svmGamma);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof ParameterSettings)) {
+        return false;
+      }
+      ParameterSettings that = (ParameterSettings) obj;
+      return this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
+          && this.svmCost == that.svmCost && this.svmGamma == that.svmGamma;
+    }
+    
+    
   }
 
   /**
@@ -324,7 +364,7 @@ public class RelationExtractorEvaluation {
     private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
 
     private float probabilityOfKeepingANegativeExample;
-
+    
     public PipelineProvider(
         File modelsDirectory,
         Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
@@ -369,7 +409,9 @@ public class RelationExtractorEvaluation {
     @Override
     public void train(String name, String... trainingArguments) throws Exception {
       // train the classifier and package it into a .jar file
+      HideOutput hider = new HideOutput();
       JarClassifierBuilder.trainAndPackage(this.getDir(name), trainingArguments);
+      hider.restoreOutput();
     }
 
     private File getDir(String name) {
