@@ -272,7 +272,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation.type,
 			edu.mayo.bmi.uima.drugner.type.FormAnnotation.type,
 			//edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation.type, // keep annotations of this type (by keeping commented out here) for downstream users
-			//edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation.type, // uncomment once debug is done
+			edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation.type, // uncomment once debug is done
 			edu.mayo.bmi.uima.drugner.type.ChunkAnnotation.type,
 			//edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation.type, // keep annotations of this type (by keeping commented out here)
 	};
