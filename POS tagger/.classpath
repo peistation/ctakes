@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="/core/lib/trove.jar"/>
 	<classpathentry kind="lib" path="resources"/>
 	<classpathentry kind="lib" path="/core/lib/maxent-2.5.0.jar"/>
-	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.4.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

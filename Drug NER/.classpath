@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="/core/lib/junit.jar"/>
 	<classpathentry kind="lib" path="/core/lib/maxent-2.5.0.jar"/>
 	<classpathentry kind="lib" path="/core/lib/OpenAI_FSM.jar"/>
-	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/core/lib/trove.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dictionary lookup"/>
