@@ -149,7 +149,11 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
               category = NO_RELATION_CATEGORY;
             } else {
               BinaryTextRelation relation = relationLookup.get(key);
-              if (relation.getArg1().equals(arg1)) {
+              
+              Annotation relationArg1 = relation.getArg1().getRole().equals("Argument")
+                  ? relation.getArg1().getArgument()
+                  : relation.getArg2().getArgument();
+              if (relationArg1.equals(arg1)) {
                 category = relation.getCategory();
               } else {
                 category = relation.getCategory() + "-1"; // inverse
@@ -164,15 +168,15 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
           else {
             String category = this.classifier.classify(features);
             
-//            // play with classification threshold because of skew in data
-//            List<ScoredOutcome<String>> scoredOutcomes = this.classifier.score(features, 2);
-//            ScoredOutcome<String> top = scoredOutcomes.get(0);
-//            String category;
-//            if (top.getOutcome().equals(NO_RELATION_CATEGORY) && top.getScore() < 0.99) {
-//              category = scoredOutcomes.get(1).getOutcome();
-//            } else {
-//              category = top.getOutcome();
-//            }
+            //  // play with classification threshold because of skew in data
+            //  List<ScoredOutcome<String>> scoredOutcomes = this.classifier.score(features, 2);
+            //  ScoredOutcome<String> top = scoredOutcomes.get(0);
+            //  String category;
+            //  if (top.getOutcome().equals(NO_RELATION_CATEGORY) && top.getScore() < 0.99) {
+            //    category = scoredOutcomes.get(1).getOutcome();
+            //  } else {
+            //    category = top.getOutcome();
+            //  }
             
             // add a relation annotation if a true relation was predicted
             if (!category.equals(NO_RELATION_CATEGORY)) {
