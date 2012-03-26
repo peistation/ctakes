@@ -1,0 +1,297 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.apache.uima</groupId>
+    <artifactId>uima-addons-parent</artifactId>
+    <version>2.3.1</version>
+    <!-- <relativePath>../uima-addons-parent</relativePath> -->
+  </parent>
+  
+  <artifactId>assertion-pear</artifactId>
+  <version>1.1</version>
+  <name>Assertion Annotator: ${project.artifactId}</name>
+  <description>classifies "problem" concepts into assertion classes</description>
+  <url>${uimaWebsiteUrl}</url>
+
+  <!-- Special inheritance note
+       even though the <scm> element that follows is exactly the 
+       same as those in super poms, it cannot be inherited because 
+       there is some special code that computes the connection elements
+       from the chain of parent poms, if this is omitted. 
+       
+       Keeping this a bit factored allows cutting/pasting the <scm>
+       element, and just changing the following two properties -->  
+  <scm>
+    <connection>
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
+    </connection>
+    <developerConnection>
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
+    </developerConnection>
+    <url>
+      https://developer.mitre.org/gf/project/medfact/scmsvn/?action=browse&amp;path=%2Fbranches%2Fapi_wrapper_take_two%2Fmedfacts-uima-assertion-pear%2F
+    </url>
+  </scm>
+  
+  <properties>
+    <uimaScmProject>${project.artifactId}</uimaScmProject>
+    <uimaDependencyVersion>2.3.1</uimaDependencyVersion>
+    <pearMainDescriptor>desc/assertionMiniPipelineAnalysisEngine.xml</pearMainDescriptor>
+    <bookNameRoot></bookNameRoot>
+  </properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.uima</groupId>
+			<artifactId>uimaj-core</artifactId>
+      <version>${uimaDependencyVersion}</version>
+      <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.uima</groupId>
+			<artifactId>uimaj-test-util</artifactId>
+      <version>${uimaDependencyVersion}</version>
+      <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.uima</groupId>
+			<artifactId>uimaj-component-test-util</artifactId>
+      <version>${uimaDependencyVersion}</version>
+      <scope>test</scope>
+		</dependency>
+
+    <dependency>
+      <groupId>org.mitre.medfacts.i2b2</groupId>
+      <artifactId>med-facts-i2b2</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+
+<!--
+    <dependency>
+      <groupId>org.mitre.medfacts.ctakes</groupId>
+      <artifactId>core</artifactId>
+      <version>ctakes-1.2.1</version>
+      <scope>provided</scope>
+    </dependency>
+-->
+<!--
+    <dependency>
+      <groupId>org.mitre.medfacts.ctakes</groupId>
+      <artifactId>core</artifactId>
+      <version>ctakes-2.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+-->
+
+    <dependency>
+      <groupId>org.mitre</groupId>
+      <artifactId>jcarafe-ext_2.9.1</artifactId>
+      <version>0.9.8.3.RC4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mitre</groupId>
+      <artifactId>jcarafe-core_2.9.1</artifactId>
+      <version>0.9.8.3.RC4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mitre.medfacts.zoner</groupId>
+      <artifactId>med-facts-zoner</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.scala-tools.sbinary</groupId>
+      <artifactId>sbinary_2.9.0</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+
+    <!--
+    <dependency>
+      <groupId>org.scalala</groupId>
+      <artifactId>scalala_2.9.0</artifactId>
+      <version>1.0.0.RC2-SNAPSHOT</version>
+    </dependency>
+    -->
+
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+		<!--dependency>
+			<groupId>local.xmlbeans.dependency</groupId>
+			<artifactId>generated-xmltypes</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/regex_annot_xml_types.jar</systemPath>
+		</dependency-->
+    
+    <!--
+    <dependency>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <version>2.4.0</version>
+      <exclusions>
+        <exclusion> <!- - licensing issues, use geronimo instead - ->
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    -->
+	</dependencies>
+  
+	<build>
+		<finalName>assertion-pear</finalName>
+    <pluginManagement>
+      <plugins>
+        <!--
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-cli</id>
+              <configuration>
+                <excludes>
+                  <exclude>release.properties</exclude> <!- - release generated artifact - ->
+                  <exclude>README*</exclude>
+                  <exclude>RELEASE_NOTES*</exclude>
+                  <exclude>issuesFixed/**</exclude> <!- - generated file - ->
+                  <exclude>marker-file-identifying-*</exclude> <!- - empty file - ->
+                  <exclude>DEPENDENCIES</exclude>  <!- - generated file - ->
+                  
+                  <exclude>src/test/resources/**/*Ref.txt</exclude> <!- - test data - ->
+                  <exclude>src/test/resources/**/*Ref2.txt</exclude> <!- - test data - ->
+                  <exclude>src/test/resources/**/*Ref3.txt</exclude> <!- - test data - ->
+                  <exclude>src/test/resources/**/*RefOutput.txt</exclude> <!- - test data - ->
+                </excludes>              
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>         
+        -->
+        
+        <plugin>
+          <groupId>org.apache.uima</groupId>
+          <artifactId>PearPackagingMavenPlugin</artifactId>
+          <!-- <version>2.3.1</version> -->
+          <extensions>true</extensions>        
+          <executions>
+            <execution>
+              <id>build uima annnotator Pear</id>
+              <!-- <goals><goal>package</goal></goals> -->
+                 <!-- needs to run after the jar is built
+                      after docbooks are packaged and copied to pearPackaging/doc folder -->
+              <!-- <phase>integration-test</phase> -->  <!-- after first copies from jar/docbk pkg -->
+              <configuration> 
+                <classpath>$main_root/../core/bin</classpath>
+                <!-- <datapath>$main_root/resources</datapath> -->
+                <!-- <componentId>${project.artifactId}</componentId> -->
+                <!-- <mainComponentDesc>${pearMainDescriptor}</mainComponentDesc> -->
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        
+        
+      </plugins>
+    </pluginManagement>      
+	  <plugins>
+      
+      <!-- generate XML parser from .xsd file -->
+      <!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xmlbeans-maven-plugin</artifactId>
+        <version>2.3.3</version>
+        <executions>
+          <execution>
+            <goals><goal>xmlbeans</goal></goals>
+            <configuration>
+              <schemaDirectory>resources</schemaDirectory>
+            </configuration>        
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Duser.language=en -Duser.region=region=US</argLine>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+ 	</build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>1.6</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javancss-maven-plugin</artifactId>
+        <version>2.0-beta-2</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>chatter.repo</id>
+      <name>Chatter Internal Repository</name>
+      <url>http://rcf.mitre.org/project/chatter/repo/</url>
+      <releases>
+        <enabled>true</enabled>
+        <!-- <updatePolicy>always</updatePolicy> -->
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <!--<updatePolicy>always</updatePolicy> -->
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+
+</project>
