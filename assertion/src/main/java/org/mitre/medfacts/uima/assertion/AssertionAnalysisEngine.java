@@ -252,7 +252,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("associated_with_someone_else"))
       // ASSOCIATED WITH SOMEONE ELSE (mastif value)
       {
-        entityMention.setSubject("other"); // NOT DEFAULT VALUE
+        entityMention.setSubject("Family_Member"); // NOT DEFAULT VALUE
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -262,6 +262,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("conditional"))
       // CONDITIONAL (mastif value)
       {
+        // currently no mapping to sharp type...all sharp properties are defaults!
         entityMention.setSubject("patient");
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
@@ -284,8 +285,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       {
         entityMention.setSubject("patient");
         entityMention.setPolarity(1);
-        entityMention.setConfidence(0.5f); // NOT DEFAULT VALUE
-        entityMention.setUncertainty(0);
+        entityMention.setConfidence(1.0f);
+        entityMention.setUncertainty(1); // NOT DEFAULT VALUE
         entityMention.setConditional(false);
         entityMention.setGeneric(false);
       } else
