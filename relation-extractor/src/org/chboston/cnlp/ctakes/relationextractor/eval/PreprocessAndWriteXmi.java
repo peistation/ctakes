@@ -119,6 +119,8 @@ public class PreprocessAndWriteXmi {
 	          ViewCreatorAnnotator.class,
 	          ViewCreatorAnnotator.PARAM_VIEW_NAME,
 	          RelationExtractorEvaluation.GOLD_VIEW_NAME));
+	      goldAnnotatorBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+	          CopyDocumentTextToGoldView.class));
 	      goldAnnotatorBuilder.add(
 	          AnalysisEngineFactory.createPrimitiveDescription(DocumentIDAnnotator.class),
 	          CAS.NAME_DEFAULT_SOFA, RelationExtractorEvaluation.GOLD_VIEW_NAME);
@@ -131,6 +133,18 @@ public class PreprocessAndWriteXmi {
 	      AnalysisEngine goldAnnotator = goldAnnotatorBuilder.createAggregate();
 	      return goldAnnotator;
 	}
+	
+  public static class CopyDocumentTextToGoldView extends JCasAnnotator_ImplBase {
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      try {
+        JCas goldView = jCas.getView(RelationExtractorEvaluation.GOLD_VIEW_NAME);
+        goldView.setDocumentText(jCas.getDocumentText());
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    }
+  }
 	
 	public static class SerializeDocumentToXMI extends JCasAnnotator_ImplBase {
 		public static final String PARAM_OUTPUT_DIRECTORY = ConfigurationParameterFactory
