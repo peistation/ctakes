@@ -1,23 +1,29 @@
 package org.chboston.cnlp.ctakes.relationextractor.ae;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
+import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.annotationpair.DistanceExtractor;
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
 
-  private SimpleFeatureExtractor namedEntityType = new TypePathExtractor(
-		  IdentifiedAnnotation.class,
-      "typeID");
+  private SimpleFeatureExtractor namedEntityType = new SimpleFeatureExtractor() {
+    @Override
+    public List<Feature> extract(JCas jCas, Annotation ann) throws CleartkExtractorException {
+      IdentifiedAnnotation idAnn = (IdentifiedAnnotation)ann;
+      return Arrays.asList(new Feature("TypeID", String.valueOf(idAnn.getTypeID())));
+    }
+  };
 
   /**
    * All extractors for mention 1, with features named to distinguish them from mention 2
