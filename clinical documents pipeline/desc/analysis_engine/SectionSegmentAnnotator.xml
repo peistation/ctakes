@@ -27,11 +27,15 @@
       <nameValuePair>
         <name>parserTemplate</name>
         <value>
-          <string>/Users/ab/Documents/cTakes/SHARPn-cTAKES//coref-resolver/resources/template.xml</string>
+          <string>template.xml</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
-    <typeSystemDescription/>
+    <typeSystemDescription>
+      <imports>
+        <import location="/home/tmill/Projects/cNLP/cTakes/sharpn/common-type-system/desc/common_type_system.xml"/>
+      </imports>
+    </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
@@ -49,5 +53,30 @@
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
   </analysisEngineMetaData>
-  <resourceManagerConfiguration/>
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>template</key>
+      <description/>
+      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <optional>false</optional>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>templateFile</name>
+        <description/>
+        <fileResourceSpecifier>
+          <fileUrl>file:template.xml</fileUrl>
+        </fileResourceSpecifier>
+        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>template</key>
+        <resourceName>templateFile</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
 </taeDescription>
