@@ -149,12 +149,10 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		}
 		
 		FSIterator iter = jcas.getAnnotationIndex(MarkablePairSet.type).iterator();
-//		int p = 0;
 		while(iter.hasNext()){
 			MarkablePairSet set = (MarkablePairSet) iter.next();
 			Markable anaphor = set.getAnaphor();
 			FSList fs = (FSList) set.getAntecedentList();
-//			double bestProb = 0.0;
 			MarkableProb bestAnte = null;
 			LinkedList<Markable> ll = fs2ll(fs);
 			if(anaphor instanceof PronounMarkable){
@@ -164,28 +162,7 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			}else if(anaphor instanceof DemMarkable){
 				bestAnte = processDem(anaphor, ll, jcas);
 			}
-//			while(fs instanceof NonEmptyFSList){
-//				NonEmptyFSList pair = (NonEmptyFSList) fs;
-//				BooleanLabeledFS feat = (BooleanLabeledFS) pair.getHead();
-//				Markable antecedent = (Markable) feat.getFeature();
-//				svm_node[] nodes = vecCreator.getNodeFeatures(anaphor, antecedent, jcas);
-//				SyntaxAttributeCalculator sac = new SyntaxAttributeCalculator(jcas, antecedent, anaphor);
-//				TreebankNode path = null;
-//				double prob = 0.0;
-//				if(anaphor instanceof NEMarkable){
-//					prob = mod_coref.predict(nodes, path);
-//				}else if(anaphor instanceof PronounMarkable){
-//					prob = mod_pron.predict(nodes, path);
-//				}else if(anaphor instanceof DemMarkable){
-//					prob = processDemRel(anaphor, antecedent, jcas);
-//				}
-				
-//				if(prob > bestProb){
-//					bestProb = prob;
-//					bestAnte = antecedent;
-//				}
-//				fs = pair.getTail();
-//			}
+
 			if(bestAnte.prob > CorefConsts.COREF_THRESHOLD){
 				CoreferenceRelation cr = new CoreferenceRelation(jcas);
 				RelationArgument ra1 = new RelationArgument(jcas);
@@ -198,7 +175,6 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 				ra2.setRole("anaphor");
 				cr.setArg1(ra1);
 				cr.setArg2(ra2);
-//				cr.setCoref_prob(bestAnte.prob);
 				cr.setConfidence(bestAnte.prob);
 				ra1.addToIndexes();
 				ra2.addToIndexes();
@@ -207,7 +183,6 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			}else{
 				indexNegativeExample(jcas, bestAnte.m, anaphor, bestAnte.prob);
 			}
-//			p++;
 		}
 
 		// Extract equivalence classes and save them into CAS
@@ -234,7 +209,6 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			l.setTail(listhds[ec[i]]);
 			listhds[ec[i]] = l;
 			chains[ec[i]].setMembers(l);
-//			chains[ec[i]].setSize(chains[ec[i]].getSize()+1);
 		}
 	}
 
@@ -254,15 +228,11 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 	private MarkableProb processPronoun(Markable anaphor, LinkedList<Markable> anteList, JCas jcas){
 		Markable ante = null;
 		double bestProb = 0.0;
-//		List<Markable> resortedList = HobbsTreeNavigator.sort(anaphor, anteList, jcas);
 		List<Markable> resortedList = anteList;
 		for(Markable antecedent : resortedList){
 			svm_node[] nodes = vecCreator.getNodeFeatures(anaphor, antecedent, jcas);
-//			SyntaxAttributeCalculator sac = new SyntaxAttributeCalculator(jcas, antecedent, anaphor);
 			TreebankNode path = null;
 			
-//			path = TreeExtractor.extractPathTree(MarkableTreeUtils.markableNode(jcas, antecedent.getBegin(), antecedent.getEnd()), 
-//					MarkableTreeUtils.markableNode(jcas, anaphor.getBegin(), anaphor.getEnd()),jcas);
 			double prob = 0.0;
 			prob = mod_coref.predict(nodes);
 			if(prob > bestProb){
@@ -284,10 +254,6 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		double bestProb = 0.0;
 		for(Markable antecedent : anteList){
 			svm_node[] nodes = vecCreator.getNodeFeatures(anaphor, antecedent, jcas, true);
-//			SyntaxAttributeCalculator sac = new SyntaxAttributeCalculator(jcas, antecedent, anaphor);
-			TreebankNode path = null;
-//			path = TreeExtractor.extractPathTree(MarkableTreeUtils.markableNode(jcas, antecedent.getBegin(), antecedent.getEnd()), 
-//							MarkableTreeUtils.markableNode(jcas, anaphor.getBegin(), anaphor.getEnd()),jcas);
 			double prob = 0.0;
 			prob = mod_coref.predict(nodes);
 			if(prob > bestProb){
@@ -327,96 +293,12 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		return new MarkableProb(ante, bestProb);
 	}
 	
-//	private void processDemRel(LinkedList<Annotation> lm, int p, JCas jcas) {
-//		Markable m = (Markable) lm.get(p); // Current markable under consideration
-//		Markable true_antecedent = null;
-//		TreebankNode n = MarkableTreeUtils.markableNode(jcas, m.getBegin(), m.getEnd());	
-//		int true_antecedent_ind = -1;
-//		double prob = 0;
-//		//		if (dnr.contains(m)) return;  // candidate already discovered as non-coreferential, stop
-//
-//		// first check for stereotyped dem markable relation:
-//		// (NP (NP *antecedent) (SBAR (WHNP (WDT that|which)) (S ...)))
-//		TreebankNode parent = (n != null ? n.getParent() : null);
-//		TreebankNode gparent = (parent != null ? parent.getParent() : null);
-//		if(n!=null && parent != null && gparent != null && n.getNodeType().equals("WHNP") && parent.getNodeType().equals("SBAR")
-//				&& gparent.getNodeType().equals("NP") && gparent.getChildren(1) == parent && gparent.getChildren(0).getNodeType().equals("NP")){
-//			TreebankNode anteNode = gparent.getChildren(0);
-//			true_antecedent = MarkableTreeUtils.nodeMarkable(jcas, anteNode.getBegin(), anteNode.getEnd());
-//			if(true_antecedent != null){
-//				for(int q = p-1; q>=0; --q){
-//					Markable a = (Markable)lm.get(q);
-//					if(a == true_antecedent){
-//						prob = 1.0;
-//						true_antecedent_ind = q;
-//						break;
-//					}else{
-//						if(debug){
-//							indexNegativeExample(jcas, a, m, 0.0);
-//						}
-//					}
-//				}
-//				if(true_antecedent_ind == -1){
-//					System.err.println("This should not happen! Markable found in tree but not in antecedents list!");
-//				}
-//			}
-//		}else{
-//			/*
-//			for (int q = p-1; q>=0; --q) {
-//				Markable a = (Markable) lm.get(q); // Candidate antecedent
-//				if (sentDist(jcas, a, m)>3) break; // Look no more than 3 sentences
-//
-//				//			double[] corefout = new double[2];
-//				//			if (corefClassifier(jcas, a, m, mod_dem, true, corefout)>0)
-//				double coref_prob = corefClassifier(jcas, a, m, mod_dem, 1.0);
-//				if (coref_prob > 0.5)
-//					if (coref_prob > prob) {
-//						true_antecedent = a;
-//						prob = coref_prob;
-//						true_antecedent_ind = q;
-//					}
-//			}*/
-//		}
-//		if (true_antecedent != null) {
-//			CoreferenceRelation cr = new CoreferenceRelation(jcas);
-//			RelationArgument ra1 = new RelationArgument(jcas);
-//			ra1.setId(true_antecedent.getId());
-//			ra1.setArgument(true_antecedent);
-//			ra1.setRole("antecedent");
-//			RelationArgument ra2 = new RelationArgument(jcas);
-//			ra2.setId(m.getId());
-//			ra2.setArgument(m);
-//			ra2.setRole("anaphor");
-//			cr.setArg1(ra1);
-//			cr.setArg2(ra2);
-//			cr.setCoref_prob(prob);
-//			ra1.addToIndexes();
-//			ra2.addToIndexes();
-//			cr.addToIndexes();
-//			ppt.union(p, true_antecedent_ind);
-//		}
-//	}
 
 
 	private void indexNegativeExample(JCas jcas, Markable ante, Markable ana,
 			double d) {
 		if(ante == null) return;
-//		UnrelationArgument ra1 = new UnrelationArgument(jcas);
-//		ra1.setId(ante.getId());
-//		ra1.setArgument(ante);
-//		ra1.setRole("non-antecedent");
-//		UnrelationArgument ra2 = new UnrelationArgument(jcas);
-//		ra2.setId(ana.getId());
-//		ra2.setArgument(ana);
-//		ra2.setRole("non-anaphor");
-//		NonCoreferenceRelation cr = new NonCoreferenceRelation(jcas);
-//		cr.setArg1(ra1);
-//		cr.setArg2(ra2);
-//		cr.setCoref_prob(d);
-//		ra1.addToIndexes();
-//		ra2.addToIndexes();
-//		cr.addToIndexes();
-
+		// README - If needed for debugging needs to be reimplemented now that type system has changed...
 	}
 }
 
