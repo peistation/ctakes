@@ -10,14 +10,14 @@
         <vendor>edu.mayo.bmi.nlp.parser.ae</vendor>
         <configurationParameters>
             <configurationParameter>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserSemanticRoleLabelerAE.parserModelFileName</name>
+                <name>ParserModelFileName</name>
                 <description>This parameter provides the file name of the semantic role labeler model required by the factory method provided by ClearParserUtil.</description>
                 <type>String</type>
                 <multiValued>false</multiValued>
                 <mandatory>false</mandatory>
             </configurationParameter>
             <configurationParameter>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserSemanticRoleLabelerAE.useLemmatizer</name>
+                <name>UseLemmatizer</name>
                 <description>If true, use the default ClearParser lemmatizer, otherwise use lemmas from the BaseToken normalizedToken field</description>
                 <type>Boolean</type>
                 <multiValued>false</multiValued>
@@ -26,7 +26,7 @@
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserSemanticRoleLabelerAE.useLemmatizer</name>
+                <name>UseLemmatizer</name>
                 <value>
                     <boolean>true</boolean>
                 </value>

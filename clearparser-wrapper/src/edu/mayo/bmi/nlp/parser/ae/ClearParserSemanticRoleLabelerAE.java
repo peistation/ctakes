@@ -93,30 +93,17 @@ public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
   public static final String ENG_LEMMATIZER_DATA_FILE = "/resources/lemmatizer/wordnet-3.0-lemma-data.jar";
   
 
-  public static final String PARAM_PARSER_MODEL_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(
-      ClearParserSemanticRoleLabelerAE.class,
-      "parserModelFileName");
+  public static final String PARAM_PARSER_MODEL_FILE_NAME = "ParserModelFileName";
 
   @ConfigurationParameter(
-      description = "This parameter provides the file name of the semantic role labeler model required by the factory method provided by ClearParserUtil.")
+		  name = PARAM_PARSER_MODEL_FILE_NAME,
+		  description = "This parameter provides the file name of the semantic role labeler model required by the factory method provided by ClearParserUtil.")
   private String parserModelFileName;
 
 
-  /*
-  public static final String PARAM_LEMMATIZER_DATA_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(
-		  ClearParserSemanticRoleLabelerAE.class,
-		  "lemmatizerDataFileName");
-  
+  public static final String PARAM_USE_LEMMATIZER = "UseLemmatizer";
   @ConfigurationParameter(
-		  description = "This parameter provides the file name of the lemmatizer data file required by the constructor of MorphEnAnalyzer.")
-  private String lemmatizerDataFileName;
-  */
-  
-  public static final String PARAM_USE_LEMMATIZER = ConfigurationParameterFactory.createConfigurationParameterName(
-		  ClearParserDependencyParserAE.class,
-		  "useLemmatizer");
-
-  @ConfigurationParameter(
+		  name = PARAM_USE_LEMMATIZER,
 		  defaultValue = "true",
 		  description = "If true, use the default ClearParser lemmatizer, otherwise use lemmas from the BaseToken normalizedToken field")
   protected boolean useLemmatizer;

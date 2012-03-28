@@ -1,4 +1,4 @@
-package edu.mayo.bmi.nlp.parser;
+package edu.mayo.bmi.nlp.parser.ae;
 /*
  * Copyright: (c) 2010   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
@@ -41,7 +41,7 @@ import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
-public class PosAssigner extends JCasAnnotator_ImplBase{
+public class LemAssigner extends JCasAnnotator_ImplBase{
 
 	// LOG4J logger based on class name
 	public Logger logger = Logger.getLogger(getClass().getName());
@@ -64,7 +64,7 @@ public class PosAssigner extends JCasAnnotator_ImplBase{
 
         while (sentences.hasNext()) {
             Sentence sentence = (Sentence) sentences.next();
-
+            
             tokens.clear();
             nodes.clear();
 
@@ -72,46 +72,54 @@ public class PosAssigner extends JCasAnnotator_ImplBase{
             while (tokenIterator.hasNext()) {
                 tokens.add((BaseToken) tokenIterator.next());
             }
-
+            //logger.info(" new sentence: ");
             FSIterator nodeIterator = nodeIndex.subiterator(sentence);
             while (nodeIterator.hasNext()) {
                 ConllDependencyNode node = (ConllDependencyNode) nodeIterator.next();
                 if (node.getId()!=0) {
                     nodes.add(node);
                 }
+                //logger.info(node.getFORM()+" ");
             }
 
-            ListIterator<BaseToken> itt           = tokens.listIterator();
+            
+            
+            ListIterator<BaseToken>           itt = tokens.listIterator();
             ListIterator<ConllDependencyNode> itn = nodes.listIterator();
             BaseToken           bt = null;
             ConllDependencyNode dn = null;
             if (tokens.size()>0 && nodes.size()>0) {
                 // iterate through the parallel sorted lists
-            	if (itt.hasNext()) bt                  = itt.next();
-            	if (itn.hasNext()) dn                  = itn.next();
-            	if (dn != null) 
-            		if (dn.getId()==0 && itn.hasNext()) 
-            			dn = itn.next();
-            	while (itt.hasNext() || itn.hasNext()) {
-            		if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
-            			dn.setPostag( bt.getPartOfSpeech() );
-            			dn.setCpostag( bt.getPartOfSpeech() );  
-            			dn.addToIndexes();
-            			if (itt.hasNext()) bt = itt.next();
-            			if (itn.hasNext()) dn = itn.next();
-            		} else if ( bt.getBegin()<dn.getBegin() ) {
-            			if (itt.hasNext()) bt = itt.next(); else break;
-            		} else if ( bt.getBegin()>dn.getBegin() ) {
-            			if (itn.hasNext()) dn = itn.next(); else break;
-            		}
-            	}
-            	if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
-            		dn.setPostag( bt.getPartOfSpeech() );
-            		dn.setCpostag( bt.getPartOfSpeech() );  
-            		dn.addToIndexes();
-            	}
+                if (itt.hasNext()) bt                  = itt.next();
+                if (itn.hasNext()) dn                  = itn.next();
+                if (dn != null) 
+                    if (dn.getId()==0 && itn.hasNext()) 
+                        dn = itn.next();
+                while (itt.hasNext() || itn.hasNext()) {
+                    if (bt.getBegin()==dn.getBegin() ) { // Allow ragged right edge //&& bt.getEnd()==dn.getEnd()) { 
+                        dn.setLemma( bt.getNormalizedForm() );
+                        if (dn.getLemma()==null)
+                            dn.setLemma( dn.getForm().toLowerCase() );
+                        dn.addToIndexes();
+                        if (itt.hasNext()) bt = itt.next();
+                        if (itn.hasNext()) dn = itn.next();
+                    } else if ( bt.getBegin()<dn.getBegin() ) {
+                        if (itt.hasNext()) bt = itt.next(); else break;
+                    } else if ( bt.getBegin()>dn.getBegin() ) {
+                        // not every node will get a lemma b/c not all tokens are word tokens
+                        if (itn.hasNext()) {
+                            dn.setLemma( dn.getForm().toLowerCase() );
+                            dn.addToIndexes();
+                            dn = itn.next(); 
+                        } else break;
+                    }
+                }
+                if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
+                    dn.setLemma( bt.getNormalizedForm() );
+                    dn.addToIndexes();
+                }
             }
-	            
+            
 		}
         
 	}

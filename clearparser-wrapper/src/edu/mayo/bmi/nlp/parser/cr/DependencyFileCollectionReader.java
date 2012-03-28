@@ -1,4 +1,4 @@
-package edu.mayo.bmi.nlp.parser;
+package edu.mayo.bmi.nlp.parser.cr;
 /*
  * Copyright: (c) 2010   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the

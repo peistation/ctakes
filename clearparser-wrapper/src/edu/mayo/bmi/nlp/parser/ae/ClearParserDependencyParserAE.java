@@ -87,21 +87,17 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 	
 	
 	// Configuration Parameters 
-	public static final String PARAM_PARSER_MODEL_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(
-			ClearParserDependencyParserAE.class,
-			"parserModelFileName");
-
+	public static final String PARAM_PARSER_MODEL_FILE_NAME = "ParserModelFileName";
 	@ConfigurationParameter(
+			name = PARAM_PARSER_MODEL_FILE_NAME,
 			description = "This parameter provides the file name of the dependency parser model required " +
 					      "by the factory method provided by ClearParserUtil.  If not specified, this " +
 					      "analysis engine will use a default model from the resources directory")
 	protected String parserModelFileName;
 
-	public static final String PARAM_PARSER_ALGORITHM_NAME = ConfigurationParameterFactory.createConfigurationParameterName(
-			ClearParserDependencyParserAE.class,
-			"parserAlgorithmName");
-
+	public static final String PARAM_PARSER_ALGORITHM_NAME = "ParserAlgorithmName";
 	@ConfigurationParameter(
+			name = PARAM_PARSER_ALGORITHM_NAME,
 			defaultValue = DEFAULT_PARSER_ALGORITHM_NAME,
 			mandatory = true,
 			description = "This parameter provides the algorithm name used by the dependency parser that " +
@@ -109,22 +105,9 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 					      "If in doubt, do not change from the default value.")
 	protected String parserAlgorithmName;
 
-	/*
-	public static final String PARAM_LEMMATIZER_DATA_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(
-			ClearParserDependencyParserAE.class,
-			"lemmatizerDataFileName");
-
+	public static final String PARAM_USE_LEMMATIZER = "UseLemmatizer";
 	@ConfigurationParameter(
-			description = "This parameter provides the file name of the lemmatizer data file required by the constructor of MorphEnAnalyzer." +
-					      "If not specified")
-	protected String lemmatizerDataFileName;
-	*/
-	
-	public static final String PARAM_USE_LEMMATIZER = ConfigurationParameterFactory.createConfigurationParameterName(
-			ClearParserDependencyParserAE.class,
-			"useLemmatizer");
-	
-	@ConfigurationParameter(
+			name = PARAM_USE_LEMMATIZER,
 			defaultValue = "true",
 			description = "If true, use the default ClearParser lemmatizer, otherwise use lemmas from the BaseToken normalizedToken field")
 	protected boolean useLemmatizer;

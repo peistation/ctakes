@@ -10,21 +10,21 @@
         <vendor>edu.mayo.bmi.nlp.parser.ae</vendor>
         <configurationParameters>
             <configurationParameter>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE.parserModelFileName</name>
+                <name>ParserModelFileName</name>
                 <description>This parameter provides the file name of the dependency parser model required by the factory method provided by ClearParserUtil.  If not specified, this analysis engine will use a default model from the resources directory</description>
                 <type>String</type>
                 <multiValued>false</multiValued>
                 <mandatory>false</mandatory>
             </configurationParameter>
             <configurationParameter>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE.parserAlgorithmName</name>
+                <name>ParserAlgorithmName</name>
                 <description>This parameter provides the algorithm name used by the dependency parser that is required by the factory method provided by ClearParserUtil.  If in doubt, do not change from the default value.</description>
                 <type>String</type>
                 <multiValued>false</multiValued>
                 <mandatory>true</mandatory>
             </configurationParameter>
             <configurationParameter>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE.useLemmatizer</name>
+                <name>UseLemmatizer</name>
                 <description>If true, use the default ClearParser lemmatizer, otherwise use lemmas from the BaseToken normalizedToken field</description>
                 <type>Boolean</type>
                 <multiValued>false</multiValued>
@@ -33,13 +33,13 @@
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE.parserAlgorithmName</name>
+                <name>ParserAlgorithmName</name>
                 <value>
                     <string>shift-pop</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
-                <name>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE.useLemmatizer</name>
+                <name>UseLemmatizer</name>
                 <value>
                     <boolean>true</boolean>
                 </value>
