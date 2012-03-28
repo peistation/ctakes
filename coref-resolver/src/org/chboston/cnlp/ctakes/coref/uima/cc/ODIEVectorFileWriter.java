@@ -138,7 +138,7 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 				neTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.NE + "/trees.txt");
 				demTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.DEM + "/trees.txt");
 				pronTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.PRON + "/trees.txt");
-				debug = new PrintWriter(new PrintWriter(outputDir + "/" + CorefConsts.NE + "/fulltrees.txt"), true);
+				debug = new PrintWriter(new PrintWriter(outputDir + "/" + CorefConsts.NE + "/fulltrees_debug.txt"), true);
 			}
 			//			if(printModels){
 			//				pathTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.NE + "/matrix.out");
