@@ -2,9 +2,9 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SimpleSegmentAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SectionSegmentAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>SimpleSegmentAnnotator</name>
+    <name>SectionSegmentAnnotator</name>
     <description/>
     <version>2.2</version>
     <vendor>Mayo Clinic</vendor>
@@ -39,7 +39,7 @@
       <nameValuePair>
         <name>parserTemplate</name>
         <value>
-          <string>../../../coref-resolver/resources/template.xml</string>
+          <string>template.xml</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

@@ -37,6 +37,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.DocumentSection;
@@ -66,27 +67,11 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 		structureFinder = new StructFinder();
 
-		templatePath = (String) aContext.getConfigParameterValue(templateName);
-
 		try {
-			File in = new File(templatePath);
-			templateContent = new FileInputStream(in);;
-
+			File in = ((FileResource)aContext.getResourceObject("template")).getFile();
+			templateContent = new FileInputStream(in);
 		}catch(Exception e ){
 			logger.error("Error reading template file: " + e.getMessage());
-		}
-
-		try {
-			logger.info("Initializing section parser...");
-			
-			File checkFile = new File(templatePath);
-			if(! checkFile.exists())
-				throw new FileNotFoundException();
-
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			logger.error("Error reading parser model file/directory: " + e.getMessage());
 		}
 
 		segmentId = (String) aContext.getConfigParameterValue("SegmentID");
