@@ -6,7 +6,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 /**
  * Define an interface for people to implement feature extractors.
@@ -24,6 +24,6 @@ public interface RelationFeaturesExtractor {
    *          The second named entity mention in the text.
    * @return A list of features indicative of the relation between the named entities
    */
-  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
+  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2)
       throws AnalysisEngineProcessException;
 }

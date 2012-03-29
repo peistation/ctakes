@@ -13,6 +13,7 @@ import org.cleartk.classifier.feature.extractor.annotationpair.DistanceExtractor
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
@@ -45,7 +46,7 @@ public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
   private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, IdentifiedAnnotation.class);
 
   @Override
-  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
+  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2)
       throws AnalysisEngineProcessException {
 
     List<Feature> features = new ArrayList<Feature>();

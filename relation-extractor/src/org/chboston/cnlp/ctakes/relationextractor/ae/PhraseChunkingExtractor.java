@@ -9,7 +9,7 @@ import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 	  
@@ -52,8 +52,8 @@ public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 		}
 	  
 	@Override
-	public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1,
-			IdentifiedAnnotation arg2) throws AnalysisEngineProcessException {
+	public List<Feature> extract(JCas jCas, EntityMention arg1,
+			EntityMention arg2) throws AnalysisEngineProcessException {
 		List<Feature> features = new ArrayList<Feature>();
 				
 		// Extract features between 
