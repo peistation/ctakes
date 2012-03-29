@@ -33,7 +33,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="/home/tmill/Projects/cNLP/cTakes/sharpn/common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
