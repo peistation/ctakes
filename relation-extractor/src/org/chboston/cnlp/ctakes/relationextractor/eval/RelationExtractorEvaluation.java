@@ -31,11 +31,20 @@ import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.encoder.features.BooleanEncoder;
+import org.cleartk.classifier.encoder.features.FeatureVectorFeaturesEncoder;
+import org.cleartk.classifier.encoder.features.NumberEncoder;
+import org.cleartk.classifier.encoder.features.StringEncoder;
+import org.cleartk.classifier.encoder.outcome.StringToIntegerOutcomeEncoder;
+import org.cleartk.classifier.jar.DataWriterFactory_ImplBase;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.DefaultMultiClassLIBSVMDataWriterFactory;
+import org.cleartk.classifier.libsvm.MultiClassLIBSVMDataWriter;
+import org.cleartk.classifier.util.featurevector.FeatureVector;
 import org.cleartk.eval.Evaluation;
 import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
 import org.cleartk.eval.provider.CleartkPipelineProvider_ImplBase;
@@ -132,7 +141,8 @@ public class RelationExtractorEvaluation {
       // defines pipelines that train a classifier and classify with it
       PipelineProvider pipelineProvider = new PipelineProvider(
           new File("models"),
-          DefaultMultiClassLIBSVMDataWriterFactory.class,
+          //DefaultMultiClassLIBSVMDataWriterFactory.class, // row-normalizes feature values
+          MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
           params.probabilityOfKeepingANegativeExample);
 
       // defines how to evaluate
@@ -351,6 +361,25 @@ public class RelationExtractorEvaluation {
       for (EntityMention mention : new ArrayList<EntityMention>(mentions)) {
         mention.removeFromIndexes();
       }
+    }
+  }
+  
+  /**
+   * This is a replacement for {@link DefaultMultiClassLIBSVMDataWriterFactory} that doesn't do
+   * row-normalization.
+   */
+  public static class MultiClassLIBSVMDataWriterFactory extends
+      DataWriterFactory_ImplBase<FeatureVector, String, Integer> {
+
+    public DataWriter<String> createDataWriter() throws IOException {
+      MultiClassLIBSVMDataWriter dataWriter = new MultiClassLIBSVMDataWriter(this.outputDirectory);
+      FeatureVectorFeaturesEncoder fe = new FeatureVectorFeaturesEncoder(0);
+      fe.addEncoder(new NumberEncoder());
+      fe.addEncoder(new BooleanEncoder());
+      fe.addEncoder(new StringEncoder());
+      dataWriter.setFeaturesEncoder(fe);
+      dataWriter.setOutcomeEncoder(new StringToIntegerOutcomeEncoder());
+      return dataWriter;
     }
   }
 
