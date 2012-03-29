@@ -20,6 +20,7 @@ import org.apache.commons.lang.SerializationUtils;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
@@ -59,6 +60,7 @@ import org.uimafit.component.JCasCollectionReader_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
+import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
@@ -85,9 +87,7 @@ public class RelationExtractorEvaluation {
         required = true)
     public File trainDirectory;
 
-    @Option(
-        name = "--grid-search",
-        usage = "run a grid search to select the best parameters")
+    @Option(name = "--grid-search", usage = "run a grid search to select the best parameters")
     public boolean gridSearch = false;
   }
 
@@ -119,7 +119,7 @@ public class RelationExtractorEvaluation {
 
     // define the grid of parameters over which we will search
     List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
-    if (options.gridSearch) { 
+    if (options.gridSearch) {
       for (float probabilityOfKeepingANegativeExample : new float[] { 0.01f, 0.05f, 0.1f }) {
         for (double svmCost : new double[] { 1, 10, 100 }) {
           for (double svmGamma : new double[] { 10, 100, 1000 }) {
@@ -141,9 +141,12 @@ public class RelationExtractorEvaluation {
       // defines pipelines that train a classifier and classify with it
       PipelineProvider pipelineProvider = new PipelineProvider(
           new File("models"),
-          //DefaultMultiClassLIBSVMDataWriterFactory.class, // row-normalizes feature values
+          // DefaultMultiClassLIBSVMDataWriterFactory.class, // row-normalizes feature values
           MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
-          params.probabilityOfKeepingANegativeExample);
+          RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+          params.probabilityOfKeepingANegativeExample,
+          RelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+          false);
 
       // defines how to evaluate
       File statisticsFile = new File("models", "collection.statistics");
@@ -172,11 +175,11 @@ public class RelationExtractorEvaluation {
       stream.close();
       System.err.println(params);
       System.err.println(params.stats);
-      
+
       // store these parameter settings
       scoredParams.put(params, params.stats.f1());
     }
-    
+
     // print parameters sorted by F1
     List<ParameterSettings> list = new ArrayList<ParameterSettings>(scoredParams.keySet());
     Function<ParameterSettings, Double> getCount = Functions.forMap(scoredParams);
@@ -200,16 +203,16 @@ public class RelationExtractorEvaluation {
       System.err.println(lastParams.stats);
     }
   }
-  
+
   private static class ParameterSettings {
     public float probabilityOfKeepingANegativeExample;
-    
+
     public double svmCost;
 
     public double svmGamma;
-    
+
     public EvaluationStatistics<?> stats;
-    
+
     public ParameterSettings(
         float probabilityOfKeepingANegativeExample,
         double svmCost,
@@ -246,8 +249,7 @@ public class RelationExtractorEvaluation {
       return this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
           && this.svmCost == that.svmCost && this.svmGamma == that.svmGamma;
     }
-    
-    
+
   }
 
   /**
@@ -276,10 +278,7 @@ public class RelationExtractorEvaluation {
 
     @Override
     public Progress[] getProgress() {
-      return new Progress[] { new ProgressImpl(
-          this.completed,
-          this.files.size(),
-          Progress.ENTITIES) };
+      return new Progress[] { new ProgressImpl(this.completed, this.files.size(), Progress.ENTITIES) };
     }
 
     @Override
@@ -348,8 +347,7 @@ public class RelationExtractorEvaluation {
     }
 
   }
-  
-  
+
   /**
    * Class that removes {@link EntityMention} annotations from the CAS's default view
    */
@@ -363,7 +361,7 @@ public class RelationExtractorEvaluation {
       }
     }
   }
-  
+
   /**
    * This is a replacement for {@link DefaultMultiClassLIBSVMDataWriterFactory} that doesn't do
    * row-normalization.
@@ -392,47 +390,62 @@ public class RelationExtractorEvaluation {
 
     private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
 
-    private float probabilityOfKeepingANegativeExample;
-    
+    private Object[] additionalParameters;
+
     public PipelineProvider(
         File modelsDirectory,
         Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
-        float probabilityOfKeepingANegativeExample) throws UIMAException, IOException {
+        Object... additionalParameters) throws UIMAException, IOException {
       this.modelsDirectory = modelsDirectory;
       this.dataWriterFactoryClass = dataWriterFactoryClass;
-      this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
+      this.additionalParameters = additionalParameters;
+    }
+
+    private AnalysisEngineDescription getClassifierAnnotatorDescription()
+        throws ResourceInitializationException {
+      return AnalysisEngineFactory.createPrimitiveDescription(
+          RelationExtractorAnnotator.class,
+          this.additionalParameters);
     }
 
     @Override
     public List<AnalysisEngine> getTrainingPipeline(String name) throws UIMAException {
+      // configure the relation extractor for training mode
+      AnalysisEngineDescription desc = this.getClassifierAnnotatorDescription();
+      ConfigurationParameterFactory.addConfigurationParameters(
+          desc,
+          RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
+          GOLD_VIEW_NAME,
+          CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+          this.dataWriterFactoryClass.getName(),
+          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+          this.getDir(name).getPath());
 
       return Arrays.asList(
-          // use gold entities during training (removing cTAKES entities) 
+          // remove cTAKES entities from the system view
           AnalysisEngineFactory.createPrimitive(EntityMentionRemover.class),
+          // copy gold mentions into the system view
           AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
-          // run the relation extractor in training mode
-          AnalysisEngineFactory.createPrimitive(
-              RelationExtractorAnnotator.class,
-              RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
-              GOLD_VIEW_NAME,
-              CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-              this.dataWriterFactoryClass.getName(),
-              DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-              this.getDir(name).getPath(),
-              RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-              this.probabilityOfKeepingANegativeExample));
+          // run the relation extractor
+          AnalysisEngineFactory.createPrimitive(desc));
     }
 
     @Override
     public List<AnalysisEngine> getClassifyingPipeline(String name) throws UIMAException {
-      // run an annotator that copies over the entity mentions,
-      // and the relation extractor in classification mode
+      // configure the relation extractor for classification mode
+      AnalysisEngineDescription desc = this.getClassifierAnnotatorDescription();
+      ConfigurationParameterFactory.addConfigurationParameters(
+          desc,
+          GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+          new File(this.getDir(name), "model.jar").getPath());
+
       return Arrays.asList(
+          // remove cTAKES entities from the system view
+          AnalysisEngineFactory.createPrimitive(EntityMentionRemover.class),
+          // copy gold mentions into the system view
           AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
-          AnalysisEngineFactory.createPrimitive(
-              RelationExtractorAnnotator.class,
-              GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-              new File(this.getDir(name), "model.jar").getPath()));
+          // run the relation extractor
+          AnalysisEngineFactory.createPrimitive(desc));
     }
 
     @Override
@@ -496,10 +509,10 @@ public class RelationExtractorEvaluation {
           categories(systemRelations),
           categories(intersection));
     }
-    
+
     private static List<String> categories(Collection<HashableRelation> relations) {
       List<String> categories = new ArrayList<String>();
-      for (HashableRelation relation: relations) {
+      for (HashableRelation relation : relations) {
         categories.add(relation.category);
       }
       return categories;
