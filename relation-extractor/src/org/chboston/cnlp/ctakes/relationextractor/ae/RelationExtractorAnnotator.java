@@ -149,6 +149,14 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
             for (RelationFeaturesExtractor extractor : this.featureExtractors) {
               features.addAll(extractor.extract(jCas, arg1, arg2));
             }
+            
+            // sanity check on feature values
+            for (Feature feature : features) {
+              if (feature.getValue() == null) {
+                String message = "Null value found in %s from %s";
+                throw new IllegalArgumentException(String.format(message, feature, features));
+              }
+            }
 
             // during training, feed the features to the data writer
             if (this.isTraining()) {
