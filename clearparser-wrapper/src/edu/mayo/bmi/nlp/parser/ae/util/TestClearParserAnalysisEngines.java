@@ -37,6 +37,8 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 public class TestClearParserAnalysisEngines {
 	public static String DEP_DUMMY_MODEL_FILE = "src/resources/dependency/dummy.dep.mod.jar";
 	public static String SRL_DUMMY_MODEL_FILE = "src/resources/srl/dummy.srl.mod.jar";
+	public static String INPUT_FILE = "../clinical documents pipeline/test/data/plaintext/testpatient_plaintext_1.txt";
+
 
 	public static class Options extends Options_ImplBase {
 		
@@ -51,6 +53,13 @@ public class TestClearParserAnalysisEngines {
 				usage = "specify the path to the clearparser srl model file",
 				required = false)
 		public File srlModelFile = new File(SRL_DUMMY_MODEL_FILE);
+		
+		
+		@Option(name = "-i",
+				aliases = "--inputFile",
+				usage = "specify the path to the plaintext input",
+				required = false)
+		public File inputFile = new File(INPUT_FILE);
 	}
 
 	
@@ -87,6 +96,7 @@ public class TestClearParserAnalysisEngines {
 
 		File depModelFile = options.depModelFile;
 		File srlModelFile = options.srlModelFile;
+		File inputFile = options.inputFile;
 		
 		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml");
 				
@@ -94,7 +104,7 @@ public class TestClearParserAnalysisEngines {
 				FilesCollectionReader.class,
 				typeSystem,
 				FilesCollectionReader.PARAM_ROOT_FILE,
-				"../clinical documents pipeline/test/data/plaintext/testpatient_plaintext_1.txt"
+				inputFile.toString()
 				);
 		
 		// Load preprocessing pipeline (consists of 
