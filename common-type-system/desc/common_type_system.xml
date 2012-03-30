@@ -58,6 +58,7 @@ Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.BaseToken</description>
           <name>lemmaEntries</name>
           <description/>
           <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <elementType>edu.mayo.bmi.uima.core.type.syntax.Lemma</elementType>
         </featureDescription>
       </features>
     </typeDescription>
@@ -1437,6 +1438,7 @@ More qualifying information on how the procedure was done.</description>
           <name>ontologyConceptArr</name>
           <description/>
           <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.mayo.bmi.uima.core.type.refsem.OntologyConcept</elementType>
         </featureDescription>
         <featureDescription>
           <name>typeID</name>
@@ -1599,6 +1601,7 @@ More qualifying information on how the procedure was done.</description>
           <name>relations</name>
           <description/>
           <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <elementType>edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation</elementType>
         </featureDescription>
         <featureDescription>
           <name>frameSet</name>
