@@ -8,6 +8,9 @@
 	<classpathentry kind="lib" path="lib/args4j-2.0.16.jar"/>
 	<classpathentry kind="lib" path="lib/hppc-0.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/clearparser-0.33.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/chunker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/POS tagger"/>

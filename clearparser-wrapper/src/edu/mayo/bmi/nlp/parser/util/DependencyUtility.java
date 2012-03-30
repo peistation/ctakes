@@ -30,6 +30,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.uimafit.util.JCasUtil;
 
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
@@ -217,5 +218,16 @@ public abstract class DependencyUtility {
 	
 	public static List<ConllDependencyNode> getLeftSibProgeny( ConllDependencyNode refNode, List<ConllDependencyNode> tree) {
 		return getProgeny( getLeftSibs(refNode,tree), tree );
+	}
+
+
+	public static String dumpDependencyGraph(Annotation annotation) {
+		StringBuilder builder = new StringBuilder();
+		for (ConllDependencyNode depNode : JCasUtil.selectCovered(ConllDependencyNode.class, annotation)) {
+			ConllDependencyNode head = depNode.getHead();
+			String headStr = (head != null) ? head.getCoveredText() : "TOP";
+			builder.append(String.format("%s(%s, %s)\n", depNode.getDeprel(), depNode.getCoveredText(), headStr));
+		}
+		return builder.toString();
 	}
 }

@@ -81,6 +81,7 @@ public class WriteClearParserDescriptors {
 				new File("/Users/lbecker/Development/workspace/SHARPn-cTAKES/clearparser-wrapper/resources/dependency/dummy.dep.mod.jar").toString()
 				*/
 				);
+		
 
 		System.out.println((new File("desc/analysis_engine")).getAbsolutePath());
 
@@ -103,8 +104,8 @@ public class WriteClearParserDescriptors {
 	public static AggregateBuilder getPlaintextAggregateBuilder() throws InvalidXMLException, IOException {
 		AggregateBuilder aggregateBuilder = new AggregateBuilder();
 		aggregateBuilder.add(getDescription(SIMPLE_SEGMENTER_PATH));
-		aggregateBuilder.add(getDescription(TOKENIZER_PATH));
 		aggregateBuilder.add(getDescription(SENTENCE_DETECTOR_PATH));
+		aggregateBuilder.add(getDescription(TOKENIZER_PATH));
 		aggregateBuilder.add(getDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
 		aggregateBuilder.add(getDescription(POS_TAGGER_PATH));
 		return aggregateBuilder;

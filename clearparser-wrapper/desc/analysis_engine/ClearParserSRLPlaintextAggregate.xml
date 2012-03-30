@@ -628,8 +628,8 @@
         <flowConstraints>
             <fixedFlow>
                 <node>SimpleSegmentAnnotator</node>
-                <node>TokenizerAnnotatorPTB</node>
                 <node>Sentence Detector annotator</node>
+                <node>TokenizerAnnotatorPTB</node>
                 <node>LVG Annotator</node>
                 <node>POSTagger</node>
                 <node>edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE</node>
