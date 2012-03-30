@@ -7,7 +7,8 @@
   <types>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.WordToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.WordToken</description>
+      <description>Differentiates a token as being a word rather than a punctuation, symbol, newline, contraction, or number.
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.WordToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
       <features>
         <featureDescription>
@@ -34,7 +35,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.BaseToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.BaseToken</description>
+      <description>A supertype for tokens subsuming word, punctuation, symbol, newline, contraction, or number.  Includes parts of speech, which are grammatical categories, e.g., noun (NN) or preposition (IN) that use Penn Treebank tags with a few additions.
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.BaseToken</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -61,7 +63,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.ContractionToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.ContractionToken</description>
+      <description>Differentiates a token as being a contraction rather than a punctuation, symbol, newline, word, or number. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.ContractionToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -78,7 +81,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.Lemma</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Lemma</description>
+      <description>Stores a lemma (canonical form of a token).  Inherits from uima.cas.TOP, allowing for reuse of standardized forms across the CAS. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Lemma</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -95,12 +99,14 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.NewlineToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NewlineToken</description>
+      <description>Differentiates a token as being a newline rather than a punctuation, symbol, contraction, word, or number. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NewlineToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.NumToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NumToken</description>
+      <description>Differentiates a token as being a number rather than a punctuation, symbol, newline, word, or contraction. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NumToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
       <features>
         <featureDescription>
@@ -112,7 +118,9 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.OntologyConcept</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
+      <description>Ontologies (e.g., SNOMED-CT) provide an expert semantic representation for concepts. They typically assign a code to a concept and normalize across various textual representations of that concept.  
+IdentifiedAnnotation and Elements may point to these normalized concept representations to indicate clinical concepts.
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -141,12 +149,14 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.PunctuationToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.PunctuationToken</description>
+      <description>Differentiates a token as being punctuation rather than a contraction, symbol, newline, word, or number. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.PunctuationToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.Segment</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Segment</description>
+      <description>A section of a clinical text, e.g., Diagnosis, Current Medications, Problem List.  Different segments often have differing sublanguages and clinical relevance.     
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Segment</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -158,7 +168,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.Sentence</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Sentence</description>
+      <description>Sentences may or may not be fully-formed and grammatical.  They form the unit of analysis for some downstream components (e.g., constituency parsers).
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Sentence</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -175,12 +186,14 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.SymbolToken</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.SymbolToken</description>
+      <description>Differentiates a token as being a symbol rather than a punctuation, contraction, newline, word, or number. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.SymbolToken</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.UmlsConcept</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.UmlsConcept</description>
+      <description>Concepts in the Unified Medical Language System (UMLS) Metathesaurus have a concept unique identifier (CUI) and a type unique identifier (TUI, i.e., semantic type) which are curated, normalized codes. For example, "pain" would have a cui=C0030193 and tui=T184.
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.UmlsConcept</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.OntologyConcept</supertypeName>
       <features>
         <featureDescription>
@@ -197,7 +210,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.Chunk</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.Chunk</description>
+      <description>Chunks are syntactic groupings of tokens, and are the results of a shallow parser (chunker).  Possible chunkTypes follow Penn Treebank guidelines, e.g., noun phrase (NP) or prepositional phrase (PP) 
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.Chunk</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -209,57 +223,68 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.NP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.NP</description>
+      <description>A noun phrase
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.NP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.ADJP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.ADJP</description>
+      <description>An adjective phrase
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.ADJP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.ADVP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.ADVP</description>
+      <description>An adverb phrase
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.ADVP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.CONJP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.CONJP</description>
+      <description>A phrase-level conjunction
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.CONJP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.INTJ</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.INTJ</description>
+      <description>An interjection
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.INTJ</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.LST</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.LST</description>
+      <description>A list item, usually intra-sentential
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.LST</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.PP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.PP</description>
+      <description>A prepositional phrase
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.PP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.PRT</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.PRT</description>
+      <description>A particle, e.g., "out" in "rule out"
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.PRT</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.SBAR</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.SBAR</description>
+      <description>A subordinate clause
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.SBAR</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.UCP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.UCP</description>
+      <description>An unlike coordinating phrase, e.g., a NP and a PP conjoined via "and" 
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.UCP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.VP</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.VP</description>
+      <description>A verb phrase
+Equivalent to cTAKES: edu.mayo.bmi.uima.chunker.type.VP</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.Chunk</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -321,24 +346,25 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</name>
-      <description>Equivalent to cTAKES: edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</description>
+      <description>Defines a window within which dictionary terms may match.  An auxiliary spanned type.
+Equivalent to cTAKES: edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationRoute</name>
-      <description/>
+      <description>Means by which the medication was taken or administered.  Value set includes Topical, Enteral_Oral, Parenteral_Intravenous, Other, undetermined, etc.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
           <name>value</name>
-          <description>Means by which the medication was taken or administered.</description>
+          <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationForm</name>
-      <description/>
+      <description>Form of this medication.  Value set includes tablet, capsule, liquid, inhalant, gel, other, etc.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -350,7 +376,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationStrength</name>
-      <description/>
+      <description>Strength indicates the strength number and unit of the prescribed drug.  E.g. "5 mg" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -367,7 +393,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationDuration</name>
-      <description/>
+      <description>The amount of time after which a medication should stop being used, e.g., "2 weeks" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -379,7 +405,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationDosage</name>
-      <description/>
+      <description>Dosage indicates how much of a prescribed drug should be taken.  E.g. "one" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -391,7 +417,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationFrequency</name>
-      <description/>
+      <description>How often a medication should be used. e.g., BID or b.i.d. or "twice-a-day" would have a number=2 and unit=day.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -408,7 +434,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.MedicationStatusChange</name>
-      <description/>
+      <description>Status refers to the whether the medication is currently being taken or not.  Value set: start, stop, increase, decrease, no change.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -420,7 +446,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.ProcedureDevice</name>
-      <description/>
+      <description>Corresponds to the UMLS Devices semantic group: medical device and research device. 
+Example: arterial line has a Medical Device semantic type. This is qualifying information on how a procedure was done.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -432,7 +459,8 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.ProcedureMethod</name>
-      <description/>
+      <description>The way or the equipment used to give or administration something (medication, test). This corresponds to the Procedures UMLS semantic group.
+More qualifying information on how the procedure was done.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -444,7 +472,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.LabDeltaFlag</name>
-      <description/>
+      <description>An indicator to warn that the laboratory test result has changed significantly from the previous identical laboratory test result.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -456,7 +484,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.LabValue</name>
-      <description/>
+      <description>Quantitative results of a laboratory, with number and unit.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -473,7 +501,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.LabReferenceRange</name>
-      <description/>
+      <description>Holds a narrative (i.e. string) reference range</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -485,7 +513,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.BodyLaterality</name>
-      <description/>
+      <description>The proximity of the location in anatomical terms (distal, proximal, superior, anterior and etc.). This is finer-grained to allow combinations of values.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -497,7 +525,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.BodySide</name>
-      <description/>
+      <description>Value set: unmarked (default), left, right, bilateral</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -509,7 +537,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Course</name>
-      <description/>
+      <description>An indication of progress or decline of a condition.  Value set: unmarked (default), changed, increased, decreased, improved, worsened, resolved</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -521,7 +549,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Severity</name>
-      <description/>
+      <description>An explicitly-mentioned indication of the seriousness of a condition.  Value Set: unmarked (default), severe, moderate, slight</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</supertypeName>
       <features>
         <featureDescription>
@@ -533,7 +561,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.AnatomicalSite</name>
-      <description/>
+      <description>A body part or area, corresponding to the UMLS semantic group of Anatomy.  An Entity based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Entity</supertypeName>
       <features>
         <featureDescription>
@@ -550,7 +578,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Medication</name>
-      <description/>
+      <description>This is an Event from the UMLS semantic group of Chemicals and Drugs, pruned by RxNORM source.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
       <features>
         <featureDescription>
@@ -607,7 +635,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Procedure</name>
-      <description/>
+      <description>This is an Event from the UMLS semantic group of Procedures (except that Laboratory procedures are separate).  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
       <features>
         <featureDescription>
@@ -659,7 +687,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.SignSymptom</name>
-      <description/>
+      <description>This is an Event from the UMLS semantic group of Sign or Symtom.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
       <features>
         <featureDescription>
@@ -721,7 +749,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.DiseaseDisorder</name>
-      <description/>
+      <description>This is an Event from the UMLS semantic group of Disorders (except that Sign and Symptom types are separate).  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
       <features>
         <featureDescription>
@@ -783,7 +811,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Lab</name>
-      <description/>
+      <description>This is an Event from the UMLS semantic group of Laboratory Procedures.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Event</supertypeName>
       <features>
         <featureDescription>
@@ -815,7 +843,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Element</name>
-      <description>A basic semantic unit, mappable to an ontology.  Includes things like Entities, Events, Attributes, Dates.</description>
+      <description>A basic semantic unit that refers to something in the real world, including Entities, Events, Attributes, Dates.  Element inherits from uima.cas.TOP to combine textual mentions of these real-world objects.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -907,7 +935,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Event</name>
-      <description>An event, which may bear some temporal properties and relationships.</description>
+      <description>A real-world event; similar to Entity, but may bear some temporal properties and relationships.  In the constrained clinical context, many concepts are discussed as instances with some temporal component, e.g., Medications, Labs.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Element</supertypeName>
       <features>
         <featureDescription>
@@ -919,7 +947,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.refsem.Entity</name>
-      <description/>
+      <description>A real-world entity such as a body part.  For example, multiple Procedures may have the same AnatomicalSite entity for their locations.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.refsem.Element</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -976,7 +1004,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.Relation</name>
-      <description/>
+      <description>A superclass for semantic relationships between Elements.  For example, one might consider TemporalRelations or UMLSRelations between a Medication and a Disorder.  The "category" feature indicates what kind of relation it is.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1013,7 +1041,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.RelationArgument</name>
-      <description/>
+      <description>Relations are like lines connecting two or more endpoints.  RelationArguments are used as endpoints that are text spans via the "argument" feature. The directed relations should specify a "role" feature.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1041,7 +1069,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</name>
-      <description/>
+      <description>A super-type for relationships between two spans of text.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
       <features>
         <featureDescription>
@@ -1063,7 +1091,7 @@
       <features>
         <featureDescription>
           <name>members</name>
-          <description/>
+          <description>A super-type for relationships between multiple spans of text.</description>
           <rangeTypeName>uima.cas.FSList</rangeTypeName>
           <elementType>edu.mayo.bmi.uima.core.type.relation.RelationArgument</elementType>
         </featureDescription>
@@ -1071,22 +1099,22 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.UMLSRelation</name>
-      <description/>
+      <description>A biomedical relationship between two spans of text that have been mapped to UMLS concepts. Inherits "category" from Relation, with values such as affects, causes, complicates, contraindicates, degree_of, etc.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.CoreferenceRelation</name>
-      <description/>
+      <description>A coreference pair, with antecedent as arg1 and anaphor as arg2</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.ElementRelation</name>
-      <description/>
+      <description>A super-type referring to real-world semantic relationships, e.g., TemporalRelations between two Events.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.AttributeRelation</name>
-      <description/>
+      <description>A real-world relationship between an Element and an Attribute.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -1121,7 +1149,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.structured.Demographics</name>
-      <description>Demographic information about the patient in a clinical document.  Attributes come from Clinical Element Models (CEMs).</description>
+      <description>Demographic information about the patient in a clinical document.  Typically comes from structured metadata.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1168,7 +1196,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.structured.SourceData</name>
-      <description/>
+      <description>Information about the caregiving setting for the clinical document.  Typically comes from structured metadata.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1230,7 +1258,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.structured.Metadata</name>
-      <description>Other structured data that captures information about the document, patient, or context of the clinical text.</description>
+      <description>Structured data that captures information about the document, patient, or context of the clinical text.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1300,7 +1328,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode</name>
-      <description>A Penn Treebank Node; as a terminal, there is an associated word, and the index of the word is an attribute.</description>
+      <description>A Penn Treebank Node; as a terminal, there is an associated word, and the index of the word is a feature.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.syntax.TreebankNode</supertypeName>
       <features>
         <featureDescription>
@@ -1397,7 +1425,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</name>
-      <description>More generalized from cTAKES: edu.mayo.bmi.uima.core.type.IdentifiedAnnotation. Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.</description>
+      <description>Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.  Generalized from cTAKES: edu.mayo.bmi.uima.core.type.IdentifiedAnnotation.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -1564,7 +1592,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.Predicate</name>
-      <description/>
+      <description>Predicates are typically verbs and may participate in SemanticRoleRelations.  Follows PropBank standards with a few clinical additions.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -1581,7 +1609,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.SemanticArgument</name>
-      <description/>
+      <description>SemanticArguments are used for predicate-argument structures (SemanticRoleRelations).  The "label" features should contain the type of semantic role (e.g., ARG0, ARGM) that this argument has w.r.t. the predicate.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -1598,7 +1626,7 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation</name>
-      <description/>
+      <description>Predicate-argument structure used for semantic role labeling output.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
       <features>
         <featureDescription>
@@ -1615,18 +1643,31 @@
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.Paragraph</name>
-      <description/>
+      <description>A text span corresponding to a paragraph, typically containing multiple sentences.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textspan.List</name>
-      <description/>
+      <description>A semi-structured text span, containing other Annotations (typically Sentences, other Lists, etc).</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>id</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>items</name>
+          <description/>
+          <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <elementType>uima.tcas.Annotation</elementType>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.util.Pair</name>
-      <description>An Attribute-Value tuple. Equivalent to cTAKES: 
-edu.mayo.bmi.uima.core.type.Property</description>
+      <description>An Attribute-Value tuple.
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Property</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1643,8 +1684,8 @@ edu.mayo.bmi.uima.core.type.Property</description>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.util.Pairs</name>
-      <description>A brute force "hash" that stores multiple Pairs in a list. Equivalent to cTAKES: 
-edu.mayo.bmi.uima.core.type.Properties</description>
+      <description>A brute force "hash" that stores multiple Pairs in a list. 
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Properties</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
