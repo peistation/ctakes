@@ -18,20 +18,27 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.collection.CasConsumer_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.refsem.Date;
+import edu.mayo.bmi.uima.core.type.refsem.MedicationStrength;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
-import edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
+import edu.mayo.bmi.uima.core.type.util.Pair;
+import edu.mayo.bmi.uima.core.type.util.Pairs;
+//import edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 
 /**
@@ -74,7 +81,33 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 		}
 
 	}
+	/**
+	 * Stores annotation version as a property JCas object.
+	 * 
+	 * @param jcas
+	 */
+	private void storeAnnotationVersion(JCas jcas) {
+	 	FSIterator<TOP> itr = jcas.getJFSIndexRepository().getAllIndexedFS(Pairs.type);
+		if (itr == null || !itr.hasNext())
+			return;
 
+		Pairs props = (Pairs) itr.next(); 
+
+		// create a new property array that is one item bigger
+		FSArray propArr = props.getPairs();
+		FSArray newPropArr = new FSArray(jcas, propArr.size() + 1);
+		for (int i = 0; i < propArr.size(); i++) {
+			newPropArr.set(i, propArr.get(i));
+		}
+
+		Pair annotVerProp = new Pair(jcas);    		
+		annotVerProp.setAttribute(iv_annotVerPropKey);
+		annotVerProp.setValue(String.valueOf(iv_annotVer));
+
+		// add annotation version prop as last item in array
+		newPropArr.set(newPropArr.size() - 1, annotVerProp);
+		props.setPairs(newPropArr);
+	}
 	public void processCas(CAS cas) throws ResourceProcessException {
 		vRevDate = "";
 		vNoteDate = "";
@@ -199,8 +232,8 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 			throws ResourceProcessException {
 		try {
 			
-	        	//JCas jcas = cas.getCurrentView().getJCas();
-		    JCas jcas  = cas.getJCas().getView("plaintext");
+	        JCas jcas = cas.getCurrentView().getJCas();
+		    //JCas jcas  = cas.getJCas().getView("plaintext");
 	                
 	        	//System.err.println("Document Id: "+DocumentIDAnnotationUtil.getDocumentID(jcas));
 	        	
@@ -222,10 +255,10 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 			    //System.err.println("Segment :"+ s.getCoveredText());
 			}
 			
-            Iterator nerItr = indexes.getAnnotationIndex(DrugMentionAnnotation.type).iterator();
+            Iterator nerItr = indexes.getAnnotationIndex(MedicationEventMention.type).iterator();
 			while (nerItr.hasNext()) 
 			{
-			  DrugMentionAnnotation neAnnot = (DrugMentionAnnotation) nerItr.next();
+			  MedicationEventMention neAnnot = (MedicationEventMention) nerItr.next();
 //System.err.println("DrugNE :"+neAnnot.getCoveredText());			  
 			  gotDup = false;
 
@@ -244,7 +277,7 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 
 						// found segment for this NE
 						String segmentID = seg.getId();
-System.err.println("Checking if segmentID ["+segmentID+"] is valid - NE["+neAnnot.getCoveredText()+"]");						
+					
 						if (iv_medicalSections.contains(segmentID)
 								|| !iv_useCurrentMedsSectionOnly.booleanValue()) {
 
@@ -253,9 +286,8 @@ System.err.println("Checking if segmentID ["+segmentID+"] is valid - NE["+neAnno
 								keepTrackOfDupEnd = neAnnot.getEnd();
 
 
-								String strengthTerm = neAnnot.getStrength();
 
-								String localDate = neAnnot.getStartDate();
+								Date localDate = neAnnot.getStartDate();//.getStartDate();
 								String chunk = null;
 
 								boolean foundChunk = false;
@@ -264,17 +296,22 @@ System.err.println("Checking if segmentID ["+segmentID+"] is valid - NE["+neAnno
 										ChunkAnnotation.type)
 										.iterator();
 
-								while (findChunk.hasNext() && !foundChunk) 
-								{
-								    ChunkAnnotation ca = (ChunkAnnotation) findChunk.next();
-									if (neAnnot.getBegin() >= ca.getBegin()
-											&& neAnnot.getEnd() <= ca
-											.getEnd()) {
-										chunk = ca.getCoveredText()
-										.replace('\n', ' ')
-										.replace(',', ';');
-										foundChunk = true;
+								try {
+									while (findChunk.hasNext() && !foundChunk) 
+									{
+									    ChunkAnnotation ca = (ChunkAnnotation) findChunk.next();
+										if (neAnnot.getBegin() >= ca.getBegin()
+												&& neAnnot.getEnd() <= ca
+												.getEnd()) {
+											chunk = ca.getCoveredText()
+											.replace('\n', ' ')
+											.replace(',', ';');
+											foundChunk = true;
+										}
 									}
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 								String containedInSubSection = segmentID;
 								Iterator subSectionItr = indexes.getAnnotationIndex(
@@ -308,39 +345,55 @@ System.err.println("Checking if segmentID ["+segmentID+"] is valid - NE["+neAnno
 								    calendar.setTimeInMillis(new Long(vNoteDate).longValue());
 								
 								String globalDate = format.format(calendar.getTime());
-								if (localDate == null
-										|| localDate.length() < 1) {
-									localDate = globalDate;
-								}
-								Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, IdentifiedAnnotation.type, neAnnot.getBegin(), neAnnot.getEnd()+1);
+//								if (localDate == null
+//										|| localDate.length() < 1) {
+//									localDate = globalDate;
+//								}
+	//							Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, IdentifiedAnnotation.type, neAnnot.getBegin(), neAnnot.getEnd()+1);
 								String neCui = "n/a";
 								String status = "n/a";
 								String rxNormCui = "n/a";
-								if (neItr.hasNext()){
-									IdentifiedAnnotation ne = (IdentifiedAnnotation) neItr.next();
-									status = new Integer(ne.getUncertainty()).toString();
-									if (ne.getTypeID() == 1){
 
-										FSArray ocArr = ne.getOntologyConceptArr();
-										if (ocArr != null)
-										{
-											for (int i = 0; i < ocArr.size(); i++)
-											{
-												OntologyConcept oc = (OntologyConcept) ocArr.get(i);
-												neCui = oc.getCode();
-												rxNormCui = oc.getOui();
-											}
-										}
-
+								FSArray ocArr = neAnnot.getOntologyConceptArr();
+								if (ocArr != null)
+								{
+									for (int i = 0; i < ocArr.size(); i++)
+									{
+										OntologyConcept oc = (OntologyConcept) ocArr.get(i);
+										neCui = oc.getCode();
+										rxNormCui = oc.getOui();
 									}
 								}
+
+								MedicationStrength strengthTerm = neAnnot.getMedicationStrength();//getStrength();
+								String strengthTermString = "null";
+								if (strengthTerm != null) 
+									strengthTermString = strengthTerm.getNumber()+ " " +strengthTerm.getUnit();
+								String medicationDosageString = "null";
+								if (neAnnot.getMedicationDosage() != null && neAnnot.getMedicationDosage().getValue() != null)
+									medicationDosageString = neAnnot.getMedicationDosage().getValue();
+								String medicationFrequencyNumber = "null";
+								if (neAnnot.getMedicationFrequency() != null && neAnnot.getMedicationFrequency().getNumber() != null)
+									medicationFrequencyNumber = neAnnot.getMedicationFrequency().getNumber()+" "+neAnnot.getMedicationFrequency().getUnit();
+								String duration = "null";
+								if (neAnnot.getMedicationDuration() != null && neAnnot.getMedicationDuration().getValue() != null)
+									duration = neAnnot.getMedicationDuration().getValue();
+
+								String route = "null";
+								if (neAnnot.getMedicationRoute() != null && neAnnot.getMedicationRoute().getValue() != null)
+									route = neAnnot.getMedicationRoute().getValue();
+								String form = "null";
+								if (neAnnot.getMedicationForm() != null && neAnnot.getMedicationForm().getValue() != null)
+									form = neAnnot.getMedicationForm().getValue();
+								String changeStatus = "null";
+								if (neAnnot.getMedicationStatusChange() != null && neAnnot.getMedicationStatusChange().getValue() != null )
+									changeStatus = neAnnot.getMedicationStatusChange().getValue();
 								medInfo = clinicNumber + "," +neAnnot.getCoveredText()  + "," + rxNormCui 
 								+ ",\"" + neAnnot.getStartDate() + "\","
-								+ globalDate + "," + neAnnot.getDosage() + "," +strengthTerm + "," 
-								+ neAnnot.getFrequency() + "," + neAnnot.getFrequencyUnit() + ","
-								+ neAnnot.getDuration() + "," + neAnnot.getRoute() + ","
-								+ neAnnot.getForm() + "," + status + "," 
-								+ neAnnot.getDrugChangeStatus() + "," +neAnnot.getConfidence() + "," +containedInSubSection
+								+ globalDate + "," + medicationDosageString + "," +strengthTermString + "," 
+								+ medicationFrequencyNumber + "," +  duration + "," + route + ","
+								+  form + "," + status + "," 
+								+ changeStatus + "," +neAnnot.getConfidence() + "," +containedInSubSection
 								+ "," +docLinkId+"_"+docRevision+","+chunk;  
 								store(fileForIO, medInfo);
 							}
