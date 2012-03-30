@@ -156,11 +156,6 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
         	JCas originalView = jcas.getView("_InitialView");
         	originalText = originalView.getSofaDataString();
 
-                //used later to copy to plaintextView 
-        	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
-		 	DocumentID docID = (DocumentID) documentIDIterator.next();
-        	
             PreProcessor pp = new ClinicalNotePreProcessor(
                     dtdFile,
                     includeSectionMarkers.booleanValue());
@@ -191,21 +186,15 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
                 sa.addToIndexes();
             }
             
-            //copy the documentId from the default sofa to plaintext
-            if(docID != null)
-            {
-        	DocumentID newDocId = new DocumentID(plaintextView);
-//TODO:Moved to Common Type System.
-//        	newDocId.setBegin(docID.getBegin());
-//        	newDocId.setEnd(docID.getEnd());
-        	newDocId.setDocumentID(docID.getDocumentID());
-        	newDocId.addToIndexes();
-            }
-            
-
             // Store meta data about the document
             Pairs propAnnot = new Pairs(plaintextView); 
             Map metaDataMap = dmd.getMetaData();
+            
+            String docID = (String)metaDataMap.get(ClinicalNotePreProcessor.MD_KEY_DOC_ID);
+        	DocumentID newDocId = new DocumentID(plaintextView);
+        	newDocId.setDocumentID(docID);
+        	newDocId.addToIndexes();
+            
             FSArray fsArr = new FSArray(plaintextView, metaDataMap.size());
             Iterator keyItr = metaDataMap.keySet().iterator();
             int pos = 0;
