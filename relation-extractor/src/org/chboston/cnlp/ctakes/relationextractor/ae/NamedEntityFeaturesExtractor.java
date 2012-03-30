@@ -43,7 +43,7 @@ public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
   /**
    * Number of named entities between the two mentions
    */
-  private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, IdentifiedAnnotation.class);
+  private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, EntityMention.class);
 
   @Override
   public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2)
