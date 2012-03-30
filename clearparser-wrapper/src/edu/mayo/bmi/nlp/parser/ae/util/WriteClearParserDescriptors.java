@@ -25,15 +25,15 @@ import edu.mayo.bmi.nlp.parser.ae.ClearParserSemanticRoleLabelerAE;
 
 
 /**
- * Use this to generate UIMA xml descriptor files for the ClearParser analysis engines.
+ * Use this to generate UIMA xml description files for the ClearParser analysis engines.
  *
  */
 public class WriteClearParserDescriptors {
 	public static final String SIMPLE_SEGMENTER_PATH = "../clinical documents pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml";
-	public static final String TOKENIZER_PATH="../core/desc/analysis_engine/TokenizerAnnotator.xml";
-	public static final String POS_TAGGER_PATH="../POS tagger/desc/POSTagger.xml";
 	public static final String SENTENCE_DETECTOR_PATH="../core/desc/analysis_engine/SentenceDetectorAnnotator.xml";
+	public static final String TOKENIZER_PATH="../core/desc/analysis_engine/TokenizerAnnotator.xml";
 	public static final String LVG_BASE_TOKEN_ANNOTATOR_PATH="desc/analysis_engine/LvgBaseTokenAnnotator.xml";
+	public static final String POS_TAGGER_PATH="../POS tagger/desc/POSTagger.xml";
 	public static final String DEP_NAME="ClearParserDependencyParser";
 	public static final String SRL_NAME="ClearParserSRL";
 
@@ -67,19 +67,11 @@ public class WriteClearParserDescriptors {
 		AnalysisEngineDescription clearparserSRLDesc = AnalysisEngineFactory.createPrimitiveDescription(
 				ClearParserSemanticRoleLabelerAE.class,
 				typeSystem
-				/*,
-				ClearParserSemanticRoleLabelerAE.PARAM_PARSER_MODEL_FILE_NAME,
-				new File("/Users/lbecker/Development/workspace/SHARPn-cTAKES/clearparser-wrapper/resources/srl/dummy.srl.mod.jar").toString()
-				*/
 				);
 
 		AnalysisEngineDescription clearparserDepParserDesc = AnalysisEngineFactory.createPrimitiveDescription(
 				ClearParserDependencyParserAE.class,
 				typeSystem
-				/*
-				ClearParserDependencyParserAE.PARAM_PARSER_MODEL_FILE_NAME,
-				new File("/Users/lbecker/Development/workspace/SHARPn-cTAKES/clearparser-wrapper/resources/dependency/dummy.dep.mod.jar").toString()
-				*/
 				);
 		
 
@@ -93,42 +85,69 @@ public class WriteClearParserDescriptors {
 		AggregateBuilder aggregateBuilder = getPlaintextAggregateBuilder();
 		writeAggregateDescriptions(aggregateBuilder, clearparserDepParserDesc, clearparserSRLDesc, options.outputRoot, "PlaintextAggregate.xml");
 
+		// Write aggregate tokenized description files
 		aggregateBuilder = getTokenizedAggregateBuilder();
 		writeAggregateDescriptions(aggregateBuilder, clearparserDepParserDesc, clearparserSRLDesc, options.outputRoot, "TokenizedAggregate.xml");
 
+		// Write aggregate tokenizedInf description files
 		aggregateBuilder = getTokenizedInfPosAggregateBuilder();
 		writeAggregateDescriptions(aggregateBuilder, clearparserDepParserDesc, clearparserSRLDesc, options.outputRoot, "TokenizedInfPosAggregate.xml");
 
 	}
 
+	/**
+	 * Builds the plaintext prepreprocessing pipeline for ClearParser
+	 * @return
+	 * @throws InvalidXMLException
+	 * @throws IOException
+	 */
 	public static AggregateBuilder getPlaintextAggregateBuilder() throws InvalidXMLException, IOException {
 		AggregateBuilder aggregateBuilder = new AggregateBuilder();
-		aggregateBuilder.add(getDescription(SIMPLE_SEGMENTER_PATH));
-		aggregateBuilder.add(getDescription(SENTENCE_DETECTOR_PATH));
-		aggregateBuilder.add(getDescription(TOKENIZER_PATH));
-		aggregateBuilder.add(getDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
-		aggregateBuilder.add(getDescription(POS_TAGGER_PATH));
+		aggregateBuilder.add(loadDescription(SIMPLE_SEGMENTER_PATH));
+		aggregateBuilder.add(loadDescription(SENTENCE_DETECTOR_PATH));
+		aggregateBuilder.add(loadDescription(TOKENIZER_PATH));
+		aggregateBuilder.add(loadDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
+		aggregateBuilder.add(loadDescription(POS_TAGGER_PATH));
 		return aggregateBuilder;
 	}
 
 
+	/**
+	 * Builds the tokenized preprocessing pipeline for ClearParser
+	 * @return
+	 * @throws InvalidXMLException
+	 * @throws IOException
+	 */
 	public static AggregateBuilder getTokenizedAggregateBuilder() throws InvalidXMLException, IOException {
 		AggregateBuilder aggregateBuilder = new AggregateBuilder();
-		aggregateBuilder.add(getDescription(SIMPLE_SEGMENTER_PATH));
-		aggregateBuilder.add(getDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
+		aggregateBuilder.add(loadDescription(SIMPLE_SEGMENTER_PATH));
+		aggregateBuilder.add(loadDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
 		return aggregateBuilder;
 	}
 
+	/**
+	 * Builds the tokenizedInf preprocessing for ClearParser
+	 * @return
+	 * @throws InvalidXMLException
+	 * @throws IOException
+	 */
 	public static AggregateBuilder getTokenizedInfPosAggregateBuilder() throws InvalidXMLException, IOException {
 		AggregateBuilder aggregateBuilder = new AggregateBuilder();
-		aggregateBuilder.add(getDescription(SIMPLE_SEGMENTER_PATH));
-		aggregateBuilder.add(getDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
-		aggregateBuilder.add(getDescription(POS_TAGGER_PATH));
+		aggregateBuilder.add(loadDescription(SIMPLE_SEGMENTER_PATH));
+		aggregateBuilder.add(loadDescription(LVG_BASE_TOKEN_ANNOTATOR_PATH));
+		aggregateBuilder.add(loadDescription(POS_TAGGER_PATH));
 		return aggregateBuilder;
 	}
 
 
-	public static AnalysisEngineDescription getDescription(String pathToDescription) throws IOException, InvalidXMLException {
+	/**
+	 * Simple method to load xml description and return an AnalysisEngineDescription object
+	 * @param pathToDescription
+	 * @return
+	 * @throws IOException
+	 * @throws InvalidXMLException
+	 */
+	public static AnalysisEngineDescription loadDescription(String pathToDescription) throws IOException, InvalidXMLException {
 		File file = new File(pathToDescription);
 		XMLParser parser = UIMAFramework.getXMLParser();
 		XMLInputSource source = new XMLInputSource(file);
