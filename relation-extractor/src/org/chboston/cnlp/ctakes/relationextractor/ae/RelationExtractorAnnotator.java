@@ -71,7 +71,7 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
       description = "probability that a negative example should be retained for training")
   private double probabilityOfKeepingANegativeExample = 1.0;
 
-  private Random coin = new Random();
+  private Random coin = new Random(0);
 
   /**
    * The list of feature extractors used by the classifier.
