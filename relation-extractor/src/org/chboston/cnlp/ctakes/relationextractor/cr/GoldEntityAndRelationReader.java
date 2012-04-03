@@ -54,8 +54,6 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  */
 public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 
-	// read all the relations in the data or just the SHARP ones?
-	public final boolean readOnlySharpRelations = true;
 	// paramater that should contain the path to knowtator xml files
 	public static final String PARAM_INPUTDIR = "InputDirectory";
 	// path to knowtator xml files
@@ -112,10 +110,9 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			// add relations and relation arguments to the cas
 			for(RelationInfo relationInfo : relationInfos) {
 
-				if(readOnlySharpRelations) {
-					if(! Constants.sharpRelations.contains(relationInfo.relation)) {
-						continue; 
-					}
+				// read only relations needed for SHARP
+				if(! Constants.sharpRelations.contains(relationInfo.relation)) {
+					continue; 
 				}
 				
 				// ignore all entities that ctakes cannot extract (and relations between them)
