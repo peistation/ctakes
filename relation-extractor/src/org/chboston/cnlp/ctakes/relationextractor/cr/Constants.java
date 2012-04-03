@@ -11,7 +11,8 @@ import java.util.HashSet;
  */
 public class Constants {
 	
-	// high priority sharp relations
+	// high priority sharp relations 
+	// degree_of relation is currently excluded since we don't have an annotator that handles it yet
 	public static final HashSet<String> sharpRelations = 
-			new HashSet<String>(Arrays.asList("manages/treats", "degree_of", "causes/brings_about", "location_of", "indicates"));
+			new HashSet<String>(Arrays.asList("manages/treats", "causes/brings_about", "location_of", "indicates"));
 }
