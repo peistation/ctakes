@@ -35,7 +35,7 @@
       <nameValuePair>
         <name>srcObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.chunker.type.ADJP</string>
+          <string>edu.mayo.bmi.uima.core.type.syntax.ADJP</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -75,7 +75,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.ADJP</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.ADJP</type>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
