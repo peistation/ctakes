@@ -36,31 +36,6 @@ public class CONST {
 
 	public static final int NE_TYPE_ID_PROCEDURE = 5;
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
-
-	// entity types used for mipacq
-	public static final int NE_TYPE_ID_DISEASE_DISORDER = 101;
-	public static final int NE_TYPE_ID_ACTIVITIES_AND_BEHAVIORS = 102;
-	public static final int NE_TYPE_ID_ORGANIZATIONS = 103;
-	public static final int NE_TYPE_ID_OBJECTS = 104;
-	public static final int NE_TYPE_ID_DEVICES = 105;
-	public static final int NE_TYPE_ID_PHYSIOLOGY = 106;
-	public static final int NE_TYPE_ID_GEOGRAPHIC_AREAS = 107;
-	public static final int NE_TYPE_ID_PHENOMENA = 108;
-
-	public static final int NE_TYPE_ID_MEDICATIONS_DRUGS = 110;
-	public static final int NE_TYPE_ID_EVENT_UMLS = 111;
-	public static final int NE_TYPE_ID_CONCEPTS_AND_IDEAS = 112;
-	public static final int NE_TYPE_ID_LIVING_BEINGS = 113;
-	public static final int NE_TYPE_ID_CLASSIFICATION = 114;
-	public static final int NE_TYPE_ID_SIGN_SYMPTOM = 115;
-	public static final int NE_TYPE_ID_TIMEX3 = 116;
-	public static final int NE_TYPE_ID_LANGUAGE = 117;
-	public static final int NE_TYPE_ID_OCCUPATIONS = 118;
-	public static final int NE_TYPE_ID_LABORATORY_OR_TEST_PROCEDURE = 119;
-
-	public static final int NE_TYPE_ID_GENES_AND_MOLECULAR_SEQUENCES = 121;
-	public static final int NE_TYPE_ID_PERSON = 122;
-	
 	
 	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 1;
 	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 2;
@@ -84,5 +59,4 @@ public class CONST {
 	public static final String MED_STATUS_CHANGE_SUM = "add";
 	public static final String MED_STATUS_CHANGE_MAX = "maximum";
 	public static final String MED_STATUS_CHANGE_OTHER = "change";
-	
 }
