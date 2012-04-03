@@ -35,7 +35,7 @@
       <nameValuePair>
         <name>srcObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.chunker.type.VP</string>
+          <string>edu.mayo.bmi.uima.core.type.syntax.VP</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -75,7 +75,7 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.VP</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.VP</type>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
