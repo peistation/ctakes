@@ -73,8 +73,8 @@
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentWithTagsAnnotator</node>
-        <node>TokenizerAnnotator</node>
         <node>SentenceDetectorAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>LvgAnnotator</node>
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
