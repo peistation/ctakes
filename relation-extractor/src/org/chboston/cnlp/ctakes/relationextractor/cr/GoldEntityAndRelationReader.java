@@ -28,7 +28,26 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**
  * Read named entity annotations and relations between them 
- * from knowtator xml files into the CAS
+ * from knowtator xml files into the CAS. 
+ * 
+ * Assumptions:
+ * 
+ *   - A pair of entities can only have a single relation between them
+ *   - An entity can have only a single semantic type
+ *   
+ * For each relation instance in the gold standard, this reader will:
+ * 
+ *   - Check if the arguments of this relation instance can be extracted
+ *     by CTAKEs automatically. If one of them cannot, this relation 
+ *     instance and the entities will be skipped. 
+ *   - Check if another relation between a pair of entities with the same 
+ *     knowtator mention ids has already been added to the cas. If it has,
+ *     the reader will not add a new relation between these entities.
+ *
+ *  This reader will also make sure each entity is added to the cas only once.
+ *  E.g. the cas may already contain an entity if it participates in another
+ *  relation that's already been added to the cas or due to an error in the gold 
+ *  standard (i.e. if it was annotated twice -- such weirdness does happen).
  * 
  * @author dmitriy dligach
  *
@@ -78,59 +97,92 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
         throw new AnalysisEngineProcessException(e);
       }
 
-      // map knowtator mention ids to entity offsets
+      // map knowtator mention ids to entity offsets (ArrayList needed to handle disjoint spans)
 			HashMap<String, ArrayList<Span>> entityMentions = XMLReader.getEntityMentions(document);
 			// map knowtator mention ids to entity types
 			HashMap<String, String> entityTypes = XMLReader.getEntityTypes(document);
 			// get relations and their arguments
 			ArrayList<RelationInfo> relationInfos = XMLReader.getRelations(document);
 
-			// mention ids of entities that are already added to the CAS
-			HashSet<String> addedEntities = new HashSet<String>();
+			// relations between unique pairs of entities in gold standard
+			HashSet<RelationInfo> uniqueRelations = new HashSet<RelationInfo>();
+			// map unique spans of text to entity mention objects
+			HashMap<Span, EntityMention> spanToEntity = new HashMap<Span, EntityMention>();
 			
-			// add relations and relation arguments to the CAS
+			// add relations and relation arguments to the cas
 			for(RelationInfo relationInfo : relationInfos) {
 
 				if(readOnlySharpRelations) {
 					if(! Constants.sharpRelations.contains(relationInfo.relation)) {
-						continue; // only load SHARP relations
+						continue; 
 					}
 				}
+				
+				// ignore all entities that ctakes cannot extract (and relations between them)
+				if(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)) == CONST.NE_TYPE_ID_UNKNOWN) {
+					continue;
+				}
+				if(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)) == CONST.NE_TYPE_ID_UNKNOWN) {
+					continue;
+				}
+
+				// only a single relation is allowed between same pair of gold entities
+				if(uniqueRelations.contains(relationInfo)) {
+					continue;
+				}
+				uniqueRelations.add(relationInfo);
 				
 				// for disjoint spans, just ignore the gap
 				Span first1 = entityMentions.get(relationInfo.id1).get(0);
 				Span last1 = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
+				Span span1 = new Span(first1.start, last1.end);
 				
-				EntityMention entityMention1 = new EntityMention(jCas, first1.start, last1.end);
-				entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)));
-				entityMention1.setId(identifiedAnnotationId++);
-				entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
-				entityMention1.setConfidence(1);
-				entityMention1.addToIndexes();
+				EntityMention entityMention1 = null;
+				if(spanToEntity.containsKey(span1)) {
+					// an entity with the same span has already been added to the cas
+					entityMention1 = spanToEntity.get(span1);
+				} 
+				else {
+					// this entity still needs to be addded to the cas
+					entityMention1 = new EntityMention(jCas, span1.start, span1.end);
+					entityMention1.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)));
+					entityMention1.setId(identifiedAnnotationId++);
+					entityMention1.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+					entityMention1.setConfidence(1);
+					entityMention1.addToIndexes();
+					spanToEntity.put(span1, entityMention1);
+				}
 				
-				// again, rememeber that some entities have disjoint spans that need to be handled
+				// again, rememeber that some entities have disjoint spans 
 				Span first2 = entityMentions.get(relationInfo.id2).get(0);
 				Span last2 = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
+				Span span2 = new Span(first2.start, last2.end);
 				
-				EntityMention entityMention2 = new EntityMention(jCas, first2.start, last2.end);
-				entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)));
-				entityMention2.setId(identifiedAnnotationId++);
-				entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
-				entityMention2.setConfidence(1);
-				entityMention2.addToIndexes();
-
-				addedEntities.add(relationInfo.id1); // save to skip later when adding the rest of entities
-				addedEntities.add(relationInfo.id2); // save to skip later when adding the rest of entities
+				EntityMention entityMention2 = null;
+				if(spanToEntity.containsKey(span2)) {
+					// an entity with this span already exists in the cas
+					entityMention2 = spanToEntity.get(span2);
+				}
+				else {
+					// this entity still needs to be added to the cas
+					entityMention2 = new EntityMention(jCas, span2.start, span2.end);
+					entityMention2.setTypeID(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)));
+					entityMention2.setId(identifiedAnnotationId++);
+					entityMention2.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+					entityMention2.setConfidence(1);
+					entityMention2.addToIndexes();
+					spanToEntity.put(span2, entityMention2);
+				}
 				
 				RelationArgument relationArgument1 = new RelationArgument(jCas);
 				relationArgument1.setId(relationArgumentId++);
 				relationArgument1.setArgument(entityMention1);
-				relationArgument1.setRole(relationInfo.position1);
+				relationArgument1.setRole(relationInfo.role1);
 				
 				RelationArgument relationArgument2 = new RelationArgument(jCas);
 				relationArgument2.setId(relationArgumentId++);
 				relationArgument2.setArgument(entityMention2);
-				relationArgument2.setRole(relationInfo.position2);
+				relationArgument2.setRole(relationInfo.role2);
 				
 				BinaryTextRelation binaryTextRelation = new BinaryTextRelation(jCas);
 				binaryTextRelation.setArg1(relationArgument1);
@@ -142,22 +194,31 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				binaryTextRelation.addToIndexes();
 			}
 			
-			
-			// add the rest of entities to the CAS
+			// add the rest of entities to the cas
 			for(Map.Entry<String, ArrayList<Span>> entry : entityMentions.entrySet()) {
-				if(addedEntities.contains(entry.getKey())) {
-					continue; // this entry is already added
-				}
-				
+
 				Span first = entry.getValue().get(0);
 				Span last = entry.getValue().get(entry.getValue().size() - 1);
+				Span span = new Span(first.start, last.end);
 				
-				EntityMention entityMention = new EntityMention(jCas, first.start, last.end);
+				// has this span been added already?
+				if(spanToEntity.containsKey(span)) {
+					continue;
+				}
+				
+				// ignore all entities that cannot be found by ctakes
+				if(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())) == CONST.NE_TYPE_ID_UNKNOWN) {
+					continue;
+				}
+				
+				EntityMention entityMention = new EntityMention(jCas, span.start, span.end);
 				entityMention.setTypeID(Mapper.getEntityTypeId(entityTypes.get(entry.getKey())));
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention.setConfidence(1);
 				entityMention.addToIndexes();
+				
+				spanToEntity.put(span, entityMention);
 			}
 	}
 }
