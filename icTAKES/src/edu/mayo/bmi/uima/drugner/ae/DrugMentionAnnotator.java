@@ -23,6 +23,7 @@ import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import edu.mayo.bmi.fsm.drugner.elements.conditions.ContainsSetTextValueCondition;
 import edu.mayo.bmi.fsm.drugner.machines.elements.DecimalStrengthFSM;
 import edu.mayo.bmi.fsm.drugner.machines.elements.DosagesFSM;
 import edu.mayo.bmi.fsm.drugner.machines.elements.DrugChangeStatusFSM;
@@ -34,6 +35,7 @@ import edu.mayo.bmi.fsm.drugner.machines.elements.FrequencyUnitFSM;
 import edu.mayo.bmi.fsm.drugner.machines.elements.RangeStrengthFSM;
 import edu.mayo.bmi.fsm.drugner.machines.elements.RouteFSM;
 import edu.mayo.bmi.fsm.drugner.machines.elements.StrengthFSM;
+import edu.mayo.bmi.fsm.drugner.machines.elements.StrengthUnitFSM;
 import edu.mayo.bmi.fsm.drugner.machines.util.SubSectionIndicatorFSM;
 import edu.mayo.bmi.fsm.drugner.machines.util.SuffixStrengthFSM;
 import edu.mayo.bmi.fsm.drugner.output.elements.BaseTokenImpl;
@@ -45,10 +47,10 @@ import edu.mayo.bmi.fsm.drugner.output.elements.FrequencyToken;
 import edu.mayo.bmi.fsm.drugner.output.elements.FrequencyUnitToken;
 import edu.mayo.bmi.fsm.drugner.output.elements.RouteToken;
 import edu.mayo.bmi.fsm.drugner.output.elements.StrengthToken;
+import edu.mayo.bmi.fsm.drugner.output.elements.StrengthUnitToken;
+import edu.mayo.bmi.fsm.drugner.output.elements.StrengthUnitCombinedToken;
 import edu.mayo.bmi.fsm.drugner.output.util.SubSectionIndicator;
 import edu.mayo.bmi.fsm.drugner.output.util.SuffixStrengthToken;
-import edu.mayo.bmi.lookup.algorithms.FirstTokenPermutationImpl;
-import edu.mayo.bmi.lookup.vo.LookupToken;
 import edu.mayo.bmi.uima.cdt.type.DateAnnotation;
 import edu.mayo.bmi.uima.core.ae.TokenizerAnnotator;
 import edu.mayo.bmi.uima.core.fsm.adapters.ContractionTokenAdapter;
@@ -86,6 +88,7 @@ import edu.mayo.bmi.uima.drugner.type.FrequencyUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RangeStrengthAnnotation;
 import edu.mayo.bmi.uima.drugner.type.RouteAnnotation;
 import edu.mayo.bmi.uima.drugner.type.StrengthAnnotation;
+import edu.mayo.bmi.uima.drugner.type.StrengthUnitAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SuffixStrengthAnnotation;
 import edu.mayo.bmi.uima.lookup.ae.LookupAnnotationToJCasAdapter;
@@ -138,6 +141,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
     iv_statusFSM = new DrugChangeStatusFSM();
     iv_decimalFSM = new DecimalStrengthFSM();
     iv_strengthFSM = new StrengthFSM();
+    iv_strengthUnitFSM = new StrengthUnitFSM();
     iv_frequencyUnitFSM = new FrequencyUnitFSM();
     iv_formFSM = new FormFSM();
     iv_subMedSectionFSM = new SubSectionIndicatorFSM();
@@ -168,8 +172,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       {
         Segment seg = (Segment) segmentItr.next();
         if (iv_medicationRelatedSections.contains(seg.getId()))
-          generateDrugMentions(jcas, seg);
-      }
+          generateDrugMentions(jcas, seg, false);
+        else 
+          generateDrugMentions(jcas, seg, true);
+      } 
 
       generateUidValues(jcas);
     } 
@@ -420,7 +426,45 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         ann.addToIndexes();
     }
   }
-  
+	/**
+	 * Finds offset of string the represents end of numeric portion
+	 */
+	private int findTextualStringOffset(String text) {
+
+			String subText = "";
+			boolean containsNums = false;
+			boolean doneHere = false;
+			int textSize = text.length();
+			int pos = 0;
+			Integer posInt = null;
+			while (!doneHere && (textSize > pos) && (textSize > 1)) {
+				try {
+					String numString = text.substring(pos, pos + 1);
+
+					Integer posNum = posInt.decode(numString);
+					int checkInt = posNum.intValue();
+
+					if ((checkInt >= 0) && (checkInt <= 9)) {
+						containsNums = true;
+						subText = text.substring(pos + 1, textSize);
+						pos++;
+					} else
+						return pos;
+				}
+
+				catch (NullPointerException npe) {
+					return 0;
+				} catch (NumberFormatException nfe) {
+					if (!containsNums)
+						return 0;
+					else
+						doneHere = true;
+
+				}
+			}
+		return pos;
+	}
+ 
   //TODO: review the executeFSMs method
   /**
    * The namedE consists of a list of the Named Entities (NE) found in the prior
@@ -455,9 +499,8 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       Set rangeTokenSet = iv_rangeFSM.execute(baseTokenList);
 
       addAnnotations(jcas, decimalTokenSet, RangeStrengthAnnotation.type);
-
-      Set strengthTokenSet = iv_strengthFSM.execute(baseTokenList, rangeTokenSet);
-      
+    //Mayo SPM 2/20/2012 Changed due to separation of strength tokens
+      Set strengthTokenSet = iv_strengthUnitFSM.execute(baseTokenList, rangeTokenSet);
       Iterator measurementTokenItr = strengthTokenSet.iterator();
       int begin = 0, previous = 0;
       while (measurementTokenItr.hasNext())
@@ -467,31 +510,39 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         boolean neFound = false;
         NamedEntity ne = null;
         WordToken we = null;
-
-        StrengthToken mt = (StrengthToken) measurementTokenItr.next();
-        int begSeg = mt.getStartOffset(), endSeg = mt.getEndOffset();
-        StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
-        ma.addToIndexes();
+        Object mt = (Object)  measurementTokenItr.next();
+        if (mt instanceof  StrengthUnitToken) {
+        	// StrengthUnitToken mt = (StrengthUnitToken) measurementTokenItr.next();
+        	int begSeg = ((StrengthUnitToken) mt).getStartOffset(), endSeg = ((StrengthUnitToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.addToIndexes();
+        } else {
+        	int begSeg = ((StrengthUnitCombinedToken) mt).getStartOffset(), endSeg = ((StrengthUnitCombinedToken) mt).getEndOffset();
+        	StrengthUnitAnnotation ma = new StrengthUnitAnnotation(jcas, begSeg, endSeg);
+        	ma.setBegin(findTextualStringOffset(ma.getCoveredText()) + begSeg);
+        	ma.addToIndexes();
+        }
+ 
         //TODO: Does this need to be commented out? Created Strength        
       }
       
-      Set decTokenSet = null;
-      {
-        decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
-            fractionTokenSet);
-        Iterator decTokenItr = decTokenSet.iterator();
-
-        while (decTokenItr.hasNext())
-        {
-          StrengthToken mt = (StrengthToken) decTokenItr.next();
-          StrengthAnnotation ma = new StrengthAnnotation(jcas, mt
-              .getStartOffset(), mt.getEndOffset());
-          ma.addToIndexes();
-          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
-          // true);
-
-        }
-      }
+//      Set decTokenSet = null;
+//      {
+//        decTokenSet = iv_strengthFSM.execute(baseTokenList, decimalTokenSet,
+//            fractionTokenSet);
+//        Iterator decTokenItr = decTokenSet.iterator();
+//
+//        while (decTokenItr.hasNext())
+//        {
+//          StrengthToken mt = (StrengthToken) decTokenItr.next();
+//          StrengthAnnotation ma = new StrengthAnnotation(jcas, mt
+//              .getStartOffset(), mt.getEndOffset());
+//          ma.addToIndexes();
+//          // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
+//          // true);
+//
+//        }
+//      }
       
       Set formTokenSet = iv_formFSM.execute(baseTokenList,
       /* decimalTokenSet */new HashSet());
@@ -513,22 +564,25 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
       // info and see how we align w/ the ne if they exist to determine
       // confidence factoring
 //      if (!doseConfidence && decTokenSet != null)
-      {
-        Set preTokenSet = iv_strengthFSM.execute(baseTokenList, decTokenSet);
+//      {
+        Set preTokenSet = iv_strengthFSM.execute(baseTokenList, strengthTokenSet, fractionTokenSet);
         Iterator preTokenItr = preTokenSet.iterator();
 
         while (preTokenItr.hasNext())
         {
           StrengthToken mt = (StrengthToken) preTokenItr.next();
-          int begSeg = mt.getStartOffset();
-          int endSeg = mt.getEndOffset();
-          StrengthAnnotation ma = new StrengthAnnotation(jcas, begSeg, endSeg);
+          int begOff = mt.getStartOffset();
+          int endOff = mt.getEndOffset();
+          StrengthAnnotation ma = new StrengthAnnotation(jcas, begOff, endOff);
+          Iterator subStrengthItr = FSUtil.getAnnotationsIteratorInSpan(jcas, StrengthUnitAnnotation.type, begOff, endOff);
+          if (subStrengthItr.hasNext() )
+            	  ma.setEnd(((StrengthUnitAnnotation)subStrengthItr.next()).getBegin());
           ma.addToIndexes();
           // loadandAppend("./strengthTable.csv", ma.getCoveredText(),
           // true);
 
         }
-      }
+//      }
       Set doseTokenSet = iv_dosagesFSM.execute(baseTokenList, formTokenSet,
           strengthTokenSet);
       Iterator dosTokenItr = doseTokenSet.iterator();
@@ -651,7 +705,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
    * would apply to the entire group) The end of a SubSection or Section
    */
 
-  private void generateDrugMentions(JCas jcas, Segment seg) throws Exception
+  private void generateDrugMentions(JCas jcas, Segment seg, boolean narrativeType) throws Exception
   {
 	  int begin = seg.getBegin(), end = seg.getEnd() + 1;
 	  NamedEntity nextNER = null;
@@ -662,13 +716,35 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 	  int[] validNeTypes =
 	  { TypeSystemConst.NE_TYPE_ID_DRUG, TypeSystemConst.NE_TYPE_ID_UNKNOWN };
 	  try {
+		 
+		  uniqueNEs = findUniqueMentions( FSUtil.getAnnotationsInSpan(jcas, NamedEntity.type, begin, end, validNeTypes).toArray());
 		  // FIX ID: 3476114, ID: 3476113, and ID: 3476110
-		  int [][] windowSpans = getWindowSpan(jcas, "list", NamedEntity.type, begin, end,  false);
-		  if (windowSpans[0][0] == -1) {
-			  windowSpans[0][0] = begin;
-			  windowSpans[0][1] = end;
+		  int globalArraySize = uniqueNEs.size()*3;
+		  int [][] windowSpans =  new int [globalArraySize][2];
+		  int globalWindowSize = 0;
+		  if (narrativeType) {
+			  for (int neCount = 0; neCount < uniqueNEs.size() ; neCount ++ ) {
+				  boolean processedSpan = false;
+				  NamedEntity neNarrative = (NamedEntity) uniqueNEs.get(neCount);
+				  for (int spanCheck = 0 ; spanCheck < windowSpans.length && !processedSpan && windowSpans[spanCheck][0] != 0; spanCheck ++ ) {
+					  if (windowSpans[spanCheck][0] ==  neNarrative.getBegin()) 
+						  processedSpan = true;
+				  }
+				  if (!processedSpan) {
+					  int [][] narrativeSpans =  getWindowSpan(jcas, "narrative", NamedEntity.type, neNarrative.getBegin(), neNarrative.getEnd(),  false, globalArraySize);
+					  for (int elementCount = 0; elementCount < narrativeSpans.length; elementCount ++ ) {
+						  windowSpans[globalWindowSize] = narrativeSpans[elementCount];
+						  globalWindowSize++;
+					  }
+				  }
+			  }
+		  } else if (uniqueNEs.size() > 0){ // don't bother finding spans if no ne in list
+			  windowSpans = getWindowSpan(jcas, "list", NamedEntity.type, begin, end,  false, globalArraySize);
+			  if (windowSpans.length > 0 && windowSpans[0][0] == -1) {
+				  windowSpans[0][0] = begin;
+				  windowSpans[0][1] = end;
+			  }
 		  }
-
 		  for (int count= 0; count < windowSpans.length; count++) {
 			  List neTokenUpdatedList = getAnnotationsInSpan(jcas,
 					  NamedEntity.type, windowSpans[count][0], windowSpans[count][1]);
@@ -983,6 +1059,7 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
           } else
           {
+        	  statusChangeItr.next();// Added this line to make sure the the next DrugChangeStatusAnnotation in the event that there is no subsection to look at
         	  boolean noWeirdError = true;
         	  boolean pullOut = false;
         	  while (!pullOut & !isolate && findSubSection.hasNext()
@@ -1597,16 +1674,25 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
         drugTokenAnt.setStrength(strengthText);
         drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
       } else if (recurseNER != null && recurseNER.getStrength() != null)
       {
         drugTokenAnt.setStrength(recurseNER.getStrength());
         drugTokenAnt.setStrengthBegin(recurseNER.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(recurseNER.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(recurseNER.getStrengthUnit());
+        drugTokenAnt.setSuBegin(recurseNER.getSuBegin());
+        drugTokenAnt.setSuEnd(recurseNER.getSuEnd());
       } else if (dm.getStrengthElement() != null && dm.strength != null)
       {
         drugTokenAnt.setStrength(dm.getStrengthElement());
         drugTokenAnt.setStrengthBegin(dm.getStrengthBegin());
         drugTokenAnt.setStrengthEnd(dm.getStrengthEnd());
+        drugTokenAnt.setStrengthUnit(dm.getStrengthUnitElement());
+        drugTokenAnt.setSuBegin(dm.getStrengthUnitBegin());
+        drugTokenAnt.setSuEnd(dm.getStrengthUnitEnd());
       }
       if ((dm.getDosageElement() != null && dm.getDosageElement().compareTo(
           "null") != 0)
@@ -1869,6 +1955,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 		  }
 		  if (priorDM.frequency != null) {
 			  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -1910,6 +1999,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -1939,6 +2031,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (priorDM.frequency != null) {
 				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -1970,6 +2065,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2004,6 +2102,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
 			  }
 			  if (priorDM.frequency != null) {
 				  tokenDrugNER.setFrequency(priorDM.getFrequencyElement());
@@ -2038,6 +2139,9 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 				  tokenDrugNER.setStrength(compareDM.getStrengthElement());
 				  tokenDrugNER.setStrengthBegin(compareDM.getStrengthBegin());
 				  tokenDrugNER.setStrengthEnd(compareDM.getStrengthEnd());
+				  tokenDrugNER.setStrengthUnit(compareDM.getStrengthUnitElement());
+				  tokenDrugNER.setSuBegin(compareDM.getStrengthUnitBegin());
+				  tokenDrugNER.setSuEnd(compareDM.getStrengthUnitEnd());
 			  }
 			  if (compareDM.frequency != null) {
 				  tokenDrugNER.setFrequency(compareDM.getFrequencyElement());
@@ -2106,6 +2210,10 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 			  tokenDrugNER.setStrength(priorDM.getStrengthElement());
 			  tokenDrugNER.setStrengthBegin(priorDM.getStrengthBegin());
 			  tokenDrugNER.setStrengthEnd(priorDM.getStrengthEnd());
+			  tokenDrugNER.setStrengthUnit(priorDM.getStrengthUnitElement());
+			  tokenDrugNER.setSuBegin(priorDM.getStrengthUnitBegin());
+			  tokenDrugNER.setSuEnd(priorDM.getStrengthUnitEnd());
+			  
 		  } else if (tokenDrugNER.getStrength() != null
 				  && tokenDrugNER.getStrength().compareTo("") != 0
 				  && tokenDrugNER.getStrength().length() > 0)
@@ -2403,6 +2511,37 @@ public class DrugMentionAnnotator extends JTextAnnotator_ImplBase
 
     return span;
   }
+  /**
+   * 
+   * @param jcas
+   * @param begin
+   * @param end
+   * @return int[] - int[0] is begin offset and int[1] is end offset of subsequent sentence end (if available)
+   */
+private int[] getSentenceSpansContainingGivenSpan(JCas jcas, int begin)
+{
+  JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+  Iterator iter = indexes.getAnnotationIndex(Sentence.type).iterator();
+  int[] span = new int[2];
+  boolean foundFirstSentence = false;
+  boolean foundSecondSentence = false;
+  while (iter.hasNext() && !foundSecondSentence)
+  {
+    Sentence sa = (Sentence) iter.next();
+    if (begin >= sa.getBegin() && begin <= sa.getEnd())
+    {
+    	span[0] = sa.getBegin();
+      	span[1] = sa.getEnd();
+      	foundFirstSentence = true;
+      // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
+    } else if (foundFirstSentence) {
+    	foundSecondSentence = true;
+    	span[1] = sa.getEnd();
+    }
+  }
+
+  return span;
+}
   private void findFSMInRange(JCas jcas, int begin, int end) throws Exception {
 		NamedEntity ne = null;
 		WordToken we = null;
@@ -2682,18 +2821,13 @@ private int findInPattern(JCas jcas, int begin, int end, int elementType, int[][
 }
 
 
-private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation, int begin, int end, boolean useBegin) throws Exception {
+private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation, int begin, int end, boolean useBegin, int sizeArrays) throws Exception {
 	int[] senSpan = {begin, end };
-	int[] span = {-1, -1};
-	int[][] spanNull = {{-1, -1,}};
-	JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-	Iterator iter = indexes.getAnnotationIndex(NewlineToken.type).iterator();
-
+	int[][] spanSoloTerm = {{-1, -1,}};
 	int lastLineNum=0;
 	boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 	if (haveNarrative) {
-		senSpan = getSentenceSpanContainingGivenSpan(jcas, begin,
-				end);
+		senSpan = getSentenceSpansContainingGivenSpan(jcas, begin);
 		if (senSpan[0] < begin) senSpan[0] = begin;
 	}
 	boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
@@ -2709,14 +2843,14 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 			findFSMInRange(jcas, begin, end);
 		}
 	}
-	span = senSpan;
+	spanSoloTerm[0] =  senSpan ;
 	//for a given span if exist more than one drug and signature elements do the following
 	if(hasMultipleDrugs) {
 
-		return sortSignatureElements(jcas, begin, end, typeAnnotation, span);
+		return sortSignatureElements(jcas, begin, end, typeAnnotation, senSpan, sizeArrays);
 
 	}
-	return spanNull;
+	return spanSoloTerm;
 }
 
 /**
@@ -2830,7 +2964,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
  * range begins with the start of the drug mention and ends with the EOL or beginning of the subsequent drug mention.
  * The end range value can be overridden by the following cases:  
  *  A) The subsequent drug mention is contained in brackets or parenthesis w/out other drug signature items and there 
- *  are no other signature elments that exist between the mentions; e.g. 
+ *  are no other signature elements that exist between the mentions; e.g. 
  *  	"ibuprofen [Motrin]".   In this case the drug span will end with the right most signature element or EOL 
  *  (which ever is farthest, but before a subsequent drug mention).
  *  B)  If there are multiple occurrences of signature elements between mentions find the second positive offset 
@@ -2845,14 +2979,14 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
  * @param senSpan
  * @return
  */
-	private int [][] sortSignatureElements(JCas jcas, int begin, int end, int typeAnnotation, int [] senSpan) 
+	private int [][] sortSignatureElements(JCas jcas, int begin, int end, int typeAnnotation, int [] senSpan, int sizeArray) 
 	{
 
 		String prePattern = "";
 		String pattern = "";
 		String postPattern = "";
 
-		int sizeArray = 100;
+//		int sizeArray = 100;
 		String groupDelimiterOpen = "(";
 		String groupDelimiterClose = ")";
 		int[][] drugSpan = new int [sizeArray][2];
@@ -2864,7 +2998,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 		int[][] formSpan= new int [sizeArray][2];
 		int[][] durationSpan = new int [sizeArray][2];
 		int[][] parenthesisSpan = new int [sizeArray][2];
-		int[][] statusSpan =new int [sizeArray][2];
+		int[][] statusSpan =new int [sizeArray*2][2];
 
 		for (int a = 0 ; a < sizeArray ; a++) {
 			for (int b = 0 ; b < 2 ; b ++) {
@@ -3117,7 +3251,6 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 
 					if (openParenFound ) 
 						pattern = pattern + groupDelimiterClose ;
-//					System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
 					if (j > 0 && pattern.endsWith("(D)") && countMultiplePre == 0) {
 						shareAttributes = true;
 						if (highestValueInRange < typeFoundC) {
@@ -3155,7 +3288,7 @@ private boolean multipleElementsInSpan(JCas jcas, int begin, int end) {
 
 		if (pattern.lastIndexOf(groupDelimiterOpen) > pattern.lastIndexOf(groupDelimiterClose))
 			pattern = pattern + groupDelimiterClose;
-
+		System.out.println("prepattern : "+prePattern+ " | " +"pattern : " +pattern+" | "+"postpattern : "+postPattern );
   		return drugSpanArray;
 	}
 
@@ -3428,6 +3561,7 @@ private FrequencyFSM iv_frequencyFSM;
 private DrugChangeStatusFSM iv_statusFSM;
 private DecimalStrengthFSM iv_decimalFSM;
 private StrengthFSM iv_strengthFSM;
+private StrengthUnitFSM iv_strengthUnitFSM;
 private FrequencyUnitFSM iv_frequencyUnitFSM;
 private FormFSM iv_formFSM;
 private static final int NERTypeIdentifier = 1;
