@@ -94,8 +94,8 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentAnnotator</node>
-        <node>TokenizerAnnotator</node>
         <node>SentenceDetectorAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>POSTagger</node>
         <node>ClearTrainerAE</node>
       </fixedFlow>
