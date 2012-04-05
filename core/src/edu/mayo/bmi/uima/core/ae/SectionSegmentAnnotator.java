@@ -57,6 +57,7 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	private StructFinder structureFinder;
 	private InputStream templateContent;
 
+	private File templateFile= null;
 	private String templatePath;
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -68,8 +69,7 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 		structureFinder = new StructFinder();
 
 		try {
-			File in = ((FileResource)aContext.getResourceObject("template")).getFile();
-			templateContent = new FileInputStream(in);
+			templateFile = ((FileResource)aContext.getResourceObject("template")).getFile();
 		}catch(Exception e ){
 			logger.error("Error reading template file: " + e.getMessage());
 		}
@@ -129,6 +129,7 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 				new HashMap<Integer, DocumentSection>();
 
 		try {
+			templateContent = new FileInputStream(templateFile);
 			ArrayList<Section> foundSections = 
 					structureFinder.execute(text, templateContent);
 
