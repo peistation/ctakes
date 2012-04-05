@@ -35,8 +35,10 @@ import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import edu.mayo.bmi.uima.core.resource.FileLocator;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
@@ -50,11 +52,14 @@ public class PairAttributeCalculator extends AttributeCalculator {
 
 	protected Markable m1, m2;
 	protected String s1, s2;
+	protected Annotation a1, a2;
 
 	public PairAttributeCalculator (JCas jcas, Markable m1, Markable m2) {
 		super(jcas);
 		this.m1 = m1;
 		this.m2 = m2;
+		this.a1 = m1.getContent();
+		this.a2 = m2.getContent();
 		s1 = m1.getCoveredText();
 		s2 = m2.getCoveredText();
 	}
@@ -475,6 +480,72 @@ public class PairAttributeCalculator extends AttributeCalculator {
 //		
 //	}
 
+	public String calcIsDrug () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_DRUG)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsDisorder () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_DISORDER)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsFinding () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_FINDING)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsProcedure () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_PROCEDURE)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsAnatomicalSite () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_ANATOMICAL_SITE)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public double calcNegatedBoth(){
+		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
+			if(((EntityMention)a1).getPolarity() == -1 &&
+			   ((EntityMention)a2).getPolarity() == -1){
+				return 1.0;
+			}else{
+				return 0.0;
+			}
+		}else{
+			return 0.0;
+		}
+	}
+	
+	public double calcNonNegatedBoth(){
+		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
+			if(((EntityMention)a1).getPolarity() == 1.0 &&
+			   ((EntityMention)a2).getPolarity() == 1.0){
+				return 1.0;
+			}else{
+				return 0.0;
+			}
+		}else{
+			return 0.0;
+		}
+	}
+	
 	public String calcClosestComp () {
 		if (calcWnClass().equals("C")) {
 			ArrayList<Annotation> l = AnnotationSelector.selectNE(jcas);
