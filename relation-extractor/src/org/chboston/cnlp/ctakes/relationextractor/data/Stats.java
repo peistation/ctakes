@@ -20,11 +20,11 @@ import org.jdom.input.SAXBuilder;
  */
 public class Stats {
 	
-	public static final String ALLFILELOC = "/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/";
+	public static final String ALLFILELOC = "/home/dima/sharp/cloud/mipacq/xml/all/";
 
-	public static final String TRAINLOC = "/home/dima/temp/splitter/train/";
-	public static final String DEVLOC = "/home/dima/temp/splitter/dev/";
-	public static final String TESTLOC = "/home/dima/temp/splitter/test/";
+	public static final String TRAINLOC = "/home/dima/sharp/cloud/mipacq/xml/train/";
+	public static final String DEVLOC = "/home/dima/sharp/cloud/mipacq/xml/dev/";
+	public static final String TESTLOC = "/home/dima/sharp/cloud/mipacq/xml/test/";
 	
 	// read all the relations in the data or just the SHARP ones?
 	public static final boolean readOnlySharpRelations = true;
