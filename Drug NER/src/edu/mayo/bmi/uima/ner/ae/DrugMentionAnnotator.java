@@ -138,7 +138,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
   	/**
   	 * Annotation type that defines the boundary within which the dictionary hits should be present. 
   	 */
-  	public static String BOUNDARY_ANN_TYPE = "BOUNDARY_ANN_TYPE";
+
   	public static int NO_WINDOW_SIZE_SPECIFIED = -1;
   	public static int NO_ANNOTATION_TYPE_SPECIFIED = -1;
 
@@ -199,15 +199,13 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			//gather window size and annotation type
 			String windowSize = (String)annotCtx.getConfigParameterValue(DISTANCE);
 			String annotationTypeName = (String)annotCtx.getConfigParameterValue(DISTANCE_ANN_TYPE);
-			String boundaryAnnTypeName = (String)annotCtx.getConfigParameterValue(BOUNDARY_ANN_TYPE);
+
 			if(windowSize != null)
 				iWindowSize = Integer.parseInt(windowSize);
 
 			if(annotationTypeName != null)
 				iAnnotationType = JCasUtil.getType(annotationTypeName);
 
-			if(boundaryAnnTypeName != null)
-				iBoundaryAnnType  = JCasUtil.getType(boundaryAnnTypeName);
 		} catch (ClassCastException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2651,7 +2649,7 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
       // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
     } else if (foundFirstTypeSpan && spanSizeCount >= iWindowSize) {
     	foundSecondTypeSpan = true;
-    	span[1] = sa.getEnd();
+ //   	span[1] = sa.getEnd();
     }
     if (foundFirstTypeSpan) 
     	spanSizeCount++;
@@ -2946,7 +2944,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 		if (haveNarrative) {
 			senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin);
-			if (senSpan[0] < begin) senSpan[0] = begin;
+			if (senSpan[0] < begin) begin = senSpan[0];
 		}
 		boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
 		boolean hasFSMrun = multipleElementsInSpan(jcas, senSpan[0], senSpan[1]);
