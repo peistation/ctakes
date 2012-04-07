@@ -46,6 +46,12 @@ public class CONST {
 	public static final int NE_DIAG_STATUS_HISTORY_OF = 1;
 	public static final int NE_DIAG_STATUS_FAM_HISTORY_OF = 2;
 	public static final int NE_DIAG_STATUS_PROBABLE = 3;
+	
+	public static final String NE_SUBJECT_PATIENT = "patient";
+	public static final String NE_SUBJECT_FAMILY_MEMBER = "family_member";
+	public static final String NE_SUBJECT_DONOR_FAMILY_MEMBER = "donor_family_member";
+	public static final String NE_SUBJECT_DONOR_OTHER = "donor_other";
+	public static final String NE_SUBJECT_OTHER = "other";
 
 	public static final int REL_DISCOVERY_TECH_GOLD_ANNOTATION = 1;
 
