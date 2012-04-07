@@ -37,6 +37,8 @@ import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
+import edu.mayo.bmi.attributes.subject.SubjectAttributeClassifier;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
@@ -231,7 +233,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       {
         debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
-        entityMention.setSubject("patient");
+        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -242,7 +244,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
-        entityMention.setSubject("patient");
+        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(-1); // NOT DEFAULT VALUE
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -252,7 +254,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("associated_with_someone_else"))
       // ASSOCIATED WITH SOMEONE ELSE (mastif value)
       {
-        entityMention.setSubject("Family_Member"); // NOT DEFAULT VALUE
+        entityMention.setSubject("CONST.NE_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -263,7 +265,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       // CONDITIONAL (mastif value)
       {
         // currently no mapping to sharp type...all sharp properties are defaults!
-        entityMention.setSubject("patient");
+        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -273,7 +275,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("hypothetical"))
       // HYPOTHETICAL (mastif value)
       {
-        entityMention.setSubject("patient");
+        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(0);
@@ -283,7 +285,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("possible"))
       // POSSIBLE (mastif value)
       {
-        entityMention.setSubject("patient");
+        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(1);
         entityMention.setConfidence(1.0f);
         entityMention.setUncertainty(1); // NOT DEFAULT VALUE
@@ -299,6 +301,13 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         Exception runtimeException = new RuntimeException(message);
         throw new AnalysisEngineProcessException(runtimeException);
       }
+      
+      // Overwrite mastif's subject attribute with Mayo subject attribute
+      String subject = SubjectAttributeClassifier.getSubject(jcas,entityMention);
+      String oldsubj = entityMention.getSubject();
+      entityMention.setSubject(subject);
+      System.out.println("overwrote mastif's subject="+oldsubj+" for "+entityMention.getCoveredText()+" with "+subject);
+
 //      entityMention.addToIndexes();
 //      logger.info(String.format("added back entityMention (%s) to indexes",
 //          entityMention.toString()));
