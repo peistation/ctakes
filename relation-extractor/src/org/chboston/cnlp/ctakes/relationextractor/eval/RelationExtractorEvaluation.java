@@ -635,7 +635,7 @@ public class RelationExtractorEvaluation {
 		public HashableRelationSpan(BinaryTextRelation relation) {
 			Annotation arg1, arg2;
 			String role = relation.getArg1().getRole();
-			if (role == null || role.equals("Argument")) {
+			if (role.equals("Argument")) {
 				arg1 = relation.getArg1().getArgument();
 				arg2 = relation.getArg2().getArgument();
 			} else {

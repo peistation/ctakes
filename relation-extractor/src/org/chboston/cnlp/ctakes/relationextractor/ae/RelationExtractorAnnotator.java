@@ -216,9 +216,11 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
                 // add the relation to the CAS
                 RelationArgument relArg1 = new RelationArgument(relationView);
                 relArg1.setArgument(arg1);
+                relArg1.setRole("Argument");
                 relArg1.addToIndexes();
                 RelationArgument relArg2 = new RelationArgument(relationView);
                 relArg2.setArgument(arg2);
+                relArg2.setRole("Related_to");
                 relArg2.addToIndexes();
                 BinaryTextRelation relation = new BinaryTextRelation(relationView);
                 relation.setArg1(relArg1);
