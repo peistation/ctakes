@@ -244,7 +244,7 @@ public class RelationExtractorAnnotatorPlusErrorLogging extends CleartkAnnotator
               }
  
               if(! predictedCategory.equals(goldCategory) && goldCategory.equals("location_of")) {
-              	System.out.format("%-15s%d\n", "instance id:", relationId++);
+              	System.out.format("%-15s%d\n", "instance:", relationId++);
               	System.out.format("%-15s%s\n", "prediction:", predictedCategory);
               	System.out.format("%-15s%s\n", "gold label:", goldCategory);
               	System.out.format("%-15s%s\n", "arg1:", arg1.getCoveredText());
