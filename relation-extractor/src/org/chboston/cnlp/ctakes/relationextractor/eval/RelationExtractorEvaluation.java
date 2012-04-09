@@ -27,6 +27,7 @@ import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
@@ -51,6 +52,7 @@ import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
 import org.cleartk.eval.provider.CleartkPipelineProvider_ImplBase;
 import org.cleartk.eval.provider.CorpusReaderProvider;
 import org.cleartk.eval.provider.EvaluationPipelineProvider;
+import org.cleartk.eval.util.ConfusionMatrix;
 import org.cleartk.util.Options_ImplBase;
 import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.cr.FilesCollectionReader;
@@ -66,11 +68,13 @@ import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Ordering;
+import com.google.common.io.Files;
 
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
@@ -132,6 +136,7 @@ public class RelationExtractorEvaluation {
       }
     } else {
       possibleParams.add(new ParameterSettings(0.05f, 1, 100));
+      //possibleParams.add(new ParameterSettings(0.2f, .5, 1));
     }
 
     // run an evaluation for each set of parameters
@@ -150,11 +155,14 @@ public class RelationExtractorEvaluation {
 
       // defines how to evaluate
       File statisticsFile = new File("models", "collection.statistics");
+      File confusionMatrixFile = new File("models", "collection.confusion_matrix.html");
       EvaluationPipelineProvider evaluationProvider = new BatchBasedEvaluationPipelineProvider(
           AnalysisEngineFactory.createPrimitive(
               RelationEvaluator.class,
               RelationEvaluator.PARAM_STATISTICS_FILE,
-              statisticsFile.getPath()));
+              statisticsFile.getPath(),
+              RelationEvaluator.PARAM_CONFUSION_MATRIX_FILE,
+              confusionMatrixFile.getPath()));
 
       // runs the evaluation
       Evaluation evaluation = new Evaluation();
@@ -163,7 +171,7 @@ public class RelationExtractorEvaluation {
           pipelineProvider,
           evaluationProvider,
           "-t",
-          "2",
+          "0",
           "-c",
           String.valueOf(params.svmCost),
           "-g",
@@ -467,12 +475,20 @@ public class RelationExtractorEvaluation {
   public static class RelationEvaluator extends JCasAnnotator_ImplBase {
 
     public static final String PARAM_STATISTICS_FILE = "StatisticsFile";
+    public static final String PARAM_CONFUSION_MATRIX_FILE = "ConfusionMatrixFile";
 
     @ConfigurationParameter(
         name = PARAM_STATISTICS_FILE,
         mandatory = true,
         description = "The file where overall evaluation statistics should be written")
     private File statisticsFile;
+    
+    @ConfigurationParameter(
+        name = PARAM_CONFUSION_MATRIX_FILE,
+        mandatory = true,
+        description = "The file where the confusion matrix HTML file should be written")
+    private File confusionMatrixFile;
+
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
@@ -484,14 +500,18 @@ public class RelationExtractorEvaluation {
       }
 
       // collect the manually annotated relations
+      Collection<BinaryTextRelation> goldBinaryTextRelations = JCasUtil.select(goldView, BinaryTextRelation.class);
       List<HashableRelation> goldRelations = new ArrayList<HashableRelation>();
-      for (BinaryTextRelation relation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
+      
+      for (BinaryTextRelation relation : goldBinaryTextRelations) {
         goldRelations.add(new HashableRelation(relation));
       }
 
       // collect the system-predicted relations
+      Collection<BinaryTextRelation> systemBinaryTextRelations = JCasUtil.select(jCas, BinaryTextRelation.class);
       List<HashableRelation> systemRelations = new ArrayList<HashableRelation>();
-      for (BinaryTextRelation relation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
+      
+      for (BinaryTextRelation relation : systemBinaryTextRelations) {
         systemRelations.add(new HashableRelation(relation));
       }
 
@@ -508,6 +528,11 @@ public class RelationExtractorEvaluation {
           categories(goldRelations),
           categories(systemRelations),
           categories(intersection));
+      
+      // update confusion matrices
+      RelationEvaluator.updateConfusionMatrix(this.batchConfusion, goldBinaryTextRelations, systemBinaryTextRelations);
+      RelationEvaluator.updateConfusionMatrix(this.collectionConfusion, goldBinaryTextRelations, systemBinaryTextRelations);
+      
     }
 
     private static List<String> categories(Collection<HashableRelation> relations) {
@@ -517,16 +542,56 @@ public class RelationExtractorEvaluation {
       }
       return categories;
     }
+    
+    private static void updateConfusionMatrix(ConfusionMatrix<String> confusionMatrix, Collection<BinaryTextRelation> gold, Collection<BinaryTextRelation> system) {
+    	Map<HashableRelationSpan, String> goldRelationSpans = new HashMap<HashableRelationSpan, String>();
+    	Map<HashableRelationSpan, String> systemRelationSpans = new HashMap<HashableRelationSpan, String>();
+    	
+    	for (BinaryTextRelation goldRel : gold) {
+    		goldRelationSpans.put(new HashableRelationSpan(goldRel), goldRel.getCategory());
+    	}
+
+    	for (BinaryTextRelation sysRel : system) {
+    		systemRelationSpans.put(new HashableRelationSpan(sysRel), sysRel.getCategory());
+    	}
+    	
+    	Set<HashableRelationSpan> allSpans = new HashSet<HashableRelationSpan>();
+    	allSpans.addAll(goldRelationSpans.keySet());
+    	allSpans.addAll(systemRelationSpans.keySet());
+
+    	for (HashableRelationSpan relationKey : allSpans) {
+    		String goldCategory = goldRelationSpans.get(relationKey);
+    		String sysCategory = systemRelationSpans.get(relationKey);
+
+    		if (goldCategory == null) {
+    			goldCategory = "No Relation";
+    		}
+
+    		if (sysCategory == null) {
+    			sysCategory = "No Relation";
+    		}
+
+    		confusionMatrix.add(goldCategory, sysCategory);
+    	}
+    }
 
     private EvaluationStatistics<String> batchStats;
 
     private EvaluationStatistics<String> collectionStats;
+    
+    private ConfusionMatrix<String> batchConfusion;
+    
+    private ConfusionMatrix<String> collectionConfusion;
+    
+    
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
       super.initialize(context);
       this.batchStats = new EvaluationStatistics<String>();
       this.collectionStats = new EvaluationStatistics<String>();
+      this.batchConfusion = new ConfusionMatrix<String>();
+      this.collectionConfusion = new ConfusionMatrix<String>();
     }
 
     @Override
@@ -534,7 +599,9 @@ public class RelationExtractorEvaluation {
       super.batchProcessComplete();
       System.err.println("Batch:");
       System.err.println(this.batchStats);
+      System.err.println(this.batchConfusion.toHTML());
       this.batchStats = new EvaluationStatistics<String>();
+      this.batchConfusion = new ConfusionMatrix<String>();
     }
 
     @Override
@@ -544,56 +611,106 @@ public class RelationExtractorEvaluation {
         FileOutputStream stream = new FileOutputStream(this.statisticsFile);
         SerializationUtils.serialize(this.collectionStats, stream);
         stream.close();
+        
+        Files.write(this.collectionConfusion.toHTML(), this.confusionMatrixFile, Charsets.UTF_8);
+        
       } catch (IOException e) {
         throw new AnalysisEngineProcessException(e);
       }
       this.collectionStats = new EvaluationStatistics<String>();
     }
+    
+    
+    /**
+     * Wrapper for relation spans that makes two relations with the same spans (not categories) have
+     * the same hash and compare equal.
+     */
+    public static class HashableRelationSpan {
+
+		protected int arg1begin;
+		protected int arg1end;
+		protected int arg2begin;
+		protected int arg2end;
+		
+		public HashableRelationSpan(BinaryTextRelation relation) {
+			Annotation arg1, arg2;
+			String role = relation.getArg1().getRole();
+			if (role == null || role.equals("Argument")) {
+				arg1 = relation.getArg1().getArgument();
+				arg2 = relation.getArg2().getArgument();
+			} else {
+				arg2 = relation.getArg1().getArgument();
+				arg1 = relation.getArg2().getArgument();
+			}	
+			this.init(arg1.getBegin(), arg1.getEnd(), arg2.getBegin(), arg2.getEnd());
+		}
+		
+		public void init (
+				int arg1Begin,
+				int arg1End,
+				int arg2Begin,
+				int arg2end) {
+			this.arg1begin = arg1Begin;
+			this.arg1end = arg1End;
+			this.arg2begin = arg2Begin;
+			this.arg2end = arg2end;
+		}
+
+		
+		@Override
+		public boolean equals(Object otherObject) {
+			if (otherObject instanceof HashableRelationSpan) {
+				HashableRelationSpan other = (HashableRelationSpan) otherObject;
+				return (this.getClass() == other.getClass() && 
+						this.arg1begin == other.arg1begin && 
+						this.arg1end == other.arg1end && 
+						this.arg2begin == other.arg2begin && 
+						this.arg2end == other.arg2end);
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(
+					this.arg1begin,
+					this.arg1end,
+					this.arg2begin,
+					this.arg2end);
+		}
+		
+		@Override
+		public String toString() {
+			return String.format(
+					"%s(%s,%s,%s,%s)",
+					this.getClass().getSimpleName(),
+					this.arg1begin,
+					this.arg1end,
+					this.arg2begin,
+					this.arg2end);
+		}
+	}
+    
 
     /**
      * Wrapper for relations that makes two relations with the same spans and category label have
      * the same hash and compare equal.
      */
-    private static class HashableRelation {
-      private int arg1begin;
-
-      private int arg1end;
-
-      private int arg2begin;
-
-      private int arg2end;
+    private static class HashableRelation extends HashableRelationSpan {
 
       private String category;
 
-      public HashableRelation(
-          int arg1begin,
-          int arg1end,
-          int arg2begin,
-          int arg2end,
-          String category) {
-        this.arg1begin = arg1begin;
-        this.arg1end = arg1end;
-        this.arg2begin = arg2begin;
-        this.arg2end = arg2end;
-        this.category = category;
-      }
-
       public HashableRelation(BinaryTextRelation relation) {
-        this(
-            relation.getArg1().getArgument().getBegin(),
-            relation.getArg1().getArgument().getEnd(),
-            relation.getArg2().getArgument().getBegin(),
-            relation.getArg2().getArgument().getEnd(),
-            relation.getCategory());
+    	super(relation);
+    	this.category = relation.getCategory();
       }
 
       @Override
-      public boolean equals(Object thatObject) {
-        if (thatObject instanceof HashableRelation) {
-          HashableRelation that = (HashableRelation) thatObject;
-          return this.getClass() == that.getClass() && this.arg1begin == that.arg1begin
-              && this.arg1end == that.arg1end && this.arg2begin == that.arg2begin
-              && this.arg2end == that.arg2end && Objects.equal(this.category, that.category);
+      public boolean equals(Object otherObject) {
+        if (otherObject instanceof HashableRelation) {
+        	HashableRelation other = (HashableRelation) otherObject;
+    	  return super.equals(otherObject) && Objects.equal(this.category, other.category);
         } else {
           return false;
         }
