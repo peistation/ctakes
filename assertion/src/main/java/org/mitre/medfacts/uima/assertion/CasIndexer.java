@@ -47,18 +47,18 @@ public class CasIndexer<T extends Annotation>
     
     mapByAddress = new HashMap<Integer, T>();
     
-    logger.info("    before iterating over all annotations in index...");
+    //logger.info("    before iterating over all annotations in index...");
     for (Annotation annotation : annotationIndex)
     {
-      logger.info("    begin single annotation");
+      //logger.info("    begin single annotation");
       Integer address = annotation.getAddress();
-      logger.info(String.format("      address: %d; type: %s", address, annotation.getClass().getName()));
+      //logger.info(String.format("      address: %d; type: %s", address, annotation.getClass().getName()));
       T current = (T)annotation;
       
       mapByAddress.put(address,  current);
-      logger.info("    end single annotation");
+      //logger.info("    end single annotation");
     }
-    logger.info("    after iterating over all annotations in index...");
+    //logger.info("    after iterating over all annotations in index...");
     
   }
   

@@ -50,8 +50,7 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
   @Override
   public void process(JCas jcas) throws AnalysisEngineProcessException
   {
-    logger.info("beginning of process()");
-    logger.info("beginning of process2()");
+    logger.info("beginning of ConceptConverterAnalysisEngine.process()");
     String contents = jcas.getDocumentText();
 
     int umlsConceptType = UmlsConcept.type;
@@ -74,18 +73,18 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
     logger.info(String.format("    named entity annotation count %d",
         entityMentionAnnotationCount));
 
-    logger.info("    before iterating over named entities...");
+    //logger.info("    before iterating over named entities...");
     for (FeatureStructure featureStructure : entityMentionAnnotationIndex)
     {
-      logger.info("    begin single named entity");
+      //logger.info("    begin single named entity");
       EntityMention entityMentionAnnotation = (EntityMention) featureStructure;
 
       int begin = entityMentionAnnotation.getBegin();
       int end = entityMentionAnnotation.getEnd();
       String conceptText = entityMentionAnnotation.getCoveredText();
 
-      logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText,
-          begin, end));
+      //logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText,
+      //    begin, end));
 
       Concept concept = new Concept(jcas, begin, end);
       concept.setConceptText(conceptText);
@@ -99,7 +98,7 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
       ConceptType conceptType = ConceptLookup
           .lookupConceptType(ontologyConceptArray);
 
-      logger.info(String.format("got concept type: %s", conceptType));
+      //logger.info(String.format("got concept type: %s", conceptType));
 
       // if (conceptType != null)
       // {
@@ -116,7 +115,7 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
       }
       concept.addToIndexes();
 
-      logger.info("finished adding new Concept annotation. " + concept);
+      //logger.info("finished adding new Concept annotation. " + concept);
 
       // FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
       //
@@ -138,9 +137,9 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
       // logger.info("        end single concept");
       // }
       // logger.info("        after iterating over concepts.");
-      logger.info("    end single named entity");
+      //logger.info("    end single named entity");
     }
-    logger.info("    after iterating over named entities.");
+    //logger.info("    after iterating over named entities.");
 
     // ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
     // for (FeatureStructure featureStructure : conceptAnnotationIndex)
@@ -233,7 +232,7 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
      * assertion.addToIndexes(); }
      */
 
-    logger.info("beginning of process()");
+    logger.info("end of ConceptConverterAnalysisEngine.process()");
   }
 
 }

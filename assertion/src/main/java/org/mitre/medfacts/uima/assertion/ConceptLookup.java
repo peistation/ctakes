@@ -73,7 +73,7 @@ public class ConceptLookup
   
   public static ConceptType lookupConceptType(FSArray ontologyConceptArray)
   {
-    logger.info("begin ConceptLookup.lookupConceptType");
+    //logger.info("begin ConceptLookup.lookupConceptType");
     FeatureStructure firstConceptFS = null;
     boolean hasConcept =
       (ontologyConceptArray != null &&
@@ -84,7 +84,7 @@ public class ConceptLookup
     {
       firstConceptFS = ontologyConceptArray.get(0);
     }
-    logger.info("hasConcept: " + hasConcept);
+    //logger.info("hasConcept: " + hasConcept);
     OntologyConcept ontologyConcept = (OntologyConcept)firstConceptFS;
     boolean isRxnorm = false;
     boolean isUmls = false;
@@ -99,7 +99,7 @@ public class ConceptLookup
       isRxnorm = "RXNORM".equalsIgnoreCase(ontologyConcept.getCodingScheme());
     }
     
-    logger.info(String.format("isUmls: %b; isRxnorm: %b", isUmls, isRxnorm));
+    //logger.info(String.format("isUmls: %b; isRxnorm: %b", isUmls, isRxnorm));
     
     if (isRxnorm)
     {
@@ -112,7 +112,7 @@ public class ConceptLookup
     // if we're continuing, this means we are umls (and we are not rxnorm)
     
     String tui = umlsConcept.getTui();
-    logger.info(String.format("tui: %s", tui));
+    //logger.info(String.format("tui: %s", tui));
     
     ConceptType conceptType = null;
     if (problemSet.contains(tui))
@@ -129,7 +129,7 @@ public class ConceptLookup
       conceptType = null;
     }
     
-    logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", (conceptType == null ? null : conceptType.toString())));
+    //logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", (conceptType == null ? null : conceptType.toString())));
     
     return conceptType;
   }

@@ -165,8 +165,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     p.setConverter2(converter);
     for (ApiConcept apiConcept : apiConceptList)
     {
-      logger
-          .info(String.format("dir loader concept: %s", apiConcept.toString()));
+      //logger
+      //    .info(String.format("dir loader concept: %s", apiConcept.toString()));
       p.addConcept(apiConcept);
     }
 
@@ -179,19 +179,19 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         .info("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
 
     Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
-    logger.info(String.format("    - done processing ..\"."));
+    //logger.info(String.format("    - done processing ..\"."));
 
     // Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas,
     // Concept.type);
     CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas, null);
 
-    logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
+    //logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
     for (Entry<Integer, String> current : assertionTypeMap.entrySet())
     {
-      logger.info("    assertionTypeMap loop INSIDE BEGIN");
+      //logger.info("    assertionTypeMap loop INSIDE BEGIN");
       String currentAssertionType = current.getValue();
-      logger.info(String.format("  currentAssertionType: %s",
-          currentAssertionType));
+      //logger.info(String.format("  currentAssertionType: %s",
+      //    currentAssertionType));
       Integer currentIndex = current.getKey();
       ApiConcept originalConcept = apiConceptList.get(currentIndex);
 
@@ -231,7 +231,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("present"))
       // PRESENT (mastif value)
       {
-        debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
+        //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
         entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
         entityMention.setPolarity(1);
@@ -240,7 +240,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         entityMention.setConditional(false);
         entityMention.setGeneric(false);
 
-        debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
+        //debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
@@ -320,9 +320,10 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       // assertion.setAssociatedConcept(associatedConcept);
       // assertion.addToIndexes();
 
-      logger.info("    assertionTypeMap loop INSIDE END");
+      //logger.info("    assertionTypeMap loop INSIDE END");
     }
-    logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
+    //logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
+    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
     logger.info("(logging statement) AssertionAnalysisEngine.process() END");
   }
 

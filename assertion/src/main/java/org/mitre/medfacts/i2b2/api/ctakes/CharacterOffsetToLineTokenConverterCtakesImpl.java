@@ -114,11 +114,11 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
-    logger.info("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
+    logger.finest("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
     
-    logger.info("before adjusting input character offset...");
+    logger.finest("before adjusting input character offset...");
     characterOffset = adjustOffsetToBestMatch(characterOffset);
-    logger.info("after adjusting input character offset.");
+    logger.finest("after adjusting input character offset.");
     int baseTokenTypeId = BaseToken.type;
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
@@ -138,14 +138,14 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 //    Annotation sentenceAnnotation = filteredIterator.next();
 //    Sentence sentence = (Sentence)sentenceAnnotation;
     
-    logger.info("finding current or previous sentence for character offset " + characterOffset);
+    logger.finest("finding current or previous sentence for character offset " + characterOffset);
     Sentence sentence = findPreviousOrCurrentSentence(characterOffset);
     if (sentence == null)
     {
     	logger.info("current or previous sentence IS NULL!");
     } else
     {
-    	logger.info("current or previous sentence -- id: " + sentence.getAddress() +
+    	logger.finest("current or previous sentence -- id: " + sentence.getAddress() +
     			"; begin: " + sentence.getBegin() + 
     			"; end: " + sentence.getEnd());
     }

@@ -40,7 +40,7 @@ public abstract class ConstraintConstructor
     Iterator<Type> it = ts.getTypeIterator();
     //Type annotationType = ts.getType(Annotation.class.getName()); // this returns "org.apache.uima.tcas.Annotation" which isn't in type system
     Type annotationType = ts.getType("uima.tcas.Annotation"); // should be safe to hard code this
-    System.err.println("annotation type: " + annotationType);
+    //System.err.println("annotation type: " + annotationType);
     Feature sentenceBeginFeature = annotationType.getFeatureByBaseName("begin");
     FeaturePath sentenceBeginFeaturePath = jcas.createFeaturePath();
     sentenceBeginFeaturePath.addFeature(sentenceBeginFeature);
