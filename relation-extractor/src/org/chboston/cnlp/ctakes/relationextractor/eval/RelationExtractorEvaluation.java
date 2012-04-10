@@ -27,11 +27,11 @@ import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator.HashableArguments;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.DataWriterFactory;
@@ -93,6 +93,7 @@ public class RelationExtractorEvaluation {
 
     @Option(name = "--grid-search", usage = "run a grid search to select the best parameters")
     public boolean gridSearch = false;
+    
   }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
@@ -151,7 +152,9 @@ public class RelationExtractorEvaluation {
           RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
           params.probabilityOfKeepingANegativeExample,
           RelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-          false);
+          false,
+          RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
+          true);
 
       // defines how to evaluate
       File statisticsFile = new File("models", "collection.statistics");
@@ -544,31 +547,31 @@ public class RelationExtractorEvaluation {
     }
     
     private static void updateConfusionMatrix(ConfusionMatrix<String> confusionMatrix, Collection<BinaryTextRelation> gold, Collection<BinaryTextRelation> system) {
-    	Map<HashableRelationSpan, String> goldRelationSpans = new HashMap<HashableRelationSpan, String>();
-    	Map<HashableRelationSpan, String> systemRelationSpans = new HashMap<HashableRelationSpan, String>();
+    	Map<HashableArguments, String> goldRelationSpans = new HashMap<HashableArguments, String>();
+    	Map<HashableArguments, String> systemRelationSpans = new HashMap<HashableArguments, String>();
     	
     	for (BinaryTextRelation goldRel : gold) {
-    		goldRelationSpans.put(new HashableRelationSpan(goldRel), goldRel.getCategory());
+    		goldRelationSpans.put(new HashableArguments(goldRel), goldRel.getCategory());
     	}
 
     	for (BinaryTextRelation sysRel : system) {
-    		systemRelationSpans.put(new HashableRelationSpan(sysRel), sysRel.getCategory());
+    		systemRelationSpans.put(new HashableArguments(sysRel), sysRel.getCategory());
     	}
     	
-    	Set<HashableRelationSpan> allSpans = new HashSet<HashableRelationSpan>();
+    	Set<HashableArguments> allSpans = new HashSet<HashableArguments>();
     	allSpans.addAll(goldRelationSpans.keySet());
     	allSpans.addAll(systemRelationSpans.keySet());
 
-    	for (HashableRelationSpan relationKey : allSpans) {
+    	for (HashableArguments relationKey : allSpans) {
     		String goldCategory = goldRelationSpans.get(relationKey);
     		String sysCategory = systemRelationSpans.get(relationKey);
 
     		if (goldCategory == null) {
-    			goldCategory = "No Relation";
+    			goldCategory = RelationExtractorAnnotator.NO_RELATION_CATEGORY;
     		}
 
     		if (sysCategory == null) {
-    			sysCategory = "No Relation";
+    			sysCategory = RelationExtractorAnnotator.NO_RELATION_CATEGORY;
     		}
 
     		confusionMatrix.add(goldCategory, sysCategory);
@@ -622,82 +625,10 @@ public class RelationExtractorEvaluation {
     
     
     /**
-     * Wrapper for relation spans that makes two relations with the same spans (not categories) have
-     * the same hash and compare equal.
-     */
-    public static class HashableRelationSpan {
-
-		protected int arg1begin;
-		protected int arg1end;
-		protected int arg2begin;
-		protected int arg2end;
-		
-		public HashableRelationSpan(BinaryTextRelation relation) {
-			Annotation arg1, arg2;
-			String role = relation.getArg1().getRole();
-			if (role.equals("Argument")) {
-				arg1 = relation.getArg1().getArgument();
-				arg2 = relation.getArg2().getArgument();
-			} else {
-				arg2 = relation.getArg1().getArgument();
-				arg1 = relation.getArg2().getArgument();
-			}	
-			this.init(arg1.getBegin(), arg1.getEnd(), arg2.getBegin(), arg2.getEnd());
-		}
-		
-		public void init (
-				int arg1Begin,
-				int arg1End,
-				int arg2Begin,
-				int arg2end) {
-			this.arg1begin = arg1Begin;
-			this.arg1end = arg1End;
-			this.arg2begin = arg2Begin;
-			this.arg2end = arg2end;
-		}
-
-		
-		@Override
-		public boolean equals(Object otherObject) {
-			if (otherObject instanceof HashableRelationSpan) {
-				HashableRelationSpan other = (HashableRelationSpan) otherObject;
-				return (this.getClass() == other.getClass() && 
-						this.arg1begin == other.arg1begin && 
-						this.arg1end == other.arg1end && 
-						this.arg2begin == other.arg2begin && 
-						this.arg2end == other.arg2end);
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(
-					this.arg1begin,
-					this.arg1end,
-					this.arg2begin,
-					this.arg2end);
-		}
-		
-		@Override
-		public String toString() {
-			return String.format(
-					"%s(%s,%s,%s,%s)",
-					this.getClass().getSimpleName(),
-					this.arg1begin,
-					this.arg1end,
-					this.arg2begin,
-					this.arg2end);
-		}
-	}
-    
-
-    /**
      * Wrapper for relations that makes two relations with the same spans and category label have
      * the same hash and compare equal.
      */
-    private static class HashableRelation extends HashableRelationSpan {
+    private static class HashableRelation extends HashableArguments {
 
       private String category;
 
