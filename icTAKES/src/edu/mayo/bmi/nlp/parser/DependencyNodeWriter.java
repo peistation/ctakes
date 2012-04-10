@@ -26,7 +26,6 @@ package edu.mayo.bmi.nlp.parser;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.CAS;
@@ -37,8 +36,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 
@@ -113,43 +112,43 @@ public class DependencyNodeWriter extends CasConsumer_ImplBase
 //                    int pID = (node==null)? 0 : node.getID();
                     node = (ConllDependencyNode) nodeIterator.next();
                     
-                    if (node.getID()!=0 ) { // && node.getID() !=pID) {
+                    if (node.getId()!=0 ) { // && node.getID() !=pID) {
 
                         if (iv_outputFormat.toLowerCase().contains("min")) {
-                            bw.write(node.getID()+"\t");
-                            bw.write(node.getFORM()+"\t");
-                            bw.write( (node.getHEAD()==null ? "_" : node.getHEAD().getID()) + "\t");
-                            bw.write(node.getDEPREL()+"\n");
+                            bw.write(node.getId()+"\t");
+                            bw.write(node.getForm()+"\t");
+                            bw.write( (node.getHead()==null ? "_" : node.getHead().getId()) + "\t");
+                            bw.write(node.getDeprel()+"\n");
                         } else if (iv_outputFormat.toLowerCase().contains("mpos")) {
-                            bw.write(node.getID()+"\t");
-                            bw.write(node.getFORM()+"\t");
-                            bw.write(node.getPOSTAG()+"\t");
-                            bw.write( (node.getHEAD()==null ? "_" : node.getHEAD().getID()) + "\t");
-                            bw.write(node.getDEPREL()+"\n");
+                            bw.write(node.getId()+"\t");
+                            bw.write(node.getForm()+"\t");
+                            bw.write(node.getPostag()+"\t");
+                            bw.write( (node.getHead()==null ? "_" : node.getHead().getId()) + "\t");
+                            bw.write(node.getDeprel()+"\n");
                         } else if (iv_outputFormat.toLowerCase().contains("mlem")) {
-                            bw.write(node.getID()+"\t");
-                            bw.write(node.getFORM()+"\t");
-                            bw.write(node.getLEMMA()+"\t");
-                            bw.write( (node.getHEAD()==null ? "_" : node.getHEAD().getID()) + "\t");
-                            bw.write(node.getDEPREL()+"\n");
+                            bw.write(node.getId()+"\t");
+                            bw.write(node.getForm()+"\t");
+                            bw.write(node.getLemma()+"\t");
+                            bw.write( (node.getHead()==null ? "_" : node.getHead().getId()) + "\t");
+                            bw.write(node.getDeprel()+"\n");
                         } else if (iv_outputFormat.toLowerCase().contains("dep")) {
-                            bw.write(node.getID()+"\t");
-                            bw.write(node.getFORM()+"\t");
-                            bw.write(node.getLEMMA()+"\t");
-                            bw.write(node.getPOSTAG()+"\t");
-                            bw.write( (node.getHEAD()==null ? "_" : node.getHEAD().getID()) + "\t");
-                            bw.write(node.getDEPREL()+"\n");
+                            bw.write(node.getId()+"\t");
+                            bw.write(node.getForm()+"\t");
+                            bw.write(node.getLemma()+"\t");
+                            bw.write(node.getPostag()+"\t");
+                            bw.write( (node.getHead()==null ? "_" : node.getHead().getId()) + "\t");
+                            bw.write(node.getDeprel()+"\n");
                         } else { //if (iv_outputFormat.toLowerCase().contains("conll")) {
-                            bw.write(node.getID()+"\t");
-                            bw.write(node.getFORM()+"\t");
-                            bw.write(node.getLEMMA()+"\t");
-                            bw.write(node.getCPOSTAG()+"\t");
-                            bw.write(node.getPOSTAG()+"\t");
-                            bw.write(node.getFEATS()+"\t");
-                            bw.write( (node.getHEAD()==null ? "_" : node.getHEAD().getID()) + "\t");
-                            bw.write(node.getDEPREL()+"\t");
-                            bw.write( (node.getPHEAD()==null ? "_" : node.getPHEAD().getID()) + "\t");
-                            bw.write(node.getPDEPREL()+"\n");
+                            bw.write(node.getId()+"\t");
+                            bw.write(node.getForm()+"\t");
+                            bw.write(node.getLemma()+"\t");
+                            bw.write(node.getCpostag()+"\t");
+                            bw.write(node.getPostag()+"\t");
+                            bw.write(node.getFeats()+"\t");
+                            bw.write( (node.getHead()==null ? "_" : node.getHead().getId()) + "\t");
+                            bw.write(node.getDeprel()+"\t");
+                            bw.write( (node.getPhead()==null ? "_" : node.getPhead().getId()) + "\t");
+                            bw.write(node.getPdeprel()+"\n");
                         }
                     }
                     

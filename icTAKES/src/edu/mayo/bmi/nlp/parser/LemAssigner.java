@@ -36,9 +36,9 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 public class LemAssigner extends JCasAnnotator_ImplBase{
 
@@ -75,7 +75,7 @@ public class LemAssigner extends JCasAnnotator_ImplBase{
             FSIterator nodeIterator = nodeIndex.subiterator(sentence);
             while (nodeIterator.hasNext()) {
                 ConllDependencyNode node = (ConllDependencyNode) nodeIterator.next();
-                if (node.getID()!=0) {
+                if (node.getId()!=0) {
                     nodes.add(node);
                 }
                 //logger.info(node.getFORM()+" ");
@@ -92,13 +92,13 @@ public class LemAssigner extends JCasAnnotator_ImplBase{
                 if (itt.hasNext()) bt                  = itt.next();
                 if (itn.hasNext()) dn                  = itn.next();
                 if (dn != null) 
-                    if (dn.getID()==0 && itn.hasNext()) 
+                    if (dn.getId()==0 && itn.hasNext()) 
                         dn = itn.next();
                 while (itt.hasNext() || itn.hasNext()) {
                     if (bt.getBegin()==dn.getBegin() ) { // Allow ragged right edge //&& bt.getEnd()==dn.getEnd()) { 
-                        dn.setLEMMA( bt.getNormalizedForm() );
-                        if (dn.getLEMMA()==null)
-                            dn.setLEMMA( dn.getFORM().toLowerCase() );
+                        dn.setLemma( bt.getNormalizedForm() );
+                        if (dn.getLemma()==null)
+                            dn.setLemma( dn.getForm().toLowerCase() );
                         dn.addToIndexes();
                         if (itt.hasNext()) bt = itt.next();
                         if (itn.hasNext()) dn = itn.next();
@@ -107,14 +107,14 @@ public class LemAssigner extends JCasAnnotator_ImplBase{
                     } else if ( bt.getBegin()>dn.getBegin() ) {
                         // not every node will get a lemma b/c not all tokens are word tokens
                         if (itn.hasNext()) {
-                            dn.setLEMMA( dn.getFORM().toLowerCase() );
+                            dn.setLemma( dn.getForm().toLowerCase() );
                             dn.addToIndexes();
                             dn = itn.next(); 
                         } else break;
                     }
                 }
                 if (bt.getBegin()==dn.getBegin() && bt.getEnd()==dn.getEnd()) {
-                    dn.setLEMMA( bt.getNormalizedForm() );
+                    dn.setLemma( bt.getNormalizedForm() );
                     dn.addToIndexes();
                 }
             }

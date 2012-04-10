@@ -31,8 +31,8 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
  * @author m081914
@@ -63,7 +63,7 @@ public abstract class DependencyUtility {
 	    FSIterator nodeIterator = nodeIndex.subiterator(sentence);
 	    while (nodeIterator.hasNext()) {
 	        ConllDependencyNode node = (ConllDependencyNode) nodeIterator.next();
-	        if (node.getID()!=0) {
+	        if (node.getId()!=0) {
 	            nodes.add(node);
 	        }
 	    }
@@ -83,13 +83,13 @@ public abstract class DependencyUtility {
 		}
 
 		pathUp1.add(node1);
-		while (node1.getHEAD()!=null) {
-			node1 = node1.getHEAD();
+		while (node1.getHead()!=null) {
+			node1 = node1.getHead();
 			pathUp1.add(node1);
 		}
 		pathUp2.add(node2);
-		while (node2.getHEAD()!=null) {
-			node2 = node2.getHEAD();
+		while (node2.getHead()!=null) {
+			node2 = node2.getHead();
 			pathUp2.add(node2);
 		}
 //		System.out.println(" Path up1:"+pathUp1.toString());
@@ -124,12 +124,12 @@ public abstract class DependencyUtility {
 
 	public static List<ConllDependencyNode> getRightSibs( ConllDependencyNode refNode, List<ConllDependencyNode> tree ) {
 		
-		ConllDependencyNode parent = refNode.getHEAD();
+		ConllDependencyNode parent = refNode.getHead();
 		List<ConllDependencyNode> out = new ArrayList<ConllDependencyNode>();
 //		System.out.println("right side is: "+tree.subList( tree.indexOf(refNode)+1, tree.size() ));
 		
 		for ( ConllDependencyNode node : tree.subList( tree.indexOf(refNode)+1, tree.size() ) ) {
-			if ( node.getHEAD().equals(parent) ) {
+			if ( node.getHead().equals(parent) ) {
 				out.add(node);
 			}
 		}
@@ -138,14 +138,14 @@ public abstract class DependencyUtility {
 	
 	public static List<ConllDependencyNode> getLeftSibs( ConllDependencyNode refNode, List<ConllDependencyNode> tree ) {
 		
-		ConllDependencyNode parent = refNode.getHEAD();
+		ConllDependencyNode parent = refNode.getHead();
 		List<ConllDependencyNode> out = new ArrayList<ConllDependencyNode>();
 //		System.out.println("right side is: "+tree.subList( tree.indexOf(refNode)+1, tree.size() ));
 		
 		List<ConllDependencyNode> lSide = tree.subList(0,tree.indexOf(refNode));
 		for ( int i=tree.indexOf(refNode)-1; i>=0; i-- ) {
 			ConllDependencyNode node = lSide.get(i);
-			if ( node.getHEAD().equals(parent) ) {
+			if ( node.getHead().equals(parent) ) {
 				out.add(node);
 			}
 		}
@@ -166,8 +166,8 @@ public abstract class DependencyUtility {
 				
 				// Anything with refNode on its path to root is progeny.  Requires acyclicity
 				ConllDependencyNode upNode = node;
-				while (upNode.getHEAD()!=null) {
-					upNode = upNode.getHEAD();
+				while (upNode.getHead()!=null) {
+					upNode = upNode.getHead();
 					if (upNode.equals(refNode)) {
 						out.add(node);
 						break;
@@ -195,8 +195,8 @@ public abstract class DependencyUtility {
 				
 				// Anything with refNode on its path to root is progeny.  Requires acyclicity
 				ConllDependencyNode upNode = node;
-				while (upNode.getHEAD()!=null) {
-					upNode = upNode.getHEAD();
+				while (upNode.getHead()!=null) {
+					upNode = upNode.getHead();
 					
 					if (refNodes.contains(upNode)) {
 						out.add(node);

@@ -40,11 +40,11 @@ import clear.dep.DepNode;
 import clear.dep.DepParser;
 import clear.dep.DepTree;
 import clear.morph.MorphEnAnalyzer;
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 public class ClearParserAE extends JCasAnnotator_ImplBase{	// LOG4J logger based on class name	public Logger logger = Logger.getLogger(getClass().getName());	/**	 * "ParserModelFile" is a required, single, string parameter that contains the	 * file name of the parser's grammar model.	 */	public static final String DEPENDENCY_MODEL_FILE_PARAM = "DependencyModelFile";	//public static final String PARAM_GRAMMAR_FILE_NAME = ConfigurationParameterFactory.createConfigurationParameterName(BerkeleyParserAE.class, "grammarFileName");	//private String grammarFileName;	public static final String LEXICON_DIR_PARAM = "LexiconDirectory";		public static final String FEATURE_TEMPLATE_PARAM = "FeatureTemplateFile";    	public static final String MORPH_DICT_PARAM = "MorphDictionaryDirectory";
 		protected DepParser parser;		protected MorphEnAnalyzer morph;
 

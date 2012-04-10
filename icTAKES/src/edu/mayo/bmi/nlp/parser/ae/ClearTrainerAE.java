@@ -47,9 +47,9 @@ import clear.dep.DepLib;
 import clear.dep.DepNode;
 import clear.dep.DepParser;
 import clear.dep.DepTree;
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 
@@ -160,7 +160,7 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 	            FSIterator nodeIterator = nodeIndex.subiterator(sentence);
 	            while (nodeIterator.hasNext()) {
 	                ConllDependencyNode node = (ConllDependencyNode) nodeIterator.next();
-	                if (node.getID()!=0) {
+	                if (node.getId()!=0) {
 	                    nodes.add(node);
 	                }
 	            }
@@ -170,12 +170,12 @@ public class ClearTrainerAE extends JCasAnnotator_ImplBase{
 	            for (ConllDependencyNode cNode : nodes)
 	            {
 	                DepNode node = new DepNode();
-	                node.id = cNode.getID();
-	                node.form = cNode.getFORM();
-	                node.lemma = cNode.getLEMMA();
-	                node.pos = cNode.getPOSTAG();
-	                node.headId = cNode.getHEAD().getID();
-	                node.deprel = cNode.getDEPREL();
+	                node.id = cNode.getId();
+	                node.form = cNode.getForm();
+	                node.lemma = cNode.getLemma();
+	                node.pos = cNode.getPostag();
+	                node.headId = cNode.getHead().getId();
+	                node.deprel = cNode.getDeprel();
 	                
 	                tree.add(node);
 	            }

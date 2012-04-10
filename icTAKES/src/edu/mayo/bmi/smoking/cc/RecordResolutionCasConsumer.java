@@ -7,16 +7,18 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.collection.CasConsumer_ImplBase;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.smoking.patientLevel.PatientLevelSmokingStatus;
 import edu.mayo.bmi.smoking.type.SmokingDocumentClassification;
-import edu.mayo.bmi.uima.core.type.DocumentID;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 
 public class RecordResolutionCasConsumer extends CasConsumer_ImplBase
 {
@@ -89,10 +91,10 @@ public class RecordResolutionCasConsumer extends CasConsumer_ImplBase
     	  jcas = cas.getJCas();
       JFSIndexRepository indexes = jcas.getJFSIndexRepository();
       
-      Iterator<?> docIdItr = indexes.getAnnotationIndex(DocumentID.type).iterator();
-      if(docIdItr.hasNext())
+	 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
+      if(documentIDIterator.hasNext())
       {
-        DocumentID dia = (DocumentID)docIdItr.next();
+        DocumentID dia = (DocumentID)documentIDIterator.next();
         iv_sb.append(dia.getDocumentID());
       }
       else

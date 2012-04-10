@@ -9,9 +9,9 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import clear.dep.DepNode;
 import clear.dep.DepTree;
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
  * @author m081914
@@ -76,16 +76,16 @@ public class ClearDependencyUtility extends DependencyUtility {
             DepNode clearNode = clearTree.get(i);
             ConllDependencyNode uimaNode = uimaNodes.get(i);
 
-            uimaNode.setID(clearNode.id);
-            uimaNode.setFORM(clearNode.form);
-            uimaNode.setLEMMA(clearNode.lemma);
-            uimaNode.setCPOSTAG(clearNode.pos);
-            uimaNode.setPOSTAG(clearNode.pos);
-            uimaNode.setFEATS("_");
-            uimaNode.setHEAD(uimaNodes.get(clearNode.headId));
-            uimaNode.setDEPREL(clearNode.deprel);
-            uimaNode.setPHEAD(null);
-            uimaNode.setPDEPREL("_");
+            uimaNode.setId(clearNode.id);
+            uimaNode.setForm(clearNode.form);
+            uimaNode.setLemma(clearNode.lemma);
+            uimaNode.setCpostag(clearNode.pos);
+            uimaNode.setPostag(clearNode.pos);
+            uimaNode.setFeats("_");
+            uimaNode.setHead(uimaNodes.get(clearNode.headId));
+            uimaNode.setDeprel(clearNode.deprel);
+            uimaNode.setPhead(null);
+            uimaNode.setPdeprel("_");
 
              
        }
