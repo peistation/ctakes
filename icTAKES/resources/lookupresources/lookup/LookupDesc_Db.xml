@@ -22,6 +22,7 @@
 			<lookupField fieldName="first_word"/>
 			<metaFields>
 				<metaField fieldName="code"/>
+				<metaField fieldName="codeRxNorm"/>
 				<metaField fieldName="preferred_designation"/>
 				<metaField fieldName="other_designation"/>
 			</metaFields>
@@ -37,8 +38,8 @@
 				<properties>
 					<property key="textMetaFields" value="text"/>
 					<property key="maxPermutationLevel" value="7"/>
-					<!--	<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.Sentence"/> -->
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation"/>  
+					<!--	<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.Sentence"/> -->
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation"/>  
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
@@ -63,15 +64,15 @@
 				<properties>
 					<property key="textMetaFields" value="preferred_designation|other_designation"/>
 					<property key="maxPermutationLevel" value="7"/>
-					<!--	<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.Sentence"/> -->
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation"/>  
+					<!--	<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.Sentence"/> -->
+					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation"/>  
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
 			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.OrangeBookFilterConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
-					<property key="codeMetaField" value="code"/>
+					<property key="codeMetaField" value="codeRxNorm"/> <!-- Use value="code" for UMLS CUIs -->
 					<property key="luceneFilterExtResrcKey" value="OrangeBookIndexReader"/>
 				</properties>
 			</lookupConsumer>
