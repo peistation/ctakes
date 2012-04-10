@@ -28,14 +28,14 @@ public class PunctuationFeatureExtractor implements RelationFeaturesExtractor {
   	// entity1 ... entity2 scenario
   	if(arg1.getEnd() < arg2.getBegin()) {
   		for(PunctuationToken token : JCasUtil.selectCovered(jCas, PunctuationToken.class, arg1.getEnd(), arg2.getBegin())) {
-  			features.add(new Feature("punctuation", token.getCoveredText()));
+  			features.add(new Feature("arg1_punctuation_arg2", token.getCoveredText()));
   		}
   	}
   	
   	// entity2 ... entity1 scenario
   	if(arg2.getEnd() < arg1.getBegin()) {
   		for(PunctuationToken token : JCasUtil.selectCovered(jCas, PunctuationToken.class, arg2.getEnd(), arg1.getBegin())) {
-  			features.add(new Feature("punctuation-1", token.getCoveredText()));
+  			features.add(new Feature("arg2_punctuation_arg1", token.getCoveredText()));
   		}
   	}
   	
