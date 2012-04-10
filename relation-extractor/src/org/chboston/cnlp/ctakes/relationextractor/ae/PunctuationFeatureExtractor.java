@@ -29,6 +29,7 @@ public class PunctuationFeatureExtractor implements RelationFeaturesExtractor {
   	if(arg1.getEnd() < arg2.getBegin()) {
   		for(PunctuationToken token : JCasUtil.selectCovered(jCas, PunctuationToken.class, arg1.getEnd(), arg2.getBegin())) {
   			features.add(new Feature("arg1_punctuation_arg2", token.getCoveredText()));
+  			break;
   		}
   	}
   	
@@ -36,6 +37,7 @@ public class PunctuationFeatureExtractor implements RelationFeaturesExtractor {
   	if(arg2.getEnd() < arg1.getBegin()) {
   		for(PunctuationToken token : JCasUtil.selectCovered(jCas, PunctuationToken.class, arg2.getEnd(), arg1.getBegin())) {
   			features.add(new Feature("arg2_punctuation_arg1", token.getCoveredText()));
+  			break;
   		}
   	}
   	

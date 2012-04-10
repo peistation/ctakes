@@ -35,7 +35,7 @@ public class PrepositionFeatureExtractor implements RelationFeaturesExtractor {
   	// entity1 ... entity2 scenario
   	if(arg1.getEnd() < arg2.getBegin()) {
   		for(BaseToken token : JCasUtil.selectCovered(jCas, BaseToken.class, arg1.getEnd(), arg2.getBegin())) {
-  			if(prepositions.contains(token)) {
+  			if(prepositions.contains(token.getCoveredText())) {
   				features.add(new Feature("arg1_preposition_arg2", token.getCoveredText()));
   			}
   		}
@@ -44,7 +44,7 @@ public class PrepositionFeatureExtractor implements RelationFeaturesExtractor {
   	// entity2 ... entity1 scenario
   	if(arg2.getEnd() < arg1.getBegin()) {
   		for(BaseToken token : JCasUtil.selectCovered(jCas, BaseToken.class, arg2.getEnd(), arg1.getBegin())) {
-  			if(prepositions.contains(token)) {
+  			if(prepositions.contains(token.getCoveredText())) {
   				features.add(new Feature("arg2_preposition_arg1", token.getCoveredText()));
   			}
   		}
