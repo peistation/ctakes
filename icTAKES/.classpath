@@ -1,34 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <classpath>
-	<classpathentry kind="src" path="auto_generatesrc"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar"/>
-	<classpathentry kind="lib" path="lib/clearparser-0.31.jar"/>
-	<classpathentry kind="lib" path="lib/hppc-0.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/jdom.jar"/>
-	<classpathentry kind="lib" path="lib/junit.jar"/>
-	<classpathentry kind="lib" path="lib/jVinci.jar"/>
-	<classpathentry kind="lib" path="lib/liblinear-1.51.jar"/>
-	<classpathentry kind="lib" path="lib/libsvm-2.91.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/lvg2010dist.jar"/>
-	<classpathentry kind="lib" path="lib/maxent-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/OpenAI_FSM.jar"/>
-	<classpathentry kind="lib" path="lib/opennlp-tools-1.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/trove.jar"/>
-	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/SQLWrapper.jar"/>
-	<classpathentry kind="lib" path="lib/uima-adapter-soap.jar"/>
-	<classpathentry kind="lib" path="lib/uima-adapter-vinci.jar"/>
-	<classpathentry kind="lib" path="lib/uima-core.jar"/>
-	<classpathentry kind="lib" path="lib/uima-cpe.jar"/>
-	<classpathentry kind="lib" path="lib/uima-document-annotation.jar"/>
-	<classpathentry kind="lib" path="lib/uima-examples.jar"/>
-	<classpathentry kind="lib" path="lib/uima-tools.jar"/>
-	<classpathentry kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="src" path="auto_generatesrc"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-tools.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-examples.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-document-annotation.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-cpe.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-core.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-adapter-vinci.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-adapter-soap.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/lvg2010dist.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/jVinci.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/hppc-0.3.1.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/args4j-2.0.12.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/Jama-1.0.2.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/libsvm-2.91.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/liblinear-1.51.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
+			
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resources"/>
-	<classpathentry kind="lib" path="cTAKESdesc"/>
+	<classpathentry exported="true" kind="lib" path="lib/opennlp-tools-1.4.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/maxent-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
+	<classpathentry kind="lib" path="lib/OpenAI_FSM.jar"/>
+	<classpathentry kind="lib" path="lib/SQLWrapper.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
