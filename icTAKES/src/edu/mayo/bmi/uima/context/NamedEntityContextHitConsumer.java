@@ -27,7 +27,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.context.type.ContextAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.ContextAnnotation;
 
 
 public abstract class NamedEntityContextHitConsumer implements ContextHitConsumer {

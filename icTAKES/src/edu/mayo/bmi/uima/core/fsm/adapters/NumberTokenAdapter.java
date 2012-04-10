@@ -24,7 +24,7 @@
 package edu.mayo.bmi.uima.core.fsm.adapters;
 
 import edu.mayo.bmi.fsm.token.NumberToken;
-import edu.mayo.bmi.uima.core.type.NumToken;
+import edu.mayo.bmi.uima.core.type.syntax.NumToken;
 
 /**
  * Adapts JCas token annotation to interface expected by the Context Dependent

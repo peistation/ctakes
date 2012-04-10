@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.analysis_engine.ResultSpecification;
 import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
@@ -16,6 +19,7 @@ import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.TOP;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.core.util.JCasUtil;
@@ -28,7 +32,7 @@ import edu.mayo.bmi.uima.core.util.ParamUtil;
  * @author duffp
  * 
  */
-public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
+public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
 {
 	private int iv_srcType;
 
@@ -53,9 +57,8 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 	// val = destination setter method (java.lang.reflect.Method)
 	private Map iv_getSetMap;
 
-	public void initialize(AnnotatorContext annotCtx)
-			throws AnnotatorInitializationException,
-			AnnotatorConfigurationException
+	public void initialize(UimaContext annotCtx)
+			throws ResourceInitializationException
 	{
 		super.initialize(annotCtx);
 
@@ -84,7 +87,7 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 				String getterMethName = (String) getterItr.next();
 				String setterMethName = (String) m.get(getterMethName);
 
-				Method getterMeth = srcClass.getMethod(getterMethName, null);
+				Method getterMeth = srcClass.getMethod(getterMethName, (Class []) null);
 
 				// get corresponding setter that has compatible args
 				Class[] setterArgs = { getterMeth.getReturnType() };
@@ -97,17 +100,17 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 		}
 		catch (Exception e)
 		{
-			throw new AnnotatorInitializationException(e);
+			throw new ResourceInitializationException(e);
 		}
 	}
 
-	public void process(JCas jcas, ResultSpecification rs)
-			throws AnnotatorProcessException
+	public void process(JCas jcas)
+			throws AnalysisEngineProcessException
 	{
 		// iterate over source objects in JCas
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator srcObjItr = indexes.getAnnotationIndex(edu.mayo.bmi.uima.core.type.Segment.type).iterator();
-		edu.mayo.bmi.uima.core.type.Segment segment = null;
+		Iterator srcObjItr = indexes.getAnnotationIndex(edu.mayo.bmi.uima.core.type.textspan.Segment.type).iterator();
+		edu.mayo.bmi.uima.core.type.textspan.Segment segment = null;
 		
 		while (srcObjItr.hasNext())
 		{
@@ -124,7 +127,7 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
                 boolean segmentMissing = iv_skipSegmentsSet.isEmpty();
 				if (!segmentMissing){
 					Iterator getSkipSegs = iv_skipSegmentsSet.iterator();
-					segment = (edu.mayo.bmi.uima.core.type.Segment) srcObj;
+					segment = (edu.mayo.bmi.uima.core.type.textspan.Segment) srcObj;
 					while (getSkipSegs.hasNext()  && !okayToSkip){
 						if (getSkipSegs.next().equals(segment.getId())){
 
@@ -142,7 +145,7 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 					Method getterMeth = (Method) getterItr.next();
 					Method setterMeth = (Method) iv_getSetMap.get(getterMeth);
 
-					Object val = getterMeth.invoke(srcObj, null);
+					Object val = getterMeth.invoke(srcObj, (Object []) null);
 					Object[] setterArgs = { val };
 					setterMeth.invoke(destObj, setterArgs);
 					
@@ -151,9 +154,9 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 				if (okayToSkip) {
 					destObj.addToIndexes();
 				} else {
-					Iterator lookupWindows = FSUtil.getAnnotationsInSpanIterator(jcas, edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation.type, segment.getBegin(), segment.getEnd());
+					Iterator lookupWindows = FSUtil.getAnnotationsInSpanIterator(jcas, edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation.type, segment.getBegin(), segment.getEnd());
 					while (lookupWindows.hasNext()){
-						edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation lookup = (edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation) lookupWindows.next();
+						edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation lookup = (edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation) lookupWindows.next();
 						edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation drugLookup = new edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation(jcas, lookup.getBegin(), lookup.getEnd());
 						drugLookup.addToIndexes();
 					}
@@ -162,7 +165,7 @@ public class CopyDrugAnnotator extends JTextAnnotator_ImplBase
 			}
 			catch (Exception e)
 			{
-				throw new AnnotatorProcessException(e);
+				throw new AnalysisEngineProcessException(e);
 			}
 		}
 	}

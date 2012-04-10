@@ -13,7 +13,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.fsm.machine.FSM;
-import edu.mayo.bmi.fsm.drugner.machines.util.NegIndicatorFSM;
+import edu.mayo.bmi.fsm.ner.machines.util.NegIndicatorFSM;
 import edu.mayo.bmi.fsm.output.NegationIndicator;
 import edu.mayo.bmi.fsm.token.TextToken;
 import edu.mayo.bmi.uima.context.ContextAnalyzerAdapter;

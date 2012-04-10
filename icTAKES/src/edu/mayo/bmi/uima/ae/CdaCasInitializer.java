@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License. 
  */
-package edu.mayo.bmi.uima.core.ae;
+package edu.mayo.bmi.uima.ae;
 
 import java.io.File;
 import java.util.HashSet;
@@ -32,9 +32,11 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.nlp.preprocessor.ClinicalNotePreProcessor;
@@ -45,10 +47,10 @@ import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
 import edu.mayo.bmi.uima.core.ci.TextModification;
 import edu.mayo.bmi.uima.core.ci.TextModifier;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.DocumentID;
-import edu.mayo.bmi.uima.core.type.Properties;
-import edu.mayo.bmi.uima.core.type.Property;
-import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import edu.mayo.bmi.uima.core.type.util.Pair;
+import edu.mayo.bmi.uima.core.type.util.Pairs;
 
 
 /**
@@ -154,13 +156,6 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
         	JCas originalView = jcas.getView("_InitialView");
         	originalText = originalView.getSofaDataString();
 
-                //used later to copy to plaintextView 
-                Iterator docItr = originalView.getAnnotationIndex(DocumentID.type).iterator();
-                DocumentID docID = null;
-                
-                if(docItr.hasNext())
-            	docID = (DocumentID)docItr.next();
-        	
             PreProcessor pp = new ClinicalNotePreProcessor(
                     dtdFile,
                     includeSectionMarkers.booleanValue());
@@ -191,20 +186,18 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
                 sa.addToIndexes();
             }
             
-            //copy the documentId from the default sofa to plaintext
-            if(docID != null)
-            {
-        	DocumentID newDocId = new DocumentID(plaintextView);
-        	newDocId.setBegin(docID.getBegin());
-        	newDocId.setEnd(docID.getEnd());
-        	newDocId.setDocumentID(docID.getDocumentID());
-        	newDocId.addToIndexes();
-            }
-            
-
             // Store meta data about the document
-            Properties propAnnot = new Properties(plaintextView); 
+            Pairs propAnnot = new Pairs(plaintextView); 
             Map metaDataMap = dmd.getMetaData();
+            
+            String docID = (String)metaDataMap.get(ClinicalNotePreProcessor.MD_KEY_DOC_ID);
+        	if (docID!=null) {
+            	DocumentID newDocId = new DocumentID(plaintextView);
+            	newDocId.setDocumentID(docID);
+            	newDocId.addToIndexes();
+        	
+        	}
+            
             FSArray fsArr = new FSArray(plaintextView, metaDataMap.size());
             Iterator keyItr = metaDataMap.keySet().iterator();
             int pos = 0;
@@ -214,8 +207,8 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
                 Object value = metaDataMap.get(key);
 
                 if (value instanceof String) {
-                    Property prop = new Property(plaintextView);
-                    prop.setKey(key);
+                    Pair prop = new Pair(plaintextView);               
+                    prop.setAttribute(key);
                     prop.setValue((String) value);
                     fsArr.set(pos++, prop);
                 }
@@ -224,7 +217,7 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
 
             }
 
-            propAnnot.setPropArr(fsArr);
+            propAnnot.setPairs(fsArr);
             propAnnot.addToIndexes();
         }
         catch (Exception e) {

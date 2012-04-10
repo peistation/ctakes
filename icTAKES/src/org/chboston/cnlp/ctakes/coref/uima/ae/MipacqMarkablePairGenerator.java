@@ -14,7 +14,7 @@
 @author Jiaping Zheng
  * @author Tim Miller
  */
-package edu.mayo.bmi.uima.coref.ae;
+package org.chboston.cnlp.ctakes.coref.uima.ae;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,17 +38,16 @@ import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
 import org.chboston.cnlp.ctakes.coref.eval.helpers.Span;
 import org.chboston.cnlp.ctakes.coref.eval.helpers.SpanAlignment;
 import org.chboston.cnlp.ctakes.coref.eval.helpers.SpanOffsetComparator;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
 import edu.mayo.bmi.coref.util.CorefConsts;
 import edu.mayo.bmi.coref.util.FSIteratorToList;
 import edu.mayo.bmi.coref.util.MarkableTreeUtils;
 import edu.mayo.bmi.coref.util.PairAttributeCalculator;
 import edu.mayo.bmi.coref.util.ParentPtrTree;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
@@ -193,9 +192,9 @@ public class MipacqMarkablePairGenerator extends JCasAnnotator_ImplBase {
 			if (sentdist>CorefConsts.NEDIST) break;
 //			else if (sentdist>PRODIST && m instanceof PronounMarkable) continue;
 			// filter out if both are NEs but of diff types
-			if (m.getContent() instanceof NamedEntity &&
-					a.getContent() instanceof NamedEntity &&
-					((NamedEntity)m.getContent()).getTypeID() != ((NamedEntity)a.getContent()).getTypeID())
+			if (m.getContent() instanceof IdentifiedAnnotation &&
+					a.getContent() instanceof IdentifiedAnnotation &&
+					((IdentifiedAnnotation)m.getContent()).getTypeID() != ((IdentifiedAnnotation)a.getContent()).getTypeID())
 				continue;
 
 			// filter out "which" that crosses sentence boundary

@@ -40,7 +40,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class FSUtil {
 	
@@ -72,6 +72,14 @@ public class FSUtil {
 	    return annotsInSpanItr;
 	}
 	
+	/**
+	 * For correct behavior, requires types to be listed in TypePriorities so that the subiterator works as expected
+	 * @param jcas
+	 * @param type
+	 * @param beginSpan
+	 * @param endSpan
+	 * @return
+	 */
 	public static FSIterator getAnnotationsIteratorInSpan(JCas jcas, int type, int beginSpan, int endSpan)
 	{
 	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);
@@ -98,9 +106,9 @@ public class FSUtil {
 	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
-		NamedEntity ne = (NamedEntity)itr.next();
-		if(isValidNE(ne.getTypeID(), validNeTypes))
-		    count++;
+	    	IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next();
+	    	if(isValidNE(ne.getTypeID(), validNeTypes))
+	    		count++;
 	    }
 	    return count;
 	}
@@ -120,9 +128,9 @@ public class FSUtil {
 	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
-		NamedEntity ne = (NamedEntity)itr.next();
-		if(isValidNE(ne.getTypeID(), validNeTypes))
-		    list.add(ne);
+    		IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next(); // might be an EventMention or an EntityMention
+	    	if(isValidNE(ne.getTypeID(), validNeTypes))
+	    		list.add(ne);
 	    }
 	    return list;
 	}

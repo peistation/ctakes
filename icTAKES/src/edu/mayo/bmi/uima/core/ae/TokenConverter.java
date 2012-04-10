@@ -26,13 +26,13 @@ package edu.mayo.bmi.uima.core.ae;
 import org.apache.uima.jcas.JCas;
 
 import edu.mayo.bmi.nlp.tokenizer.Token;
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.ContractionToken;
-import edu.mayo.bmi.uima.core.type.NewlineToken;
-import edu.mayo.bmi.uima.core.type.NumToken;
-import edu.mayo.bmi.uima.core.type.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.SymbolToken;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
+import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
+import edu.mayo.bmi.uima.core.type.syntax.NumToken;
+import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 
 /**
  * Utilities methods for converting between Java Tokenizer objects and their

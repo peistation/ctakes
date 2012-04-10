@@ -30,17 +30,23 @@ import edu.mayo.bmi.uima.core.resource.FileLocator;
 
 public class ConstituencyParser extends JCasAnnotator_ImplBase {
 
-	ParserWrapper parser = null;
+	static ParserWrapper parser = null;
 	Logger logger = Logger.getLogger(this.getClass());
 	
 	@Override
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
 		super.initialize(aContext);
-		
 		String modelFileOrDirname = (String) aContext.getConfigParameterValue("modelFilename");
+//		parser = new BerkeleyParserWrapper(modelFilename);
 		try {
-			parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
+			synchronized(this.getClass()){
+				if(parser == null){
+					logger.info("Initializing parser...");
+					parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
+				}
+			}
+//			parser = new ParallelParser(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.error("Error reading parser model file/directory: " + e.getMessage());
@@ -50,6 +56,13 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		parser.createAnnotations(jcas);
+//		TreebankParser p = new TreebankParser();
+		if (parser==null) {
+			logger.error("Error accessing parser.");
+			throw new RuntimeException("Parser not set");
+		}
+		synchronized(parser){
+			parser.createAnnotations(jcas);
+		}
 	}
 }

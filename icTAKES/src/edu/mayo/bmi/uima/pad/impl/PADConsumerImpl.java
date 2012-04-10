@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 
-
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.lookup.ae.BaseLookupConsumerImpl;
 import edu.mayo.bmi.uima.lookup.ae.LookupConsumer;
 import edu.mayo.bmi.uima.pad.type.SubSection;
@@ -22,7 +21,7 @@ public abstract class  PADConsumerImpl
 {
 
   public abstract void consumeHits(JCas jcas, Iterator lookupHitItr)
-  throws AnnotatorProcessException;
+  throws AnalysisEngineProcessException;
 
   protected List<WordToken> getTokenData(JCas jcas, Annotation locationTerm)
   {

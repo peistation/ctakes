@@ -24,7 +24,7 @@
 package edu.mayo.bmi.uima.core.fsm.adapters;
 
 import edu.mayo.bmi.fsm.token.EolToken;
-import edu.mayo.bmi.uima.core.type.NewlineToken;
+import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
 
 /**
  * Adapts JCas token annotation to interface expected by the Context Dependent

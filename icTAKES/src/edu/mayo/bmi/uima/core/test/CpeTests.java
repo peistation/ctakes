@@ -1,3 +1,4 @@
+package edu.mayo.bmi.uima.core.test;
 /*
  * Copyright: (c) 2009   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
@@ -21,7 +22,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License. 
  */
-package edu.mayo.bmi.uima.pos_tagger.test;
+
 
 
 // from  org.apache.uima.examples.cpe.CpeTests.java in the %UIMA_HOME%\examples\src
