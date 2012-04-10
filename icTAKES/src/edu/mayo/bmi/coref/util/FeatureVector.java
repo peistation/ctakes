@@ -37,6 +37,7 @@ public class FeatureVector {
 	};
 
 	final static String[] ne_coref_feats = {
+			"SameSection",  // {yes, no}
 			"TokenDistance"   , // numeric    1
 			"SentenceDistance", // numeric
 			"ExactMatch"      , // {yes,no}
@@ -80,8 +81,8 @@ public class FeatureVector {
 			"ClosestComp"     , // {C,I}
 			"NPHead"          , // {yes, no}
 			"Anaph"           , // numeric
-			"PermStrDist"	  , //             
-			"PathLength"	  , // number of nodes in full path
+//			"PermStrDist"	  , //             
+			"PathLength"	  , // number of nodes in full path 37
 			"NPunderVP1"	  , // NP object?
 			"NPunderVP2"	  , //
 			"NPunderS1"		  , // NP subject?
@@ -90,8 +91,11 @@ public class FeatureVector {
 			"NPunderPP2"      , //             
 			"NPSubj1"		  , //			   
 			"NPSubj2"		  , //             
-			"NPSubjBoth"	  , //			   
-			"Cat:Ngrams"      , //			   :n-1
+			"NPSubjBoth"	  , //			   46
+			//"NPSubjBoth"    , //             
+//			"Cat:Ngrams"      , //			   :n-1
+//			"TK"			  ,
+//			"WordsStr"			// not used, why?		 
 	};
 
 	final static String[] pron_coref_feats = ne_coref_feats;
