@@ -89,15 +89,15 @@
       <nameValuePair>
         <name>PostLemmas</name>
         <value>
-          <boolean>false</boolean>
+          <boolean>true</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentAnnotator</node>
-        <node>TokenizerAnnotator</node>
         <node>SentenceDetectorAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>LvgBaseTokenAnnotator</node>
         <node>POSTagger</node>
         <node>ClearParserAE</node>

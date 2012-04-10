@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>testdata/dptest/testinput/sample.tok</string>
+                        <string>data/sample.tok</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,13 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>dpresources/wgc-train-STMP.mod</string>
+                        <string>resources/wgc-train-STMP.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>dpresources/lexiconWgcSTMP</string>
+                        <string>lexiconWgcSTMP</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>testdata/dptest/testoutput/outputClinQues</string>
+                        <string>data/outputClinQues</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -89,7 +89,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>testdata/dptest/testoutput/outputClinQues</string>
+                        <string>data/outputClinQues</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

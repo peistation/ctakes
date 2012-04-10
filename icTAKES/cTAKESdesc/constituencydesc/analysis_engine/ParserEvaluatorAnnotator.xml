@@ -26,7 +26,8 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
+        <import location="../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

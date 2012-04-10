@@ -36,7 +36,7 @@ This parameter is optional.  If not specified, all JCas annotations will be dump
       <nameValuePair>
         <name>outputDir</name>
         <value>
-          <string>testdata/coretest/testoutput/embedded</string>
+          <string>c:\temp\uima\embedded</string>
         </value>
       </nameValuePair>
       <nameValuePair>

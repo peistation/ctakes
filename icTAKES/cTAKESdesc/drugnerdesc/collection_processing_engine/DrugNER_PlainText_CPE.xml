@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>testdata/drugnertest/testinput/plaintext</string>
+                        <string>data</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -43,7 +43,7 @@
                 <nameValuePair>
                     <name>OutputDirectory</name>
                     <value>
-                        <string>testdata/drugnertest/testout/plaintext</string>
+                        <string>data/output</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

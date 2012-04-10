@@ -89,7 +89,13 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>LexiconDirectory</name>
         <value>
-          <string>dpresources/lexiconClinQues</string>
+          <string>dpresources/resources/lexiconClinQues</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>TrainerPath</name>
+        <value>
+          <string>dpresources/../../liblinear-1.7/train</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -119,14 +125,13 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>

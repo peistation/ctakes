@@ -66,26 +66,25 @@ If no valid directory is given, this AE will default to using lemmas provided by
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs>
-          <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
-          <feature>edu.mayo.bmi.uima.core.type.BaseToken:partOfSpeech</feature>
-          <feature>edu.mayo.bmi.uima.core.type.BaseToken:normalizedForm</feature>
-          <feature>edu.mayo.bmi.uima.core.type.BaseToken:tokenNumber</feature>
-          <feature>edu.mayo.bmi.uima.core.type.BaseToken:end</feature>
-          <feature>edu.mayo.bmi.uima.core.type.BaseToken:begin</feature>
+          <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+          <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech</feature>
+          <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:normalizedForm</feature>
+          <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber</feature>
+          <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:end</feature>
+          <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin</feature>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.nlp.parser.type.ConllDependencyNode</type>

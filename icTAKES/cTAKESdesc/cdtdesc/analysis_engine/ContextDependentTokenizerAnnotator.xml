@@ -11,20 +11,17 @@
 <configurationParameters/>
 <configurationParameterSettings/>
 <typeSystemDescription>
-<imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
-</imports>
 </typeSystemDescription>
 <capabilities>
 <capability>
 <inputs/>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.TimeAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.RomanNumeralAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.RangeAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.PersonTitleAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.MeasurementAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.cdt.type.FractionAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.TimeAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RangeAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.PersonTitleAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.MeasurementAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.FractionAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>

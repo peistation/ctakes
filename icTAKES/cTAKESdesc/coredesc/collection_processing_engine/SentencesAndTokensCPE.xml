@@ -9,7 +9,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>testdata/coretest/testinput</string>
+<string>data/test/sample_notes_plaintext</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -43,7 +43,7 @@
 <nameValuePair>
 <name>outputDir</name>
 <value>
-<string>testdata/coretest/testoutput</string>
+<string>data/test/output</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

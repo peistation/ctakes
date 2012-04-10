@@ -21,7 +21,7 @@
       <nameValuePair>
         <name>MetaKeywordsFile</name>
         <value>
-          <string>sideeffectresources/data/sentenceLevelMetaKeywords.txt</string>
+          <string>resources/sideeffect/data/sentenceLevelMetaKeywords.txt</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

@@ -26,7 +26,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
+<import location="../type_system/SmokingProductionTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -34,7 +34,7 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.type.BaseTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.type.StringAttributeValue</type>

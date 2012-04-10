@@ -41,7 +41,7 @@
 <nameValuePair>
 <name>destObjClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.Sentence</string>
+<string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
 </value>
 </nameValuePair>
 <nameValuePair>

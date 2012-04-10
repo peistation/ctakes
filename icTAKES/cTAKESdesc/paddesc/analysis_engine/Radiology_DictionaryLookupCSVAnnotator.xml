@@ -12,7 +12,7 @@
 <configurationParameterSettings/>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
+<import location="../type_system/PADSiteAndTerm.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -20,11 +20,11 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Sentence</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>

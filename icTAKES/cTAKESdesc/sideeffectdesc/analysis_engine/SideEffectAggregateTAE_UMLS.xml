@@ -22,7 +22,7 @@
       <import location="../../posdesc/analysis_engine/POSTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DrugMentionAnnotator">
-      <import location="../../drugnerdesc/analysis_engine/DrugMentionAnnotatorsection.xml"/>
+      <import location="../../drugnerdesc/analysis_engine/DrugMentionAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="Chunker">
       <import location="../../chunkerdesc/analysis_engine/Chunker.xml"/>
@@ -73,8 +73,8 @@
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentWithTagsAnnotator</node>
-        <node>TokenizerAnnotator</node>
         <node>SentenceDetectorAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>LvgAnnotator</node>
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>

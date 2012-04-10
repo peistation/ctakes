@@ -4,19 +4,19 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-<import location="../../coredesc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+<import location="SimpleSegmentAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="Chunker">
 <import location="Chunker.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SentenceDetectorAnnotator">
-<import location="../../coredesc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+<import location="SentenceDetectorAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
-<import location="../../coredesc/analysis_engine/TokenizerAnnotator.xml"/>
+<import location="../coredesc/analysis_engine/TokenizerAnnotator.xml"/>  
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="POSTagger">
-<import location="../../posdesc/analysis_engine/POSTagger.xml"/>
+<import location="POSTagger.xml"/>
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>

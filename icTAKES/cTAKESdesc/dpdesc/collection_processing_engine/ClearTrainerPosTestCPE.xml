@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>testdata/dptest/testinput/sample.dep</string>
+                        <string>data/sample.dep</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,25 +37,25 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>dpresources/sample.mod</string>
+                        <string>sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>dpresources/lexiconSample</string>
+                        <string>resources/lexiconSample</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>posresources/models/postagger.model.bin.gz</string>
+                        <string>models/postagger.model.bin.gz</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>posresources/models/tag.dictionary.txt</string>
+                        <string>models/tag.dictionary.txt</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -75,7 +75,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>testdata/dptest/testoutput/outputSample</string>
+                        <string>data/outputSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

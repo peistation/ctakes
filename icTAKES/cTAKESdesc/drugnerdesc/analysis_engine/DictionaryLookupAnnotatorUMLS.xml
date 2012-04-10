@@ -82,21 +82,17 @@
         </value>
       </nameValuePair>                      
     </configurationParameterSettings>
-    <typeSystemDescription>
-      <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
-      </imports>
-    </typeSystemDescription>
+    <typeSystemDescription/>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.NamedEntity</type>
         </outputs>
         <languagesSupported/>
       </capability>

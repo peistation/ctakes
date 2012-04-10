@@ -20,7 +20,7 @@
       <nameValuePair>
         <name>PathOfModel</name>
         <value>
-          <string>sideeffectresources/classifier/libsvm_model_onWholeSet</string>
+          <string>resources/sideeffect/classifier/libsvm_model_onWholeSet</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

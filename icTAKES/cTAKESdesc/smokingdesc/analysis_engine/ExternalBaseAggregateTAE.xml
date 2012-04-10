@@ -26,8 +26,8 @@
     <flowConstraints>
       <fixedFlow>
         <node>SimpleSegmentAnnotator</node>
-        <node>TokenizerAnnotator</node>
         <node>SentDetectAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>LvgAnnotator</node>
       </fixedFlow>
     </flowConstraints>

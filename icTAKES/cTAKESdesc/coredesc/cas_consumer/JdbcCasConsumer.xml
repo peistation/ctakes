@@ -23,7 +23,7 @@
 <nameValuePair>
 <name>NormalizedTokenClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.BaseToken</string>
+<string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -129,7 +129,7 @@
 <name>BindDescriptorFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:cc/jdbc/TestBinding.xml</fileUrl>
+<fileUrl>file:coreresources/cc/jdbc/TestBinding.xml</fileUrl>
 </fileResourceSpecifier>
 <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
 </externalResource>

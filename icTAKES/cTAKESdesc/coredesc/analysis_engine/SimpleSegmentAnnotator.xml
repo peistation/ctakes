@@ -20,7 +20,7 @@
 <configurationParameterSettings/>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
+<import location="../../common-type-system/desc/common_type_system.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -29,7 +29,7 @@
 <capability>
 <inputs/>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
 </outputs>
 <languagesSupported/>
 </capability>

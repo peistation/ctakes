@@ -25,7 +25,7 @@
 <nameValuePair>
 <name>outputFileName</name>
 <value>
-<string>testdata/padtest/testoutput/padoutput.txt</string>
+<string>C:\\temp\\PAD_output.txt</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -37,7 +37,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
+<import location="../type_system/PADSiteAndTerm.xml"/>
 </imports>
 </typeSystemDescription>
 <capabilities/>

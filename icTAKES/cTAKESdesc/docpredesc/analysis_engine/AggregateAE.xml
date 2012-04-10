@@ -4,7 +4,7 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="CdaCasInitializer">
-<import location="../cas_initializer/CdaCasInitializer.xml"/>
+<import location="CdaCasInitializer.xml"/>
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>

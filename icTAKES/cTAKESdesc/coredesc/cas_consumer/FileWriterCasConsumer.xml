@@ -20,13 +20,12 @@
 <nameValuePair>
 <name>outputDir</name>
 <value>
-<string>testdata/coretest/testoutput</string>
+<string>test\data\output</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

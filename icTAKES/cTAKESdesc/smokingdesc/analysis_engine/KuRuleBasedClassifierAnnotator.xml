@@ -54,7 +54,7 @@
 <value>
 <boolean>false</boolean>
 </value>
-</nameValuePair> 
+</nameValuePair>
 <nameValuePair>
 <name>UnknownWordsFile</name>
 <value>
@@ -64,7 +64,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../typesystem/cTAKESTypes.xml"/>
+<import location="../type_system/SmokingProductionTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

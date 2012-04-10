@@ -110,7 +110,7 @@
       <nameValuePair>
         <name>CmdCacheFileLocation</name>
         <value>
-          <string>lvgresources/lvg/2005_norm.voc</string>
+          <string>dpresources//lvg/2005_norm.voc</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -123,24 +123,24 @@
         <name>ExclusionSet</name>
         <value>
           <array>
-            <string>and</string>
-            <string>And</string>
-            <string>by</string>
-            <string>By</string>
-            <string>for</string>
-            <string>For</string>
-            <string>in</string>
-            <string>In</string>
-            <string>of</string>
-            <string>Of</string>
-            <string>on</string>
-            <string>On</string>
-            <string>the</string>
-            <string>The</string>
-            <string>to</string>
-            <string>To</string>
-            <string>with</string>
-            <string>With</string>
+            <string>dpresources/and</string>
+            <string>dpresources/And</string>
+            <string>dpresources/by</string>
+            <string>dpresources/By</string>
+            <string>dpresources/for</string>
+            <string>dpresources/For</string>
+            <string>dpresources/in</string>
+            <string>dpresources/In</string>
+            <string>dpresources/of</string>
+            <string>dpresources/Of</string>
+            <string>dpresources/on</string>
+            <string>dpresources/On</string>
+            <string>dpresources/the</string>
+            <string>dpresources/The</string>
+            <string>dpresources/to</string>
+            <string>dpresources/To</string>
+            <string>dpresources/with</string>
+            <string>dpresources/With</string>
           </array>
         </value>
       </nameValuePair>
@@ -148,24 +148,24 @@
         <name>XeroxTreebankMap</name>
         <value>
           <array>
-            <string>adj|JJ</string>
-            <string>adv|RB</string>
-            <string>aux|AUX</string>
-            <string>compl|CS</string>
-            <string>conj|CC</string>
-            <string>det|DET</string>
-            <string>modal|MD</string>
-            <string>noun|NN</string>
-            <string>prep|IN</string>
-            <string>pron|PRP</string>
-            <string>verb|VB</string>
+            <string>dpresources/adj|JJ</string>
+            <string>dpresources/adv|RB</string>
+            <string>dpresources/aux|AUX</string>
+            <string>dpresources/compl|CS</string>
+            <string>dpresources/conj|CC</string>
+            <string>dpresources/det|DET</string>
+            <string>dpresources/modal|MD</string>
+            <string>dpresources/noun|NN</string>
+            <string>dpresources/prep|IN</string>
+            <string>dpresources/pron|PRP</string>
+            <string>dpresources/verb|VB</string>
           </array>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>LemmaCacheFileLocation</name>
         <value>
-          <string>lvgresources/lvg/2005_lemma.voc</string>
+          <string>dpresources//lvg/2005_lemma.voc</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -189,18 +189,17 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
-       	</imports>
+      </imports>
     </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.WordToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
         </outputs>
         <languagesSupported/>
       </capability>

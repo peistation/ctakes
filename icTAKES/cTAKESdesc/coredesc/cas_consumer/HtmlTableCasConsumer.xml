@@ -38,33 +38,29 @@ annotation_classname|getter_method</description>
       <nameValuePair>
         <name>TableSpanAnnotation</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.Sentence</string>
+          <string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>NestedAnnotations</name>
         <value>
           <array>
-            <string>edu.mayo.bmi.uima.core.type.BaseToken|getNormalizedForm</string>
+            <string>edu.mayo.bmi.uima.core.type.syntax.BaseToken|getPennTag</string>
           </array>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>OutputDir</name>
         <value>
-          <string>data/outputdata</string>
+          <string>c:\temp\uima</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription/>
-    <typePriorities/>
-    <fsIndexCollection/>
     <capabilities/>
     <operationalProperties>
       <modifiesCas>false</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
-      <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
   </processingResourceMetaData>
-  <resourceManagerConfiguration/>
 </casConsumerDescription>

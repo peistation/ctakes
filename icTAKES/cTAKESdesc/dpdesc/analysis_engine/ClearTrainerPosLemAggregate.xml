@@ -117,7 +117,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>LexiconDirectory</name>
         <value>
-          <string>dpresources/lexiconClinQues</string>
+          <string>dpresources/resources/lexiconClinQues</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -135,7 +135,7 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>TrainerPath</name>
         <value>
-          <string>../../liblinear-1.7/train</string>
+          <string>dpresources/../../liblinear-1.7/train</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -147,13 +147,13 @@ If this is not a valid file, ClearTrainerAE will use the Java version (less effi
       <nameValuePair>
         <name>PosModelFile</name>
         <value>
-          <string>posresources/models/postagger.model.bin.gz</string>
+          <string>dpresources/models/postagger.model.bin.gz</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>TagDictionary</name>
         <value>
-          <string>posresources/models/tag.dictionary.txt</string>
+          <string>dpresources/models/tag.dictionary.txt</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

@@ -41,7 +41,7 @@
       <nameValuePair>
         <name>srcDrugObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.chunker.type.NP</string>
+          <string>edu.mayo.bmi.uima.core.type.syntax.NP</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -73,8 +73,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
-        
+        <import location="../type_system/NERTypeSystem.xml"/>
       </imports>
       <types>
         <typeDescription>
@@ -95,10 +94,10 @@
       <capability>
         <inputs>
           <type allAnnotatorFeatures="true">uima.tt.CNPAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation</type>
         </outputs>
         <languagesSupported/>

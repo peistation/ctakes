@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>DependencyFile</name>
                     <value>
-                        <string>testdata/dptest/testinput/sample.mpos</string>
+                        <string>data/sample.mpos</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
@@ -37,13 +37,13 @@
                 <nameValuePair>
                     <name>DependencyModelFile</name>
                     <value>
-                        <string>testdata/dptest/testoutput/sample.mod</string>
+                        <string>sample.mod</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>LexiconDirectory</name>
                     <value>
-                        <string>testdata/dptest/testoutput/lexiconSample</string>
+                        <string>resources/lexiconSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -63,7 +63,7 @@
                 <nameValuePair>
                     <name>outputDir</name>
                     <value>
-                        <string>testdata/dptest/testoutput</string>
+                        <string>data/outputSample</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

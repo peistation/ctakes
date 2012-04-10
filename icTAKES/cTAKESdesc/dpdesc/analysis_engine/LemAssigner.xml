@@ -12,7 +12,6 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

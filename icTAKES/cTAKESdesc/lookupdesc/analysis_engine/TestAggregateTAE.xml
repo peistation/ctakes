@@ -4,7 +4,7 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-<import location="../../coredesc/analysis_engine/SimpleSegmentWithTagsAnnotator.xml"/>
+<import location="../../coredesc/analysis_engine/SimpleSegmentAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
 <import location="../../coredesc/analysis_engine/TokenizerAnnotator.xml"/>

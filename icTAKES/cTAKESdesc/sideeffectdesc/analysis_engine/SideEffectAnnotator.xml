@@ -191,7 +191,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
+        <import location="../type_system/SideEffectTypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <capabilities>

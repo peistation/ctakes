@@ -45,7 +45,7 @@ The default is CONLL-x tab-delimited format, with underscores for empty fields. 
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../typesystem/cTAKESTypes.xml"/>
+        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

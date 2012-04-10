@@ -4,7 +4,7 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="ConstituencyParserAnnotator">
-      <import location="../analysis_engine/ConstituencyParserAnnotator.xml"/>
+      <import location="ConstituencyParserAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TokenizerAnnotator">
       <import location="../../coredesc/analysis_engine/TokenizerAnnotator.xml"/>
@@ -47,13 +47,13 @@
       <description>For subiterator</description>
       <version>1.0</version>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.BaseToken</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
       </priorityList>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.NamedEntity</type>
+        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+        <type>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>
