@@ -125,19 +125,15 @@ public class RelationExtractorEvaluation {
     // define the grid of parameters over which we will search
     List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
     if (options.gridSearch) {
-      for (float probabilityOfKeepingANegativeExample : new float[] { 0.01f, 0.05f, 0.1f }) {
-        for (double svmCost : new double[] { 1, 10, 100 }) {
-          for (double svmGamma : new double[] { 10, 100, 1000 }) {
-            possibleParams.add(new ParameterSettings(
-                probabilityOfKeepingANegativeExample,
-                svmCost,
-                svmGamma));
-          }
-        }
+      for (float probabilityOfKeepingANegativeExample : new float[] { 0.05f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 1.0f }) {
+      	for (double svmCost : new double[] { 0.001, 0.01, 0.05, 0.1, 1, 10, 100, 1000 }) {
+      		possibleParams.add(new ParameterSettings(
+      				probabilityOfKeepingANegativeExample,
+      				svmCost));
+      	}
       }
     } else {
-      possibleParams.add(new ParameterSettings(0.05f, 1, 100));
-      //possibleParams.add(new ParameterSettings(0.2f, .5, 1));
+      possibleParams.add(new ParameterSettings(0.15f, 0.05));
     }
 
     // run an evaluation for each set of parameters
@@ -147,14 +143,13 @@ public class RelationExtractorEvaluation {
       // defines pipelines that train a classifier and classify with it
       PipelineProvider pipelineProvider = new PipelineProvider(
           new File("models"),
-          // DefaultMultiClassLIBSVMDataWriterFactory.class, // row-normalizes feature values
           MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
           RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
           params.probabilityOfKeepingANegativeExample,
           RelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-          false,
+          true,
           RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-          true);
+          false);
 
       // defines how to evaluate
       File statisticsFile = new File("models", "collection.statistics");
@@ -176,9 +171,7 @@ public class RelationExtractorEvaluation {
           "-t",
           "0",
           "-c",
-          String.valueOf(params.svmCost),
-          "-g",
-          String.valueOf(params.svmGamma));
+          String.valueOf(params.svmCost));
 
       // collect the statistics from the evaluation
       FileInputStream stream = new FileInputStream(statisticsFile);
@@ -220,18 +213,14 @@ public class RelationExtractorEvaluation {
 
     public double svmCost;
 
-    public double svmGamma;
-
     public EvaluationStatistics<?> stats;
 
     public ParameterSettings(
         float probabilityOfKeepingANegativeExample,
-        double svmCost,
-        double svmGamma) {
+        double svmCost) {
       super();
       this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
       this.svmCost = svmCost;
-      this.svmGamma = svmGamma;
     }
 
     @Override
@@ -239,7 +228,6 @@ public class RelationExtractorEvaluation {
       ToStringHelper helper = Objects.toStringHelper(this);
       helper.add("probabilityOfKeepingANegativeExample", this.probabilityOfKeepingANegativeExample);
       helper.add("svmCost", this.svmCost);
-      helper.add("svmGamma", this.svmGamma);
       return helper.toString();
     }
 
@@ -247,8 +235,7 @@ public class RelationExtractorEvaluation {
     public int hashCode() {
       return Objects.hashCode(
           this.probabilityOfKeepingANegativeExample,
-          this.svmCost,
-          this.svmGamma);
+          this.svmCost);
     }
 
     @Override
@@ -258,7 +245,7 @@ public class RelationExtractorEvaluation {
       }
       ParameterSettings that = (ParameterSettings) obj;
       return this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
-          && this.svmCost == that.svmCost && this.svmGamma == that.svmGamma;
+          && this.svmCost == that.svmCost;
     }
 
   }
