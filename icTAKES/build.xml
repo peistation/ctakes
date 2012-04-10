@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="cTAKES1.3.2" name="Create Runnable Jar for Project cTAKES_HF">
-      <target name="cTAKES1.3.2">
-        <mkdir dir="bin"/>
-   <path id="_ctakes.cp">
+<project default="cTAKES-2.0" name="Create Runnable Jar for Project cTAKES">
+   <target name="cTAKES-2.0">
+       <mkdir dir="bin"/>
+       <path id="_ctakes.cp">
             <pathelement location="lib/uima_tools.jar"/>
             <pathelement location="lib/uima-tools.jar"/>
             <pathelement location="lib/uima-examples.jar"/>
@@ -28,15 +28,15 @@
             <pathelement location="lib/libsvm-2.91.jar"/>
             <pathelement location="lib/liblinear-1.51.jar"/>
             <pathelement location="lib/xercesImpl-2.6.2.jar"/>
-    </path>
+       </path>
 
-        <javac destdir="bin">
+       <javac destdir="bin">  <!--  verbose="yes" -->
             <src path="src" />
             <src path="auto_generatesrc" />
             <classpath refid="_ctakes.cp" />
-        </javac>
+       </javac>
 
-        <jar destfile="cTAKES.jar">
+       <jar destfile="cTAKES.jar">
             <manifest>
                 <attribute name="Main-Class" value="edu.mayo.bmi.ctakes.main.cTAKESCPEGUI"/>
                 <attribute name="Class-Path" value="."/>
@@ -62,8 +62,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/args4j-2.0.12.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/libsvm-2.91.jar"/>
-        	<zipfileset excludes="META-INF/*.SF" src="lib/liblinear-1.51.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/liblinear-1.51.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/xercesImpl-2.6.2.jar"/>
-        </jar>
+       </jar>
     </target>
 </project>
