@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
@@ -20,6 +21,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 import org.apache.uima.resource.ResourceAccessException;
+import org.apache.uima.resource.ResourceInitializationException;
 //import org.jfree.util.Log;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
@@ -44,9 +46,75 @@ import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 {
   Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
+  
+  AssertionDecoderConfiguration assertionDecoderConfiguration;
 
   public AssertionAnalysisEngine()
   {
+  }
+  
+  @Override
+  public void initialize(UimaContext uimaContext)
+    throws ResourceInitializationException
+  {
+      super.initialize(uimaContext);
+    
+      // byte assertionModelContents[];
+      String scopeModelFilePath;
+      String cueModelFilePath;
+      String posModelFilePath;
+      File enabledFeaturesFile;
+
+      File assertionModelFile = null;
+      try
+      {
+        String assertionModelResourceKey = "assertionModelResource";
+        String assertionModelFilePath = getContext().getResourceFilePath(
+            assertionModelResourceKey);
+        assertionModelFile = new File(assertionModelFilePath);
+        // assertionModelContents = StringHandling
+        // .readEntireContentsBinary(assertionModelFile);
+        String scopeModelResourceKey = "scopeModelResource";
+        scopeModelFilePath = getContext().getResourceFilePath(
+            scopeModelResourceKey);
+        String cueModelResourceKey = "cueModelResource";
+        cueModelFilePath = getContext().getResourceFilePath(cueModelResourceKey);
+
+        String posModelResourceKey = "posModelResource";
+        posModelFilePath = getContext().getResourceFilePath(posModelResourceKey);
+
+        String enabledFeaturesResourceKey = "enabledFeaturesResource";
+        String enabledFeaturesFilePath = getContext().getResourceFilePath(
+            enabledFeaturesResourceKey);
+        enabledFeaturesFile = new File(enabledFeaturesFilePath);
+      } catch (ResourceAccessException e)
+      {
+        String message = String.format("problem accessing resource");
+        throw new RuntimeException(message, e);
+      }
+
+      AssertionDecoderConfiguration assertionDecoderConfiguration = new AssertionDecoderConfiguration();
+
+      logger.info(String.format("scope model file: %s", scopeModelFilePath));
+      logger.info(String.format("cue model file: %s", cueModelFilePath));
+      ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
+          cueModelFilePath);
+      assertionDecoderConfiguration.setScopeParser(scopeParser);
+
+      logger.info(String.format("pos model file: %s", posModelFilePath));
+      PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
+      assertionDecoderConfiguration.setPosTagger(posTagger);
+
+      Set<String> enabledFeatureIdSet = null;
+      enabledFeatureIdSet = BatchRunner
+          .loadEnabledFeaturesFromFile(enabledFeaturesFile);
+      assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
+
+      JarafeMEDecoder assertionDecoder = null;
+      assertionDecoder = new JarafeMEDecoder(assertionModelFile);
+      assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
+
+      this.assertionDecoderConfiguration = assertionDecoderConfiguration;
   }
 
   @Override
@@ -81,40 +149,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       apiConceptList.add(apiConcept);
     }
 
-    // byte assertionModelContents[];
-    String scopeModelFilePath;
-    String cueModelFilePath;
-    String posModelFilePath;
-    File enabledFeaturesFile;
-
-    File assertionModelFile = null;
-    try
-    {
-      String assertionModelResourceKey = "assertionModelResource";
-      String assertionModelFilePath = getContext().getResourceFilePath(
-          assertionModelResourceKey);
-      assertionModelFile = new File(assertionModelFilePath);
-      // assertionModelContents = StringHandling
-      // .readEntireContentsBinary(assertionModelFile);
-      String scopeModelResourceKey = "scopeModelResource";
-      scopeModelFilePath = getContext().getResourceFilePath(
-          scopeModelResourceKey);
-      String cueModelResourceKey = "cueModelResource";
-      cueModelFilePath = getContext().getResourceFilePath(cueModelResourceKey);
-
-      String posModelResourceKey = "posModelResource";
-      posModelFilePath = getContext().getResourceFilePath(posModelResourceKey);
-
-      String enabledFeaturesResourceKey = "enabledFeaturesResource";
-      String enabledFeaturesFilePath = getContext().getResourceFilePath(
-          enabledFeaturesResourceKey);
-      enabledFeaturesFile = new File(enabledFeaturesFilePath);
-    } catch (ResourceAccessException e)
-    {
-      String message = String.format("problem accessing resource");
-      throw new RuntimeException(message, e);
-    }
-
     // String conceptFilePath =
     // currentTextFile.getAbsolutePath().replaceFirst("\\.txt$", ".con");
     // File conceptFile = new File(conceptFilePath);
@@ -133,26 +167,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     // LineTokenToCharacterOffsetConverter converter =
     // new LineTokenToCharacterOffsetConverter(contents);
 
-    AssertionDecoderConfiguration assertionDecoderConfiguration = new AssertionDecoderConfiguration();
-
-    logger.info(String.format("scope model file: %s", scopeModelFilePath));
-    logger.info(String.format("cue model file: %s", cueModelFilePath));
-    ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
-        cueModelFilePath);
-    assertionDecoderConfiguration.setScopeParser(scopeParser);
-
-    logger.info(String.format("pos model file: %s", posModelFilePath));
-    PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
-    assertionDecoderConfiguration.setPosTagger(posTagger);
-
-    Set<String> enabledFeatureIdSet = null;
-    enabledFeatureIdSet = BatchRunner
-        .loadEnabledFeaturesFromFile(enabledFeaturesFile);
-    assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
-
-    JarafeMEDecoder assertionDecoder = null;
-    assertionDecoder = new JarafeMEDecoder(assertionModelFile);
-    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
 
     // SingleDocumentProcessor p = new SingleDocumentProcessor();
     SingleDocumentProcessorCtakes p = new SingleDocumentProcessorCtakes();
