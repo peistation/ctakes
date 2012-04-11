@@ -100,12 +100,6 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
 
       //logger.info(String.format("got concept type: %s", conceptType));
 
-      // if (conceptType != null)
-      // {
-      // concept.setConceptType(conceptType.toString());
-      // concept.addToIndexes();
-      // }
-
       // now always generating a concept annotation whether or not the
       // conceptType is null (previously, we only generated a concept
       // annotation if the conceptType was not null)
@@ -117,120 +111,8 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
 
       //logger.info("finished adding new Concept annotation. " + concept);
 
-      // FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
-      //
-      // logger.info("        before iterating over concepts...");
-      // for (FeatureStructure currentConceptArrayItem : conceptArray.toArray())
-      // {
-      // logger.info("        begin single concept");
-      // UmlsConcept umlsConcept = (UmlsConcept)currentConceptArrayItem;
-      //
-      // String codingScheme = umlsConcept.getCodingScheme();
-      // String cui = umlsConcept.getCui();
-      // String tui = umlsConcept.getTui();
-      //
-      // Concept concept = new Concept(jcas, begin, end);
-      // concept.setConceptText(conceptText);
-      // concept.setConceptType(null);
-      //
-      // concept.addToIndexes();
-      // logger.info("        end single concept");
-      // }
-      // logger.info("        after iterating over concepts.");
-      //logger.info("    end single named entity");
     }
     //logger.info("    after iterating over named entities.");
-
-    // ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
-    // for (FeatureStructure featureStructure : conceptAnnotationIndex)
-    // {
-    // UmlsConcept umlsConceptAnnotation = (UmlsConcept)featureStructure;
-    //
-    // ApiConcept apiConcept = new ApiConcept();
-    // int umlsConceptId = umlsConceptAnnotation.getAddress();
-    //
-    // int begin = 0; //umlsConceptAnnotation.getBegin();
-    // int end = 0; //umlsConceptAnnotation.getEnd();
-    // String conceptText = contents.substring(begin, begin + end + 1);
-    //
-    // apiConcept.setBegin(begin);
-    // apiConcept.setEnd(end);
-    // apiConcept.setText(conceptText);
-    // apiConcept.setType(null);
-    // //apiConcept.setType(umlsConceptAnnotation.getConceptType());
-    //
-    // apiConceptList.add(apiConcept);
-    // }
-
-    /*
-     * String assertionModelContents; String scopeModelFilePath; String
-     * cueModelFilePath; File enabledFeaturesFile;
-     * 
-     * try { String assertionModelResourceKey = "assertionModelResource"; String
-     * assertionModelFilePath = getContext().getResourceFilePath(
-     * assertionModelResourceKey); File assertionModelFile = new
-     * File(assertionModelFilePath); assertionModelContents = StringHandling
-     * .readEntireContents(assertionModelFile); String scopeModelResourceKey =
-     * "scopeModelResource"; scopeModelFilePath =
-     * getContext().getResourceFilePath( scopeModelResourceKey); String
-     * cueModelResourceKey = "cueModelResource"; cueModelFilePath =
-     * getContext().getResourceFilePath( cueModelResourceKey); String
-     * enabledFeaturesResourceKey = "enabledFeaturesResource"; String
-     * enabledFeaturesFilePath = getContext().getResourceFilePath(
-     * enabledFeaturesResourceKey); enabledFeaturesFile = new
-     * File(enabledFeaturesFilePath); } catch (ResourceAccessException e) {
-     * String message = String.format("problem accessing resource"); throw new
-     * RuntimeException(message, e); }
-     * 
-     * // String conceptFilePath =
-     * currentTextFile.getAbsolutePath().replaceFirst("\\.txt$", ".con"); //
-     * File conceptFile = new File(conceptFilePath); //
-     * logger.info(String.format("    - using concept file \"%s\"...",
-     * conceptFile.getName())); // String conceptFileContents =
-     * StringHandling.readEntireContents(conceptFile); // //List<Concept>
-     * parseConceptFileContents(conceptFileContents); // //
-     * LineTokenToCharacterOffsetConverter converter = // new
-     * LineTokenToCharacterOffsetConverter(contents); // // List<ApiConcept>
-     * apiConceptList = parseConceptFile(conceptFile, contents, converter);
-     * 
-     * LineTokenToCharacterOffsetConverter converter = new
-     * LineTokenToCharacterOffsetConverter(contents);
-     * 
-     * AssertionDecoderConfiguration assertionDecoderConfiguration = new
-     * AssertionDecoderConfiguration();
-     * 
-     * ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
-     * cueModelFilePath);
-     * assertionDecoderConfiguration.setScopeParser(scopeParser);
-     * 
-     * Set<String> enabledFeatureIdSet = null; enabledFeatureIdSet =
-     * BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);
-     * assertionDecoderConfiguration
-     * .setEnabledFeatureIdSet(enabledFeatureIdSet);
-     * 
-     * JarafeMEDecoder assertionDecoder = null; assertionDecoder = new
-     * JarafeMEDecoder(assertionModelContents);
-     * assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
-     * 
-     * SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
-     * p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
-     * p.setContents(contents); for (ApiConcept apiConcept : apiConceptList) {
-     * logger.info(String.format("dir loader concept: %s",
-     * apiConcept.toString())); p.addConcept(apiConcept); }
-     * p.processSingleDocument(); Map<Integer, String> assertionTypeMap =
-     * p.getAssertionTypeMap();
-     * logger.info(String.format("    - done processing \"%s\"."));
-     * 
-     * for (Entry<Integer, String> current : assertionTypeMap.entrySet()) {
-     * String currentAssertionType = current.getValue(); Integer currentIndex =
-     * current.getKey(); ApiConcept originalConcept =
-     * apiConceptList.get(currentIndex);
-     * 
-     * Assertion assertion = new Assertion(jcas, originalConcept.getBegin(),
-     * originalConcept.getEnd());
-     * assertion.setAssertionType(currentAssertionType);
-     * assertion.addToIndexes(); }
-     */
 
     logger.info("end of ConceptConverterAnalysisEngine.process()");
   }
