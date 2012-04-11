@@ -125,15 +125,32 @@ public class RelationExtractorEvaluation {
     // define the grid of parameters over which we will search
     List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
     if (options.gridSearch) {
-      for (float probabilityOfKeepingANegativeExample : new float[] { 0.05f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 1.0f }) {
-      	for (double svmCost : new double[] { 0.001, 0.01, 0.05, 0.1, 1, 10, 100, 1000 }) {
-      		possibleParams.add(new ParameterSettings(
-      				probabilityOfKeepingANegativeExample,
-      				svmCost));
-      	}
+      for (boolean classifyBothDirections : new boolean[] { false, true }) {
+        for (float probabilityOfKeepingANegativeExample : new float[] { 0.1f, 0.15f, 0.2f, 0.25f, 0.5f }) {
+          for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
+            
+            // linear kernel (gamma doesn't matter)
+            possibleParams.add(new ParameterSettings(
+                classifyBothDirections,
+                probabilityOfKeepingANegativeExample,
+                "linear",
+                svmCost,
+                1.0));
+            
+//            // RBF kernel with different gamma values
+//            for (double svmGamma : new double[] { 1, 10, 100, 1000 }) {
+//              possibleParams.add(new ParameterSettings(
+//                  classifyBothDirections,
+//                  probabilityOfKeepingANegativeExample,
+//                  "radial basis function",
+//                  svmCost,
+//                  svmGamma));
+//            }
+          }
+        }
       }
     } else {
-      possibleParams.add(new ParameterSettings(0.15f, 0.05));
+      possibleParams.add(new ParameterSettings(true, 0.15f, "linear", 0.05, 1.0));
     }
 
     // run an evaluation for each set of parameters
@@ -147,7 +164,7 @@ public class RelationExtractorEvaluation {
           RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
           params.probabilityOfKeepingANegativeExample,
           RelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-          true,
+          params.classifyBothDirections,
           RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
           false);
 
@@ -169,9 +186,11 @@ public class RelationExtractorEvaluation {
           pipelineProvider,
           evaluationProvider,
           "-t",
-          "0",
+          String.valueOf(params.svmKernelIndex),
           "-c",
-          String.valueOf(params.svmCost));
+          String.valueOf(params.svmCost),
+          "-g",
+          String.valueOf(params.svmGamma));
 
       // collect the statistics from the evaluation
       FileInputStream stream = new FileInputStream(statisticsFile);
@@ -209,33 +228,63 @@ public class RelationExtractorEvaluation {
   }
 
   private static class ParameterSettings {
+    public boolean classifyBothDirections;
+    
     public float probabilityOfKeepingANegativeExample;
+    
+    public String svmKernel;
+    
+    public int svmKernelIndex;
 
     public double svmCost;
+    
+    public double svmGamma;
 
     public EvaluationStatistics<?> stats;
+    
+    private static List<String> SVM_KERNELS = Arrays.asList(
+        "linear",
+        "polynomial",
+        "radial basis function",
+        "sigmoid");
 
     public ParameterSettings(
+        boolean classifyBothDirections,
         float probabilityOfKeepingANegativeExample,
-        double svmCost) {
+        String svmKernel,
+        double svmCost,
+        double svmGamma) {
       super();
+      this.classifyBothDirections = classifyBothDirections;
       this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
+      this.svmKernel = svmKernel;
+      this.svmKernelIndex = SVM_KERNELS.indexOf(this.svmKernel);
+      if (this.svmKernelIndex == -1) {
+        throw new IllegalArgumentException("Unrecognized kernel: " + this.svmKernel);
+      }
       this.svmCost = svmCost;
+      this.svmGamma = svmGamma;
     }
 
     @Override
     public String toString() {
       ToStringHelper helper = Objects.toStringHelper(this);
+      helper.add("classifyBothDirections", this.classifyBothDirections);
       helper.add("probabilityOfKeepingANegativeExample", this.probabilityOfKeepingANegativeExample);
+      helper.add("svmKernel", this.svmKernel);
       helper.add("svmCost", this.svmCost);
+      helper.add("svmGamma", this.svmGamma);
       return helper.toString();
     }
 
     @Override
     public int hashCode() {
       return Objects.hashCode(
+          this.classifyBothDirections,
           this.probabilityOfKeepingANegativeExample,
-          this.svmCost);
+          this.svmKernel,
+          this.svmCost,
+          this.svmGamma);
     }
 
     @Override
@@ -244,8 +293,11 @@ public class RelationExtractorEvaluation {
         return false;
       }
       ParameterSettings that = (ParameterSettings) obj;
-      return this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
-          && this.svmCost == that.svmCost;
+      return this.classifyBothDirections == that.classifyBothDirections
+          && this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
+          && this.svmKernel == that.svmKernel
+          && this.svmCost == that.svmCost
+          && this.svmGamma == that.svmGamma;
     }
 
   }
