@@ -106,11 +106,12 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
    */
   private List<RelationFeaturesExtractor> featureExtractors = Arrays.<RelationFeaturesExtractor> asList(
       new TokenFeaturesExtractor(),
-      new PartOfSpeechFeaturesExtractor(),
-      new PhraseChunkingExtractor(),
-      new NamedEntityFeaturesExtractor(),
-      new DependencyTreeFeaturesExtractor(),
-      new DependencyPathFeaturesExtractor());
+      // new PartOfSpeechFeaturesExtractor(),
+      // new PhraseChunkingExtractor(),
+      new NamedEntityFeaturesExtractor()
+      // new DependencyTreeFeaturesExtractor(),
+      // new DependencyPathFeaturesExtractor()
+      );
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -292,17 +293,18 @@ public class RelationExtractorAnnotator extends CleartkAnnotator<String> {
   private void logResults(Sentence sentence, EntityMention arg1,
 		  EntityMention arg2, List<Feature> features, String predictedCategory,
 		  String goldCategory) {
-	  if (printErrors && !predictedCategory.equals(goldCategory) && goldCategory.equals("location_of")) {
-		  errorOutStream.format("%-15s%d\n", "instance id:", relationId++);
-		  errorOutStream.format("%-15s%d\n", "instance id:", relationId++);
-		  errorOutStream.format("%-15s%s\n", "prediction:", predictedCategory);
-		  errorOutStream.format("%-15s%s\n", "gold label:", goldCategory);
-		  errorOutStream.format("%-15s%s\n", "arg1:", arg1.getCoveredText());
-		  errorOutStream.format("%-15s%s\n", "arg2:", arg2.getCoveredText());
-		  errorOutStream.format("%-15s%s\n", "sentence:", sentence.getCoveredText());
-		  errorOutStream.format("\n%s\n\n", features);
-		  errorOutStream.println();
-	  }
+  	if(goldCategory.equals("location_of") || predictedCategory.equals("location_of")) { 
+  		if (printErrors && !predictedCategory.equals(goldCategory)) {
+  			errorOutStream.format("%-15s%d\n", "instance:", relationId++);
+  			errorOutStream.format("%-15s%s\n", "prediction:", predictedCategory);
+  			errorOutStream.format("%-15s%s\n", "gold label:", goldCategory);
+  			errorOutStream.format("%-15s%s\n", "arg1:", arg1.getCoveredText());
+  			errorOutStream.format("%-15s%s\n", "arg2:", arg2.getCoveredText());
+  			errorOutStream.format("%-15s%s\n", "sentence:", sentence.getCoveredText());
+  			errorOutStream.format("\n%s\n\n", features);
+  			errorOutStream.println();
+  		}
+  	}
   }
 
   /**
