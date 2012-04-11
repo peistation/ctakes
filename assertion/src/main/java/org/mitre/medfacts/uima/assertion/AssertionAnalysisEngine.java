@@ -39,6 +39,7 @@ import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
+import edu.mayo.bmi.attributes.generic.GenericAttributeClassifier;
 import edu.mayo.bmi.attributes.subject.SubjectAttributeClassifier;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
@@ -316,11 +317,21 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         throw new AnalysisEngineProcessException(runtimeException);
       }
       
-//      // Overwrite mastif's subject attribute with Mayo subject attribute
-//      String subject = SubjectAttributeClassifier.getSubject(jcas,annotation);
-//      String oldsubj = annotation.getSubject();
-//      annotation.setSubject(subject);
-//      System.out.println("overwrote mastif's subject="+oldsubj+" for "+annotation.getCoveredText()+" with "+subject);
+//      // Overwrite mastif's generic attribute with Mayo's generic attribute
+//      Boolean generic = GenericAttributeClassifier.getGeneric(jcas,entityMention);
+//      Boolean oldgeneric = entityMention.getGeneric();
+//      entityMention.setGeneric(generic);
+//      System.out.println("overwrote mastif's generic="+oldgeneric+" for "+entityMention.getCoveredText()+" with "+generic);
+//
+//      // Overwrite mastif's subject attribute with Mayo subject attribute. 
+//      // SHARP annotation guidelines have subject=NULL whenever generic=true
+//      String subject = null; 
+//      String oldsubj = entityMention.getSubject();
+//      if (entityMention.getGeneric()==false) {
+//          subject = SubjectAttributeClassifier.getSubject(jcas,entityMention);
+//      }
+//	    entityMention.setSubject(subject);
+//      System.out.println("overwrote mastif's subject="+oldsubj+" for "+entityMention.getCoveredText()+" with "+subject);
 
 //      entityMention.addToIndexes();
 //      logger.info(String.format("added back entityMention (%s) to indexes",

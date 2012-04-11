@@ -18,7 +18,7 @@ import edu.mayo.bmi.nlp.parser.util.DependencyUtility;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.SemanticArgument;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
@@ -65,7 +65,7 @@ public class SubjectAttributeClassifier {
     }
 
 	// currently goes from entityMention to Sentence to SemanticArgument
-	public static String getSubject(JCas jCas, IdentifiedAnnotation identifiedAnnotation) {
+	public static String getSubject(JCas jCas, IdentifiedAnnotation mention) {
 		
 		HashMap<String,Boolean> vfeat = new HashMap<String,Boolean>();
 		for (String feat : FeatureIndex) {
@@ -76,13 +76,13 @@ public class SubjectAttributeClassifier {
 		Sentence sEntity = null;
 		Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
 		for (Sentence s : sentences) {
-			if ( s.getBegin()<=identifiedAnnotation.getBegin() && s.getEnd()>=identifiedAnnotation.getEnd()) {
+			if ( s.getBegin()<=mention.getBegin() && s.getEnd()>=mention.getEnd()) {
 				sEntity = s;
 				break;
 			}
 		}
-		if (sEntity==null)
-			return null;
+//		if (sEntity==null)
+//			return null;
 		
 		// look for mentions of "donor" in the tokens
 		List<BaseToken> toks = JCasUtil.selectCovered(jCas, BaseToken.class, sEntity);
@@ -119,9 +119,9 @@ public class SubjectAttributeClassifier {
 		}
 		
 		// search dependency paths for stuff
-		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, identifiedAnnotation);
+		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, mention);
 		if (!depnodes.isEmpty()) {
-			ConllDependencyNode depnode = depnodes.get(0);
+			ConllDependencyNode depnode = DependencyUtility.getNominalHeadNode(depnodes);
 //			for (ConllDependencyNode dn : DependencyUtility.getPathToTop(jCas, depnode)) {
 //				if ( isDonorTerm(dn) ) {
 //					vfeat.put(DONOR_DEPPATH, true);
@@ -138,12 +138,12 @@ public class SubjectAttributeClassifier {
 //			}
 		}
 		
-		// 
+		// Logic to identify cases, may be replaced by learned classification
 		Boolean donor_summary = new Boolean(vfeat.get(DONOR_TOKEN) || vfeat.get(DONOR_DEPPATH) || 
 				vfeat.get(DONOR_DEPSRL) || vfeat.get(DONOR_SRLARG));
-		Boolean family_summary = new Boolean(vfeat.get(FAMILY_TOKEN) || vfeat.get(FAMILY_DEPPATH) || 
+		Boolean family_summary = new Boolean(                         vfeat.get(FAMILY_DEPPATH) || 
 				vfeat.get(FAMILY_DEPSRL) || vfeat.get(FAMILY_SRLARG));
-		Boolean other_summary = new Boolean(vfeat.get(OTHER_TOKEN) || vfeat.get(OTHER_DEPPATH) || 
+		Boolean other_summary = new Boolean(                          vfeat.get(OTHER_DEPPATH) || 
 				vfeat.get(OTHER_DEPSRL) || vfeat.get(OTHER_SRLARG));
 		vfeat.put(DONOR_OR, donor_summary);
 		vfeat.put(FAMILY_OR, family_summary);
