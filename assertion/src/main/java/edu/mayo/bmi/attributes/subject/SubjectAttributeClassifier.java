@@ -19,6 +19,7 @@ import edu.mayo.bmi.uima.core.type.constants.CONST;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.SemanticArgument;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
@@ -64,7 +65,7 @@ public class SubjectAttributeClassifier {
     }
 
 	// currently goes from entityMention to Sentence to SemanticArgument
-	public static String getSubject(JCas jCas, EntityMention entityMention) {
+	public static String getSubject(JCas jCas, IdentifiedAnnotation identifiedAnnotation) {
 		
 		HashMap<String,Boolean> vfeat = new HashMap<String,Boolean>();
 		for (String feat : FeatureIndex) {
@@ -75,7 +76,7 @@ public class SubjectAttributeClassifier {
 		Sentence sEntity = null;
 		Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
 		for (Sentence s : sentences) {
-			if ( s.getBegin()<=entityMention.getBegin() && s.getEnd()>=entityMention.getEnd()) {
+			if ( s.getBegin()<=identifiedAnnotation.getBegin() && s.getEnd()>=identifiedAnnotation.getEnd()) {
 				sEntity = s;
 				break;
 			}
@@ -118,7 +119,7 @@ public class SubjectAttributeClassifier {
 		}
 		
 		// search dependency paths for stuff
-		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, entityMention);
+		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, identifiedAnnotation);
 		if (!depnodes.isEmpty()) {
 			ConllDependencyNode depnode = depnodes.get(0);
 			for (ConllDependencyNode dn : DependencyUtility.getPathToTop(jCas, depnode)) {

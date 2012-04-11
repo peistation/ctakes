@@ -41,7 +41,7 @@ import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
 import edu.mayo.bmi.attributes.subject.SubjectAttributeClassifier;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 {
@@ -212,7 +212,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       Concept associatedConcept = (Concept) indexer
           .lookupByAddress(originalConcept.getExternalId());
       int entityAddress = associatedConcept.getOriginalEntityExternalId();
-      EntityMention entityMention = (EntityMention) indexer
+      IdentifiedAnnotation annotation = (IdentifiedAnnotation) indexer
           .lookupByAddress(entityAddress);
 
       // possible values for currentAssertionType:
@@ -235,76 +235,76 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         // throw new AnalysisEngineProcessException(runtimeException);
       
         // ALL OBVIOUS ERROR VALUES!!
-        entityMention.setSubject("skipped");
-        entityMention.setPolarity(-2);
-        entityMention.setConfidence(-2.0f);
-        entityMention.setUncertainty(-2);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject("skipped");
+        annotation.setPolarity(-2);
+        annotation.setConfidence(-2.0f);
+        annotation.setUncertainty(-2);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("present"))
       // PRESENT (mastif value)
       {
         //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
-        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
         //debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
-        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
-        entityMention.setPolarity(-1); // NOT DEFAULT VALUE
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(-1); // NOT DEFAULT VALUE
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("associated_with_someone_else"))
       // ASSOCIATED WITH SOMEONE ELSE (mastif value)
       {
-        entityMention.setSubject("CONST.NE_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject("CONST.NE_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("conditional"))
       // CONDITIONAL (mastif value)
       {
         // currently no mapping to sharp type...all sharp properties are defaults!
-        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("hypothetical"))
       // HYPOTHETICAL (mastif value)
       {
-        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(true); // NOT DEFAULT VALUE
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(true); // NOT DEFAULT VALUE
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("possible"))
       // POSSIBLE (mastif value)
       {
-        entityMention.setSubject(CONST.NE_SUBJECT_PATIENT);
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(1); // NOT DEFAULT VALUE
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(1); // NOT DEFAULT VALUE
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
       } else
       {
         String message = String.format(
@@ -317,10 +317,10 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       }
       
       // Overwrite mastif's subject attribute with Mayo subject attribute
-      String subject = SubjectAttributeClassifier.getSubject(jcas,entityMention);
-      String oldsubj = entityMention.getSubject();
-      entityMention.setSubject(subject);
-      System.out.println("overwrote mastif's subject="+oldsubj+" for "+entityMention.getCoveredText()+" with "+subject);
+      String subject = SubjectAttributeClassifier.getSubject(jcas,annotation);
+      String oldsubj = annotation.getSubject();
+      annotation.setSubject(subject);
+      System.out.println("overwrote mastif's subject="+oldsubj+" for "+annotation.getCoveredText()+" with "+subject);
 
 //      entityMention.addToIndexes();
 //      logger.info(String.format("added back entityMention (%s) to indexes",
@@ -341,15 +341,15 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     logger.info("(logging statement) AssertionAnalysisEngine.process() END");
   }
 
-  public void debugAnnotationsInCas(JCas jcas, EntityMention entityMention,
+  public void debugAnnotationsInCas(JCas jcas, IdentifiedAnnotation annotation,
       String label)
   {
-    CasIndexer<EntityMention> i = new CasIndexer<EntityMention>(jcas, entityMention.getType());
+    CasIndexer<IdentifiedAnnotation> i = new CasIndexer<IdentifiedAnnotation>(jcas, annotation.getType());
     
     StringBuilder b = new StringBuilder();
-    b.append(String.format("<<<<<%n### TARGET ###%nclass: %s%naddress: %d%nvalue: %s%n### END TARGET ###%n>>>>>%n%n", entityMention.getClass().getName(), entityMention.getAddress(), entityMention.toString()));
+    b.append(String.format("<<<<<%n### TARGET ###%nclass: %s%naddress: %d%nvalue: %s%n### END TARGET ###%n>>>>>%n%n", annotation.getClass().getName(), annotation.getAddress(), annotation.toString()));
     
-    String debugOutput = i.convertToDebugOutput(label, entityMention);
+    String debugOutput = i.convertToDebugOutput(label, annotation);
     
     b.append(debugOutput);
     

@@ -37,6 +37,8 @@ import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.EventMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
 {
@@ -53,35 +55,36 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
     logger.info("beginning of ConceptConverterAnalysisEngine.process()");
     String contents = jcas.getDocumentText();
 
-    int umlsConceptType = UmlsConcept.type;
-    // AnnotationIndex<Annotation> conceptAnnotationIndex =
-    // jcas.getAnnotationIndex(umlsConceptType);
+    processForEntityType(jcas, EntityMention.type, EntityMention.class);
 
-    Map<Integer, UmlsConcept> idToConceptMap = new HashMap<Integer, UmlsConcept>();
-    Map<Integer, Set<Integer>> idToConceptMapForEntity = new HashMap<Integer, Set<Integer>>();
-    Map<Integer, Set<EntityMention>> idToNamedEntityMap = new HashMap<Integer, Set<EntityMention>>();
+    processForEntityType(jcas, EventMention.type, EventMention.class);
 
-    int entityMentionType = EntityMention.type;
-    AnnotationIndex<Annotation> entityMentionAnnotationIndex = jcas
-        .getAnnotationIndex(entityMentionType);
+    logger.info("end of ConceptConverterAnalysisEngine.process()");
+  }
+
+  public void processForEntityType(JCas jcas, int annotationType, Class<? extends IdentifiedAnnotation> annotationClass)
+  {
+    AnnotationIndex<Annotation> annotationIndex = jcas
+        .getAnnotationIndex(annotationType);
 
     int totalAnnotationCount = jcas.getAnnotationIndex().size();
-    int entityMentionAnnotationCount = entityMentionAnnotationIndex.size();
+    int typeSpecificAnnotationCount = annotationIndex.size();
 
     logger.info(String.format("    total annotation count %d",
         totalAnnotationCount));
-    logger.info(String.format("    named entity annotation count %d",
-        entityMentionAnnotationCount));
+    logger.info(String.format("    %s annotation count %d",
+        annotationClass.getName(),
+        typeSpecificAnnotationCount));
 
     //logger.info("    before iterating over named entities...");
-    for (FeatureStructure featureStructure : entityMentionAnnotationIndex)
+    for (FeatureStructure featureStructure : annotationIndex)
     {
       //logger.info("    begin single named entity");
-      EntityMention entityMentionAnnotation = (EntityMention) featureStructure;
+      IdentifiedAnnotation annotation = (IdentifiedAnnotation) featureStructure;
 
-      int begin = entityMentionAnnotation.getBegin();
-      int end = entityMentionAnnotation.getEnd();
-      String conceptText = entityMentionAnnotation.getCoveredText();
+      int begin = annotation.getBegin();
+      int end = annotation.getEnd();
+      String conceptText = annotation.getCoveredText();
 
       //logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText,
       //    begin, end));
@@ -90,9 +93,9 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
       concept.setConceptText(conceptText);
       concept.setConceptType(null);
 
-      concept.setOriginalEntityExternalId(entityMentionAnnotation.getAddress());
+      concept.setOriginalEntityExternalId(annotation.getAddress());
 
-      FSArray ontologyConceptArray = entityMentionAnnotation
+      FSArray ontologyConceptArray = annotation
           .getOntologyConceptArr();
 
       ConceptType conceptType = ConceptLookup
@@ -113,8 +116,6 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
 
     }
     //logger.info("    after iterating over named entities.");
-
-    logger.info("end of ConceptConverterAnalysisEngine.process()");
   }
 
 }
