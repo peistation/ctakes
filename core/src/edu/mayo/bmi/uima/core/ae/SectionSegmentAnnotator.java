@@ -95,67 +95,19 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException("text is null for docId="
 					+ docId, null);
 		}
-
-		sections = sectionIdentifier( text);
-
-		if (sections == null){
-			Segment segment = new Segment(jCas);
-			segment.setBegin(0);
-
-			segment.setEnd(text.length());
-			segment.setId(segmentId);
-			segment.addToIndexes();
-		}else
-			for(Integer key : sections.keySet()){
-				DocumentSection section = sections.get(key);
-				Segment segment = new Segment(jCas);
-				segment.setBegin(section.getStartLine());
-
-				segment.setEnd(section.getEndLine());
-				segment.setId(section.getSectionName());
-				segment.addToIndexes();
-			}
-	}
-
-	/**
-	 * Identify the sections of a document
-	 * @author andreea bodnari
-	 * @param tmpFilePath
-	 * @return the identified sections
-	 */
-	private HashMap<Integer, DocumentSection> sectionIdentifier(String text) {
-
-		HashMap<Integer, DocumentSection> cSections = 
-				new HashMap<Integer, DocumentSection>();
+		
+		ArrayList<Integer> line2char = new ArrayList<Integer>();
+		String[] lines = text.split("\n");
+		int charNum = 0;
+		for(String line : lines){
+			line2char.add(charNum);
+			charNum += line.length()+1;
+		}
 
 		try {
 			templateContent = new FileInputStream(templateFile);
 			ArrayList<Section> foundSections = 
-					structureFinder.execute(text, templateContent);
-
-			cSections = this.identifySections(foundSections);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error finding sections: " + e.getMessage());
-		}	
-
-		return cSections;
-	}
-
-	/**
-	 * @author andreea bodnari
-	 * @param foundSections
-	 */
-	private HashMap<Integer, DocumentSection> identifySections(
-			ArrayList<Section> foundSections){
-
-		HashMap<Integer, DocumentSection> sections = 
-				new HashMap<Integer, DocumentSection>();
-
-		try{
-
-			int startLine = 0;
+				structureFinder.execute(text, templateContent);
 
 			for (Section sct : foundSections) {
 				String nodeName = sct.getHeader();
@@ -165,22 +117,129 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 						content == null || content.trim().isEmpty())
 					continue;
 
-				String[] splitContent = content.split("\n");
-				int endLine = startLine + splitContent.length;
+				//			String[] splitContent = content.split("\n");
+				//			int endLine = startLine + splitContent.length;
 
-				DocumentSection section = 
-						new DocumentSection(startLine, endLine, content);
-				section.setSectionName(nodeName);
-				sections.put(startLine, section);
+				int index = text.indexOf(content);
 
-				startLine = endLine ;
-			}
+				Segment segment = new Segment(jCas);
+				segment.setBegin(index);
+				segment.setEnd(index+content.length());
+				segment.setId(sct.getHeader());
+				segment.addToIndexes();
 
-		}catch(Exception e){
+				//			DocumentSection section = 
+				//					new DocumentSection(startLine, endLine, content);
+				//			section.setSectionName(nodeName);
+				//			sections.put(startLine, section);
+				//
+				//			startLine = endLine ;
+			}		
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			logger.error("Error parsing tmp file: " + e.getMessage());
+			Segment seg = new Segment(jCas);
+			seg.setBegin(0);
+			seg.setEnd(text.length());
+			seg.setId(segmentId);
+			seg.addToIndexes();
 		}
 
-		return sections;
+//		sections = sectionIdentifier( text);
+//
+//		if (sections == null){
+//			Segment segment = new Segment(jCas);
+//			segment.setBegin(0);
+//
+//			segment.setEnd(text.length());
+//			segment.setId(segmentId);
+//			segment.addToIndexes();
+//		}else
+//			for(Integer key : sections.keySet()){
+//				DocumentSection section = sections.get(key);
+//				Segment segment = new Segment(jCas);
+//				segment.setBegin(line2char.get(section.getStartLine()));
+//
+//				segment.setEnd(line2char.get(section.getEndLine()));
+//				segment.setId(section.getSectionName());
+//				segment.addToIndexes();
+//			}
 	}
+
+	/**
+	 * Identify the sections of a document
+	 * @author andreea bodnari
+	 * @param tmpFilePath
+	 * @return the identified sections
+	 */
+//	private HashMap<Integer, DocumentSection> sectionIdentifier(String text) {
+//
+//		HashMap<Integer, DocumentSection> cSections = 
+//				new HashMap<Integer, DocumentSection>();
+//
+//		try {
+//			templateContent = new FileInputStream(templateFile);
+//			ArrayList<Section> foundSections = 
+//					structureFinder.execute(text, templateContent);
+//
+////			this.addSections(foundSections);
+//			for(Section sct : foundSections){
+//				String nodeName = sct.getHeader();
+//				String content  = sct.getContent();
+//
+//				if(nodeName== null || nodeName.trim().isEmpty() || 
+//						content == null || content.trim().isEmpty())
+//					continue;
+//
+//				int index = text.indexOf(content);
+//				
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error("Error finding sections: " + e.getMessage());
+//		}	
+//
+//		return cSections;
+//	}
+
+	/**
+	 * @author andreea bodnari
+	 * @param foundSections
+	 */
+//	private void addSections(ArrayList<Section> foundSections){
+//
+//		HashMap<Integer, DocumentSection> sections = 
+//				new HashMap<Integer, DocumentSection>();
+//
+//		try{
+//
+//			int startLine = 0;
+//
+//			for (Section sct : foundSections) {
+//				String nodeName = sct.getHeader();
+//				String content  = sct.getContent();
+//
+//				if(nodeName== null || nodeName.trim().isEmpty() || 
+//						content == null || content.trim().isEmpty())
+//					continue;
+//
+////				String[] splitContent = content.split("\n");
+////				int endLine = startLine + splitContent.length;
+//				
+//				int index = 
+//				DocumentSection section = 
+//						new DocumentSection(startLine, endLine, content);
+//				section.setSectionName(nodeName);
+//				sections.put(startLine, section);
+//
+//				startLine = endLine ;
+//			}
+//
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			logger.error("Error parsing tmp file: " + e.getMessage());
+//		}
+//
+//		return sections;
+//	}
 }
