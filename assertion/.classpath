@@ -18,5 +18,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
 	<classpathentry kind="lib" path="/relation-extractor/lib/uimafit-1.2.0.jar" sourcepath="/relation-extractor/lib/uimafit-1.0.0-javadoc.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/clearparser-wrapper"/>
+	<classpathentry kind="lib" path="/core/lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
