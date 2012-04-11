@@ -122,20 +122,20 @@ public class SubjectAttributeClassifier {
 		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, identifiedAnnotation);
 		if (!depnodes.isEmpty()) {
 			ConllDependencyNode depnode = depnodes.get(0);
-			for (ConllDependencyNode dn : DependencyUtility.getPathToTop(jCas, depnode)) {
-				if ( isDonorTerm(dn) ) {
-					vfeat.put(DONOR_DEPPATH, true);
-				}
-				if ( isFamilyTerm(dn) ) {
-					vfeat.put(FAMILY_DEPPATH, true);
-				}
-				if ( isOtherTerm(dn) ) {
-					vfeat.put(OTHER_DEPPATH, true);
-				}
-				
-				// check if there is SRL stuff on the dependency path
-				
-			}
+//			for (ConllDependencyNode dn : DependencyUtility.getPathToTop(jCas, depnode)) {
+//				if ( isDonorTerm(dn) ) {
+//					vfeat.put(DONOR_DEPPATH, true);
+//				}
+//				if ( isFamilyTerm(dn) ) {
+//					vfeat.put(FAMILY_DEPPATH, true);
+//				}
+//				if ( isOtherTerm(dn) ) {
+//					vfeat.put(OTHER_DEPPATH, true);
+//				}
+//				
+//				// check if there is SRL stuff on the dependency path
+//				
+//			}
 		}
 		
 		// 

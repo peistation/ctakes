@@ -316,11 +316,11 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         throw new AnalysisEngineProcessException(runtimeException);
       }
       
-      // Overwrite mastif's subject attribute with Mayo subject attribute
-      String subject = SubjectAttributeClassifier.getSubject(jcas,annotation);
-      String oldsubj = annotation.getSubject();
-      annotation.setSubject(subject);
-      System.out.println("overwrote mastif's subject="+oldsubj+" for "+annotation.getCoveredText()+" with "+subject);
+//      // Overwrite mastif's subject attribute with Mayo subject attribute
+//      String subject = SubjectAttributeClassifier.getSubject(jcas,annotation);
+//      String oldsubj = annotation.getSubject();
+//      annotation.setSubject(subject);
+//      System.out.println("overwrote mastif's subject="+oldsubj+" for "+annotation.getCoveredText()+" with "+subject);
 
 //      entityMention.addToIndexes();
 //      logger.info(String.format("added back entityMention (%s) to indexes",
