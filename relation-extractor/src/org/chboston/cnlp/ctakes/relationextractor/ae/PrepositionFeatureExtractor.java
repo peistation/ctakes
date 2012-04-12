@@ -13,6 +13,11 @@ import org.uimafit.util.JCasUtil;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
+/**
+ * Features that indicate whether there is a preposition between the two arguments. 
+ * Uses a predifined list of prepositions rather than POS tags.
+ * 
+ */
 public class PrepositionFeatureExtractor implements RelationFeaturesExtractor {
 
   @Override
