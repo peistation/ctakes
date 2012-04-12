@@ -11,6 +11,9 @@ import org.uimafit.util.JCasUtil;
 import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
+/**
+ * Features that capture punctuation marks between the two arguments.
+ */
 public class PunctuationFeatureExtractor implements RelationFeaturesExtractor {
 
   @Override
