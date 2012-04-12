@@ -42,7 +42,6 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
-import org.chboston.cnlp.ctakes.coref.UncoreferentRelation;
 
 import edu.mayo.bmi.coref.util.AbstractClassifier;
 import edu.mayo.bmi.coref.util.CorefConsts;
@@ -200,7 +199,7 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 					
 				}
 			}else{
-				indexNegativeExample(jcas, bestAnte.m, anaphor, bestAnte.prob);
+//				indexNegativeExample(jcas, bestAnte.m, anaphor, bestAnte.prob);
 			}
 		}
 
@@ -254,13 +253,13 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			double prob = 0.0;
 			prob = mod_coref.predict(nodes);
 			if(prob > bestProb){
-				if(debug) indexNegativeExample(jcas, ante, anaphor, bestProb); // save former best as non-ante...
+//				if(debug) indexNegativeExample(jcas, ante, anaphor, bestProb); // save former best as non-ante...
 				bestProb = prob;
 				ante = antecedent;
 			}else{
-				if(debug){
-					indexNegativeExample(jcas, antecedent, anaphor, prob);
-				}
+//				if(debug){
+//					indexNegativeExample(jcas, antecedent, anaphor, prob);
+//				}
 			}
 			if(bestProb > 0.5) break;
 		}
@@ -275,11 +274,11 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			double prob = 0.0;
 			prob = mod_coref.predict(nodes);
 			if(prob > bestProb){
-				if(debug) indexNegativeExample(jcas, ante, anaphor, bestProb);
+//				if(debug) indexNegativeExample(jcas, ante, anaphor, bestProb);
 				bestProb = prob;
 				ante = antecedent;
 			}else{
-				if(debug) indexNegativeExample(jcas, antecedent, anaphor, prob);
+//				if(debug) indexNegativeExample(jcas, antecedent, anaphor, prob);
 			}
 		}
 		return new MarkableProb(ante, bestProb);
@@ -313,22 +312,22 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 	
 
 
-	private void indexNegativeExample(JCas jcas, Markable ante, Markable ana,
-			double d) {
-		if(ante == null) return;
-		// README - If needed for debugging needs to be reimplemented now that type system has changed...
-		UncoreferentRelation rel = new UncoreferentRelation(jcas);
-		RelationArgument arg1 = new RelationArgument(jcas);
-		arg1.setArgument(ante);
-		arg1.setRole("nonantecedent");
-		RelationArgument arg2 = new RelationArgument(jcas);
-		arg2.setArgument(ana);
-		arg2.setRole("nonanaphor");
-		rel.setArg1(arg1);
-		rel.setArg2(arg2);
-		rel.setConfidence(d);
-		rel.addToIndexes();
-	}
+//	private void indexNegativeExample(JCas jcas, Markable ante, Markable ana,
+//			double d) {
+//		if(ante == null) return;
+//		// README - If needed for debugging needs to be reimplemented now that type system has changed...
+//		UncoreferentRelation rel = new UncoreferentRelation(jcas);
+//		RelationArgument arg1 = new RelationArgument(jcas);
+//		arg1.setArgument(ante);
+//		arg1.setRole("nonantecedent");
+//		RelationArgument arg2 = new RelationArgument(jcas);
+//		arg2.setArgument(ana);
+//		arg2.setRole("nonanaphor");
+//		rel.setArg1(arg1);
+//		rel.setArg2(arg2);
+//		rel.setConfidence(d);
+//		rel.addToIndexes();
+//	}
 }
 
 class MarkableProb{
