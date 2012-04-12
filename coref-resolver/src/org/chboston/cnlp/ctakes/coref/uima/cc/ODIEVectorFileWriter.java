@@ -108,7 +108,7 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 	private boolean printVectors;
 	private boolean printTrees;
 	private boolean anaphora;
-	private boolean useFrags = false; 							// make a parameter once development is done...
+	private boolean useFrags = true; 							// make a parameter once development is done...
 
 	@Override
 	public void initialize() throws ResourceInitializationException{

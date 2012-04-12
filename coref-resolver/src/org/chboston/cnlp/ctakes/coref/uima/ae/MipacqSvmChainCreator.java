@@ -18,11 +18,13 @@ package org.chboston.cnlp.ctakes.coref.uima.ae;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -40,6 +42,7 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS;
+import org.chboston.cnlp.ctakes.coref.UncoreferentRelation;
 
 import edu.mayo.bmi.coref.util.AbstractClassifier;
 import edu.mayo.bmi.coref.util.CorefConsts;
@@ -53,6 +56,7 @@ import edu.mayo.bmi.uima.core.type.relation.CollectionTextRelation;
 import edu.mayo.bmi.uima.core.type.relation.CoreferenceRelation;
 import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.MarkablePairSet;
@@ -65,7 +69,7 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 	private Logger logger = Logger.getLogger(getClass().getName());
 
 	// debug
-	private boolean debug = true;
+	private boolean debug = false;
 
 	// svm models
 	private AbstractClassifier mod_pron, mod_dem, mod_coref;
@@ -77,6 +81,7 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 	ParentPtrTree ppt;
 
 	HashSet<String> stopwords;
+	private ArrayList<String> treeFrags;
 
 	private svm_model loadModel (UimaContext uc, String m) {
 		svm_model ret = null;
@@ -112,10 +117,10 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		try {
 			stopwords = new HashSet<String>();
 			FileResource r = (FileResource) uc.getResourceObject("stopWords");
-			BufferedReader br = new BufferedReader(new FileReader(r.getFile()));
+			Scanner scanner = new Scanner(r.getFile());
 			String l;
-			while ((l = br.readLine())!=null) {
-				l = l.trim();
+			while (scanner.hasNextLine()) {
+				l = scanner.nextLine().trim();
 				if (l.length()==0) continue;
 				int i = l.indexOf('|');
 				if (i > 0)
@@ -124,6 +129,17 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 					stopwords.add(l.trim());
 			}
 			vecCreator = new edu.mayo.bmi.coref.util.SvmVectorCreator(stopwords, mod_anaphoricity);
+
+			treeFrags = new ArrayList<String>();
+			r = (FileResource) uc.getResourceObject("frags");
+			if(r != null){
+				scanner = new Scanner(r.getFile());
+				while(scanner.hasNextLine()){
+					String line = scanner.nextLine();
+					treeFrags.add(line.split(" ")[1]);
+				}
+				vecCreator.setFrags(treeFrags);
+			}
 			logger.info("Stop words list loaded: " + r.getFile().getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -140,15 +156,13 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		// Create a parent pointer tree to calculate equivalence classes
 		ppt = new ParentPtrTree(lm.size());
 
-		boolean first_dem = true;
-
 		// Make a data structure mapping markables to indexes so we don't lose the order if we re-arrange
 		Map<Markable, Integer> m2q = new HashMap<Markable,Integer>();
 		for(int p = 0; p < lm.size(); p++){
 			m2q.put((Markable)lm.get(p), p);
 		}
 		
-		FSIterator iter = jcas.getAnnotationIndex(MarkablePairSet.type).iterator();
+		FSIterator<Annotation> iter = jcas.getAnnotationIndex(MarkablePairSet.type).iterator();
 		while(iter.hasNext()){
 			MarkablePairSet set = (MarkablePairSet) iter.next();
 			Markable anaphor = set.getAnaphor();
@@ -179,7 +193,12 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 				ra1.addToIndexes();
 				ra2.addToIndexes();
 				cr.addToIndexes();
-				ppt.union(m2q.get(anaphor), m2q.get(bestAnte.m));				
+				ppt.union(m2q.get(anaphor), m2q.get(bestAnte.m));
+				if(anaphor instanceof PronounMarkable){
+					// if the anaphor is a pronoun then it won't be in the cas as an identifiedannotation so we need to add it.
+					IdentifiedAnnotation ia = new IdentifiedAnnotation(jcas);
+					
+				}
 			}else{
 				indexNegativeExample(jcas, bestAnte.m, anaphor, bestAnte.prob);
 			}
@@ -231,7 +250,6 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 		List<Markable> resortedList = anteList;
 		for(Markable antecedent : resortedList){
 			svm_node[] nodes = vecCreator.getNodeFeatures(anaphor, antecedent, jcas);
-			TreebankNode path = null;
 			
 			double prob = 0.0;
 			prob = mod_coref.predict(nodes);
@@ -299,6 +317,17 @@ public class MipacqSvmChainCreator extends JCasAnnotator_ImplBase {
 			double d) {
 		if(ante == null) return;
 		// README - If needed for debugging needs to be reimplemented now that type system has changed...
+		UncoreferentRelation rel = new UncoreferentRelation(jcas);
+		RelationArgument arg1 = new RelationArgument(jcas);
+		arg1.setArgument(ante);
+		arg1.setRole("nonantecedent");
+		RelationArgument arg2 = new RelationArgument(jcas);
+		arg2.setArgument(ana);
+		arg2.setRole("nonanaphor");
+		rel.setArg1(arg1);
+		rel.setArg2(arg2);
+		rel.setConfidence(d);
+		rel.addToIndexes();
 	}
 }
 
