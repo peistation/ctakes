@@ -36,6 +36,10 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Text;
+import org.jdom.input.SAXBuilder;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
@@ -43,6 +47,7 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.DocumentSection;
 import findstruct.Section;
 import findstruct.StructFinder;
+import findstruct.StructModel;
 
 /**
  * Creates a single segment annotation that spans the entire document. This is
@@ -53,23 +58,19 @@ import findstruct.StructFinder;
  */
 public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	private String segmentId;
-	private final String templateName = "parserTemplate";
 	private StructFinder structureFinder;
-	private InputStream templateContent;
 
-	private File templateFile= null;
-	private String templatePath;
+	private String templateFile= null;
 	Logger logger = Logger.getLogger(this.getClass());
 
 	public HashMap<Integer, DocumentSection> sections;
 
-	public void initialize(UimaContext aContext)
-			throws ResourceInitializationException {
+	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-		structureFinder = new StructFinder();
 
 		try {
-			templateFile = ((FileResource)aContext.getResourceObject("template")).getFile();
+			templateFile = ((FileResource)aContext.getResourceObject("template")).getFile().getAbsolutePath();
+			structureFinder = new StructFinder();
 		}catch(Exception e ){
 			logger.error("Error reading template file: " + e.getMessage());
 		}
@@ -95,20 +96,13 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException("text is null for docId="
 					+ docId, null);
 		}
-		
-		ArrayList<Integer> line2char = new ArrayList<Integer>();
-		String[] lines = text.split("\n");
-		int charNum = 0;
-		for(String line : lines){
-			line2char.add(charNum);
-			charNum += line.length()+1;
-		}
 
-		try {
-			templateContent = new FileInputStream(templateFile);
-			ArrayList<Section> foundSections = 
-				structureFinder.execute(text, templateContent);
+		// use the API to get the list of sections.
+		try{
+			ArrayList<Section> foundSections = structureFinder.execute(text, new FileInputStream(templateFile));
 
+			// iterate over the ordered sections...
+			int index = 0;
 			for (Section sct : foundSections) {
 				String nodeName = sct.getHeader();
 				String content  = sct.getContent();
@@ -120,23 +114,21 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 				//			String[] splitContent = content.split("\n");
 				//			int endLine = startLine + splitContent.length;
 
-				int index = text.indexOf(content);
+				index = text.indexOf(content, index);
 
 				Segment segment = new Segment(jCas);
 				segment.setBegin(index);
 				segment.setEnd(index+content.length());
 				segment.setId(sct.getHeader());
 				segment.addToIndexes();
-
 				//			DocumentSection section = 
 				//					new DocumentSection(startLine, endLine, content);
 				//			section.setSectionName(nodeName);
 				//			sections.put(startLine, section);
 				//
 				//			startLine = endLine ;
-			}		
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			}
+		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			Segment seg = new Segment(jCas);
 			seg.setBegin(0);
@@ -144,102 +136,60 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 			seg.setId(segmentId);
 			seg.addToIndexes();
 		}
-
-//		sections = sectionIdentifier( text);
-//
-//		if (sections == null){
-//			Segment segment = new Segment(jCas);
-//			segment.setBegin(0);
-//
-//			segment.setEnd(text.length());
-//			segment.setId(segmentId);
-//			segment.addToIndexes();
-//		}else
-//			for(Integer key : sections.keySet()){
-//				DocumentSection section = sections.get(key);
-//				Segment segment = new Segment(jCas);
-//				segment.setBegin(line2char.get(section.getStartLine()));
-//
-//				segment.setEnd(line2char.get(section.getEndLine()));
-//				segment.setId(section.getSectionName());
-//				segment.addToIndexes();
-//			}
 	}
+}
 
-	/**
-	 * Identify the sections of a document
-	 * @author andreea bodnari
-	 * @param tmpFilePath
-	 * @return the identified sections
-	 */
-//	private HashMap<Integer, DocumentSection> sectionIdentifier(String text) {
+//class StructFinder {
 //
-//		HashMap<Integer, DocumentSection> cSections = 
-//				new HashMap<Integer, DocumentSection>();
-//
-//		try {
-//			templateContent = new FileInputStream(templateFile);
-//			ArrayList<Section> foundSections = 
-//					structureFinder.execute(text, templateContent);
-//
-////			this.addSections(foundSections);
-//			for(Section sct : foundSections){
-//				String nodeName = sct.getHeader();
-//				String content  = sct.getContent();
-//
-//				if(nodeName== null || nodeName.trim().isEmpty() || 
-//						content == null || content.trim().isEmpty())
-//					continue;
-//
-//				int index = text.indexOf(content);
-//				
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error("Error finding sections: " + e.getMessage());
-//		}	
-//
-//		return cSections;
+//	/** Creates a new instance of StructFinder */
+//	public StructFinder() {
 //	}
-
-	/**
-	 * @author andreea bodnari
-	 * @param foundSections
-	 */
-//	private void addSections(ArrayList<Section> foundSections){
 //
-//		HashMap<Integer, DocumentSection> sections = 
-//				new HashMap<Integer, DocumentSection>();
+//	/**
+//	 * Main method that takes in the content of a file to process
+//	 * and the input stream of a template of section names 
+//	 * and returns the section names found in the given file
+//	 * @param wholeFile
+//	 * @param templateContent
+//	 * 
+//	 * @return a list with the found sections
+//	 */
+//	public ArrayList<Section> execute(String wholeFile, 
+//			InputStream templateContent) {
+//		ArrayList<Section> foundSections = new ArrayList<Section>();
 //
-//		try{
+//		String templateFileName = null;
+//		StructModel template = null;
 //
-//			int startLine = 0;
 //
-//			for (Section sct : foundSections) {
-//				String nodeName = sct.getHeader();
-//				String content  = sct.getContent();
-//
-//				if(nodeName== null || nodeName.trim().isEmpty() || 
-//						content == null || content.trim().isEmpty())
-//					continue;
-//
-////				String[] splitContent = content.split("\n");
-////				int endLine = startLine + splitContent.length;
-//				
-//				int index = 
-//				DocumentSection section = 
-//						new DocumentSection(startLine, endLine, content);
-//				section.setSectionName(nodeName);
-//				sections.put(startLine, section);
-//
-//				startLine = endLine ;
-//			}
-//
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			logger.error("Error parsing tmp file: " + e.getMessage());
+//		SAXBuilder parser = new SAXBuilder();
+//		try {
+//			template = new StructModel(parser.build(templateContent));
+//		} catch (JDOMException e) {
+//			System.err.println("Error parsing template file "
+//					+ templateFileName + ": " + e);
 //		}
 //
-//		return sections;
+//		if (template!=null) {
+//			if (wholeFile!=null) { 
+//				Element e = template.process(wholeFile);
+//
+//				for(Object el : e.getContent()) {
+//					// find the type of the element
+//					if (el.getClass().equals(Text.class)) {
+//						Section sct = new Section("root", ((Text)el).getText());
+//						foundSections.add(sct);
+//					}
+//					else if (el.getClass().equals(Element.class)) {
+//						Element foundElement = ((Element)el);
+//						Section sct = new Section(foundElement.getName(), 
+//								foundElement.getText());
+//						foundSections.add(sct);
+//					}
+//				}
+//			}
+//		}
+//
+//		return foundSections;
 //	}
-}
+//}
