@@ -27,10 +27,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.NP</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.NP</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>
