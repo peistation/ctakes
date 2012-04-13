@@ -132,7 +132,7 @@ public class GenericAttributeClassifier {
 			ConllDependencyNode depnode = DependencyUtility.getNominalHeadNode(depnodes);
 
 			// 1) check if the head node of the entity mention is really just part of a larger noun phrase
-			if (depnode.getDeprel().equals("NMOD")) {
+			if (depnode.getDeprel().matches("(NMOD|amod|nmod|det|predet|nn|poss|possessive|infmod|partmod|rcmod)")) {
 				vfeat.put(POSTCOORD_NMOD, true);
 			}
 

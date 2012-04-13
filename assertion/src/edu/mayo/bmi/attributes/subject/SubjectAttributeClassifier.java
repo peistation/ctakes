@@ -33,17 +33,22 @@ import java.util.regex.Pattern;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 import org.xml.sax.SAXException;
 
+import edu.mayo.bmi.nlp.parser.util.DependencyPath;
 import edu.mayo.bmi.nlp.parser.util.DependencyUtility;
 import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.relation.Relation;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.Predicate;
 import edu.mayo.bmi.uima.core.type.textsem.SemanticArgument;
+import edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 
@@ -56,34 +61,34 @@ public class SubjectAttributeClassifier {
 	private static final String DONOR_TOKEN = "donor_token"; 
 	private static final String DONOR_SRLARG = "donor_srlarg";
 	private static final String DONOR_DEPPATH = "donor_deppath";
-	private static final String DONOR_DEPSRL = "donor_depsrl";
+	private static final String DONOR_DEPTOK = "donor_depsrl";
 	private static final String DONOR_OR = "donor_or";
 	private static final String FAMILY_TOKEN = "family_token"; 
 	private static final String FAMILY_SRLARG = "family_srlarg";
 	private static final String FAMILY_DEPPATH = "family_deppath";
-	private static final String FAMILY_DEPSRL = "family_depsrl";
+	private static final String FAMILY_DEPTOK = "family_depsrl";
 	private static final String FAMILY_OR = "family_or";
 	private static final String OTHER_TOKEN = "other_token"; 
 	private static final String OTHER_SRLARG = "other_srlarg"; 
 	private static final String OTHER_DEPPATH = "other_deppath"; 
-	private static final String OTHER_DEPSRL = "other_depsrl";
+	private static final String OTHER_DEPTOK = "other_depsrl";
 	private static final String OTHER_OR = "other_or";
     public static ArrayList<String> FeatureIndex = new ArrayList<String>();
     static{
             FeatureIndex.add(DONOR_TOKEN);
             FeatureIndex.add(DONOR_SRLARG);
             FeatureIndex.add(DONOR_DEPPATH);
-            FeatureIndex.add(DONOR_DEPSRL);
+            FeatureIndex.add(DONOR_DEPTOK);
             FeatureIndex.add(DONOR_OR);
             FeatureIndex.add(FAMILY_TOKEN);
             FeatureIndex.add(FAMILY_SRLARG);
             FeatureIndex.add(FAMILY_DEPPATH);
-            FeatureIndex.add(FAMILY_DEPSRL);
+            FeatureIndex.add(FAMILY_DEPTOK);
             FeatureIndex.add(FAMILY_OR);
             FeatureIndex.add(OTHER_TOKEN);
             FeatureIndex.add(OTHER_SRLARG);
             FeatureIndex.add(OTHER_DEPPATH);
-            FeatureIndex.add(OTHER_DEPSRL);
+            FeatureIndex.add(OTHER_DEPTOK);
             FeatureIndex.add(OTHER_OR);
     }
 
@@ -106,22 +111,7 @@ public class SubjectAttributeClassifier {
 		}
 //		if (sEntity==null)
 //			return null;
-		
-		// look for mentions of "donor" in the tokens
-		List<BaseToken> toks = JCasUtil.selectCovered(jCas, BaseToken.class, sEntity);
-		for (BaseToken tok : toks) {
-			if ( isDonorTerm(tok) ) {
-				vfeat.put(DONOR_TOKEN, true);
-			}
-			if ( isFamilyTerm(tok) ) {
-				vfeat.put(FAMILY_TOKEN, true);
-			}
-			
-			if ( isOtherTerm(tok) ) {
-				vfeat.put(OTHER_TOKEN, true);
-			}
-		}
-		
+				
 		// get any SRL arguments
 		List<SemanticArgument> args = JCasUtil.selectCovered(jCas, SemanticArgument.class, sEntity);
 		for (SemanticArgument arg : args) {
@@ -140,6 +130,10 @@ public class SubjectAttributeClassifier {
 			}
 
 		}
+
+		// get any SRL predicates
+		List<Predicate> preds = JCasUtil.selectCovered(jCas, Predicate.class, sEntity);
+
 		
 		// search dependency paths for stuff
 		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, mention);
@@ -156,18 +150,57 @@ public class SubjectAttributeClassifier {
 					vfeat.put(OTHER_DEPPATH, true);
 				}
 				
-				// check if there is SRL stuff on the dependency path
-				
 			}
 		}
+
+		// look for mentions of "donor" in the tokens
+		List<BaseToken> toks = JCasUtil.selectCovered(jCas, BaseToken.class, sEntity);
+		for (BaseToken tok : toks) {
+			
+			if ( isDonorTerm(tok) ) {
+				vfeat.put(DONOR_TOKEN, true);
+				
+				// check if there are one-removed dependencies on the dependency path
+				DependencyPath path = DependencyUtility.getPath(jCas, DependencyUtility.getNominalHeadNode(jCas,tok), 
+						DependencyUtility.getNominalHeadNode(jCas,mention));
+				int commonInd = path.indexOf(path.getCommonNode());
+				if (commonInd==1 || commonInd==path.size()-2) {
+					vfeat.put(DONOR_DEPTOK, true);
+				}
+			}
+			if ( isFamilyTerm(tok) ) {
+				vfeat.put(FAMILY_TOKEN, true);
+
+				// check if there are one-removed dependencies on the dependency path
+				DependencyPath path = DependencyUtility.getPath(jCas, DependencyUtility.getNominalHeadNode(jCas,tok), 
+						DependencyUtility.getNominalHeadNode(jCas,mention));
+				int commonInd = path.indexOf(path.getCommonNode());
+				if (commonInd==1 || commonInd==path.size()-2) {
+					vfeat.put(FAMILY_DEPTOK, true);
+				}
+			}
+			
+			if ( isOtherTerm(tok) ) {
+				vfeat.put(OTHER_TOKEN, true);
+
+				// check if there are one-removed dependencies on the dependency path
+				DependencyPath path = DependencyUtility.getPath(jCas, DependencyUtility.getNominalHeadNode(jCas,tok), 
+						DependencyUtility.getNominalHeadNode(jCas,mention));
+				int commonInd = path.indexOf(path.getCommonNode());
+				if (commonInd==1 || commonInd==path.size()-2) {
+					vfeat.put(OTHER_DEPTOK, true);
+				}
+			}
+		}
+
 		
 		// Logic to identify cases, may be replaced by learned classification
 		Boolean donor_summary = new Boolean(vfeat.get(DONOR_TOKEN) || vfeat.get(DONOR_DEPPATH) || 
-				vfeat.get(DONOR_DEPSRL) || vfeat.get(DONOR_SRLARG));
+				vfeat.get(DONOR_DEPTOK) || vfeat.get(DONOR_SRLARG));
 		Boolean family_summary = new Boolean(                         vfeat.get(FAMILY_DEPPATH) || 
-				vfeat.get(FAMILY_DEPSRL) || vfeat.get(FAMILY_SRLARG));
+				vfeat.get(FAMILY_DEPTOK) || vfeat.get(FAMILY_SRLARG));
 		Boolean other_summary = new Boolean(                          vfeat.get(OTHER_DEPPATH) || 
-				vfeat.get(OTHER_DEPSRL) || vfeat.get(OTHER_SRLARG));
+				vfeat.get(OTHER_DEPTOK) || vfeat.get(OTHER_SRLARG));
 		vfeat.put(DONOR_OR, donor_summary);
 		vfeat.put(FAMILY_OR, family_summary);
 		vfeat.put(OTHER_OR, other_summary);
