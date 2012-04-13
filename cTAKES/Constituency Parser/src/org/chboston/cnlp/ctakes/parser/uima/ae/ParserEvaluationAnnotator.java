@@ -25,7 +25,8 @@ import opennlp.tools.parser.Parser;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
+
+import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
 
 public class ParserEvaluationAnnotator extends JCasAnnotator_ImplBase {
 
