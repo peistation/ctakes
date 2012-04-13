@@ -24,41 +24,17 @@
 package edu.mayo.bmi.uima.lookup.ae;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-
-import edu.mayo.bmi.dictionary.MetaDataHit;
-import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
-import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.lookup.vo.LookupToken;
-import edu.mayo.bmi.lookup.vo.LookupTokenComparator;
-import edu.mayo.bmi.uima.core.resource.FileResource;
+import org.apache.uima.UimaContext;
+import org.apache.uima.resource.ResourceInitializationException;
 
 /**
  * UIMA annotator that identified entities based on lookup.
@@ -77,16 +53,15 @@ public class UmlsDictionaryLookupAnnotator extends DictionaryLookupAnnotator
 	private final static String UMLSPW_PARAM = "UMLSPW";
 	
 	private Logger iv_logger = Logger.getLogger(getClass().getName());
-	private AnnotatorContext iv_context;
+	private UimaContext iv_context;
 	private Set iv_lookupSpecSet = new HashSet();
 	private String UMLSAddr;
 	private String UMLSVendor;
 	private String UMLSUser;
 	private String UMLSPW;
 
-	public void initialize(AnnotatorContext aContext)
-			throws AnnotatorConfigurationException,
-			AnnotatorInitializationException
+	public void initialize(UimaContext aContext)
+			throws ResourceInitializationException
 	{
 		super.initialize(aContext);
 		iv_context = aContext;
@@ -107,7 +82,7 @@ public class UmlsDictionaryLookupAnnotator extends DictionaryLookupAnnotator
 			}
 			
 		} catch (Exception e) {
-			throw new AnnotatorInitializationException(e);
+			throw new ResourceInitializationException(e);
 		}	
 	}
 

@@ -25,6 +25,7 @@ package edu.mayo.bmi.uima.lookup.ae;
 
 import java.util.Iterator;
 
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.JCas;
 
@@ -50,5 +51,5 @@ public interface LookupConsumer
 	 * @throws AnnotatorProcessException
 	 */
 	public void consumeHits(JCas jcas, Iterator lookupHitItr)
-			throws AnnotatorProcessException;
+			throws AnalysisEngineProcessException;
 }
