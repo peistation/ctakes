@@ -3,13 +3,13 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="../../../core/desc/collection_reader/LinesFromFileCollectionReader.xml"/>
+                <import location="../../coredesc/collection_reader/LinesFromFileCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>
                     <name>InputFileName</name>
                     <value>
-                        <string>/home/tmill/Projects/parser/data/test_sents.txt</string>
+                        <string>PATH_TO_YOUR_DATA_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -31,7 +31,7 @@
                 <nameValuePair>
                     <name>modelDir</name>
                     <value>
-                        <string>/home/tmill/Projects/parser/models/outdomain</string>
+                        <string>PATH_TO_YOUR_MODELS_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -51,7 +51,7 @@
                 <nameValuePair>
                     <name>outputFile</name>
                     <value>
-                        <string>/home/tmill/Projects/parser/outputs/outdomain.out</string>
+                        <string>PATH_TO_YOUR_OUTPUT_HERE</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

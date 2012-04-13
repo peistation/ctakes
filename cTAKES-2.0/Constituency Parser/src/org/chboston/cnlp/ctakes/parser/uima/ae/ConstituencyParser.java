@@ -57,6 +57,10 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 //		TreebankParser p = new TreebankParser();
+		if (parser==null) {
+			logger.error("Error accessing parser.");
+			throw new RuntimeException("Parser not set");
+		}
 		synchronized(parser){
 			parser.createAnnotations(jcas);
 		}
