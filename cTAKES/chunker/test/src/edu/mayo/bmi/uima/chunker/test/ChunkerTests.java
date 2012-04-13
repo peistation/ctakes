@@ -34,19 +34,19 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator;
-import edu.mayo.bmi.uima.chunker.type.ADJP;
-import edu.mayo.bmi.uima.chunker.type.ADVP;
-import edu.mayo.bmi.uima.chunker.type.CONJP;
-import edu.mayo.bmi.uima.chunker.type.INTJ;
-import edu.mayo.bmi.uima.chunker.type.LST;
-import edu.mayo.bmi.uima.chunker.type.NP;
-import edu.mayo.bmi.uima.chunker.type.PP;
-import edu.mayo.bmi.uima.chunker.type.PRT;
-import edu.mayo.bmi.uima.chunker.type.SBAR;
-import edu.mayo.bmi.uima.chunker.type.UCP;
-import edu.mayo.bmi.uima.chunker.type.VP;
+import edu.mayo.bmi.uima.core.type.syntax.ADJP;
+import edu.mayo.bmi.uima.core.type.syntax.ADVP;
+import edu.mayo.bmi.uima.core.type.syntax.CONJP;
+import edu.mayo.bmi.uima.core.type.syntax.INTJ;
+import edu.mayo.bmi.uima.core.type.syntax.LST;
+import edu.mayo.bmi.uima.core.type.syntax.NP;
+import edu.mayo.bmi.uima.core.type.syntax.PP;
+import edu.mayo.bmi.uima.core.type.syntax.PRT;
+import edu.mayo.bmi.uima.core.type.syntax.SBAR;
+import edu.mayo.bmi.uima.core.type.syntax.UCP;
+import edu.mayo.bmi.uima.core.type.syntax.VP;
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.chunker.type.Chunk;
+import edu.mayo.bmi.uima.core.type.syntax.Chunk;
 
 public class ChunkerTests {
 

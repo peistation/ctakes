@@ -5,10 +5,10 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import name="edu.mayo.bmi.uima.core.type.Sentence"/>
-    <import name="edu.mayo.bmi.uima.core.type.BaseToken"/>
-    <import name="edu.mayo.bmi.uima.core.type.Segment"/>
-    <import name="edu.mayo.bmi.uima.core.type.WordToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.textspan.Sentence"/>
+    <import name="edu.mayo.bmi.uima.core.type.syntax.BaseToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.textspan.Segment"/>
+    <import name="edu.mayo.bmi.uima.core.type.syntax.WordToken"/>
     <import name="edu.mayo.bmi.uima.core.type.ContractionToken"/>
     <import name="edu.mayo.bmi.uima.core.type.NewlineToken"/>
     <import name="edu.mayo.bmi.uima.core.type.NumToken"/>
@@ -21,7 +21,7 @@
     <import name="edu.mayo.bmi.uima.chunker.type.CONJP"/>
     <import name="edu.mayo.bmi.uima.chunker.type.INTJ"/>
     <import name="edu.mayo.bmi.uima.chunker.type.LST"/>
-    <import name="edu.mayo.bmi.uima.chunker.type.NP"/>
+    <import name="edu.mayo.bmi.uima.core.type.syntax.NP"/>
     <import name="edu.mayo.bmi.uima.chunker.type.PP"/>
     <import name="edu.mayo.bmi.uima.chunker.type.PRT"/>
     <import name="edu.mayo.bmi.uima.chunker.type.SBAR"/>
