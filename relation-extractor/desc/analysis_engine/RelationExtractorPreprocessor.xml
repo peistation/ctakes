@@ -46,7 +46,7 @@
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ClearParserAE">
-      <import location="../../../dependency parser/desc/analysis_engine/ClearParserAE.xml"/>
+      <import location="../../../dependency parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ConstituencyParser">
       <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
