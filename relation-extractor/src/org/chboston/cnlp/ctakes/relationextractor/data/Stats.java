@@ -52,18 +52,18 @@ public class Stats {
 			for(RelationInfo relationInfo : XMLReader.getRelations(document)) {
 	    	
 				if(readOnlySharpRelations) {
-	    		if(! Constants.sharpRelationsSelected.contains(relationInfo.relation)) {
+	    		if(! Constants.sharpRelationsSelected.contains(relationInfo.category)) {
 	    			continue; // ignore this relation
 	    		}
 	    	}
 	  
 				totalRelationCount++;
 				
-				if(relationCounts.containsKey(relationInfo.relation)) {
-					relationCounts.put(relationInfo.relation, relationCounts.get(relationInfo.relation) + 1);
+				if(relationCounts.containsKey(relationInfo.category)) {
+					relationCounts.put(relationInfo.category, relationCounts.get(relationInfo.category) + 1);
 				} 
 				else {
-					relationCounts.put(relationInfo.relation, 1);
+					relationCounts.put(relationInfo.category, 1);
 				}
 			}
 		}
