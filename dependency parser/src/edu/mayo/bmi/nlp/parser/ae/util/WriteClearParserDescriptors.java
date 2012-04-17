@@ -62,7 +62,7 @@ public class WriteClearParserDescriptors {
 		Options options = new Options();
 		options.parseOptions(args);
 
-		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml");
+		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../../../common-type-system/desc/common_type_system.xml");
 
 		AnalysisEngineDescription clearparserSRLDesc = AnalysisEngineFactory.createPrimitiveDescription(
 				ClearParserSemanticRoleLabelerAE.class,
