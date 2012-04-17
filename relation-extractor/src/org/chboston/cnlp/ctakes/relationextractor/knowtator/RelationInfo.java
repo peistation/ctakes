@@ -14,21 +14,21 @@ public class RelationInfo {
 
   public String id1;       // id of the first argument
   public String id2;       // id of the second argument
-  public String role1; // position of first arg (e.g. Argument)
-  public String role2; // semantic type of second arg (e.g. Related_to)
-  public String relation;  // relation type e.g. co_occurs_with
+  public String role1;     // position of first arg (e.g. Argument)
+  public String role2;     // semantic type of second arg (e.g. Related_to)
+  public String category;  // relation type e.g. co_occurs_with
   
-  RelationInfo(String id1, String id2, String role1, String role2, String relation) {
+  RelationInfo(String id1, String id2, String role1, String role2, String category) {
     this.id1 = id1; // id of the first argument
     this.id2 = id2; // id of the second argument
     this.role1 = role1;
     this.role2 = role2;
-    this.relation = relation;
+    this.category = category;
   }
   
   @Override
   public String toString() {
-  	return String.format("<%s, %s, %s, %s, %s>", id1, id2, role1, role2, relation);
+  	return String.format("<%s, %s, %s, %s, %s>", id1, id2, role1, role2, category);
   }
   
   /*
