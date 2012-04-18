@@ -123,18 +123,43 @@ public class XMLReader {
   	String position1 = hashComplexSlotMentions.get(ids.get(0)).position; // e.g. Argument                                                                                             
 
   	String id2 = hashComplexSlotMentions.get(ids.get(1)).value;          // obtain mention id2                                       
-  	String position2 = hashComplexSlotMentions.get(ids.get(1)).position; // e.g. Related_to                                     
+  	String position2 = hashComplexSlotMentions.get(ids.get(1)).position; // e.g. Related_to     
+  	
+  	// TODO: this will go away when data post-processing is in place
+  	position1 = normalizePositionName(position1);
+  	position2 = normalizePositionName(position2);
 
-  	// a quick sanity check (this has failed before)
+  	// a quick sanity check 
   	if(!position1.equals("Argument") && !position1.equals("Related_to")) {
-  		System.out.println("unrecognized position: " + position1);
+  		// System.out.println("unrecognized position: " + position1);
   		return;
   	}
   	if(!position2.equals("Argument") && !position2.equals("Related_to")) {
-  		System.out.println("unrecognized position: " + position2);
+  		// System.out.println("unrecognized position: " + position2);
   		return;
   	}
 
   	relations.add(new RelationInfo(id1, id2, position1, position2, relationType));
+  }
+  
+  /**
+   * Convert Argument_CU and Related_to_CU to Argument and Related_to.
+   * This will not be necessary in the future when the data will be 
+   * post-processed to remove _CU suffixes. 
+   * 
+   * Currently mipacq data does not have the suffixes and sharp data does.
+   */
+  private static String normalizePositionName(String position) {
+  	
+  	if(position.equals("Argument_CU")) {
+  		return "Argument";
+  	} 
+  	
+  	if(position.equals("Related_to_CU")) {
+  		return "Related_to";
+  	}
+  	
+  	return position;
+  		
   }
 }
