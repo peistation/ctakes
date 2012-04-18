@@ -19,13 +19,7 @@ import org.jdom.input.SAXBuilder;
  *
  */
 public class Stats {
-	
-	public static final String ALLFILELOC = "/home/dima/sharp/cloud/mipacq/xml/all/";
-
-	public static final String TRAINLOC = "/home/dima/sharp/cloud/mipacq/xml/train/";
-	public static final String DEVLOC = "/home/dima/sharp/cloud/mipacq/xml/dev/";
-	public static final String TESTLOC = "/home/dima/sharp/cloud/mipacq/xml/test/";
-	
+		
 	// read all the relations in the data or just the SHARP ones?
 	public static final boolean readOnlySharpRelations = true;
 	
@@ -83,10 +77,6 @@ public class Stats {
   
 	public static void main(String[] args) throws JDOMException, IOException {
 		
-		Stats.compute(Stats.ALLFILELOC);
-		
-		Stats.compute(Stats.TRAINLOC);
-		Stats.compute(Stats.DEVLOC);
-		Stats.compute(Stats.TESTLOC);
+		Stats.compute(Constants.sharpAllXmlPath);
 	}
 }
