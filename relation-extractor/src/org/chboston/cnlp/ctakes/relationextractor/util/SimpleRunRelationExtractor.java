@@ -11,8 +11,9 @@ import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.chboston.cnlp.ctakes.relationextractor.ae.NamedEntityPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.chboston.cnlp.ctakes.relationextractor.eval.MultiClassLIBSVMDataWriterFactory;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
-import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.XMIReader;
+import org.chboston.cnlp.ctakes.relationextractor.eval.XMIReader;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -71,7 +72,7 @@ public class SimpleRunRelationExtractor {
 
 	    // Create a collection reader to read specified XMI files 
 		CollectionReader reader = CollectionReaderFactory.createCollectionReader(
-				RelationExtractorEvaluation.XMIReader.class,
+				XMIReader.class,
 				typeSystem,
 				XMIReader.PARAM_FILES,
 				xmiFiles.toArray(new String[xmiFiles.size()]));
@@ -80,14 +81,14 @@ public class SimpleRunRelationExtractor {
 		AnalysisEngineDescription relationExtractor = AnalysisEngineFactory.createPrimitiveDescription(
 				NamedEntityPairRelationExtractorAnnotator.class,
 				RelationExtractorAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-				RelationExtractorEvaluation.MultiClassLIBSVMDataWriterFactory.class.getName(),
+				MultiClassLIBSVMDataWriterFactory.class.getName(),
 				RelationExtractorAnnotator.PARAM_IS_TRAINING,
 				true,
 				RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
 				RelationExtractorEvaluation.GOLD_VIEW_NAME,
 				NamedEntityPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
 				true,
-				RelationExtractorEvaluation.MultiClassLIBSVMDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+				MultiClassLIBSVMDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 				options.outputRoot.getPath());
 		
 		// Read and run
