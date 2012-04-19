@@ -1,6 +1,7 @@
 package org.chboston.cnlp.ctakes.relationextractor.knowtator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,16 +77,16 @@ public class XMLReader {
       // key: complexSlotMention id, value: complexSlotMention value                                                           
       HashMap<String, ArgumentInfo> hashComplexSlotMentions = new HashMap<String, ArgumentInfo>();
 
-      // first read all complexSlotMentions which contain argument positions (Related_to or Argument)                         
+      // first read all complexSlotMentions which contain argument roles (Related_to or Argument)                         
       List<?> complexSlotMentions = root.getChildren("complexSlotMention");
       for (int i = 0; i < complexSlotMentions.size(); i++) {
         Element complexSlotMention = (Element) complexSlotMentions.get(i);
 
         String id = complexSlotMention.getAttributeValue("id");
         String value = complexSlotMention.getChild("complexSlotMentionValue").getAttributeValue("value");
-        String position = complexSlotMention.getChild("mentionSlot").getAttributeValue("id"); // e.g. "Related_to"             
+        String role = complexSlotMention.getChild("mentionSlot").getAttributeValue("id"); // e.g. "Related_to"             
 
-        hashComplexSlotMentions.put(id, new ArgumentInfo(value, position));
+        hashComplexSlotMentions.put(id, new ArgumentInfo(value, normalizeRoleName(role)));
       }
 
       // now read all classMentions which have relation type and arguments (as hasSlotMention(s))                                 
@@ -111,35 +112,27 @@ public class XMLReader {
   	for(int i = 0; i < hasSlotMentions.size(); i++) {
   		String id = ((Element) hasSlotMentions.get(i)).getAttributeValue("id");
   		if(hashComplexSlotMentions.containsKey(id)) {
-  			ids.add(id); // this is an argument                                                                                    
+    		String role = hashComplexSlotMentions.get(id).role;
+    		// check the role explicitly; in sharp data (unlike in mipacq), one
+    		// of the hasSlotMention(s) can be a negation attribute with a span
+  			if(role.equals("Argument") || role.equals("Related_to")) {
+  				ids.add(id);                               
+  			}
   		}
   	}
-
+   	
+  	// exactly two arguments are allowed
   	if(ids.size() != 2) {
-  		return; // this classMention is not a relation (exactly two args are allowed)                                            
+  		return; 
   	}
-
+  	
   	String id1 = hashComplexSlotMentions.get(ids.get(0)).value;          // obtain mention id1                                       
-  	String position1 = hashComplexSlotMentions.get(ids.get(0)).position; // e.g. Argument                                                                                             
+  	String role1 = hashComplexSlotMentions.get(ids.get(0)).role;         // e.g. Argument                                                                                             
 
   	String id2 = hashComplexSlotMentions.get(ids.get(1)).value;          // obtain mention id2                                       
-  	String position2 = hashComplexSlotMentions.get(ids.get(1)).position; // e.g. Related_to     
-  	
-  	// TODO: this will go away when data post-processing is in place
-  	position1 = normalizePositionName(position1);
-  	position2 = normalizePositionName(position2);
+  	String role2 = hashComplexSlotMentions.get(ids.get(1)).role;         // e.g. Related_to     
 
-  	// a quick sanity check 
-  	if(!position1.equals("Argument") && !position1.equals("Related_to")) {
-  		// System.out.println("unrecognized position: " + position1);
-  		return;
-  	}
-  	if(!position2.equals("Argument") && !position2.equals("Related_to")) {
-  		// System.out.println("unrecognized position: " + position2);
-  		return;
-  	}
-
-  	relations.add(new RelationInfo(id1, id2, position1, position2, relationType));
+  	relations.add(new RelationInfo(id1, id2, role1, role2, relationType));
   }
   
   /**
@@ -149,17 +142,17 @@ public class XMLReader {
    * 
    * Currently mipacq data does not have the suffixes and sharp data does.
    */
-  private static String normalizePositionName(String position) {
+  private static String normalizeRoleName(String role) {
   	
-  	if(position.equals("Argument_CU")) {
+  	if(role.equals("Argument_CU")) {
   		return "Argument";
   	} 
   	
-  	if(position.equals("Related_to_CU")) {
+  	if(role.equals("Related_to_CU")) {
   		return "Related_to";
   	}
   	
-  	return position;
+  	return role;
   		
   }
 }
