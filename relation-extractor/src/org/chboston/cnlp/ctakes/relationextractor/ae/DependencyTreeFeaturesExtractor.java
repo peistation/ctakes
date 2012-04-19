@@ -14,8 +14,8 @@ import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 public class DependencyTreeFeaturesExtractor implements RelationFeaturesExtractor{
 
 	@Override
-	public List<Feature> extract(JCas jCas, EntityMention arg1,
-			EntityMention arg2) throws AnalysisEngineProcessException {
+	public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1,
+			IdentifiedAnnotation arg2) throws AnalysisEngineProcessException {
 		
 	    List<Feature> features = new ArrayList<Feature>();
 	    features.addAll(extractForNode(jCas, arg1, "MENTION1"));

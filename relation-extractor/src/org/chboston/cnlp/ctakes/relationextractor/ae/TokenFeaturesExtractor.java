@@ -19,7 +19,7 @@ import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
 
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
 
@@ -70,7 +70,7 @@ public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
   private DistanceExtractor nTokensBetween = new DistanceExtractor(null, BaseToken.class);
 
   @Override
-  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2)
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
       throws AnalysisEngineProcessException {
     List<Feature> features = new ArrayList<Feature>();
     features.addAll(this.mention1FeaturesExtractor.extract(jCas, arg1));

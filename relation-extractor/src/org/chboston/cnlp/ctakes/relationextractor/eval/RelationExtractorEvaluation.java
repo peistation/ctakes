@@ -24,6 +24,7 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.chboston.cnlp.ctakes.relationextractor.ae.NamedEntityPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator.HashableArguments;
 import org.cleartk.classifier.CleartkAnnotator;
@@ -131,7 +132,7 @@ public class RelationExtractorEvaluation {
           MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
           RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
           params.probabilityOfKeepingANegativeExample,
-          RelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+          NamedEntityPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
           params.classifyBothDirections,
           RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
           false);

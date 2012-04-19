@@ -46,7 +46,7 @@ public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
   private DistanceExtractor nEntityMentionsBetween = new DistanceExtractor(null, EntityMention.class);
 
   @Override
-  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2)
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
       throws AnalysisEngineProcessException {
 
     List<Feature> features = new ArrayList<Feature>();

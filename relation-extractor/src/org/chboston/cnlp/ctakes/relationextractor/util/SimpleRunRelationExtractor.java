@@ -9,6 +9,7 @@ import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.chboston.cnlp.ctakes.relationextractor.ae.NamedEntityPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.XMIReader;
@@ -77,13 +78,15 @@ public class SimpleRunRelationExtractor {
 
 		// Create a RelationExtractorAnnotator that will write out the training data
 		AnalysisEngineDescription relationExtractor = AnalysisEngineFactory.createPrimitiveDescription(
-				RelationExtractorAnnotator.class,
+				NamedEntityPairRelationExtractorAnnotator.class,
 				RelationExtractorAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 				RelationExtractorEvaluation.MultiClassLIBSVMDataWriterFactory.class.getName(),
 				RelationExtractorAnnotator.PARAM_IS_TRAINING,
 				true,
 				RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
 				RelationExtractorEvaluation.GOLD_VIEW_NAME,
+				NamedEntityPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+				true,
 				RelationExtractorEvaluation.MultiClassLIBSVMDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 				options.outputRoot.getPath());
 		
