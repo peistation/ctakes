@@ -18,10 +18,10 @@ package org.chboston.cnlp.ctakes.relationextractor.knowtator;
 public class ArgumentInfo {
 
   public String value;    // value of "value" attribute above
-  public String position; // e.g. "Related_to"
+  public String role; // e.g. "Related_to"
   
-  ArgumentInfo(String value, String position) {
+  ArgumentInfo(String value, String role) {
     this.value = value;
-    this.position = position;
+    this.role = role;
   }
 }
