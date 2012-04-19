@@ -9,7 +9,7 @@ import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
 import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 /**
  * Features that capture punctuation marks between the two arguments.
@@ -17,7 +17,7 @@ import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 public class PunctuationFeatureExtractor implements RelationFeaturesExtractor {
 
   @Override
-  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2) throws AnalysisEngineProcessException {
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) throws AnalysisEngineProcessException {
 
   	List<Feature> features = new ArrayList<Feature>();
   	

@@ -11,7 +11,7 @@ import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 /**
  * Features that indicate whether there is a preposition between the two arguments. 
@@ -21,7 +21,7 @@ import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 public class PrepositionFeatureExtractor implements RelationFeaturesExtractor {
 
   @Override
-  public List<Feature> extract(JCas jCas, EntityMention arg1, EntityMention arg2) throws AnalysisEngineProcessException {
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) throws AnalysisEngineProcessException {
 
   	HashSet<String> prepositions = 
   			new HashSet<String>(Arrays.asList("about", "above", "across", "against", "amid", "around", "at", "atop", 
