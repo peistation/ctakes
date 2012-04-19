@@ -1,4 +1,4 @@
-package org.chboston.cnlp.ctakes.relationextractor.ae;
+package org.chboston.cnlp.ctakes.relationextractor.ae.features;
 
 import java.util.List;
 
