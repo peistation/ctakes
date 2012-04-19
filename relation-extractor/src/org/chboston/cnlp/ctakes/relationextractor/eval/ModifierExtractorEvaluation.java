@@ -17,11 +17,10 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
-import org.cleartk.classifier.CleartkSequenceAnnotator;
+import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.viterbi.ViterbiDataWriterFactory;
 import org.cleartk.eval.Evaluation;
 import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
 import org.cleartk.eval.provider.CleartkPipelineProvider;
@@ -88,9 +87,7 @@ public class ModifierExtractorEvaluation {
     @Override
     public List<AnalysisEngine> getTrainingPipeline(String name) throws UIMAException {
       AnalysisEngineDescription classifierDescription = ModifierExtractorAnnotator.getDescription(
-          CleartkSequenceAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-          ViterbiDataWriterFactory.class.getName(),
-          ViterbiDataWriterFactory.PARAM_DELEGATED_DATA_WRITER_FACTORY_CLASS,
+          CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
           MultiClassLIBSVMDataWriterFactory.class.getName(),
           DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
           this.getDir(name).getPath());

@@ -1,0 +1,5 @@
+These classes are copied over from ClearTK trunk, since they're not yet 
+available in an official ClearTK release.
+
+Once they're released, this directory and the classes in it should be
+deleted and the official classes from the ClearTK release should be used.
