@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.apache.uima.jcas.JCas;
+import org.chboston.cnlp.ctakes.relationextractor.ae.features.NamedEntityFeaturesExtractor;
 import org.cleartk.classifier.Feature;
 import org.junit.Test;
 import org.uimafit.factory.JCasFactory;
