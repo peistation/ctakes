@@ -35,7 +35,7 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
  * Identifies and classifies relations between pairs of named entities
  *
  */
-public class NamedEntityPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	public static final String PARAM_CLASSIFY_BOTH_DIRECTIONS = "ClassifyBothDirections";
 
