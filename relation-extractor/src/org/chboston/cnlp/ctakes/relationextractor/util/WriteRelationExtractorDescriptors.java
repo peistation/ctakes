@@ -6,12 +6,15 @@ import java.io.IOException;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.xml.sax.SAXException;
+
+import com.google.common.io.Files;
 
 
 /**
@@ -50,14 +53,25 @@ public class WriteRelationExtractorDescriptors {
 	    File outputRoot = options.outputRoot;
 	    File modelFile = options.modelFile;
 	    
-	    AnalysisEngineDescription relationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
-	    		RelationExtractorAnnotator.class,
+	    AnalysisEngineDescription entityMentionPairRelationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
+	    		EntityMentionPairRelationExtractorAnnotator.class,
 	    		GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 	    		modelFile.getPath());
 	    
-	    FileOutputStream output = new FileOutputStream(new File(outputRoot, "RelationExtractorAnnotator.xml"));
-	    relationExtractorDesc.toXML(output);
+	    FileOutputStream output = new FileOutputStream(new File(outputRoot, "EntityMentionPairRelationExtractorAnnotator.xml"));
+	    entityMentionPairRelationExtractorDesc.toXML(output);
 	    output.close();
+	    
+	    
+	    AnalysisEngineDescription degreeOfRelationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
+	    		EntityMentionPairRelationExtractorAnnotator.class,
+	    		GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	    		modelFile.getPath());
+	    
+	    output = new FileOutputStream(new File(outputRoot, "DegreeOfRelationExtractorAnnotator.xml"));
+	    degreeOfRelationExtractorDesc.toXML(output);
+	    output.close();
+	    
 	}
 		
 }
