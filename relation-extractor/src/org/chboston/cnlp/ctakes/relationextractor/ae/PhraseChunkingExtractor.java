@@ -54,6 +54,7 @@ public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 	@Override
 	public List<Feature> extract(JCas jCas, EntityMention arg1,
 			EntityMention arg2) throws AnalysisEngineProcessException {
+
 		List<Feature> features = new ArrayList<Feature>();
 				
 		// Extract features between 
@@ -77,24 +78,39 @@ public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 		// Extract feature before M1
 		headList = this.extractPhraseHeadByTreenode(jCas, JCasUtil.selectPreceding(jCas, TreebankNode.class, arg1, 20));
 
-		if(headList.size() > 0) {
-			features.add(new Feature("PhraseChunk_Before_FirstHead", headList.get(headList.size() - 1).getNodeValue()));
-		}
-		
-		if(headList.size() > 1){
-			features.add(new Feature("PhraseChunk_Before_SecondHead", headList.get(headList.size()-2).getNodeValue()));
+		boolean isFirst = false;
+		for(int i=headList.size()-1;i>=0;i--) {
+			if(headList.get(i).getEnd() < arg1.getBegin()) {
+				if(!isFirst) { 
+				features.add(new Feature("PhraseChunk_Before_FirstHead", headList.get(i).getNodeValue()));
+				isFirst = true;
+				}
+				else {
+					features.add(new Feature("PhraseChunk_Before_SecondHead", headList.get(i).getNodeValue()));
+					break;
+				}
+			}
 		}
 		
 		// Extract feature after M2
 		headList = this.extractPhraseHeadByTreenode(jCas, JCasUtil.selectFollowing(jCas, TreebankNode.class, arg2, 20));
 		
-		if(headList.size() > 0)
-			features.add(new Feature("PhraseChunk_After_FirstHead", headList.get(0).getNodeValue()));
-
-		if(headList.size() > 1) {
-			features.add(new Feature("PhraseChunk_After_SecondHead", headList.get(1).getNodeValue()));
+		
+		isFirst = false;
+		for(int i=0;i<headList.size();i++) {
+			if(headList.get(i).getBegin() > arg2.getEnd() ) {
+				if(!isFirst) {
+					features.add(new Feature("PhraseChunk_After_FirstHead", headList.get(i).getNodeValue()));
+					isFirst = true;
+				}
+				else {
+					features.add(new Feature("PhraseChunk_After_SecondHead", headList.get(i).getNodeValue()));
+					break;
+				}
+			}
 		}
-
+		
+		
 		return features;
 	}
 }
