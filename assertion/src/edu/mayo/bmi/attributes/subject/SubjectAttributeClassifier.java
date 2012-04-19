@@ -206,15 +206,15 @@ public class SubjectAttributeClassifier {
 		vfeat.put(OTHER_OR, other_summary);
 		
 		if (vfeat.get(DONOR_OR) && vfeat.get(FAMILY_OR)) {
-			return CONST.NE_SUBJECT_DONOR_FAMILY_MEMBER;
+			return CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER;
 		} else if (vfeat.get(DONOR_OR) && !vfeat.get(FAMILY_OR)) {
-			return CONST.NE_SUBJECT_DONOR_OTHER;
+			return CONST.ATTR_SUBJECT_DONOR_OTHER;
 		} else if (!vfeat.get(DONOR_OR) && !vfeat.get(FAMILY_OR) && vfeat.get(OTHER_OR)) {
-			return CONST.NE_SUBJECT_OTHER;
+			return CONST.ATTR_SUBJECT_OTHER;
 		} else if (!vfeat.get(DONOR_OR) && vfeat.get(FAMILY_OR)) {
-			return (CONST.NE_SUBJECT_FAMILY_MEMBER);
+			return (CONST.ATTR_SUBJECT_FAMILY_MEMBER);
 		} else {
-			return CONST.NE_SUBJECT_PATIENT;
+			return CONST.ATTR_SUBJECT_PATIENT;
 		}
 			
 	}

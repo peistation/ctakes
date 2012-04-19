@@ -270,7 +270,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       {
         //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
-        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
         annotation.setPolarity(1);
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(0);
@@ -281,7 +281,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
-        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
         annotation.setPolarity(-1); // NOT DEFAULT VALUE
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(0);
@@ -291,7 +291,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("associated_with_someone_else"))
       // ASSOCIATED WITH SOMEONE ELSE (mastif value)
       {
-        annotation.setSubject("CONST.NE_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
+        annotation.setSubject("CONST.ATTR_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
         annotation.setPolarity(1);
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(0);
@@ -302,7 +302,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       // CONDITIONAL (mastif value)
       {
         // currently no mapping to sharp type...all sharp properties are defaults!
-        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
         annotation.setPolarity(1);
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(0);
@@ -312,7 +312,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("hypothetical"))
       // HYPOTHETICAL (mastif value)
       {
-        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
         annotation.setPolarity(1);
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(0);
@@ -322,7 +322,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       } else if (currentAssertionType.equals("possible"))
       // POSSIBLE (mastif value)
       {
-        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
         annotation.setPolarity(1);
         annotation.setConfidence(1.0f);
         annotation.setUncertainty(1); // NOT DEFAULT VALUE
