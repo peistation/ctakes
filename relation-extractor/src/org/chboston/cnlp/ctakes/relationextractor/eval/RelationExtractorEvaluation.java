@@ -1,6 +1,5 @@
 package org.chboston.cnlp.ctakes.relationextractor.eval;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,30 +21,16 @@ import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.impl.XmiCasDeserializer;
-import org.apache.uima.collection.CollectionException;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.util.Progress;
-import org.apache.uima.util.ProgressImpl;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator.HashableArguments;
 import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.DataWriterFactory;
-import org.cleartk.classifier.encoder.features.BooleanEncoder;
-import org.cleartk.classifier.encoder.features.FeatureVectorFeaturesEncoder;
-import org.cleartk.classifier.encoder.features.NumberEncoder;
-import org.cleartk.classifier.encoder.features.StringEncoder;
-import org.cleartk.classifier.encoder.outcome.StringToIntegerOutcomeEncoder;
-import org.cleartk.classifier.jar.DataWriterFactory_ImplBase;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.libsvm.DefaultMultiClassLIBSVMDataWriterFactory;
-import org.cleartk.classifier.libsvm.MultiClassLIBSVMDataWriter;
-import org.cleartk.classifier.util.featurevector.FeatureVector;
 import org.cleartk.eval.Evaluation;
 import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
 import org.cleartk.eval.provider.CleartkPipelineProvider_ImplBase;
@@ -58,15 +42,12 @@ import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.cr.FilesCollectionReader;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.component.JCasCollectionReader_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
-import org.xml.sax.SAXException;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
@@ -105,21 +86,8 @@ public class RelationExtractorEvaluation {
     List<File> testFiles = Arrays.asList(); // TODO: add a --test-dir option
 
     // defines train and test corpora
-    CorpusReaderProvider readerProvider;
-    readerProvider = new CorpusReaderProvider_ImplBase<File>(trainFiles, testFiles) {
-      @Override
-      protected CollectionReader getReader(List<File> files) throws UIMAException {
-        String[] paths = new String[files.size()];
-        for (int i = 0; i < paths.length; ++i) {
-          paths[i] = files.get(i).getPath();
-        }
-        return CollectionReaderFactory.createCollectionReader(
-            XMIReader.class,
-            TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml"),
-            XMIReader.PARAM_FILES,
-            paths);
-      }
-    };
+    TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml");
+    CorpusReaderProvider readerProvider = new XMICorpusReaderProvider(tsd, trainFiles, testFiles);
     readerProvider.setNumberOfFolds(2);
 
     // define the grid of parameters over which we will search
@@ -303,54 +271,6 @@ public class RelationExtractorEvaluation {
   }
 
   /**
-   * UIMA CollectionReader that reads in CASes from XMI files.
-   */
-  public static class XMIReader extends JCasCollectionReader_ImplBase {
-
-    public static final String PARAM_FILES = "files";
-
-    @ConfigurationParameter(
-        name = PARAM_FILES,
-        mandatory = true,
-        description = "The XMI files to be loaded")
-    private List<File> files;
-
-    private Iterator<File> filesIter;
-
-    private int completed;
-
-    @Override
-    public void initialize(UimaContext context) throws ResourceInitializationException {
-      super.initialize(context);
-      this.filesIter = files.iterator();
-      this.completed = 0;
-    }
-
-    @Override
-    public Progress[] getProgress() {
-      return new Progress[] { new ProgressImpl(this.completed, this.files.size(), Progress.ENTITIES) };
-    }
-
-    @Override
-    public boolean hasNext() throws IOException, CollectionException {
-      return this.filesIter.hasNext();
-    }
-
-    @Override
-    public void getNext(JCas jCas) throws IOException, CollectionException {
-      FileInputStream inputStream = new FileInputStream(this.filesIter.next());
-      try {
-        XmiCasDeserializer.deserialize(new BufferedInputStream(inputStream), jCas.getCas());
-      } catch (SAXException e) {
-        throw new CollectionException(e);
-      }
-      inputStream.close();
-      this.completed += 1;
-    }
-
-  }
-
-  /**
    * Class for adding DocumentID annotations.
    * 
    * Needed because {@link FilesInDirectoryCollectionReader} creates {@link DocumentID} annotations
@@ -409,25 +329,6 @@ public class RelationExtractorEvaluation {
       for (EntityMention mention : new ArrayList<EntityMention>(mentions)) {
         mention.removeFromIndexes();
       }
-    }
-  }
-
-  /**
-   * This is a replacement for {@link DefaultMultiClassLIBSVMDataWriterFactory} that doesn't do
-   * row-normalization.
-   */
-  public static class MultiClassLIBSVMDataWriterFactory extends
-      DataWriterFactory_ImplBase<FeatureVector, String, Integer> {
-
-    public DataWriter<String> createDataWriter() throws IOException {
-      MultiClassLIBSVMDataWriter dataWriter = new MultiClassLIBSVMDataWriter(this.outputDirectory);
-      FeatureVectorFeaturesEncoder fe = new FeatureVectorFeaturesEncoder(0);
-      fe.addEncoder(new NumberEncoder());
-      fe.addEncoder(new BooleanEncoder());
-      fe.addEncoder(new StringEncoder());
-      dataWriter.setFeaturesEncoder(fe);
-      dataWriter.setOutcomeEncoder(new StringToIntegerOutcomeEncoder());
-      return dataWriter;
     }
   }
 
