@@ -77,6 +77,9 @@ public class Stats {
   
 	public static void main(String[] args) throws JDOMException, IOException {
 		
-		Stats.compute(Constants.sharpAllXmlPath);
+		Stats.compute(Constants.shareAllXmlPath);
+		Stats.compute(Constants.shareTrainXmlPath);
+		Stats.compute(Constants.shareDevXmlPath);
+		Stats.compute(Constants.shareTestXmlPath);
 	}
 }
