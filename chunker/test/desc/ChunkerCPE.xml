@@ -31,7 +31,7 @@
 <nameValuePair>
 <name>PosModelFile</name>
 <value>
-<string>test\data\unit-test.postagger.model.bin.gz</string>
+<string>test\data\unit-test.mayo-pos.zip</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

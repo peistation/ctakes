@@ -6,9 +6,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
 	<classpathentry kind="lib" path="/core/lib/jdom.jar"/>
 	<classpathentry kind="lib" path="/core/lib/junit.jar"/>
-	<classpathentry kind="lib" path="/core/lib/maxent-2.5.0.jar"/>
 	<classpathentry kind="lib" path="/core/lib/OpenAI_FSM.jar"/>
-	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.4.3.jar"/>
+	<classpathentry kind="lib" path="/core/lib/opennlp-maxent-3.0.2-incubating.jar"/>
+	<classpathentry kind="lib" path="/core/lib/opennlp-tools-1.5.2-incubating.jar"/>
 	<classpathentry kind="lib" path="/core/lib/trove.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dictionary lookup"/>

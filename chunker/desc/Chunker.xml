@@ -26,7 +26,7 @@
 <nameValuePair>
 <name>ChunkerModelFile</name>
 <value>
-<string>models/chunker.model.bin.gz</string>
+<string>models/chunk-model.claims-1.5.zip</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -78,7 +78,7 @@
 <name>ChunkerModelFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:models/chunker.model.bin.gz</fileUrl>
+<fileUrl>file:models/chunk-model.claims-1.5.zip</fileUrl>
 </fileResourceSpecifier>
 <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
 </externalResource>

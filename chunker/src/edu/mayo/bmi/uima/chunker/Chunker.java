@@ -24,10 +24,13 @@
 package edu.mayo.bmi.uima.chunker;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import opennlp.tools.lang.english.TreebankChunker;
+import opennlp.tools.chunker.ChunkerModel;
+// import opennlp.tools.lang.english.TreebankChunker; // no longer part of OpenNLP as of 1.5
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -85,10 +88,12 @@ public class Chunker extends JCasAnnotator_ImplBase {
 		try {
 			chunkerModelPath = (String) uimaContext.getConfigParameterValue(CHUNKER_MODEL_FILE_PARAM);
 			File chunkerModelFile = FileLocator.locateFile(chunkerModelPath);
+			InputStream fis = new FileInputStream(chunkerModelFile);
+			ChunkerModel model = new ChunkerModel(fis);
 			String chunkerModelAbsPath = chunkerModelFile.getAbsolutePath();
 			logger.info("Chunker model file: " + chunkerModelAbsPath); 
 									
-			chunker = new TreebankChunker(chunkerModelAbsPath);
+			chunker = new opennlp.tools.chunker.ChunkerME(model);
 
 			String chunkerCreatorClassName = (String) uimaContext.getConfigParameterValue(CHUNKER_CREATOR_CLASS_PARAM);
 
