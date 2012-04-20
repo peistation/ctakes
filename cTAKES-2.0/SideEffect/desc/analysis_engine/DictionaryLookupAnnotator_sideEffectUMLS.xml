@@ -93,7 +93,7 @@
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.NamedEntity</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.IdentifiedAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>
