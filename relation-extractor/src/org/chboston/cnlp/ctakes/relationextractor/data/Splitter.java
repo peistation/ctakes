@@ -17,11 +17,10 @@ import java.util.Stack;
  */
 public class Splitter {
 
-	public final String ALLFILELOC = "/home/dima/mipacq/iaa/data/XML_exported_corpus_1_2_show_all/";
-
-	public final String TRAINLOC = "/home/dima/temp/splitter/train/";
-	public final String DEVLOC = "/home/dima/temp/splitter/dev/";
-	public final String TESTLOC = "/home/dima/temp/splitter/test/";
+	public final String ALLFILELOC = "/home/dima/sharp/cloud/share/xml/all/";
+	public final String TRAINLOC = "/home/dima/sharp/cloud/share/xml/train/";
+	public final String DEVLOC = "/home/dima/sharp/cloud/share/xml/dev/";
+	public final String TESTLOC = "/home/dima/sharp/cloud/share/xml/test/";
 	
 	// number of files in train, dev, and test
 	int totalSize;
@@ -33,10 +32,6 @@ public class Splitter {
 		
 	/**
 	 * Specify percentages of the split.
-	 * 
-	 * @param trainProportion
-	 * @param devProportion
-	 * @param testProportion
 	 */
 	public Splitter(double trainProportion, double devProportion, double testProportion) {
 
@@ -60,10 +55,6 @@ public class Splitter {
 	
 	/**
 	 * Specify the size of each set.
-	 * 
-	 * @param trainSize
-	 * @param devSize
-	 * @param testSize
 	 */
 	public Splitter(int trainSize, int devSize, int testSize) {
 
@@ -114,7 +105,7 @@ public class Splitter {
 	
 	public static void main(String[] args) throws IOException {
 		
-		Splitter s = new Splitter(147, 50, 50);
+		Splitter s = new Splitter(80, 25, 25);
 		s.createDirectories();
 		s.split();
 	}
