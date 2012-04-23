@@ -356,7 +356,7 @@ public class RelationExtractorEvaluation {
     private AnalysisEngineDescription getClassifierAnnotatorDescription()
         throws ResourceInitializationException {
       return AnalysisEngineFactory.createPrimitiveDescription(
-          RelationExtractorAnnotator.class,
+          EntityMentionPairRelationExtractorAnnotator.class,
           this.additionalParameters);
     }
 
