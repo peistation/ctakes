@@ -9,7 +9,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/home/dima/sharp/cloud/mipacq/text/all/</string>
+                        <string>/home/dima/sharp/cloud/share/text/all/</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
@@ -31,7 +31,7 @@
                 <nameValuePair>
                     <name>InputDirectory</name>
                     <value>
-                        <string>/home/dima/sharp/cloud/mipacq/xml/all/</string>
+                        <string>/home/dima/sharp/cloud/share/xml/all/</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>
