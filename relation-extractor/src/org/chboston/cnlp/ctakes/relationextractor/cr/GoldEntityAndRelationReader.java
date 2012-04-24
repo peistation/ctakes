@@ -114,8 +114,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 	
 	/**
 	 * Add to the CAS instances of degree_of relations of the form:
-	 * [Argument] degree_of [Related_to] (e.g. "chronic pain")
-	 * Create a Modifier for [Argument] and an EntityMention for [Related_to].
+	 * Modifer degree_of EntityMention (e.g. "chronic pain")
 	 */
 	private void addDegreeOfRelations(
 			JCas jCas, 
@@ -137,12 +136,12 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				continue; 
 			}
 
-			// restrict the types of Related_to arguments to the ones that ctakes can extract
-			if(relationInfo.role1.equals(Constants.mipacqRelatedToName) &&  
+			// ignore relations where the entity cannot be extracted by ctakes
+			if(relationInfo.role1.equals(Constants.shareEntityMentionRole) &&  
 					(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)) == CONST.NE_TYPE_ID_UNKNOWN)) {
 				continue;
 			}
-			if(relationInfo.role2.equals(Constants.mipacqRelatedToName) &&
+			if(relationInfo.role2.equals(Constants.shareEntityMentionRole) &&
 					Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)) == CONST.NE_TYPE_ID_UNKNOWN) {
 				continue;
 			}
@@ -153,87 +152,90 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			}
 			uniqueRelations.add(relationInfo);
 
-			Span argumentSpan;
-			int argumentType;
-			// need to find out which of the two arguments is the first semantic argument (i.e. "Argument")
-			if(relationInfo.role1.equals(Constants.mipacqArgumentName)) {
+			Span modifierSpan;
+			int modifierType;
+			// need to find out which of the two arguments is the modifier
+			if(relationInfo.role1.equals(Constants.shareModifierRole)) {
 				Span first = entityMentions.get(relationInfo.id1).get(0);
 				Span last = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
-				argumentSpan = new Span(first.start, last.end);
-				argumentType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
+				modifierSpan = new Span(first.start, last.end);
+				modifierType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
 			} 
-			else if(relationInfo.role2.equals(Constants.mipacqArgumentName)) {
+			else if(relationInfo.role2.equals(Constants.shareModifierRole)) {
 				Span first = entityMentions.get(relationInfo.id2).get(0);
 				Span last = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
-				argumentSpan = new Span(first.start, last.end);
-				argumentType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
+				modifierSpan = new Span(first.start, last.end);
+				modifierType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
 			}
 			else {
 				continue; // invalid value in role1
 			}
 			
-			Span relatedToSpan;
-			int relatedToType;
-			// need to find out which of the two arguments is the second semantic argument (i.e. "Related_to")
-			if(relationInfo.role1.equals(Constants.mipacqRelatedToName)) {
+			
+
+			
+			Span entityMentionSpan;
+			int entityMentionType;
+			// need to find out which of the two arguments is the entity mention
+			if(relationInfo.role1.equals(Constants.shareEntityMentionRole)) {
 				Span first = entityMentions.get(relationInfo.id1).get(0);
 				Span last = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
-				relatedToSpan = new Span(first.start, last.end);
-				relatedToType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
+				entityMentionSpan = new Span(first.start, last.end);
+				entityMentionType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
 			} 
-			else if(relationInfo.role2.equals(Constants.mipacqRelatedToName)) {
+			else if(relationInfo.role2.equals(Constants.shareEntityMentionRole)) {
 				Span first = entityMentions.get(relationInfo.id2).get(0);
 				Span last = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
-				relatedToSpan = new Span(first.start, last.end);
-				relatedToType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
+				entityMentionSpan = new Span(first.start, last.end);
+				entityMentionType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
 			}
 			else {
 				continue; // invalid value in role2
 			}
 			
-			// create a modifier for "Argument"
+			// create a modifier object and add it to the cas
 			Modifier modifier = null;
-			if(spanToModifier.containsKey(argumentSpan)) {
+			if(spanToModifier.containsKey(modifierSpan)) {
 				// an entity with the same span has already been added to the cas
-				modifier = spanToModifier.get(argumentSpan);
+				modifier = spanToModifier.get(modifierSpan);
 			} 
 			else {
 				// this entity needs to be addded to the cas
-				modifier = new Modifier(jCas, argumentSpan.start, argumentSpan.end);
-				modifier.setTypeID(argumentType);
+				modifier = new Modifier(jCas, modifierSpan.start, modifierSpan.end);
+				modifier.setTypeID(modifierType);
 				modifier.setId(identifiedAnnotationId++);
 				modifier.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				modifier.setConfidence(1);
 				modifier.addToIndexes();
-				spanToModifier.put(argumentSpan, modifier);
+				spanToModifier.put(modifierSpan, modifier);
 			}
 			
-			// create an entity mention for "Related_to"
+			// create an entity mention object and add it to the cas
 			EntityMention entityMention = null;
-			if(spanToEntity.containsKey(relatedToSpan)) {
+			if(spanToEntity.containsKey(entityMentionSpan)) {
 				// an entity with the same span has already been added to the cas
-				entityMention = spanToEntity.get(relatedToSpan);
+				entityMention = spanToEntity.get(entityMentionSpan);
 			} 
 			else {
 				// this entity needs to be addded to the cas
-				entityMention = new EntityMention(jCas, relatedToSpan.start, relatedToSpan.end);
-				entityMention.setTypeID(relatedToType);
+				entityMention = new EntityMention(jCas, entityMentionSpan.start, entityMentionSpan.end);
+				entityMention.setTypeID(entityMentionType);
 				entityMention.setId(identifiedAnnotationId++);
 				entityMention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 				entityMention.setConfidence(1);
 				entityMention.addToIndexes();
-				spanToEntity.put(relatedToSpan, entityMention);
+				spanToEntity.put(entityMentionSpan, entityMention);
 			}
 
 			RelationArgument relationArgument1 = new RelationArgument(jCas);
 			relationArgument1.setId(relationArgumentId++);
 			relationArgument1.setArgument(modifier);
-			relationArgument1.setRole(Constants.mipacqArgumentName);
+			relationArgument1.setRole(Constants.shareModifierRole);
 
 			RelationArgument relationArgument2 = new RelationArgument(jCas);
 			relationArgument2.setId(relationArgumentId++);
 			relationArgument2.setArgument(entityMention);
-			relationArgument2.setRole(Constants.mipacqRelatedToName);
+			relationArgument2.setRole(Constants.shareEntityMentionRole);
 
 			BinaryTextRelation binaryTextRelation = new BinaryTextRelation(jCas);
 			binaryTextRelation.setArg1(relationArgument1);
