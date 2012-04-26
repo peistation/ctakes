@@ -387,34 +387,34 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 		}
 	}
 	
-	/**
-	 * Show relation instances that are currently present in the CAS. 
-	 * This can be useful for debugging.  
-	 */
-	private void showAddedRelations(JCas jCas, boolean showBothArguments) {
-		
-		for(BinaryTextRelation binaryTextRelation : org.uimafit.util.JCasUtil.select(jCas, BinaryTextRelation.class)) {
-			
-			String arg1 = binaryTextRelation.getArg1().getArgument().getCoveredText();
-			String role1 = binaryTextRelation.getArg1().getRole();
-			
-			String arg2 = binaryTextRelation.getArg2().getArgument().getCoveredText();
-			String role2 = binaryTextRelation.getArg2().getRole();
-			
-			String category = binaryTextRelation.getCategory();
-			
-			if(category.equals("degree_of")) { // <argument> degree_of <related_to> e.g. severe pain
-				
-				if(showBothArguments) {
-					System.err.format("<%s: %s> <%s: %s>\n", role1, arg1, role2, arg2);
-				}
-				
-				if(role1.equals("Argument")) {
-					System.out.println(arg1);
-				} else {
-					System.out.println(arg2);
-				}
-			}
-		}
-	}
+//	/**
+//	 * Show relation instances that are currently present in the CAS. 
+//	 * This can be useful for debugging.  
+//	 */
+//	private void showAddedRelations(JCas jCas, boolean showBothArguments) {
+//		
+//		for(BinaryTextRelation binaryTextRelation : org.uimafit.util.JCasUtil.select(jCas, BinaryTextRelation.class)) {
+//			
+//			String arg1 = binaryTextRelation.getArg1().getArgument().getCoveredText();
+//			String role1 = binaryTextRelation.getArg1().getRole();
+//			
+//			String arg2 = binaryTextRelation.getArg2().getArgument().getCoveredText();
+//			String role2 = binaryTextRelation.getArg2().getRole();
+//			
+//			String category = binaryTextRelation.getCategory();
+//			
+//			if(category.equals("degree_of")) { // <argument> degree_of <related_to> e.g. severe pain
+//				
+//				if(showBothArguments) {
+//					System.err.format("<%s: %s> <%s: %s>\n", role1, arg1, role2, arg2);
+//				}
+//				
+//				if(role1.equals("Argument")) {
+//					System.out.println(arg1);
+//				} else {
+//					System.out.println(arg2);
+//				}
+//			}
+//		}
+//	}
 }

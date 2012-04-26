@@ -7,14 +7,11 @@ import java.io.IOException;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
-import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.xml.sax.SAXException;
-
-import com.google.common.io.Files;
 
 
 /**
