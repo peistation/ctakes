@@ -33,7 +33,6 @@ import opennlp.maxent.GISModel;
 import opennlp.maxent.io.SuffixSensitiveGISModelWriter;
 import opennlp.tools.sentdetect.DefaultSDContextGenerator;
 import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.util.Span;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
