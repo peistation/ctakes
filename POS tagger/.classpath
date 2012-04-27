@@ -8,7 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry kind="lib" path="/core/lib/jdom.jar"/>
-	<classpathentry kind="lib" path="/core/lib/trove.jar"/>
 	<classpathentry kind="lib" path="resources"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="lib" path="/core/lib/opennlp-maxent-3.0.2-incubating.jar"/>

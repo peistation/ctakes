@@ -5,9 +5,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resources"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
 	<classpathentry kind="lib" path="lib/OpenAI_FSM.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/opennlp-maxent-3.0.2-incubating.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/opennlp-tools-1.5.2-incubating.jar"/>
