@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/POS tagger"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/document preprocessor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/assertion"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
