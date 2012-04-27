@@ -31,7 +31,7 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 		List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
 		for (EntityMention entity : entities) {
 			for (Modifier modifier : modifiers) {
-				pairs.add(new IdentifiedAnnotationPair(modifier, entity));
+				pairs.add(new IdentifiedAnnotationPair(entity, modifier));
 			}
 		}
 		return pairs;

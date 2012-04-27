@@ -53,6 +53,7 @@ import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.Modifier;
 
 public class RelationExtractorEvaluation {
 	
@@ -361,6 +362,32 @@ public class RelationExtractorEvaluation {
   }
 
   /**
+   * Class that copies {@link Modifier} annotations from the CAS with the manual annotations to
+   * the CAS that will be used by the system.
+   */
+  public static class GoldModifierCopier extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas goldView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+      for (Modifier goldModifier : JCasUtil.select(goldView, Modifier.class)) {
+        Modifier modifier = new Modifier(jCas, goldModifier.getBegin(), goldModifier.getEnd());
+        modifier.setTypeID(goldModifier.getTypeID());
+        modifier.setId(goldModifier.getId());
+        modifier.setDiscoveryTechnique(goldModifier.getDiscoveryTechnique());
+        modifier.setConfidence(goldModifier.getConfidence());
+        modifier.addToIndexes();
+      }
+    }
+
+  }
+
+  /**
    * Class that removes {@link EntityMention} annotations from the CAS's default view
    */
   public static class EntityMentionRemover extends JCasAnnotator_ImplBase {
@@ -370,6 +397,20 @@ public class RelationExtractorEvaluation {
       // iterate over copy of collection so that we can delete mentions
       for (EntityMention mention : new ArrayList<EntityMention>(mentions)) {
         mention.removeFromIndexes();
+      }
+    }
+  }
+
+  /**
+   * Class that removes {@link Modifier} annotations from the CAS's default view
+   */
+  public static class ModifierRemover extends JCasAnnotator_ImplBase {
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      Collection<Modifier> modifiers = JCasUtil.select(jCas, Modifier.class);
+      // iterate over copy of collection so that we can delete mentions
+      for (Modifier modifier : new ArrayList<Modifier>(modifiers)) {
+        modifier.removeFromIndexes();
       }
     }
   }

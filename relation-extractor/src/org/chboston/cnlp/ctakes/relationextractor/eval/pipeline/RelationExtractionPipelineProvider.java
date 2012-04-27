@@ -13,6 +13,8 @@ import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.EntityMentionRemover;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.GoldEntityMentionCopier;
+import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.GoldModifierCopier;
+import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.ModifierRemover;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
@@ -61,10 +63,12 @@ import org.uimafit.testing.util.HideOutput;
           this.getDir(name).getPath());
 
       return Arrays.asList(
-          // remove cTAKES entities from the system view
+          // remove cTAKES entity mentions and modifiers from the system view
           AnalysisEngineFactory.createPrimitive(EntityMentionRemover.class),
-          // copy gold mentions into the system view
+          AnalysisEngineFactory.createPrimitive(ModifierRemover.class),
+          // copy gold entity mentions and modifiers into the system view
           AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
+          AnalysisEngineFactory.createPrimitive(GoldModifierCopier.class),
           // run the relation extractor
           AnalysisEngineFactory.createPrimitive(desc));
     }
@@ -79,10 +83,12 @@ import org.uimafit.testing.util.HideOutput;
           new File(this.getDir(name), "model.jar").getPath());
 
       return Arrays.asList(
-          // remove cTAKES entities from the system view
+          // remove cTAKES entity mentions and modifiers from the system view
           AnalysisEngineFactory.createPrimitive(EntityMentionRemover.class),
-          // copy gold mentions into the system view
+          AnalysisEngineFactory.createPrimitive(ModifierRemover.class),
+          // copy gold entity mentions and modifiers into the system view
           AnalysisEngineFactory.createPrimitive(GoldEntityMentionCopier.class),
+          AnalysisEngineFactory.createPrimitive(GoldModifierCopier.class),
           // run the relation extractor
           AnalysisEngineFactory.createPrimitive(desc));
     }
