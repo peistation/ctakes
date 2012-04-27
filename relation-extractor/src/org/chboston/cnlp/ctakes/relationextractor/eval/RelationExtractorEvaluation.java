@@ -219,7 +219,7 @@ public class RelationExtractorEvaluation {
 	  // define the grid of parameters over which we will search
 	  List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
 	  if (gridSearch) {
-		  for (float probabilityOfKeepingANegativeExample : new float[] { 0.1f, 0.15f, 0.2f, 0.25f, 0.5f }) {
+		  for (float probabilityOfKeepingANegativeExample : new float[] { 0.5f, 1.0f }) {
 			  for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
 				  // linear kernel (gamma doesn't matter)
 				  possibleParams.add(new ParameterSettings(
@@ -231,7 +231,7 @@ public class RelationExtractorEvaluation {
 			  }
 		  }
 	  } else {
-		  possibleParams.add(new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0));
+		  possibleParams.add(new ParameterSettings(false, 1.0f, "linear", 0.1, 1.0));
 	  }
 	  return possibleParams;
   }
