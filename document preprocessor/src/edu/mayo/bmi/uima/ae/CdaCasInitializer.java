@@ -191,9 +191,12 @@ public class CdaCasInitializer extends JCasAnnotator_ImplBase
             Map metaDataMap = dmd.getMetaData();
             
             String docID = (String)metaDataMap.get(ClinicalNotePreProcessor.MD_KEY_DOC_ID);
-        	DocumentID newDocId = new DocumentID(plaintextView);
-        	newDocId.setDocumentID(docID);
-        	newDocId.addToIndexes();
+        	if (docID!=null) {
+            	DocumentID newDocId = new DocumentID(plaintextView);
+            	newDocId.setDocumentID(docID);
+            	newDocId.addToIndexes();
+        	
+        	}
             
             FSArray fsArr = new FSArray(plaintextView, metaDataMap.size());
             Iterator keyItr = metaDataMap.keySet().iterator();
