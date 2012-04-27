@@ -78,6 +78,7 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 	static{
 		// TODO initialize feature types...
 		// read in feature files for each classifier type
+		// TODO don't hard code these file names or at least not the assumption they are not in a subdir of what's on the path
 		featSet = loadFeatures(selFeats, "ngramids.mayo.txt");
 		pronFeatSet = loadFeatures(pronSelFeats, "pronngramids.mayo.txt");
 		numNEFeats = selFeats.length;
