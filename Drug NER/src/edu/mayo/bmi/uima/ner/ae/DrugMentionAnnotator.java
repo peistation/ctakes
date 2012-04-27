@@ -935,7 +935,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					  }
 				  }
 			  }
-		  } else {
+		  } else if (uniqueNEs.size() > 0){ // don't bother finding spans if no ne in list
 			  windowSpans = getWindowSpan(jcas, "list", MedicationEventMention.type, begin, end,  false, globalArraySize);
 			  if (windowSpans.length > 0 && windowSpans[0][0] == -1) {
 				  windowSpans[0][0] = begin;
@@ -1247,9 +1247,10 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 
 					} else
 					{
+						statusChangeItr.next();// Added this line to make sure the the next DrugChangeStatusAnnotation in the event that there is no subsection to look at
 						boolean noWeirdError = true;
 						boolean pullOut = false;
-						while (!pullOut & !isolate && findSubSection.hasNext()
+						while (!pullOut && !isolate && findSubSection.hasNext()
 								&& noWeirdError)
 						{
 							try
