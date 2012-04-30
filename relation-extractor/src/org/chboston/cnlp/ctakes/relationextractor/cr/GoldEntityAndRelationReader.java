@@ -49,6 +49,13 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  *  E.g. the cas may already contain an entity if it participates in another
  *  relation that's already been added to the cas or due to an error in the gold 
  *  standard (i.e. if it was annotated twice -- such weirdness does happen).
+ *  
+ *  TODO: Currently this reader does not normalize the roles of the arguments
+ *  accross different corpora. It will simply add to the cas whatever is in the data.
+ *  However, the roles were not consistently annotated accross different corpora 
+ *  (e.g. Sharp and Share assign different roles to the modifiers and entity
+ *  mentions that participate in degree_of relation). This issue needs to be addressed
+ *  so that modles can be trained on data coming from different sources.
  * 
  * @author dmitriy dligach
  *
