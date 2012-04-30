@@ -62,6 +62,7 @@
     <!-- Project folders -->
     <!-- - - - - - - - - -->
     <property name="_common_type_system.dir" value="../common-type-system" />
+    <property name="_assertion.dir" value="../assertion" />
     <property name="_chunker.dir" value="../chunker" />
     <property name="_clinical_documents_pipeline.dir" value="../clinical documents pipeline" />
     <property name="_context_dependent_tokenizer.dir" value="../context dependent tokenizer" />
@@ -78,7 +79,6 @@
     <property name="_side_effects.dir" value="../SideEffect" />
     <property name="_constituency_parser.dir" value="../Constituency Parser" />
     <property name="_coref_resolver.dir" value="../coref-resolver" />
-    <property name="_relation_extractor.dir" value="../relation-extractor" />
     	
     <property name="_utils_project.dir" value="../utils" />
 
@@ -93,6 +93,7 @@
     <property name="lib.dir" value="lib" />
     <property name="desc.dir" value="desc" />
     <property name="res.dir" value="resources" />
+	
     <property name="compile.debug" value="true" />
 
     <!-- - - - - - - - - - - - - - -->
@@ -100,6 +101,27 @@
     <!-- - - - - - - - - - - - - - -->
     <property name="_uima.lib" value="${uima.home}/lib/uima-core.jar:${uima.home}/lib/uima-document-annotation.jar:${uima.home}/lib/uima-tools.jar:${uima.home}/lib/uima-cpe.jar" />
     <property name="_junit.lib" value="${_core.dir}/${lib.dir}/junit.jar" />
+    <path id="_assertion.cp">
+        <pathelement path="${_assertion.dir}/${src.dir}" />
+        <pathelement path="${_assertion.dir}/conf" />
+        <pathelement path="${_assertion.dir}/${res.dir}" />
+        <pathelement path="${_common_type_system.dir}/${bin.dir}" />
+        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
+        <pathelement location="${_assertion.dir}/${lib.dir}/commons-cli-1.2.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/commons-lang-2.6.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/jackson-core-asl-1.5.0.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/jackson-mapper-asl-1.5.0.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/jcarafe-core_2.9.1-0.9.8.3.RC4.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/med-facts-i2b2-1.2-SNAPSHOT.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/med-facts-zoner-1.1.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/sbinary_2.9.0-0.4.0.jar"/>
+        <pathelement location="${_assertion.dir}/${lib.dir}/scala-library-2.9.0.jar"/>
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/uimafit-1.2.0.jar" />
+        <pathelement path="${_uima.lib}" />
+        <pathelement path="${_junit.lib}" />
+    </path>
     <path id="_chunker.cp">
         <pathelement path="${_chunker.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
@@ -317,34 +339,6 @@
         <pathelement path="${_uima.lib}" />
     </path>
 
-    <path id="_relation_extractor.cp" >
-        <pathelement path="${_relation_extractor.dir}/${src.dir}" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/uimafit-1.2.0.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-util-0.8.1.jar" />    	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-svmlight-1.0.2.jar" />     	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-libsvm-1.0.1.jar" />     	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-opennlp-maxent-1.0.2.jar" /> 
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-chunker-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-eval-0.8.1.jar" />    	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-test-util-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/args4j-2.0.16.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/guava-10.0.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/hppc-0.4.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-io-2.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-lang-2.4.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-logging-1.1.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/spring-core-3.0.3.RELEASE.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement path="${_core.dir}/${bin.dir}" />
-    	<pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
-        <pathelement path="${_chunker.dir}/${bin.dir}" />
-        <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
-        <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
-        <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
-        <pathelement path="${_uima.lib}" />
-    </path>	
 
 	<!-- - - - - - - - - - -->
     <!-- Runtime classpath -->
@@ -364,7 +358,7 @@
         <pathelement path="${_LVG.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
-        <pathelement path="${_relation_extractor.dir}/${bin.dir}" />
+    	
         <!-- resource directories -->
         <pathelement path="${_chunker.dir}/${res.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${res.dir}" />
@@ -377,7 +371,7 @@
         <pathelement path="${_LVG.dir}/${res.dir}" />
         <pathelement path="${_NE_contexts.dir}/${res.dir}" />
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
-        <pathelement path="${_relation_extractor.dir}/${res.dir}" />
+    	
         <!-- library jars directories -->
         <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
@@ -390,24 +384,7 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
         <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />     	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/uimafit-1.2.0.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-util-0.8.1.jar" />    	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-svmlight-1.0.2.jar" />     	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-libsvm-1.0.1.jar" />     	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-ml-opennlp-maxent-1.0.2.jar" /> 
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-chunker-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-eval-0.8.1.jar" />    	
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/cleartk-test-util-1.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/args4j-2.0.16.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/guava-10.0.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/hppc-0.4.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-io-2.0.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-lang-2.4.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/commons-logging-1.1.1.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/spring-core-3.0.3.RELEASE.jar" />
-        <pathelement location="${_relation_extractor.dir}/${lib.dir}/jdom.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
         <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" />
  
 
@@ -446,9 +423,10 @@
         <delete dir="${_side_effects.dir}/${bin.dir}" />
         <delete dir="${_constituency_parser.dir}/${bin.dir}" />
         <delete dir="${_coref_resolver.dir}/${bin.dir}" />
-        <delete dir="${_relation_extractor.dir}/${bin.dir}" />
+        <delete dir="${_assertion.dir}/${bin.dir}" />
    		<echo message="Now deleting filesets for gen'd types"/>
         <delete>
+            <fileset dir="${_assertion.dir}/${src.dir}" includes="**/types/*.java" />
             <fileset dir="${_chunker.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/core/type/*/*.java" />
             <fileset dir="${_clinical_documents_pipeline.dir}/${src.dir}" includes="**/core/type/*.java" /> <!-- any old types -->
@@ -479,7 +457,6 @@
             <fileset dir="${_side_effects.dir}/${src.dir}" includes="**/type/*/*.java" />
             <fileset dir="${_constituency_parser.dir}/${src.dir}" includes="**/type/*.java" />
             <fileset dir="${_coref_resolver.dir}/${src.dir}" includes="**/type/*.java" />
-            <fileset dir="${_relation_extractor.dir}/${src.dir}" includes="**/type/*.java" />        	
         </delete>
    		<echo message="Done deleting filesets for gen'd types"/>
         <delete dir="${docs.dir}/api" />
@@ -495,8 +472,8 @@
     <target name="all" depends="generate_types,build_all,javadoc.generate" description="Generates necessary type system files, compiles all source files, and build Javadoc API documentations." />
 
     <target name="build_all" depends="build_base, build_extensions, build_other" description="Compiles all source files." />
-    <target name="build_base" depends="_common_type_system.build,_core.build,_document_preprocessor.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build,_LVG.build,_dictionary_lookup.build,_NE_contexts.build,_clinical_documents_pipeline.build,_dependency_parser.build" description="Gens types (xml to .java) and Compiles .java to .class." />
-    <target name="build_extensions" depends="_pad_termspotter.build,_drug_ner.build,_smoking_status.build,_side_effects.build,_constituency_parser.build,_coref_resolver.build,_relation_extractor.build" description="Compiles optional parts of cTAKES." />
+    <target name="build_base" depends="_common_type_system.build,_core.build,_document_preprocessor.build,_POS_tagger.build,_chunker.build,_context_dependent_tokenizer.build,_LVG.build,_dictionary_lookup.build,_NE_contexts.build,_clinical_documents_pipeline.build,_dependency_parser.build,_assertion.build" description="Gens types (xml to .java) and Compiles .java to .class." />
+    <target name="build_extensions" depends="_pad_termspotter.build,_drug_ner.build,_smoking_status.build,_side_effects.build,_constituency_parser.build,_coref_resolver.build" description="Compiles optional parts of cTAKES." />
     <target name="build_other" depends="comparexcas.build" description="Compiles Utilities such as CompareXcas." />
 
     <!-- - - - - - - - - - - - - - - - - -->
@@ -516,18 +493,10 @@
         <java fork="true" classname="org.apache.uima.tools.cpm.CpmFrame" classpathref="testrun.cp" />
     </target>
 
-    <!-- - - - - - - - - - - - - - - - -->
-    <!-- Unzip additional dictionaries -->
-    <!-- - - - - - - - - - - - - - - - -->
-    <target name="_dictionaries.expand">
-    	<!-- no longer needed... -->
-    	<!-- lucene can handle the .svn directories now so can store them in SVN already expanded -->
-    </target>
-
     <!-- - - - - - - - - - - - - -->
     <!-- Type system generators  -->
     <!-- - - - - - - - - - - - - -->
-    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_pad_subsection.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type" unless="-types.ready" description="JCasGen type systems files for every project that has types.">
+    <target name="generate_types" depends="_common_type_system.type,_clinical_documents_pipeline.type,_pad_termspotter.type,_pad_subsection.type,_drug_ner.type,_smoking_status.type,_side_effects.type,_coref_resolver1.type,_coref_resolver2.type,_assertion.type" unless="-types.ready" description="JCasGen type systems files for every project that has types.">
     <!-- avoid generating more than once, jcasgen and jcasgen_merge are not intelligent enough to only generate outdated types -->
         <property name="types.ready" value="true" />
     </target>
@@ -626,6 +595,16 @@
             <env key="TEMP" value="${env.TEMP}" />
             <arg value="${_coref_resolver.dir}/${desc.dir}/type-system/CorefTypes.xml" />
             <arg value="${_coref_resolver.dir}/${src.dir}" />
+        </exec>
+    </target>
+
+    <target name="_assertion.type">
+        <exec executable="${uima.home}/bin/${jcasgener}.${jext}">
+            <env key="ECLIPSE_HOME" value="${eclipse.home}" />
+            <env key="UIMA_HOME" value="${uima.home}" />
+            <env key="TEMP" value="${env.TEMP}" />
+            <arg value="${_assertion.dir}/${desc.dir}/medfactsTypeSystem.xml" />
+            <arg value="${_assertion.dir}/${src.dir}" />
         </exec>
     </target>
 
@@ -774,13 +753,16 @@
             <classpath refid="_coref_resolver.cp" />
         </javac>
     </target>
-    <target name="_relation_extractor.build" depends="generate_types,build_base" >
-        <mkdir dir="${_relation_extractor.dir}/${bin.dir}" />
-        <javac destdir="${_relation_extractor.dir}/${bin.dir}" srcdir="${_relation_extractor.dir}/${src.dir}" debug="${compile.debug}">
-            <src path="${_relation_extractor.dir}/${src.dir}" />
-            <classpath refid="_relation_extractor.cp" />
+	
+    <target name="_assertion.build" depends="generate_types,_dependency_parser.build" >
+        <mkdir dir="${_assertion.dir}/${bin.dir}" />
+        <javac destdir="${_assertion.dir}/${bin.dir}" debug="${compile.debug}">
+            <src path="${_assertion.dir}/${src.dir}" />
+            <classpath refid="_assertion.cp" />
         </javac>
     </target>
+	
+	
 
     <target name="build_runtime_classpath">
         <property name="testrun_classpath" refid="testrun.cp"/>
@@ -790,7 +772,7 @@
 	<!-- - - - - - - - - - - -->
     <!-- Javadoc generators  -->
     <!-- - - - - - - - - - - -->
-    <target name="javadoc.generate" depends="_javadoc2009.generate,_javadoc2011.generate" />
+    <target name="javadoc.generate" depends="_javadoc2009.generate,_javadoc2011.generate,_javadoc2012a.generate" />
 	
     <target name="_javadoc2009.generate" description="Generates Javadoc HTML pages.">
         <mkdir dir="${docs.dir}/api" />
@@ -817,14 +799,22 @@
         <javadoc destdir="${docs.dir}/api" windowtitle="Clinical Text Analysis and Knowledge Extraction System API">
             <doctitle><![CDATA[<h1>cTAKES ${pipeline.version} Java API Documentation</h1>]]></doctitle>
             <bottom><![CDATA[Copyright &copy; 2011 Mayo Foundation for Medical Education and Research. All Rights Reserved.]]></bottom>
-            <packageset dir="${_common_type_system.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />          	
             <packageset dir="${_smoking_status.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_side_effects.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_constituency_parser.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
             <packageset dir="${_coref_resolver.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />
-            <packageset dir="${_relation_extractor.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />           	
         </javadoc>
     </target>
+
+    <target name="_javadoc2012a.generate" description="Generates Javadoc HTML pages.">
+        <mkdir dir="${docs.dir}/api" />
+        <javadoc destdir="${docs.dir}/api" windowtitle="Clinical Text Analysis and Knowledge Extraction System API">
+            <doctitle><![CDATA[<h1>cTAKES ${pipeline.version} Java API Documentation</h1>]]></doctitle>
+            <bottom><![CDATA[Copyright &copy; 2012 Mayo Foundation for Medical Education and Research. All Rights Reserved.]]></bottom>
+            <packageset dir="${_common_type_system.dir}/${src.dir}" defaultexcludes="yes" excludes="**/type" />          	
+        </javadoc>
+    </target>
+
 
     <!-- - - - - - - - - - -->
     <!-- Build CompareXcas -->
