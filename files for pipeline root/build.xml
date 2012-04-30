@@ -117,7 +117,9 @@
         <pathelement location="${_assertion.dir}/${lib.dir}/med-facts-zoner-1.1.jar"/>
         <pathelement location="${_assertion.dir}/${lib.dir}/sbinary_2.9.0-0.4.0.jar"/>
         <pathelement location="${_assertion.dir}/${lib.dir}/scala-library-2.9.0.jar"/>
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/uimafit-1.2.0.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
@@ -127,9 +129,9 @@
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
@@ -147,14 +149,14 @@
 	<!--
             <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
 	-->
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
     <path id="_context_dependent_tokenizer.cp">
         <pathelement path="${_context_dependent_tokenizer.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
     <path id="_core.cp">
@@ -162,24 +164,23 @@
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement path="${_junit.lib}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
+        <pathelement location="${_core.dir}/${lib.dir}/FindStructAPI.jar" />    	
+        <pathelement location="${_core.dir}/${lib.dir}/struct_mult.jar" />    	
+        <!-- <pathelement location="${_core.dir}/${lib.dir}/uimafit-1.2.0.jar" /> -->    	
         <pathelement path="${_uima.lib}" />
     </path>
     <path id="_common_type_system.cp">
         <pathelement path="${_core.dir}/${src.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
-        <pathelement location="${_common_type_system.dir}/${lib.dir}/libsvm.jar" />
+    	<!-- <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" /> --> 
+        <!-- <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" /> -->
+        <!-- <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" /> --> 
+        <pathelement location="${_common_type_system.dir}/${lib.dir}/libsvm-2.91.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>	
@@ -189,7 +190,7 @@
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
@@ -200,7 +201,7 @@
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xercesImpl.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
@@ -208,15 +209,15 @@
         <pathelement path="${_LVG.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
-        <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_LVG.dir}/${lib.dir}/lvg2010dist.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
     <path id="_NE_contexts.cp">
         <pathelement path="${_NE_contexts.dir}/${src.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
@@ -225,9 +226,9 @@
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
         <pathelement path="${_uima.lib}" />
         <pathelement path="${_junit.lib}" />
     </path>
@@ -239,10 +240,17 @@
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
         <pathelement path="${_chunker.dir}/${bin.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
-        <pathelement location="${_dependency_parser.dir}/${lib.dir}/hppc-0.3.1.jar" />
-        <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" />
-        <pathelement location="${_dependency_parser.dir}/${lib.dir}/args4j-2.0.12.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement path="${_dependency_parser.dir}/{$resources.dir}" />
+        <!-- <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" /> -->
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/cleartk-util-0.8.1.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/args4j-2.0.16.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/hppc-0.3.1.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/clearparser-0.33.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/commons-io-2.0.1.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/commons-lang-2.4.jar"/>
+    	<pathelement location="${_dependency_parser.dir}/${lib.dir}/commons-logging-1.1.1.jar"/>
+    	<pathelement location="${_core.dir}/${lib.dir}/uimafit-1.2.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_junit.lib}" />
         <pathelement path="${_uima.lib}" />
     </path>
@@ -254,7 +262,7 @@
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
@@ -269,11 +277,11 @@
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
         <pathelement path="${_NE_contexts.dir}/${bin.dir}" />
         <pathelement path="${_POS_tagger.dir}/${bin.dir}" />
@@ -284,7 +292,7 @@
         <pathelement path="${_smoking_status.dir}/${src.dir}" />
         <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement path="${_chunker.dir}/${bin.dir}" />
         <pathelement path="${_context_dependent_tokenizer.dir}/${bin.dir}" />
         <pathelement path="${_core.dir}/${bin.dir}" />
@@ -303,7 +311,7 @@
     <path id="_side_effects.cp">
         <pathelement path="${_side_effects.dir}/${src.dir}" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_side_effects.dir}/${lib.dir}/libsvm-2.91.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />
@@ -316,10 +324,10 @@
     <pathelement path="${_constituency_parser.dir}/${src.dir}" />
     <pathelement path="${_clinical_documents_pipeline.dir}/${bin.dir}" />
     <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-    <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+    <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
     <pathelement path="${_core.dir}/${bin.dir}" />
     <pathelement path="${_common_type_system.dir}/${bin.dir}" />
-    <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
+    <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
     <pathelement path="${_uima.lib}" />
     </path>
 
@@ -328,14 +336,14 @@
         <pathelement location="${_coref_resolver.dir}/${lib.dir}/Jama-1.0.2.jar" />
         <pathelement location="${_coref_resolver.dir}/${lib.dir}/libsvm.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_side_effects.dir}/${lib.dir}/libsvm-2.91.jar" />
         <pathelement path="${_core.dir}/${bin.dir}" />
         <pathelement path="${_common_type_system.dir}/${bin.dir}" />    	
         <pathelement path="${_constituency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dependency_parser.dir}/${bin.dir}" />
         <pathelement path="${_dictionary_lookup.dir}/${bin.dir}" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
         <pathelement path="${_uima.lib}" />
     </path>
 
@@ -373,17 +381,16 @@
         <pathelement path="${_POS_tagger.dir}/${res.dir}" />
     	
         <!-- library jars directories -->
-        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.8.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/log4j-1.2.15.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/jdom.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/lucene-core-3.0.2.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.4.3.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/maxent-2.5.0.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-tools-1.5.2-incubating.jar" />
+        <pathelement location="${_core.dir}/${lib.dir}/opennlp-maxent-3.0.2-incubating.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/OpenAI_FSM.jar" />
-        <pathelement location="${_core.dir}/${lib.dir}/trove.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xercesImpl.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xml-apis.jar" />
         <pathelement location="${_document_preprocessor.dir}/${lib.dir}/xmlParserAPIs.jar" />
-        <pathelement location="${_LVG.dir}/${lib.dir}/lvg2008dist.jar" />
+        <pathelement location="${_LVG.dir}/${lib.dir}/lvg2010dist.jar" />
         <pathelement location="${_core.dir}/${lib.dir}/SQLWrapper.jar" />    	
         <pathelement location="${_dependency_parser.dir}/${lib.dir}/liblinear-1.51.jar" />
  
