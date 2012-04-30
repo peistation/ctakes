@@ -36,6 +36,11 @@ public class CONST {
 	public static final int NE_TYPE_ID_PROCEDURE = 5;
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
 	
+	public static final int MODIFIER_TYPE_ID_UNKNOWN = 0;
+	public static final int MODIFIER_TYPE_ID_COURSE_CLASS = 1;
+	public static final int MODIFIER_TYPE_ID_SEVERITY_CLASS = 2;
+	public static final int MODIFIER_TYPE_ID_LAB_INTERPRETATION_INDICATOR = 3;
+	
 	public static final int NE_DISCOVERY_TECH_DICT_LOOKUP = 1;
 	public static final int NE_DISCOVERY_TECH_GOLD_ANNOTATION = 2;
 	
