@@ -1811,15 +1811,22 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			if (isDrugNER)
 			{
 				countNER = globalDrugNER.size();
-				FSArray drugNERArr = new FSArray(jcas, countNER);
+				boolean gotChangeStatus = false;
 				for (int i = 0; i < countNER; i++)
 				{
-					drugNERArr.set(i, (FeatureStructure) globalDrugNER.get(i));
-					
-					addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
-
+					if (!globalDrugNER.get(i).getDrugChangeStatus().equals("noChange"))
+						gotChangeStatus = true;
+					if (i == 0) {
+						addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
+					}
+					else if (gotChangeStatus){
+						MedicationEventMention mem = new MedicationEventMention(jcas, globalDrugNER.get(i).getBegin(), globalDrugNER.get(i).getEnd());
+						addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), mem);
+						mem.addToIndexes(jcas);
+					}
 				}
 			}
+			
 		}
 			}
 
