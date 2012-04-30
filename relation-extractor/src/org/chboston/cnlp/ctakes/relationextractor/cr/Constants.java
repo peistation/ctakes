@@ -19,6 +19,10 @@ public class Constants {
 	public static final String sharpModifierRole = "";
 	public static final String sharpEntityMentionRole = "";
 
+	// modifiers participating in degree_of relation are of one of these types 
+	public static final HashSet<String> modifierClasses = 
+			new HashSet<String>(Arrays.asList("course_class", "severity_class", " lab_interpretation_indicator"));
+	
 	// high priority sharp relations 
 	public static final HashSet<String> relationSet = new HashSet<String>(Arrays.asList("location_of", "degree_of"));
 }

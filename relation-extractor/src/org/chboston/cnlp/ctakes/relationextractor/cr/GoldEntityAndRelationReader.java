@@ -136,16 +136,16 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 				continue; 
 			}
 
-			// ignore relations where the entity cannot be extracted by ctakes
-			if(relationInfo.role1.equals(Constants.shareEntityMentionRole) &&  
-					(Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)) == CONST.NE_TYPE_ID_UNKNOWN)) {
-				continue;
+			// ignore instances where entity mention cannot be extracted by ctakes
+			if(! Constants.modifierClasses.contains(entityTypes.get(relationInfo.id1)) && // is this a modifier? 
+					Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1)) == CONST.NE_TYPE_ID_UNKNOWN) {
+				continue; 
 			}
-			if(relationInfo.role2.equals(Constants.shareEntityMentionRole) &&
+			if(! Constants.modifierClasses.contains(entityTypes.get(relationInfo.id2)) && // is this a modifier? 
 					Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2)) == CONST.NE_TYPE_ID_UNKNOWN) {
-				continue;
+				continue; 
 			}
-
+			
 			// only a single relation is allowed between same pair of gold entities
 			if(uniqueRelations.contains(relationInfo)) {
 				continue;
@@ -155,48 +155,45 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 			Span modifierSpan;
 			int modifierType;
 			// need to find out which of the two arguments is the modifier
-			if(relationInfo.role1.equals(Constants.shareModifierRole)) {
+			if(Constants.modifierClasses.contains(entityTypes.get(relationInfo.id1))) {
 				Span first = entityMentions.get(relationInfo.id1).get(0);
 				Span last = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
 				modifierSpan = new Span(first.start, last.end);
-				modifierType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
+				modifierType = Mapper.getModifierTypeId(entityTypes.get(relationInfo.id1));
 			} 
-			else if(relationInfo.role2.equals(Constants.shareModifierRole)) {
+			else if(Constants.modifierClasses.contains(entityTypes.get(relationInfo.id2))) {
 				Span first = entityMentions.get(relationInfo.id2).get(0);
 				Span last = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
 				modifierSpan = new Span(first.start, last.end);
-				modifierType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
+				modifierType = Mapper.getModifierTypeId(entityTypes.get(relationInfo.id2));
 			}
 			else {
-				continue; // invalid value in role1
+				continue; // neither of the arguments is a modifier; probably an annotation error
 			}
-			
-			
-
 			
 			Span entityMentionSpan;
 			int entityMentionType;
 			// need to find out which of the two arguments is the entity mention
-			if(relationInfo.role1.equals(Constants.shareEntityMentionRole)) {
+			if(! Constants.modifierClasses.contains(entityTypes.get(relationInfo.id1))) {
 				Span first = entityMentions.get(relationInfo.id1).get(0);
 				Span last = entityMentions.get(relationInfo.id1).get(entityMentions.get(relationInfo.id1).size() - 1);
 				entityMentionSpan = new Span(first.start, last.end);
 				entityMentionType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id1));
 			} 
-			else if(relationInfo.role2.equals(Constants.shareEntityMentionRole)) {
+			else if(! Constants.modifierClasses.contains(entityTypes.get(relationInfo.id2))) {
 				Span first = entityMentions.get(relationInfo.id2).get(0);
 				Span last = entityMentions.get(relationInfo.id2).get(entityMentions.get(relationInfo.id2).size() - 1);
 				entityMentionSpan = new Span(first.start, last.end);
 				entityMentionType = Mapper.getEntityTypeId(entityTypes.get(relationInfo.id2));
 			}
 			else {
-				continue; // invalid value in role2
+				continue; // neither of the arguments is an entity mention; probably an annotation error
 			}
 			
 			// create a modifier object and add it to the cas
 			Modifier modifier = null;
 			if(spanToModifier.containsKey(modifierSpan)) {
-				// an entity with the same span has already been added to the cas
+				// an modifier with the same span has already been added to the cas
 				modifier = spanToModifier.get(modifierSpan);
 			} 
 			else {
