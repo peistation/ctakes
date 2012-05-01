@@ -1812,7 +1812,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				boolean gotChangeStatus = false;
 				for (int i = 0; i < countNER; i++)
 				{
-					if (!globalDrugNER.get(i).getDrugChangeStatus().equals("noChange"))
+					if (!globalDrugNER.get(i).getDrugChangeStatus().equals("noChange") && !globalDrugNER.get(i).getDrugChangeStatus().equals("stop") && !globalDrugNER.get(i).getDrugChangeStatus().equals("start"))
 						gotChangeStatus = true;
 					if (i == 0) {
 						addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
