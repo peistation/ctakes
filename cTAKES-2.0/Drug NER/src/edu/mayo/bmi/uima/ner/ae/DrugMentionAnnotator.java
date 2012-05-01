@@ -2725,9 +2725,9 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
 		int [] lastLocation =  {-1,-1};
 		boolean wantMuliple = true;
-		if (elementType == StrengthAnnotation.type) {
+		if (elementType == StrengthUnitAnnotation.type) {
 			while (neItr.hasNext() && wantMuliple) {
-				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+				StrengthUnitAnnotation nea = (StrengthUnitAnnotation) neItr.next();
 
 				if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
 					if (!highest) wantMuliple = false;
@@ -2785,8 +2785,8 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
 		doseSpanLength = findInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan);
 		int parenthesisSpanLength = findInPattern(jcas, beginSpan, endSpan, PunctuationToken.type, parenthesisSpan);
-		strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan);
-		spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
+		strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan);
+		spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan, highestRange);
 		spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange); 
 		spanDose = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange);
 
@@ -2813,9 +2813,9 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
 		int [] lastLocation =  {-1,-1};
 		int counter = 0;
-		if (elementType == StrengthAnnotation.type) {
+		if (elementType == StrengthUnitAnnotation.type) {
 			while (neItr.hasNext()) {
-				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+				StrengthUnitAnnotation nea = (StrengthUnitAnnotation) neItr.next();
 				lastLocation[0] = nea.getBegin();
 				lastLocation[1] = nea.getEnd();
 				if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
