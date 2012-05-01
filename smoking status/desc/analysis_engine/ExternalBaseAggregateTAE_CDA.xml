@@ -26,8 +26,8 @@
     <flowConstraints>
       <fixedFlow>
         <node>CdaCasInitializer</node>
-        <node>TokenizerAnnotator</node>
         <node>SentenceDetectorAnnotator</node>
+        <node>TokenizerAnnotator</node>
         <node>LvgAnnotator</node>
       </fixedFlow>
     </flowConstraints>
