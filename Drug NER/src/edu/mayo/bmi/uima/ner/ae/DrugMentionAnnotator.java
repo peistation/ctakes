@@ -3118,7 +3118,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		int[][] formSpan= new int [sizeArray][2];
 		int[][] durationSpan = new int [sizeArray][2];
 		int[][] parenthesisSpan = new int [sizeArray][2];
-		int[][] statusSpan =new int [sizeArray*2][2];
+		int[][] statusSpan =new int [sizeArray*10][2];
 
 		for (int a = 0 ; a < sizeArray ; a++) {
 			for (int b = 0 ; b < 2 ; b ++) {
