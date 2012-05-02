@@ -19,7 +19,7 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/guava-10.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-10.0.jar" sourcepath="/Users/bethard/.m2/repository/com/google/guava/guava/10.0/guava-10.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/hppc-0.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core-3.0.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>

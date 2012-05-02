@@ -1,75 +1,74 @@
 package org.chboston.cnlp.ctakes.relationextractor.eval;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.chboston.cnlp.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
+import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator.HashableArguments;
-import org.chboston.cnlp.ctakes.relationextractor.eval.pipeline.DegreeOfRelationExtractorPipelineProvider;
-import org.chboston.cnlp.ctakes.relationextractor.eval.pipeline.EntityMentionPairRelationExtractorPipelineProvider;
-import org.cleartk.eval.Evaluation;
-import org.cleartk.eval.provider.BatchBasedEvaluationPipelineProvider;
-import org.cleartk.eval.provider.CleartkPipelineProvider;
-import org.cleartk.eval.provider.CorpusReaderProvider;
-import org.cleartk.eval.provider.EvaluationPipelineProvider;
-import org.cleartk.eval.util.ConfusionMatrix;
+import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
+import org.cleartk.classifier.jar.GenericJarClassifierFactory;
+import org.cleartk.classifier.jar.JarClassifierBuilder;
+import org.cleartk.eval.AnnotationStatistics;
+import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.cr.FilesCollectionReader;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.CollectionReaderFactory;
+import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
+import org.uimafit.pipeline.JCasIterable;
+import org.uimafit.pipeline.SimplePipeline;
+import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Ordering;
-import com.google.common.io.Files;
-
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.Modifier;
 
-public class RelationExtractorEvaluation {
-	
-	public static class Options extends Options_ImplBase {
+public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
 
-		@Option(name = "--train-dir",
-				usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
-				required = true)
-		public File trainDirectory;
+  public static class Options extends Options_ImplBase {
 
-		@Option(name = "--grid-search", usage = "run a grid search to select the best parameters")
-		public boolean gridSearch = false;
+    @Option(
+        name = "--train-dir",
+        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
+        required = true)
+    public File trainDirectory;
 
-		@Option(name = "--run-degree-of", usage = "if true runs the degree of relation extractor otherwise " +
-				"it uses the normal entity mention pair relation extractor")
-		public boolean runDegreeOf = false;
+    @Option(name = "--grid-search", usage = "run a grid search to select the best parameters")
+    public boolean gridSearch = false;
+
+    @Option(
+        name = "--run-degree-of",
+        usage = "if true runs the degree of relation extractor otherwise "
+            + "it uses the normal entity mention pair relation extractor")
+    public boolean runDegreeOf = false;
 
   }
 
@@ -79,80 +78,64 @@ public class RelationExtractorEvaluation {
     Options options = new Options();
     options.parseOptions(args);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-    List<File> testFiles = Arrays.asList(); // TODO: add a --test-dir option
 
-    // defines train and test corpora
-    TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml");
-    CorpusReaderProvider readerProvider = new XMICorpusReaderProvider(tsd, trainFiles, testFiles);
-    readerProvider.setNumberOfFolds(2);
+    // define the output directory for models
+    File modelsDir = options.runDegreeOf
+        ? new File("models/degree_of")
+        : new File("models/em_pair");
 
-    // define our set of possible training parameters for later iteration
+    // determine class for the classifier annotator
+    Class<? extends RelationExtractorAnnotator> annotatorClass = options.runDegreeOf
+        ? DegreeOfRelationExtractorAnnotator.class
+        : EntityMentionPairRelationExtractorAnnotator.class;
+
+    // determine the type of classifier to be trained
+    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = MultiClassLIBSVMDataWriterFactory.class;
+
+    // define the set of possible training parameters
     List<ParameterSettings> possibleParams = options.runDegreeOf
-    		? getDegreeOfParameterSpace(options.gridSearch) 
-    		: getEMPairParameterSpace(options.gridSearch);
-    File modelsDir = options.runDegreeOf 
-    		? new File("models/degree_of")
-    		: new File("models/em_pair");
-    		
+        ? getDegreeOfParameterSpace(options.gridSearch)
+        : getEMPairParameterSpace(options.gridSearch);
+
     // run an evaluation for each set of parameters
     Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
     for (ParameterSettings params : possibleParams) {
-    	
-    	// defines pipelines that train a classifier and classify with it
-    	CleartkPipelineProvider trainingAndClassificationPipelineProvider;
-    	if (options.runDegreeOf) {
-    		// DegreeOf Pipeline
-    		trainingAndClassificationPipelineProvider = new DegreeOfRelationExtractorPipelineProvider(
-    				modelsDir,
-    				MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
-    				RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-    				params.probabilityOfKeepingANegativeExample,
-    				RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-    				false); 
-    	} else {
-    		// Entity Mention Pair Pipeline
-    		trainingAndClassificationPipelineProvider = new EntityMentionPairRelationExtractorPipelineProvider(
-    				modelsDir,
-    				MultiClassLIBSVMDataWriterFactory.class, // defined below, no row-normalization
-    				RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-    				params.probabilityOfKeepingANegativeExample,
-    				RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-    				false); 
-    	}
+      System.err.println(params);
+      System.err.println();
 
-    	// defines how to evaluate
-    	File statisticsFile = new File(modelsDir, "collection.statistics");
-    	File confusionMatrixFile = new File(modelsDir, "collection.confusion_matrix.html");
-    	EvaluationPipelineProvider evaluationProvider = new BatchBasedEvaluationPipelineProvider(
-    		AnalysisEngineFactory.createPrimitive(
-    			RelationEvaluator.class,
-    			RelationEvaluator.PARAM_STATISTICS_FILE,
-    			statisticsFile.getPath(),
-    			RelationEvaluator.PARAM_CONFUSION_MATRIX_FILE,
-    			confusionMatrixFile.getPath()));
+      // define additional configuration parameters for the annotator
+      Object[] additionalParameters = new Object[] {
+          RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+          params.probabilityOfKeepingANegativeExample,
+          RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
+          false };
 
-    	// runs the evaluation
-    	Evaluation evaluation = new Evaluation();
-    	evaluation.runCrossValidation(
-    		readerProvider,
-    		trainingAndClassificationPipelineProvider,
-    		evaluationProvider,
-    		"-t",
-    		String.valueOf(params.svmKernelIndex),
-    		"-c",
-    		String.valueOf(params.svmCost),
-    		"-g",
-    		String.valueOf(params.svmGamma));
+      // define arguments to be passed to the classifier
+      String[] trainingArguments = new String[] {
+          "-t",
+          String.valueOf(params.svmKernelIndex),
+          "-c",
+          String.valueOf(params.svmCost),
+          "-g",
+          String.valueOf(params.svmGamma) };
 
-    	// collect the statistics from the evaluation
-    	FileInputStream stream = new FileInputStream(statisticsFile);
-    	params.stats = (EvaluationStatistics<?>) SerializationUtils.deserialize(stream);
-    	stream.close();
-    	System.err.println(params);
-    	System.err.println(params.stats);
+      // create the evaluation
+      RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
+          modelsDir,
+          annotatorClass,
+          dataWriterFactoryClass,
+          additionalParameters,
+          trainingArguments);
+      List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
+      params.stats = AnnotationStatistics.addAll(foldStats);
 
-    	// store these parameter settings
-    	scoredParams.put(params, params.stats.f1());
+      System.err.println("overall:");
+      System.err.print(params.stats);
+      System.err.println(params.stats.confusions());
+      System.err.println();
+      
+      // store these parameter settings
+      scoredParams.put(params, params.stats.f1());
     }
 
     // print parameters sorted by F1
@@ -160,6 +143,7 @@ public class RelationExtractorEvaluation {
     Function<ParameterSettings, Double> getCount = Functions.forMap(scoredParams);
     Collections.sort(list, Ordering.natural().onResultOf(getCount));
 
+    // print performance of each set of parameters
     System.err.println("Summary:");
     ParameterSettings lastParams = null;
     for (ParameterSettings params : list) {
@@ -171,88 +155,243 @@ public class RelationExtractorEvaluation {
           params);
       lastParams = params;
     }
+
+    // print overall best model
     if (lastParams != null) {
       System.err.println();
       System.err.println("Best model:");
+      System.err.print(lastParams.stats);
       System.err.println(lastParams);
-      System.err.println(lastParams.stats);
+      System.err.println(lastParams.stats.confusions());
+      System.err.println();
+      System.err.println(lastParams.stats.confusions().toHTML());
     }
   }
-  
-  
+
+  /**
+   * An evaluation of a relation extractor.
+   * 
+   * @param baseDirectory
+   *          The directory where models, etc. should be written
+   * @param classifierAnnotatorClass
+   *          The CleartkAnnotator class that learns a relation extractor model
+   * @param dataWriterFactoryClass
+   *          The DataWriterFactory defining what type of classifier to train
+   * @param additionalParameters
+   *          Additional parameters that should be supplied when creating the CleartkAnnotator
+   * @param trainingArguments
+   *          Arguments that should be passed to the classifier's train method
+   */
+  public RelationExtractorEvaluation(
+      File baseDirectory,
+      Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass,
+      Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
+      Object[] additionalParameters,
+      String[] trainingArguments) {
+    super(baseDirectory);
+    this.classifierAnnotatorClass = classifierAnnotatorClass;
+    this.dataWriterFactoryClass = dataWriterFactoryClass;
+    this.additionalParameters = additionalParameters;
+    this.trainingArguments = trainingArguments;
+  }
+
+  private Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass;
+
+  private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
+
+  private Object[] additionalParameters;
+
+  private String[] trainingArguments;
+
+  @Override
+  protected CollectionReader getCollectionReader(List<File> items) throws Exception {
+    // convert the List<File> to a String[]
+    String[] paths = new String[items.size()];
+    for (int i = 0; i < paths.length; ++i) {
+      paths[i] = items.get(i).getPath();
+    }
+    // return a reader that will load each of the XMI files
+    return CollectionReaderFactory.createCollectionReader(
+        XMIReader.class,
+        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml"),
+        XMIReader.PARAM_FILES,
+        paths);
+  }
+
+  @Override
+  protected void train(CollectionReader collectionReader, File directory) throws Exception {
+    AggregateBuilder builder = new AggregateBuilder();
+    // remove cTAKES entity mentions and modifiers from the system view
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ModifierRemover.class));
+    // copy gold entity mentions and modifiers into the system view
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldEntityMentionCopier.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldModifierCopier.class));
+    // add the relation extractor, configured for training mode
+    AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+        this.classifierAnnotatorClass,
+        this.additionalParameters);
+    ConfigurationParameterFactory.addConfigurationParameters(
+        classifierAnnotator,
+        RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
+        RelationExtractorEvaluation.GOLD_VIEW_NAME,
+        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+        this.dataWriterFactoryClass.getName(),
+        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+        directory.getPath());
+    builder.add(classifierAnnotator);
+
+    // run the data-writing pipeline
+    SimplePipeline.runPipeline(collectionReader, builder.createAggregateDescription());
+
+    // train the classifier and package it into a .jar file
+    HideOutput hider = new HideOutput();
+    JarClassifierBuilder.trainAndPackage(directory, this.trainingArguments);
+    hider.restoreOutput();
+  }
+
+  @Override
+  protected AnnotationStatistics test(CollectionReader collectionReader, File directory)
+      throws Exception {
+    AggregateBuilder builder = new AggregateBuilder();
+    // remove cTAKES entity mentions and modifiers from the system view
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ModifierRemover.class));
+    // copy gold entity mentions and modifiers into the system view
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldEntityMentionCopier.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldModifierCopier.class));
+    // add the relation extractor, configured for classification mode
+    AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+        this.classifierAnnotatorClass,
+        this.additionalParameters);
+    ConfigurationParameterFactory.addConfigurationParameters(
+        classifierAnnotator,
+        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+        new File(directory, "model.jar").getPath());
+    builder.add(classifierAnnotator);
+
+    // statistics will be based on the "category" feature of the BinaryTextRelations
+    AnnotationStatistics stats = new AnnotationStatistics("category");
+
+    // calculate statistics, iterating over the results of the classifier
+    AnalysisEngine engine = builder.createAggregate();
+    for (JCas jCas : new JCasIterable(collectionReader, engine)) {
+
+      // get the gold view
+      JCas goldView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+
+      // get the gold and system annotations
+      Collection<BinaryTextRelation> goldBinaryTextRelations = JCasUtil.select(
+          goldView,
+          BinaryTextRelation.class);
+      Collection<BinaryTextRelation> systemBinaryTextRelations = JCasUtil.select(
+          jCas,
+          BinaryTextRelation.class);
+
+      // update the statistics based on the argument spans of the relation
+      stats.add(
+          goldBinaryTextRelations,
+          systemBinaryTextRelations,
+          new Function<BinaryTextRelation, HashableArguments>() {
+            @Override
+            public HashableArguments apply(BinaryTextRelation relation) {
+              return new HashableArguments(relation);
+            }
+          });
+    }
+
+    System.err.println(directory.getName() + ":");
+    System.err.print(stats);
+    System.err.println(stats.confusions());
+    System.err.println();
+    return stats;
+  }
+
   /**
    * Defines the parameter space for Entity Mention Pair Relation Extraction
+   * 
    * @param gridSearch
    * @return
    */
   private static List<ParameterSettings> getEMPairParameterSpace(boolean gridSearch) {
-	  // define the grid of parameters over which we will search
-	  List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
-	  if (gridSearch) {
-		  for (boolean classifyBothDirections : new boolean[] { false, true }) {
-			  for (float probabilityOfKeepingANegativeExample : new float[] { 0.1f, 0.15f, 0.2f, 0.25f, 0.5f }) {
-				  for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
-					  // linear kernel (gamma doesn't matter)
-					  possibleParams.add(new ParameterSettings(
-							  classifyBothDirections,
-							  probabilityOfKeepingANegativeExample,
-							  "linear",
-							  svmCost,
-							  1.0));
-				  }
-			  }
-		  }
-	  } else {
-		  possibleParams.add(new ParameterSettings(true, 0.15f, "linear", 0.05, 1.0));
-	  }
-	  return possibleParams;
+    // define the grid of parameters over which we will search
+    List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
+    if (gridSearch) {
+      for (boolean classifyBothDirections : new boolean[] { false, true }) {
+        for (float probabilityOfKeepingANegativeExample : new float[] {
+            0.1f,
+            0.15f,
+            0.2f,
+            0.25f,
+            0.5f }) {
+          for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
+            // linear kernel (gamma doesn't matter)
+            possibleParams.add(new ParameterSettings(
+                classifyBothDirections,
+                probabilityOfKeepingANegativeExample,
+                "linear",
+                svmCost,
+                1.0));
+          }
+        }
+      }
+    } else {
+      possibleParams.add(new ParameterSettings(true, 0.15f, "linear", 0.05, 1.0));
+    }
+    return possibleParams;
 
   }
 
-  
   /**
    * Defines the parameter space for Degree_Of Relation Extraction
+   * 
    * @param gridSearch
    * @return
    */
   private static List<ParameterSettings> getDegreeOfParameterSpace(boolean gridSearch) {
-	  // define the grid of parameters over which we will search
-	  List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
-	  if (gridSearch) {
-		  for (float probabilityOfKeepingANegativeExample : new float[] { 0.5f, 1.0f }) {
-			  for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
-				  // linear kernel (gamma doesn't matter)
-				  possibleParams.add(new ParameterSettings(
-						  false,
-						  probabilityOfKeepingANegativeExample,
-						  "linear",
-						  svmCost,
-						  1.0));
-			  }
-		  }
-	  } else {
-		  possibleParams.add(new ParameterSettings(false, 1.0f, "linear", 0.1, 1.0));
-	  }
-	  return possibleParams;
+    // define the grid of parameters over which we will search
+    List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
+    if (gridSearch) {
+      for (float probabilityOfKeepingANegativeExample : new float[] { 0.5f, 1.0f }) {
+        for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
+          // linear kernel (gamma doesn't matter)
+          possibleParams.add(new ParameterSettings(
+              false,
+              probabilityOfKeepingANegativeExample,
+              "linear",
+              svmCost,
+              1.0));
+        }
+      }
+    } else {
+      possibleParams.add(new ParameterSettings(false, 1.0f, "linear", 0.1, 1.0));
+    }
+    return possibleParams;
   }
 
-
-
+  /**
+   * Holds a set of parameters for a relation extraction model
+   */
   private static class ParameterSettings {
     public boolean classifyBothDirections;
-    
+
     public float probabilityOfKeepingANegativeExample;
-    
+
     public String svmKernel;
-    
+
     public int svmKernelIndex;
 
     public double svmCost;
-    
+
     public double svmGamma;
 
-    public EvaluationStatistics<?> stats;
-    
+    public AnnotationStatistics stats;
+
     private static List<String> SVM_KERNELS = Arrays.asList(
         "linear",
         "polynomial",
@@ -306,8 +445,7 @@ public class RelationExtractorEvaluation {
       ParameterSettings that = (ParameterSettings) obj;
       return this.classifyBothDirections == that.classifyBothDirections
           && this.probabilityOfKeepingANegativeExample == that.probabilityOfKeepingANegativeExample
-          && this.svmKernel == that.svmKernel
-          && this.svmCost == that.svmCost
+          && this.svmKernel == that.svmKernel && this.svmCost == that.svmCost
           && this.svmGamma == that.svmGamma;
     }
 
@@ -362,8 +500,8 @@ public class RelationExtractorEvaluation {
   }
 
   /**
-   * Class that copies {@link Modifier} annotations from the CAS with the manual annotations to
-   * the CAS that will be used by the system.
+   * Class that copies {@link Modifier} annotations from the CAS with the manual annotations to the
+   * CAS that will be used by the system.
    */
   public static class GoldModifierCopier extends JCasAnnotator_ImplBase {
 
@@ -411,205 +549,6 @@ public class RelationExtractorEvaluation {
       // iterate over copy of collection so that we can delete mentions
       for (Modifier modifier : new ArrayList<Modifier>(modifiers)) {
         modifier.removeFromIndexes();
-      }
-    }
-  }
-
-  /**
-   * Annotator that compares system-predicted relations to manually-annotated relations.
-   */
-  public static class RelationEvaluator extends JCasAnnotator_ImplBase {
-
-    public static final String PARAM_STATISTICS_FILE = "StatisticsFile";
-    public static final String PARAM_CONFUSION_MATRIX_FILE = "ConfusionMatrixFile";
-
-    @ConfigurationParameter(
-        name = PARAM_STATISTICS_FILE,
-        mandatory = true,
-        description = "The file where overall evaluation statistics should be written")
-    private File statisticsFile;
-    
-    @ConfigurationParameter(
-        name = PARAM_CONFUSION_MATRIX_FILE,
-        mandatory = true,
-        description = "The file where the confusion matrix HTML file should be written")
-    private File confusionMatrixFile;
-
-
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-      JCas goldView;
-      try {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
-      } catch (CASException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-
-      // collect the manually annotated relations (i.e. gold relations)
-      Collection<BinaryTextRelation> goldBinaryTextRelations = JCasUtil.select(goldView, BinaryTextRelation.class);
-      List<HashableRelation> goldRelations = new ArrayList<HashableRelation>();
-      
-      for (BinaryTextRelation relation : goldBinaryTextRelations) {
-        goldRelations.add(new HashableRelation(relation));
-      }
-
-      // collect the system-predicted relations
-      Collection<BinaryTextRelation> systemBinaryTextRelations = JCasUtil.select(jCas, BinaryTextRelation.class);
-      List<HashableRelation> systemRelations = new ArrayList<HashableRelation>();
-      
-      for (BinaryTextRelation relation : systemBinaryTextRelations) {
-        systemRelations.add(new HashableRelation(relation));
-      }
-
-      // determine which system relations were also in the gold relations
-      Set<HashableRelation> intersection = new HashSet<HashableRelation>(goldRelations);
-      intersection.retainAll(systemRelations);
-
-      // update stats
-      this.batchStats.update(
-          categories(goldRelations),
-          categories(systemRelations),
-          categories(intersection));
-      this.collectionStats.update(
-          categories(goldRelations),
-          categories(systemRelations),
-          categories(intersection));
-      
-      // update confusion matrices
-      RelationEvaluator.updateConfusionMatrix(this.batchConfusion, goldBinaryTextRelations, systemBinaryTextRelations);
-      RelationEvaluator.updateConfusionMatrix(this.collectionConfusion, goldBinaryTextRelations, systemBinaryTextRelations);
-      
-    }
-
-    private static List<String> categories(Collection<HashableRelation> relations) {
-      List<String> categories = new ArrayList<String>();
-      for (HashableRelation relation : relations) {
-        categories.add(relation.category);
-      }
-      return categories;
-    }
-    
-    private static void updateConfusionMatrix(ConfusionMatrix<String> confusionMatrix, Collection<BinaryTextRelation> gold, Collection<BinaryTextRelation> system) {
-    	Map<HashableArguments, String> goldRelationSpans = new HashMap<HashableArguments, String>();
-    	Map<HashableArguments, String> systemRelationSpans = new HashMap<HashableArguments, String>();
-    	
-    	for (BinaryTextRelation goldRel : gold) {
-    		goldRelationSpans.put(new HashableArguments(goldRel), goldRel.getCategory());
-    	}
-
-    	for (BinaryTextRelation sysRel : system) {
-    		systemRelationSpans.put(new HashableArguments(sysRel), sysRel.getCategory());
-    	}
-    	
-    	Set<HashableArguments> allSpans = new HashSet<HashableArguments>();
-    	allSpans.addAll(goldRelationSpans.keySet());
-    	allSpans.addAll(systemRelationSpans.keySet());
-
-    	for (HashableArguments relationKey : allSpans) {
-    		String goldCategory = goldRelationSpans.get(relationKey);
-    		String sysCategory = systemRelationSpans.get(relationKey);
-
-    		if (goldCategory == null) {
-    			goldCategory = RelationExtractorAnnotator.NO_RELATION_CATEGORY;
-    		}
-
-    		if (sysCategory == null) {
-    			sysCategory = RelationExtractorAnnotator.NO_RELATION_CATEGORY;
-    		}
-
-    		confusionMatrix.add(goldCategory, sysCategory);
-    	}
-    }
-
-    private EvaluationStatistics<String> batchStats;
-
-    private EvaluationStatistics<String> collectionStats;
-    
-    private ConfusionMatrix<String> batchConfusion;
-    
-    private ConfusionMatrix<String> collectionConfusion;
-    
-    
-
-    @Override
-    public void initialize(UimaContext context) throws ResourceInitializationException {
-      super.initialize(context);
-      this.batchStats = new EvaluationStatistics<String>();
-      this.collectionStats = new EvaluationStatistics<String>();
-      this.batchConfusion = new ConfusionMatrix<String>();
-      this.collectionConfusion = new ConfusionMatrix<String>();
-    }
-
-    @Override
-    public void batchProcessComplete() throws AnalysisEngineProcessException {
-      super.batchProcessComplete();
-      System.err.println("Batch:");
-      System.err.println(this.batchStats);
-      System.err.println(this.batchConfusion.toHTML());
-      this.batchStats = new EvaluationStatistics<String>();
-      this.batchConfusion = new ConfusionMatrix<String>();
-    }
-
-    @Override
-    public void collectionProcessComplete() throws AnalysisEngineProcessException {
-      super.collectionProcessComplete();
-      try {
-        FileOutputStream stream = new FileOutputStream(this.statisticsFile);
-        SerializationUtils.serialize(this.collectionStats, stream);
-        stream.close();
-        
-        Files.write(this.collectionConfusion.toHTML(), this.confusionMatrixFile, Charsets.UTF_8);
-        
-      } catch (IOException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-      this.collectionStats = new EvaluationStatistics<String>();
-    }
-    
-    
-    /**
-     * Wrapper for relations that makes two relations with the same spans and category label have
-     * the same hash and compare equal.
-     */
-    private static class HashableRelation extends HashableArguments {
-
-      private String category;
-
-      public HashableRelation(BinaryTextRelation relation) {
-    	super(relation);
-    	this.category = relation.getCategory();
-      }
-
-      @Override
-      public boolean equals(Object otherObject) {
-        if (otherObject instanceof HashableRelation) {
-        	HashableRelation other = (HashableRelation) otherObject;
-    	  return super.equals(otherObject) && Objects.equal(this.category, other.category);
-        } else {
-          return false;
-        }
-      }
-
-      @Override
-      public int hashCode() {
-        return Objects.hashCode(
-            this.arg1begin,
-            this.arg1end,
-            this.arg2begin,
-            this.arg2end,
-            this.category);
-      }
-
-      @Override
-      public String toString() {
-        return String.format(
-            "%s(%s,%s,%s,%s,%s)",
-            this.getClass().getSimpleName(),
-            this.arg1begin,
-            this.arg1end,
-            this.arg2begin,
-            this.arg2end,
-            this.category);
       }
     }
   }
