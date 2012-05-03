@@ -2658,7 +2658,7 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
       // System.out.println("In setSentenceSpanContainingGivenSpan: begin="+span[0]+"|"+"end="+span[1]);
     } else if (foundFirstTypeSpan && spanSizeCount >= iWindowSize) {
     	foundSecondTypeSpan = true;
- //   	span[1] = sa.getEnd();
+    	span[1] = sa.getEnd();
     }
     if (foundFirstTypeSpan) 
     	spanSizeCount++;
@@ -2953,7 +2953,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 		if (haveNarrative) {
 			senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin);
-			if (senSpan[0] < begin) begin = senSpan[0];
+			if (senSpan[0] < begin) senSpan[0] = begin;
 		}
 		boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
 		boolean hasFSMrun = multipleElementsInSpan(jcas, senSpan[0], senSpan[1]);
