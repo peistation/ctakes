@@ -3,7 +3,6 @@ package org.chboston.cnlp.ctakes.relationextractor.ae.wiki;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -24,7 +23,7 @@ import org.apache.lucene.util.Version;
 
 public class WikipediaIndex {
 
-	private final int totalHits = 5;
+	private final int totalHits = 10;
 	private final String indexPath = "/home/dima/i2b2/wiki-index/index_vectors_notext/";
 	
 	private IndexReader indexReader;
@@ -62,18 +61,28 @@ public class WikipediaIndex {
   	return articleTitles;
   }
   
-  public double similarity(String queryText1, String queryText2) throws ParseException, IOException {
+  public double getCosineSimilarityTopHit(String queryText1, String queryText2) throws ParseException, IOException {
 
   	String escaped1 = QueryParser.escape(queryText1);
   	Query query1 = queryParser.parse(escaped1);
   	ScoreDoc[] scoreDocs1 = indexSearcher.search(query1, null, totalHits).scoreDocs;
+  	
+  	if(scoreDocs1.length == 0) {
+  		return 0;
+  	}
+  	
   	HashMap<String, Double> vector1 = makeTfIdfVector(indexReader.getTermFreqVector(scoreDocs1[0].doc, "text"));
   	
   	String escaped2 = QueryParser.escape(queryText2);
   	Query query2 = queryParser.parse(escaped2);
   	ScoreDoc[] scoreDocs2 = indexSearcher.search(query2, null, totalHits).scoreDocs;
+  	
+  	if(scoreDocs2.length == 0) {
+  		return 0;
+  	}
+  	
   	HashMap<String, Double> vector2 = makeTfIdfVector(indexReader.getTermFreqVector(scoreDocs2[0].doc, "text"));
-
+  	
   	double dotProduct = computeDotProduct(vector1, vector2);
   	double norm1 = computeEuclideanNorm(vector1);
   	double norm2 = computeEuclideanNorm(vector2);
@@ -81,6 +90,43 @@ public class WikipediaIndex {
   	return dotProduct / (norm1 * norm2);
   }
 
+  public double getCosineSimilarityNHits(String queryText1, String queryText2) throws ParseException, IOException {
+
+  	String escaped1 = QueryParser.escape(queryText1);
+  	Query query1 = queryParser.parse(escaped1);
+  	ScoreDoc[] scoreDocs1 = indexSearcher.search(query1, null, totalHits).scoreDocs;
+  	
+  	if(scoreDocs1.length == 0) {
+  		return 0;
+  	}
+
+  	ArrayList<TermFreqVector> termFreqVectors1 = new ArrayList<TermFreqVector>();
+  	for(ScoreDoc scoreDoc : scoreDocs1) {
+  		termFreqVectors1.add(indexReader.getTermFreqVector(scoreDoc.doc, "text"));
+  	}
+  	HashMap<String, Double> vector1 = makeTfIdfVector(termFreqVectors1);
+  	
+  	String escaped2 = QueryParser.escape(queryText2);
+  	Query query2 = queryParser.parse(escaped2);
+  	ScoreDoc[] scoreDocs2 = indexSearcher.search(query2, null, totalHits).scoreDocs;
+  	
+  	if(scoreDocs2.length == 0) {
+  		return 0;
+  	}
+  	
+  	ArrayList<TermFreqVector> termFreqVectors2 = new ArrayList<TermFreqVector>();
+  	for(ScoreDoc scoreDoc : scoreDocs2) {
+  		termFreqVectors2.add(indexReader.getTermFreqVector(scoreDoc.doc, "text"));
+  	}
+  	HashMap<String, Double> vector2 = makeTfIdfVector(termFreqVectors2);
+  	
+  	double dotProduct = computeDotProduct(vector1, vector2);
+  	double norm1 = computeEuclideanNorm(vector1);
+  	double norm2 = computeEuclideanNorm(vector2);
+  	
+  	return dotProduct / (norm1 * norm2);
+  }
+  
   private HashMap<String, Double> makeTfIdfVector(TermFreqVector termFreqVector) throws IOException {
 
   	// map terms to their tfidf values
@@ -93,6 +139,31 @@ public class WikipediaIndex {
   		double tf = defaultSimilarity.tf(freqs[i]);
   		double idf = defaultSimilarity.idf(indexReader.docFreq(new Term("text", terms[i])), indexReader.numDocs());
   		tfIdfVector.put(terms[i], tf * idf);
+  	}
+  	
+  	return tfIdfVector;
+  }
+
+  private HashMap<String, Double> makeTfIdfVector(ArrayList<TermFreqVector> termFreqVectors) throws IOException {
+
+  	// map terms to their tfidf values
+  	HashMap<String, Double> tfIdfVector = new HashMap<String, Double>(); 
+
+  	for(TermFreqVector termFreqVector : termFreqVectors) {
+  		String[] terms = termFreqVector.getTerms();
+  		int[] freqs = termFreqVector.getTermFrequencies();
+
+  		for(int i = 0; i < terms.length; i++) {
+  			double tf = defaultSimilarity.tf(freqs[i]);
+  			double idf = defaultSimilarity.idf(indexReader.docFreq(new Term("text", terms[i])), indexReader.numDocs());
+  			
+  			if(tfIdfVector.containsKey(terms[i])) {
+  				tfIdfVector.put(terms[i], tfIdfVector.get(terms[i]) + tf * idf);
+  			}
+  			else {
+  				tfIdfVector.put(terms[i], tf * idf);
+  			}
+  		}
   	}
   	
   	return tfIdfVector;
