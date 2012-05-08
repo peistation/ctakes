@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <classpath>
 	<classpathentry kind="src" path="auto_generatesrc"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/uima-tools.jar"/>
+				<classpathentry exported="true" kind="lib" path="lib/uima-tools.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/uima-examples.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/uima-document-annotation.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/uima-cpe.jar"/>
@@ -12,23 +12,41 @@
 	<classpathentry exported="true" kind="lib" path="lib/lvg2010dist.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jVinci.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hppc-0.3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/args4j-2.0.12.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/args4j-2.0.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/Jama-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/libsvm-2.91.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/liblinear-1.51.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uimafit-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/clearparser-0.33.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-util-0.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl-1.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcarafe-core_2.9.1-0.9.8.3.RC4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/med-facts-i2b2-1.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/med-facts-zoner-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sbinary_2.9.0-0.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/scala-library-2.9.0.jar"/>
+			
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resources"/>
-	<classpathentry exported="true" kind="lib" path="lib/opennlp-tools-1.4.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/maxent-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
 	<classpathentry kind="lib" path="lib/OpenAI_FSM.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/opennlp-maxent-3.0.2-incubating.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/opennlp-tools-1.5.2-incubating.jar"/>
 	<classpathentry kind="lib" path="lib/SQLWrapper.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
+	
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	
+	<classpathentry kind="lib" path="lib/FindStructAPI.jar"/>
+	
 	<classpathentry kind="output" path="bin"/>
 </classpath>

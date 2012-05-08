@@ -1,52 +1,67 @@
-
-===================== Bundled UMLS dictionaries ========================
-
-cTAKES 1.3 includes dictionaries built from the UMLS Metathesaurus 
-(SNOMED CT® and RxNorm)
-
-If you choose to use those dictionaries, you must have a UMLS username
-and password, and an internet connection.
-
-The following are included from the UMLS Metathesaurus:
-  SNOMED CT®
-  NCI Thesaurus             http://ncit.nci.nih.gov/
-  Medical Subject Headings  http://www.nlm.nih.gov/mesh/
-  RxNorm                    http://www.nlm.nih.gov/research/umls/rxnorm/
-
-Some material in the UMLS Metathesaurus is from copyrighted sources of
-the respective copyright holders. Users of the UMLS Metathesaurus are 
-solely responsible for compliance with any copyright, patent or 
-trademark restrictions and are referred to the copyright, patent or 
-trademark notices appearing in the original sources, all of which are 
-hereby incorporated by reference.
-
-This material includes SNOMED Clinical Terms® (SNOMED CT®) which is 
-used by permission of the International Health Terminology Standards 
-Development Organisation (IHTSDO). All rights reserved. SNOMED CT®, 
-was originally created by The College of American Pathologists.
-"SNOMED" and "SNOMED CT" are registered trademarks of the IHTSDO. 
+Contents
+- Introduction
+- Running the clinical documents pipeline 
+	- AggregateCdaProcessor.xml  for CDA documents conforming to the provided DTD.
+	- AggregatePlaintextProcessor.xml  for plaintext documents.
 
 
-============ Fixes and Enhancements Included in cTAKES 1.3 =============
+ 
+############
+Introduction
+############
 
-3458394  Side effects - make user lib UIMA not UIMA_HOME
-3458373  Drug NER shows error when import into Eclipse
-3447321  Add Co Reference Resolver Module
-3447319  Add new Constituency Parser 
-3438494  Add prebundled UMLS Dictionary
-3438483  Include sqlWrapper WrappedConnection
-3438457  Increase lookup windows sizes to include PP and adjacent NPs
-3436695  Tokenizer does not handle UTF-8 properly
-3425014  SNOMED lucene dictionary lookup hardcodes resource path
+This project is the top-level, main project for processing a clinical document
+through the entire pipeline, including sentence detection, part of speech tagging, 
+chunking, named entity recognition, context detection, and negation detection.
 
 
-======================= Other Documentation ============================
+############################################################################
+Running the clinical documents pipeline
+############################################################################
 
-Javadocs are found within the docs directory.
+The pipeline can process two types of documents
+ - plaintext files
+ - Clinical Document Architecture (CDA) XML files that conform to the DTD provided 
 
-cTAKES release-specific documentation is found online at:
-https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/CTAKES_1.3
 
-OHNLP documentation is found online at:
-https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/OHNLP_Documentation_and_Downloads
+%%%%%%%%%%%%%%%%%%%%%%%%%
+AggregateCdaProcessor.xml  for CDA documents conforming to the provided DTD.
 
+The file cTAKESdesc/analysis_engine/AggregateCdaProcessor.xml is the aggregate
+analysis engine to use to run the entire pipeline, including the 
+CdaCasInitialzer analysis engine, which reads CDA documents that conform
+to the DTD provided, and create Segment annotations based on the sections
+within the CDA document.
+
+Open this file using the Component Descriptor Editor as described in the tutorial.
+Click on the tab labeled "Aggregate" to observe that the Component Engine Flow (pipeline) 
+defined by this descriptor includes CdaCasInitialzer as the first component.
+Observe that part of speech tagging (POSTagger) comes before chunking (Chunker), etc.
+ 
+Click on the tab labeled "Parameter Settings" to view the parameters set in this
+descriptor.  The ChunkCreatorClass is set to edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator
+so that each phrase type gets its own type of annotation, rather than having all
+chunks be of type Chunk.  
+
+The parameters are:
+- ChunkerCreatorClass - the full class name of an implementation of the 
+                        interface edu.mayo.bmi.uima.chunker.ChunkerCreator
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+AggregatePlaintextProcessor.xml  for plaintext documents.
+
+The file cTAKESdesc/analysis_engine/AggregatePlaintextProcessor.xml is the aggregate
+analysis engine to use to run the entire pipeline, including the 
+SimpleSegmentAnnotator analysis engine, which creates a Segment annotation that
+wraps the entire plaintext document.  Other annotators in the pipeline require
+at least 1 Segment annotation.
+
+Click on the tab labeled "Parameter Settings" to view the parameters set in this
+descriptor.  The ChunkCreatorClass is set to edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator
+so that each phrase type gets its own type of annotation, rather than having all
+chunks be of type Chunk.  
+
+The parameters are:
+- SegmentID - the identifier or name to assign to the Segment annotation 
+- ChunkerCreatorClass - the full class name of an implementation of the 
+                        interface edu.mayo.bmi.uima.chunker.ChunkerCreator
