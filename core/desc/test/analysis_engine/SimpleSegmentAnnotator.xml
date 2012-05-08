@@ -27,7 +27,6 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-         <import name="net.sourceforge.ohnlp.common_type_system"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

@@ -52,7 +52,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import name="net.sourceforge.ohnlp.common_type_system"/>
+                            <import location="../../../common-type-system/desc/common_type_system.xml"/>
                         </imports>
                     </typeSystemDescription>
                     <fsIndexCollection/>
@@ -343,7 +343,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import name="net.sourceforge.ohnlp.common_type_system"/>
+                            <import location="../../../common-type-system/desc/common_type_system.xml"/>
                         </imports>
                     </typeSystemDescription>
                     <typePriorities/>
@@ -404,7 +404,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import name="net.sourceforge.ohnlp.common_type_system"/>
+                            <import location="../../../common-type-system/desc/common_type_system.xml"/>
                         </imports>
                     </typeSystemDescription>
                     <fsIndexCollection/>
