@@ -34,7 +34,7 @@ Description of resources
 %%%%%%%%%%%%%%%%
 lvg.properties
 %%%%%%%%%%%%%%%%
-The LVG config file  lvgresources/lvg/data/config/lvg.properties  defines the location
+The LVG config file  resources/lvg/data/config/lvg.properties  defines the location
 and attributes of the LVG database and the jdbc driver used.
 
 %%%%%%%%%%%%%%%%
