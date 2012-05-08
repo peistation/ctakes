@@ -11,6 +11,8 @@ import clear.dep.DepNode;
 import clear.dep.DepTree;
 import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textsem.Predicate;
+import edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
@@ -115,5 +117,7 @@ public class ClearDependencyUtility extends DependencyUtility {
 //			udNode2.end==udNode.end && 
 //			udNode2.form==udNode.form;
 //	}
+	
+
 	
 }

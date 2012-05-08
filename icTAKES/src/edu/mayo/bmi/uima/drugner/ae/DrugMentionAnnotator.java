@@ -1811,15 +1811,22 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			if (isDrugNER)
 			{
 				countNER = globalDrugNER.size();
-				FSArray drugNERArr = new FSArray(jcas, countNER);
+				boolean gotChangeStatus = false;
 				for (int i = 0; i < countNER; i++)
 				{
-					drugNERArr.set(i, (FeatureStructure) globalDrugNER.get(i));
-					
-					addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
-
+					if (!globalDrugNER.get(i).getDrugChangeStatus().equals("noChange") && !globalDrugNER.get(i).getDrugChangeStatus().equals("stop") && !globalDrugNER.get(i).getDrugChangeStatus().equals("start"))
+						gotChangeStatus = true;
+					if (i == 0) {
+						addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), tokenAnt);
+					}
+					else if (gotChangeStatus){
+						MedicationEventMention mem = new MedicationEventMention(jcas, globalDrugNER.get(i).getBegin(), globalDrugNER.get(i).getEnd());
+						addMedicationSpecificAttributes(jcas, globalDrugNER.get(i), mem);
+						mem.addToIndexes(jcas);
+					}
 				}
 			}
+			
 		}
 			}
 
@@ -2721,9 +2728,9 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
 		int [] lastLocation =  {-1,-1};
 		boolean wantMuliple = true;
-		if (elementType == StrengthAnnotation.type) {
+		if (elementType == StrengthUnitAnnotation.type) {
 			while (neItr.hasNext() && wantMuliple) {
-				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+				StrengthUnitAnnotation nea = (StrengthUnitAnnotation) neItr.next();
 
 				if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
 					if (!highest) wantMuliple = false;
@@ -2781,7 +2788,7 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
 		doseSpanLength = findInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan);
 		int parenthesisSpanLength = findInPattern(jcas, beginSpan, endSpan, PunctuationToken.type, parenthesisSpan);
-		strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan);
+		strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan);
 		spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
 		spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange); 
 		spanDose = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange);
@@ -2809,9 +2816,9 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		Iterator neItr = indexes.getAnnotationIndex(elementType).iterator();//FSUtil.getAnnotationsInSpanIterator(jcas, elementType, begin, end);
 		int [] lastLocation =  {-1,-1};
 		int counter = 0;
-		if (elementType == StrengthAnnotation.type) {
+		if (elementType == StrengthUnitAnnotation.type) {
 			while (neItr.hasNext()) {
-				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+				StrengthUnitAnnotation nea = (StrengthUnitAnnotation) neItr.next();
 				lastLocation[0] = nea.getBegin();
 				lastLocation[1] = nea.getEnd();
 				if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
@@ -3114,7 +3121,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		int[][] formSpan= new int [sizeArray][2];
 		int[][] durationSpan = new int [sizeArray][2];
 		int[][] parenthesisSpan = new int [sizeArray][2];
-		int[][] statusSpan =new int [sizeArray*2][2];
+		int[][] statusSpan =new int [sizeArray*10][2];
 
 		for (int a = 0 ; a < sizeArray ; a++) {
 			for (int b = 0 ; b < 2 ; b ++) {

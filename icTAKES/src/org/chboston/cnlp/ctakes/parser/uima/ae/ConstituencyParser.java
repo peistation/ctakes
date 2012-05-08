@@ -30,7 +30,7 @@ import edu.mayo.bmi.uima.core.resource.FileLocator;
 
 public class ConstituencyParser extends JCasAnnotator_ImplBase {
 
-	static ParserWrapper parser = null;
+	ParserWrapper parser = null;
 	Logger logger = Logger.getLogger(this.getClass());
 	
 	@Override
@@ -40,12 +40,12 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 		String modelFileOrDirname = (String) aContext.getConfigParameterValue("modelFilename");
 //		parser = new BerkeleyParserWrapper(modelFilename);
 		try {
-			synchronized(this.getClass()){
-				if(parser == null){
+//			synchronized(this.getClass()){
+//				if(parser == null){
 					logger.info("Initializing parser...");
 					parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
-				}
-			}
+//				}
+//			}
 //			parser = new ParallelParser(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -57,12 +57,8 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 //		TreebankParser p = new TreebankParser();
-		if (parser==null) {
-			logger.error("Error accessing parser.");
-			throw new RuntimeException("Parser not set");
-		}
-		synchronized(parser){
+//		synchronized(parser){
 			parser.createAnnotations(jcas);
-		}
+//		}
 	}
 }

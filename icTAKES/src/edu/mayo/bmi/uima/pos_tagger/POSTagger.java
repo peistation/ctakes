@@ -58,11 +58,14 @@
 package edu.mayo.bmi.uima.pos_tagger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import opennlp.tools.lang.english.PosTagger;
+//import opennlp.tools.lang.english.PosTagger;
+import opennlp.model.AbstractModel;
 import opennlp.tools.postag.POSDictionary;
+import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.TagDictionary;
 
 import org.apache.log4j.Logger;
@@ -128,7 +131,7 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 	 */
 	public static final String CASE_SENSITIVE_PARAM = "CaseSensitive";
 
-	private PosTagger tagger;
+	private opennlp.tools.postag.POSTaggerME tagger;
 
 	public void initialize(UimaContext uimaContext)	throws ResourceInitializationException {
 		super.initialize(uimaContext);
@@ -155,7 +158,9 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 				logger.info("No POS tagger tag-dictionary.");
 			}
 
-			tagger = new PosTagger(modelFileAbsPath, tagDictionary);
+			FileInputStream fis = new FileInputStream(posModelFile);
+			POSModel modelFile = new POSModel(fis); // skip using the tag dictionary for now since OpenNLP (1.5) changed
+			tagger = new opennlp.tools.postag.POSTaggerME(modelFile); //, tagDictionary);
 
 		} catch (Exception e) {
 			logger.info("POS tagger model: " + posModelPath);

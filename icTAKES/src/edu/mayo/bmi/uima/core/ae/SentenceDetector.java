@@ -46,6 +46,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.resource.MaxentModelResource;
 import edu.mayo.bmi.uima.core.sentence.EndOfSentenceScannerImpl;
+import edu.mayo.bmi.uima.core.sentence.SentenceDetectorCtakes;
 import edu.mayo.bmi.uima.core.sentence.SentenceSpan;
 import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
@@ -73,7 +74,7 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 
 	private Set<?> skipSegmentsSet;
 
-	private SentenceDetectorME sentenceDetector;
+	private SentenceDetectorCtakes sentenceDetector;
 
 	private String NEWLINE = "\n";
 
@@ -114,8 +115,7 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 			char[] eosc = eoss.getEndOfSentenceCharacters();
 			// SentenceDContextGenerator cg = new SentenceDContextGenerator();
 			DefaultSDContextGenerator cg = new DefaultSDContextGenerator(eosc);
-			sentenceDetector = new SentenceDetectorME(mmResrc.getModel(), cg,
-					eoss);
+			sentenceDetector = new SentenceDetectorCtakes(mmResrc.getModel(), cg, eoss);
 		}
 
 		skipSegmentsSet = ParamUtil.getStringParameterValuesSet(
@@ -176,8 +176,7 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 		// The sentence detector returns the offsets of the sentence-endings it
 		// detects
 		// within the string
-		int[] sentenceBreaks = sentenceDetector.sentPosDetect(text.substring(b,
-				e));
+		int[] sentenceBreaks = sentenceDetector.sentPosDetect(text.substring(b, e)); // OpenNLP tools 1.5 returns Spans rather than offsets that 1.4 did
 		int numSentences = sentenceBreaks.length;
 		// There might be text after the last sentence-ending found by detector,
 		// so +1
@@ -189,7 +188,7 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 		// Will trim leading or trailing whitespace when check for end-of-line
 		// characters
 		for (int i = 0; i < numSentences; i++) {
-			sentEnd = sentenceBreaks[i] + b;
+			sentEnd = sentenceBreaks[i] + b; // OpenNLP tools 1.5 returns Spans rather than offsets that 1.4 did
 			String coveredText = text.substring(sentStart, sentEnd);
 			potentialSentSpans[i] = new SentenceSpan(sentStart, sentEnd,
 					coveredText);
@@ -292,11 +291,16 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 
 		logger.info("Training new model from " + inFile.getAbsolutePath());
 		logger.info("Using " + numEosc + " end of sentence characters.");
-		GISModel mod = SentenceDetectorME.train(inFile, iters, cut, scanner);
-		SuffixSensitiveGISModelWriter ssgmw = new SuffixSensitiveGISModelWriter(
-				mod, outFile);
-		logger.info("Saving the model as: " + outFile.getAbsolutePath());
-		ssgmw.persist();
+		
+		logger.error("----------------------------------------------------------------------------------"); 
+		logger.error("Need to update yet for OpenNLP changes "); // TODO 
+		logger.error("Commented out code that no longer compiles due to OpenNLP API incompatible changes"); // TODO 
+		logger.error("----------------------------------------------------------------------------------"); 
+		//GISModel mod = SentenceDetectorME.train(inFile, iters, cut, scanner);
+		//SuffixSensitiveGISModelWriter ssgmw = new SuffixSensitiveGISModelWriter(
+		//		mod, outFile);
+		//logger.info("Saving the model as: " + outFile.getAbsolutePath());
+		//ssgmw.persist();
 
 	}
 

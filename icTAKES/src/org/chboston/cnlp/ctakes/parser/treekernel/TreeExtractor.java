@@ -236,4 +236,57 @@ public class TreeExtractor {
 		return node;
 	}
 
+	/* This method is used to extract trees for finding _properties_ rather than relations, or for
+	 * finding relations where only one argument is known (and a label), and the other argument
+	 * will be learned as an important tree fragment (e.g., relations like negation or uncertainty).
+	 * The object returned is the largest subtree surrounding the context, with an extra node above it
+	 * labeled with the argument in the variable string.
+	 * For example, given the arguments:
+	 * (NP (DT a) (NN dog))) from a tree representing the sentence "That is not a dog" 
+	 * and the string "NEGATION"; this method will return the tree:
+	 * (S (NP (DT that)) (VP (VBZ is) (RB not) (NEGATION (NP (DT a) (NN dog)))))
+	 * 
+	 * It uses the method getSurroundingTree in a somewhat clever way to do the additional annotation
+	 * on the output string instead of the tree object.
+	 */
+	public static SimpleTree getSurroundingTreeWithAnnotation(TreebankNode node, String string) {
+		SimpleTree inner = getSimpleClone(node);
+		SimpleTree outer = getSurroundingTree(node);
+		
+		String innerString = inner.toString();
+		String outerString = outer.toString();
+		
+		String fullString = outerString.replace(innerString, "(" + string + " " + innerString + ")");
+		return SimpleTree.fromString(fullString);		
+	}
+
+	public static SimpleTree getSurroundingTree(TreebankNode node){
+		SimpleTree tree = null;
+		TreebankNode top = node;
+		while(node.getParent() != null){
+			node = node.getParent();
+		}
+		tree = getSimpleClone(node);
+		return tree;
+	}
+
+	public static SimpleTree getSimpleClone(TreebankNode node) {
+		SimpleTree t = new SimpleTree(node.getNodeType());
+		if(!(node instanceof TerminalTreebankNode)){
+			for(int i = 0; i < node.getChildren().size(); i++){
+				t.addChild(getSimpleClone(node.getChildren(i)));
+			}
+		}
+		return t;
+	}
+	
+	public static void lowercaseWords(SimpleTree t){
+		if(t.children.size() == 0){
+			t.cat = t.cat.toLowerCase();
+		}else{
+			for(SimpleTree child : t.children){
+				lowercaseWords(child);
+			}
+		}
+	}
 }

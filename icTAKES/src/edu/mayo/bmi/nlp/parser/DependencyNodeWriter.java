@@ -1,3 +1,4 @@
+package edu.mayo.bmi.nlp.parser;
 /*
  * Copyright: (c) 2010   Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
@@ -21,7 +22,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License. 
  */
-package edu.mayo.bmi.nlp.parser;
+
 
 import java.io.BufferedWriter;
 import java.io.File;

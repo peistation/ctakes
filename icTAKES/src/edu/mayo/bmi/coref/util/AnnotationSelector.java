@@ -32,6 +32,7 @@ import edu.mayo.bmi.uima.core.type.syntax.Chunk;
 import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
@@ -42,9 +43,9 @@ public class AnnotationSelector {
 
 	public static ArrayList<Annotation> selectNE (JCas jcas) {
 		ArrayList<Annotation> ret = new ArrayList<Annotation>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(IdentifiedAnnotation.type).iterator();
+		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(EntityMention.type).iterator();
 		while (iter.hasNext()) {
-			IdentifiedAnnotation a = (IdentifiedAnnotation) iter.next();
+			EntityMention a = (EntityMention) iter.next();
 			if(a.getOntologyConceptArr() != null)
 //			int tid = a.getTypeID();
 //			if (tid == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE ||
