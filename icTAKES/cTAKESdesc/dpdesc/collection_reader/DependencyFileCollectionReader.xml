@@ -58,7 +58,7 @@ Reads dependency nodes (lines) from a file and creates DependencyNode annotation
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../TypeSystem.xml"/>
+        <import location="../../typesystem/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

@@ -3,7 +3,7 @@
 <collectionReader>
 <collectionIterator>
 <descriptor>
-<import location="../coredesc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+<import location="../../coredesc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
 </descriptor>
 <configurationParameterSettings>
 <nameValuePair>
@@ -38,7 +38,7 @@
 </casProcessor>
 <casProcessor deployment="integrated" name="XCAS Writer CAS Consumer">
 <descriptor>
-<import location="../coredesc/cas_consumer/FileWriterCasConsumer.xml"/>
+<import location="../../coredesc/cas_consumer/FileWriterCasConsumer.xml"/>
 </descriptor>
 <deploymentParameters/>
 <errorHandling>

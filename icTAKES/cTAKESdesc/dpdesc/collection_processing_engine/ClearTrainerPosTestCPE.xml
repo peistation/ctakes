@@ -49,13 +49,13 @@
                 <nameValuePair>
                     <name>PosModelFile</name>
                     <value>
-                        <string>models/postagger.model.bin.gz</string>
+                        <string>posresources/models/mayo-pos.zip</string>
                     </value>
                 </nameValuePair>
                 <nameValuePair>
                     <name>TagDictionary</name>
                     <value>
-                        <string>models/tag.dictionary.txt</string>
+                        <string>posresources/models/tag.dictionary.txt</string>
                     </value>
                 </nameValuePair>
             </configurationParameterSettings>

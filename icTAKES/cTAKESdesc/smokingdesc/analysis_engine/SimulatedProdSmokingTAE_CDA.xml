@@ -4,13 +4,13 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="SentenceAdjuster">
-<import location="SentenceAdjuster.xml"/>
+<import name="analysis_engine.SentenceAdjuster"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="KuRuleBasedClassifierAnnotator">
-<import location="KuRuleBasedClassifierAnnotator.xml"/>
+<import name="analysis_engine.KuRuleBasedClassifierAnnotator"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="ClassifiableEntriesAnnotator">
-<import location="ClassifiableEntriesAnnotator.xml"/>
+<import name="analysis_engine.ClassifiableEntriesAnnotator"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="ExternalBaseAggregateTAE_CDA">
 <import location="ExternalBaseAggregateTAE_CDA.xml"/>

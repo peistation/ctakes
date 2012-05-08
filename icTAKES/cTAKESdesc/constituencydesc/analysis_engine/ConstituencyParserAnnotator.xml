@@ -20,7 +20,7 @@
       <nameValuePair>
         <name>modelFilename</name>
         <value>
-          <string>constituencyresources/parsermodel</string>
+          <string>constituencyresources/fastModel</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

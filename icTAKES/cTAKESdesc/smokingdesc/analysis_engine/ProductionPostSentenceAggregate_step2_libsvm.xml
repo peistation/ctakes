@@ -4,13 +4,13 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="ArtificialSentenceAnnotator">
-<import location="ArtificialSentenceAnnotator.xml"/>
+<import location="file:ArtificialSentenceAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SentenceAdjuster">
 <import location="SentenceAdjuster.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SmokingStatusDictionaryLookupAnnotator">
-<import location="SmokingStatusDictionaryLookupAnnotator.xml"/>
+<import location="file:SmokingStatusDictionaryLookupAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="PcsClassifierAnnotator_libsvm">
 <import location="PcsClassifierAnnotator_libsvm.xml"/>
@@ -20,8 +20,8 @@
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
-<name>Production RuntimeTAE</name>
-<description>Aggregate TAE used to run the Smoking Status pipeline.  This should be followed by the RecordResolutionCasConsumer.</description>
+<name>Smoking Status AE</name>
+<description>Aggregate AE used to run the Smoking Status pipeline.  This should be followed by the RecordResolutionCasConsumer.</description>
 <version></version>
 <vendor></vendor>
 <configurationParameters searchStrategy="language_fallback"/>

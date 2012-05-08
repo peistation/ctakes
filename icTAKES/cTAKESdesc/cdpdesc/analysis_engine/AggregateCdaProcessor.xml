@@ -45,6 +45,12 @@
 <delegateAnalysisEngine key="DictionaryLookupAnnotator">
 <import location="../../lookupdesc/analysis_engine/DictionaryLookupAnnotator.xml"/>
 </delegateAnalysisEngine>
+<delegateAnalysisEngine key="AssertionAnnotator">
+<import location="../../assertiondesc/AssertionMiniPipelineAnalysisEngine.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="DependencyParser">
+<import location="../../dpdesc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+</delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
 <name>AggregateCdaProcessor</name>
@@ -83,8 +89,12 @@
 <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
 <node>LookupWindowAnnotator</node>
 <node>DictionaryLookupAnnotator</node>
-<node>StatusAnnotator</node>
-<node>NegationAnnotator</node>
+<node>DependencyParser</node>
+<node>AssertionAnnotator</node>
+<!-- 
+	<node>StatusAnnotator</node>
+	<node>NegationAnnotator</node>
+ -->
 <node>ExtractionPrepAnnotator</node>
 </fixedFlow>
 </flowConstraints>
@@ -176,6 +186,14 @@
 </sofaMapping>
 <sofaMapping>
 <componentKey>LvgAnnotator</componentKey>
+<aggregateSofaName>plaintext</aggregateSofaName>
+</sofaMapping>
+<sofaMapping>
+<componentKey>AssertionAnnotator</componentKey>
+<aggregateSofaName>plaintext</aggregateSofaName>
+</sofaMapping>
+<sofaMapping>
+<componentKey>DependencyParser</componentKey>
 <aggregateSofaName>plaintext</aggregateSofaName>
 </sofaMapping>
 </sofaMappings>

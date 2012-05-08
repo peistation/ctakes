@@ -98,7 +98,7 @@ Open CPE SentenceDetectorCPE.xml, which uses the analysis
 engines listed in SentenceDetectorAggregate.xml.
 
 The aggregate analysis engine is defined to read from plain text file(s) in 
-$cTAKESHOME/testdata/coretest/testinput/sample_notes_plaintext
+data\test\sample_notes_plaintext
 using the FilesInDirectoryCollectionReader.
 
 Since the sentence annotator processes the text one section at a time, there 
