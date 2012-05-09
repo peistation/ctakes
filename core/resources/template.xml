@@ -1,4 +1,4 @@
-<root suffix="[\s|:]" case_insensitive="yes" lists="no" >
+<root suffix="[:]" case_insensitive="yes" lists="no" >
     <report>
  	    <!-- RECORD INFO START -->
             <record/>
