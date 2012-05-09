@@ -23,8 +23,8 @@ import org.apache.uima.util.XMLInputSource;
 import org.apache.uima.util.XMLParser;
 import org.apache.uima.util.XMLSerializer;
 import org.chboston.cnlp.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
-import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.DocumentIDAnnotator;
 import org.cleartk.util.Options_ImplBase;
+import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.cr.FilesCollectionReader;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
@@ -38,6 +38,8 @@ import org.uimafit.pipeline.SimplePipeline;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 
@@ -185,4 +187,23 @@ public class PreprocessAndWriteXmi {
 		
 	}
 	
+  /**
+   * Class for adding DocumentID annotations.
+   * 
+   * Needed because {@link FilesInDirectoryCollectionReader} creates {@link DocumentID} annotations
+   * but doesn't allow specific files to be loaded, while {@link FilesCollectionReader} allows
+   * specific files to be loaded but creates URIs instead of {@link DocumentID} annotations.
+   */
+  public static class DocumentIDAnnotator extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      String documentID = new File(ViewURIUtil.getURI(jCas)).getName();
+      DocumentID documentIDAnnotation = new DocumentID(jCas);
+      documentIDAnnotation.setDocumentID(documentID);
+      documentIDAnnotation.addToIndexes();
+    }
+
+  }
+
 }
