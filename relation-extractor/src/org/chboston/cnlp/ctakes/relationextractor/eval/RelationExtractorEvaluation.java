@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
@@ -43,8 +44,10 @@ import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Ordering;
+
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.Modifier;
 
 public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
@@ -129,7 +132,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       System.err.print(params.stats);
       System.err.println(params.stats.confusions());
       System.err.println();
-      
+
       // store these parameter settings
       scoredParams.put(params, params.stats.f1());
     }
@@ -217,12 +220,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   @Override
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
-    // remove cTAKES entity mentions and modifiers from the system view
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ModifierRemover.class));
-    // copy gold entity mentions and modifiers into the system view
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldEntityMentionCopier.class));
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldModifierCopier.class));
+    // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
     // add the relation extractor, configured for training mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -250,12 +249,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   protected AnnotationStatistics test(CollectionReader collectionReader, File directory)
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
-    // remove cTAKES entity mentions and modifiers from the system view
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ModifierRemover.class));
-    // copy gold entity mentions and modifiers into the system view
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldEntityMentionCopier.class));
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(GoldModifierCopier.class));
+    // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
     // add the relation extractor, configured for classification mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -448,22 +443,35 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   /**
-   * Class that copies {@link EntityMention} annotations from the CAS with the manual annotations to
-   * the CAS that will be used by the system.
+   * Annotator that removes cTAKES EntityMentions and Modifiers from the system view, and copies
+   * over the manually annotated EntityMentions and Modifiers from the gold view.
+   * 
    */
-  public static class GoldEntityMentionCopier extends JCasAnnotator_ImplBase {
+  public static class ReplaceCTakesEntityMentionsAndModifiersWithGold extends
+      JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
-      JCas goldView;
+      JCas goldView, systemView;
       try {
         goldView = jCas.getView(GOLD_VIEW_NAME);
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
+
+      // remove cTAKES EntityMentions and Modifiers from system view
+      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
+      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
+      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
+      for (IdentifiedAnnotation cTakesMention : cTakesMentions) {
+        cTakesMention.removeFromIndexes();
+      }
+
+      // copy gold EntityMentions to system view
       for (EntityMention goldMention : JCasUtil.select(goldView, EntityMention.class)) {
         EntityMention mention = new EntityMention(
-            jCas,
+            systemView,
             goldMention.getBegin(),
             goldMention.getEnd());
         mention.setTypeID(goldMention.getTypeID());
@@ -472,60 +480,15 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         mention.setConfidence(goldMention.getConfidence());
         mention.addToIndexes();
       }
-    }
 
-  }
-
-  /**
-   * Class that copies {@link Modifier} annotations from the CAS with the manual annotations to the
-   * CAS that will be used by the system.
-   */
-  public static class GoldModifierCopier extends JCasAnnotator_ImplBase {
-
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-      JCas goldView;
-      try {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
-      } catch (CASException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
+      // copy gold Modifiers to system view
       for (Modifier goldModifier : JCasUtil.select(goldView, Modifier.class)) {
-        Modifier modifier = new Modifier(jCas, goldModifier.getBegin(), goldModifier.getEnd());
+        Modifier modifier = new Modifier(systemView, goldModifier.getBegin(), goldModifier.getEnd());
         modifier.setTypeID(goldModifier.getTypeID());
         modifier.setId(goldModifier.getId());
         modifier.setDiscoveryTechnique(goldModifier.getDiscoveryTechnique());
         modifier.setConfidence(goldModifier.getConfidence());
         modifier.addToIndexes();
-      }
-    }
-
-  }
-
-  /**
-   * Class that removes {@link EntityMention} annotations from the CAS's default view
-   */
-  public static class EntityMentionRemover extends JCasAnnotator_ImplBase {
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-      Collection<EntityMention> mentions = JCasUtil.select(jCas, EntityMention.class);
-      // iterate over copy of collection so that we can delete mentions
-      for (EntityMention mention : new ArrayList<EntityMention>(mentions)) {
-        mention.removeFromIndexes();
-      }
-    }
-  }
-
-  /**
-   * Class that removes {@link Modifier} annotations from the CAS's default view
-   */
-  public static class ModifierRemover extends JCasAnnotator_ImplBase {
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-      Collection<Modifier> modifiers = JCasUtil.select(jCas, Modifier.class);
-      // iterate over copy of collection so that we can delete mentions
-      for (Modifier modifier : new ArrayList<Modifier>(modifiers)) {
-        modifier.removeFromIndexes();
       }
     }
   }
