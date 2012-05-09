@@ -13,8 +13,12 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.Feature;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.util.CasCopier;
+import org.apache.uima.util.Level;
 import org.chboston.cnlp.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
@@ -46,6 +50,7 @@ import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Ordering;
 
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
+import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.type.textsem.Modifier;
@@ -489,6 +494,81 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         modifier.setDiscoveryTechnique(goldModifier.getDiscoveryTechnique());
         modifier.setConfidence(goldModifier.getConfidence());
         modifier.addToIndexes();
+      }
+    }
+  }
+
+  public static class ReplaceGoldEntityMentionsAndModifiersWithCTakes extends
+      JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas goldView, systemView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+
+      // remove manual EntityMentions and Modifiers from gold view
+      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
+      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
+      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
+      for (IdentifiedAnnotation goldMention : goldMentions) {
+        goldMention.removeFromIndexes();
+      }
+
+      // copy cTAKES EntityMentions and Modifiers to gold view
+      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
+      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
+      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
+      CasCopier copier = new CasCopier(systemView.getCas(), goldView.getCas());
+      for (IdentifiedAnnotation cTakesMention : cTakesMentions) {
+        Annotation copy = (Annotation) copier.copyFs(cTakesMention);
+        Feature sofaFeature = copy.getType().getFeatureByBaseName("sofa");
+        copy.setFeatureValue(sofaFeature, goldView.getSofa());
+        copy.addToIndexes();
+      }
+
+      // replace gold EntityMentions and Modifiers in relations with cTAKES ones
+      List<BinaryTextRelation> relations = new ArrayList<BinaryTextRelation>();
+      relations.addAll(JCasUtil.select(goldView, BinaryTextRelation.class));
+      for (BinaryTextRelation relation : relations) {
+
+        // attempt to replace the gold RelationArguments with system ones
+        int replacedArgumentCount = 0;
+        for (RelationArgument relArg : Arrays.asList(relation.getArg1(), relation.getArg2())) {
+          Annotation goldArg = relArg.getArgument();
+          Class<? extends Annotation> argClass = goldArg.getClass();
+
+          // find all annotations covered by the gold argument and of the same class (these should
+          // be the ones copied over from the cTAKES output earlier)
+          List<? extends Annotation> systemArgs = JCasUtil.selectCovered(
+              goldView,
+              argClass,
+              goldArg);
+
+          // if there's exactly one annotation, replace the gold one with that
+          if (systemArgs.size() == 1) {
+            relArg.setArgument(systemArgs.get(0));
+            replacedArgumentCount += 1;
+          }
+
+          // otherwise, issue a warning message
+          else {
+            String word = systemArgs.size() == 0 ? "no" : "multiple";
+            String className = argClass.getSimpleName();
+            String argText = goldArg.getCoveredText();
+            String message = String.format("%s %s for \"%s\"", word, className, argText);
+            this.getContext().getLogger().log(Level.FINE, message);
+          }
+        }
+
+        // if replacements were not found for both arguments, remove the relation
+        if (replacedArgumentCount < 2) {
+          relation.removeFromIndexes();
+        }
       }
     }
   }
