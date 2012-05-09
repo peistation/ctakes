@@ -21,10 +21,19 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+/**
+ * A wrapper for a wikipedia lucene index.
+ * 
+ * @author dmitriy dligach
+ *
+ */
 public class WikipediaIndex {
 
-	private final int totalHits = 10;
-	private final String indexPath = "/home/dima/i2b2/wiki-index/index_vectors_notext/";
+	private final int defaultTotalHits = 10;
+	private final String defaultIndexPath = "/home/dima/i2b2/wiki-index/index_vectors_notext/";
+	
+	private int totalHits;
+	private String indexPath;
 	
 	private IndexReader indexReader;
   private IndexSearcher indexSearcher;
@@ -32,8 +41,14 @@ public class WikipediaIndex {
   private QueryParser queryParser;
   private DefaultSimilarity defaultSimilarity;
   
+  public WikipediaIndex(int totalHits, String indexPath) {
+  	this.totalHits = totalHits;
+  	this.indexPath = indexPath;
+  }
+  
   public WikipediaIndex() {
-
+  	totalHits = defaultTotalHits;
+  	indexPath = defaultIndexPath;
   }
   
   public void initialize() throws CorruptIndexException, IOException {
@@ -45,6 +60,9 @@ public class WikipediaIndex {
   	defaultSimilarity = new DefaultSimilarity();
   }
   
+  /**
+   * Search the index. Return a list of article titles and their scores.
+   */
   public ArrayList<SearchResult> search(String queryText) throws ParseException, IOException {
 
   	ArrayList<SearchResult> articleTitles = new ArrayList<SearchResult>();
@@ -60,8 +78,12 @@ public class WikipediaIndex {
   	
   	return articleTitles;
   }
-  
-  public double getCosineSimilarityTopHit(String queryText1, String queryText2) throws ParseException, IOException {
+
+  /**
+   * Send two queries to the index. 
+   * Return cosine similarity between the two top matching documents.
+   */
+  public double getCosineSimilarityUsingTopHit(String queryText1, String queryText2) throws ParseException, IOException {
 
   	String escaped1 = QueryParser.escape(queryText1);
   	Query query1 = queryParser.parse(escaped1);
@@ -70,7 +92,8 @@ public class WikipediaIndex {
   	if(scoreDocs1.length == 0) {
   		return 0;
   	}
-  	
+
+  	// for the first query, map words in the top hit to their tfidf scores
   	HashMap<String, Double> vector1 = makeTfIdfVector(indexReader.getTermFreqVector(scoreDocs1[0].doc, "text"));
   	
   	String escaped2 = QueryParser.escape(queryText2);
@@ -81,6 +104,7 @@ public class WikipediaIndex {
   		return 0;
   	}
   	
+  	// for the second query, map words in the top hit to their tfidf scores
   	HashMap<String, Double> vector2 = makeTfIdfVector(indexReader.getTermFreqVector(scoreDocs2[0].doc, "text"));
   	
   	double dotProduct = computeDotProduct(vector1, vector2);
@@ -90,7 +114,12 @@ public class WikipediaIndex {
   	return dotProduct / (norm1 * norm2);
   }
 
-  public double getCosineSimilarityNHits(String queryText1, String queryText2) throws ParseException, IOException {
+  /**
+   * Send two queries to the index.
+   * For each query, form a tfidf vector that represents N top matching documents.
+   * Return cosine similarity between the two tfidf vectors.
+   */
+  public double getCosineSimilarityUsingNHits(String queryText1, String queryText2) throws ParseException, IOException {
 
   	String escaped1 = QueryParser.escape(queryText1);
   	Query query1 = queryParser.parse(escaped1);
@@ -127,6 +156,10 @@ public class WikipediaIndex {
   	return dotProduct / (norm1 * norm2);
   }
   
+  /**
+   * Return a hash table that maps terms to their tfidf values. 
+   * The input is a single TermFreqVector object.
+   */
   private HashMap<String, Double> makeTfIdfVector(TermFreqVector termFreqVector) throws IOException {
 
   	// map terms to their tfidf values
@@ -144,6 +177,12 @@ public class WikipediaIndex {
   	return tfIdfVector;
   }
 
+
+  /**
+   * Return a hash table that maps terms to their tfidf values.
+   * The input is a list of TermFreqVector objects. The return
+   * value is formed by summing up individual tfidf vectors.
+   */
   private HashMap<String, Double> makeTfIdfVector(ArrayList<TermFreqVector> termFreqVectors) throws IOException {
 
   	// map terms to their tfidf values

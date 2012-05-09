@@ -20,7 +20,7 @@ public class WikipediaFeatureExtractor {
   	List<Feature> features = new ArrayList<Feature>();
   	
   	try {
-	    features.add(new Feature("wikisim", wikipediaIndex.getCosineSimilarityNHits(arg1.getCoveredText(), arg2.getCoveredText())));
+	    features.add(new Feature("wikisim", wikipediaIndex.getCosineSimilarityUsingNHits(arg1.getCoveredText(), arg2.getCoveredText())));
     } catch (ParseException e) {
 	    e.printStackTrace();
     } catch (IOException e) {
