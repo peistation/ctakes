@@ -11,7 +11,7 @@ import org.cleartk.classifier.Feature;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 /**
- * Features that capture punctuation marks between the two arguments.
+ * Features based on wikipedia
  */
 public class WikipediaFeatureExtractor {
 
