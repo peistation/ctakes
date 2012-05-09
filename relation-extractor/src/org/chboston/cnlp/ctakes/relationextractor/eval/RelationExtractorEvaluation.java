@@ -473,27 +473,16 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         cTakesMention.removeFromIndexes();
       }
 
-      // copy gold EntityMentions to system view
-      for (EntityMention goldMention : JCasUtil.select(goldView, EntityMention.class)) {
-        EntityMention mention = new EntityMention(
-            systemView,
-            goldMention.getBegin(),
-            goldMention.getEnd());
-        mention.setTypeID(goldMention.getTypeID());
-        mention.setId(goldMention.getId());
-        mention.setDiscoveryTechnique(goldMention.getDiscoveryTechnique());
-        mention.setConfidence(goldMention.getConfidence());
-        mention.addToIndexes();
-      }
-
-      // copy gold Modifiers to system view
-      for (Modifier goldModifier : JCasUtil.select(goldView, Modifier.class)) {
-        Modifier modifier = new Modifier(systemView, goldModifier.getBegin(), goldModifier.getEnd());
-        modifier.setTypeID(goldModifier.getTypeID());
-        modifier.setId(goldModifier.getId());
-        modifier.setDiscoveryTechnique(goldModifier.getDiscoveryTechnique());
-        modifier.setConfidence(goldModifier.getConfidence());
-        modifier.addToIndexes();
+      // copy gold EntityMentions and Modifiers to the system view
+      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
+      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
+      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
+      CasCopier copier = new CasCopier(goldView.getCas(), systemView.getCas());
+      for (IdentifiedAnnotation goldMention : goldMentions) {
+        Annotation copy = (Annotation) copier.copyFs(goldMention);
+        Feature sofaFeature = copy.getType().getFeatureByBaseName("sofa");
+        copy.setFeatureValue(sofaFeature, systemView.getSofa());
+        copy.addToIndexes();
       }
     }
   }
