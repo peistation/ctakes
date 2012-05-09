@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
-import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 /**
