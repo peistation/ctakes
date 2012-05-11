@@ -45,6 +45,12 @@
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="AssertionAnnotator">
+      <import location="../../../assertion/desc/AssertionMiniPipelineAnalysisEngine.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="DependencyParser">
+      <import location="../../../dependency parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>AggregatePlaintextUMLSProcessor</name>
@@ -95,8 +101,12 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
         <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
         <node>LookupWindowAnnotator</node>
         <node>DictionaryLookupAnnotatorDB</node>
-        <node>StatusAnnotator</node>
-        <node>NegationAnnotator</node>
+        <node>DependencyParser</node>
+        <node>AssertionAnnotator</node>
+        <!-- 
+        	<node>StatusAnnotator</node>
+        	<node>NegationAnnotator</node>
+         -->
         <node>ExtractionPrepAnnotator</node>
       </fixedFlow>
     </flowConstraints>

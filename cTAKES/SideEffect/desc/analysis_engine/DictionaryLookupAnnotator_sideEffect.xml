@@ -12,17 +12,17 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
+        <import location="../../../common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.NamedEntity</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.IdentifiedAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>

@@ -27,36 +27,70 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TopTreebankNode;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.coref.util.AnnotationSelector;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;
 import edu.mayo.bmi.uima.coref.type.PronounMarkable;
-import edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation;
 
 public class PairAttributeCalculator extends AttributeCalculator {
 
 	protected Markable m1, m2;
 	protected String s1, s2;
+	protected Annotation a1, a2;
 
 	public PairAttributeCalculator (JCas jcas, Markable m1, Markable m2) {
 		super(jcas);
 		this.m1 = m1;
 		this.m2 = m2;
+		this.a1 = m1.getContent();
+		this.a2 = m2.getContent();
 		s1 = m1.getCoveredText();
 		s2 = m2.getCoveredText();
+	}
+	
+	/**
+	 * Determine whether the markables are located within the same section
+	 * @author andreea bodnari
+	 * @return
+	 */
+	public String calcSameSection(){
+//		ArrayList<Segment> ret = new ArrayList<Segment>();
+//		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(Segment.type).iterator();
+//		while (iter.hasNext())
+//			ret.add((Segment)iter.next());
+//		java.util.Collections.sort(ret, new AnnotOffsetComparator());
+//		
+//		Segment seg1 = null;
+//		Segment seg2 = null;
+//		
+//		for (Segment a : ret){
+//			if(a.getStart() <= m1.getStart() && a.getEnd() >= m1.getEnd())
+//				seg1 = a;
+//			if(a.getStart() <= m2.getStart() && a.getEnd() >= m2.getEnd())
+//				seg2 = a;	
+//		}
+		boolean sameSection = false;
+		
+//		if(seg1 != null && seg2 != null)
+//			sameSection = seg1.getId().equals(seg2.getId());
+			
+		return sameSection ? "yes" : "no";
 	}
 
 	public double calcTokenDistance () {
@@ -173,10 +207,10 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	//	}
 
 	public String calcWnClassC () {
-		if (m1.getContent() instanceof NamedEntity &&
-				m2.getContent() instanceof NamedEntity) {
-				NamedEntity ne1 = (NamedEntity) m1.getContent();
-				NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				m2.getContent() instanceof IdentifiedAnnotation) {
+				IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+				IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 				if (ne1.getTypeID() == ne2.getTypeID())
 					return "C";
 				else return "N";
@@ -185,10 +219,10 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcWnClassI () {
-		if (m1.getContent() instanceof NamedEntity &&
-				m2.getContent() instanceof NamedEntity) {
-				NamedEntity ne1 = (NamedEntity) m1.getContent();
-				NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				m2.getContent() instanceof IdentifiedAnnotation) {
+				IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+				IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 				if (ne1.getTypeID() != ne2.getTypeID())
 					return "Y";
 				else return "N";
@@ -197,18 +231,18 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcWnClassNA () {
-		if (!(m1.getContent() instanceof NamedEntity) ||
-				!(m2.getContent() instanceof NamedEntity))
+		if (!(m1.getContent() instanceof IdentifiedAnnotation) ||
+				!(m2.getContent() instanceof IdentifiedAnnotation))
 			return "Y";
 		else
 			return "N";
 	}
 
 	public String calcWnClass () {
-		if (m1.getContent() instanceof NamedEntity &&
-			m2.getContent() instanceof NamedEntity) {
-			NamedEntity ne1 = (NamedEntity) m1.getContent();
-			NamedEntity ne2 = (NamedEntity) m2.getContent();
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+			m2.getContent() instanceof IdentifiedAnnotation) {
+			IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+			IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 			if (ne1.getTypeID() == ne2.getTypeID())
 				return "C";
 			else return "I";
@@ -217,10 +251,11 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public String calcAlias () {
-		if (m1.getContent() instanceof NamedEntity &&
-			m2.getContent() instanceof NamedEntity) {
-			NamedEntity ne1 = (NamedEntity) m1.getContent();
-			NamedEntity ne2 = (NamedEntity) m2.getContent();
+		try{
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+			m2.getContent() instanceof IdentifiedAnnotation) {
+			IdentifiedAnnotation ne1 = (IdentifiedAnnotation) m1.getContent();
+			IdentifiedAnnotation ne2 = (IdentifiedAnnotation) m2.getContent();
 
 			ArrayList<String> l = new ArrayList<String>();
 			FSArray fsa = ne1.getOntologyConceptArr();
@@ -233,6 +268,9 @@ public class PairAttributeCalculator extends AttributeCalculator {
 				if (fsa.get(i) instanceof UmlsConcept &&
 					l.contains(((UmlsConcept)fsa.get(i)).getCui()))
 					return "C";
+		}
+		}catch(Exception e){
+			System.err.println("Error here!");
 		}
 		return "I";
 	}
@@ -442,12 +480,78 @@ public class PairAttributeCalculator extends AttributeCalculator {
 //		
 //	}
 
+	public String calcIsDrug () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_DRUG)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsDisorder () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_DISORDER)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsFinding () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_FINDING)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsProcedure () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_PROCEDURE)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public String calcIsAnatomicalSite () {
+		if (m1.getContent() instanceof IdentifiedAnnotation &&
+				((IdentifiedAnnotation)m1.getContent()).getTypeID() == CONST.NE_TYPE_ID_ANATOMICAL_SITE)
+			return "Y";
+		else
+			return "N";
+	}
+
+	public double calcNegatedBoth(){
+		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
+			if(((EntityMention)a1).getPolarity() == -1 &&
+			   ((EntityMention)a2).getPolarity() == -1){
+				return 1.0;
+			}else{
+				return 0.0;
+			}
+		}else{
+			return 0.0;
+		}
+	}
+	
+	public double calcNonNegatedBoth(){
+		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
+			if(((EntityMention)a1).getPolarity() == 1.0 &&
+			   ((EntityMention)a2).getPolarity() == 1.0){
+				return 1.0;
+			}else{
+				return 0.0;
+			}
+		}else{
+			return 0.0;
+		}
+	}
+	
 	public String calcClosestComp () {
 		if (calcWnClass().equals("C")) {
 			ArrayList<Annotation> l = AnnotationSelector.selectNE(jcas);
-			int m2type = ((NamedEntity)m2.getContent()).getTypeID();
+			int m2type = ((IdentifiedAnnotation)m2.getContent()).getTypeID();
 			for (Annotation a : l) {
-				if (((NamedEntity)a).getTypeID()==m2type &&
+				if (((IdentifiedAnnotation)a).getTypeID()==m2type &&
 					a.getBegin()>=m1.getEnd() &&
 					a.getEnd()<=m2.getBegin())
 					return "I";
@@ -470,30 +574,7 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	
-	public static void main(String[] args){
-		// FOR DEBUGGING ONLY!
-		//		PairAttributeCalculator.initTrigrams("NP<PP<UCP<VP<SQ<NP<S<TOP>S>VP>VP");
-
-		// OK MAYBE FOR A LITTLE ANALYSIS TOO
-		try{
-//			trigrams = new HashMap<String,Integer>();
-//			Scanner scanner = new Scanner(new File("/home/tmill/Projects/cNLP/cTakes-Ext/coref-resolver/results/v2/fullpaths.out"));
-//			while(scanner.hasNextLine()){
-//				String line = scanner.nextLine().trim();
-//				PairAttributeCalculator.initTrigrams(line);
-//			}
-//			PrintWriter out = new PrintWriter("/home/tmill/Projects/cNLP/cTakes-Ext/coref-resolver/results/v2/trigramcounts.out");
-//			for(Map.Entry<String,Integer> entry : trigrams.entrySet()){
-//				out.println(entry.getValue()+" " + entry.getKey());
-//			}
-//			out.close();
-		}catch(Exception e){
-			System.err.println(e);
-		}
-	}
-
-	
-
+	// FIXME - Based on gpl'd code so can't be released (marginal to no effect on performance)
 	public double calcPermStrDist () {
 //		StringSim ss = new StringSim(s1, s2);
 //		ss.setStopWords(stopwords);

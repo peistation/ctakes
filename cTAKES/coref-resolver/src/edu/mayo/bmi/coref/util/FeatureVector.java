@@ -37,7 +37,8 @@ public class FeatureVector {
 	};
 
 	final static String[] ne_coref_feats = {
-			"TokenDistance"   , // numeric    1
+			"SameSection",  // {yes, no}	 1
+			"TokenDistance"   , // numeric    
 			"SentenceDistance", // numeric
 			"ExactMatch"      , // {yes,no}
 			"StartMatch"      , // {yes,no}
@@ -47,8 +48,8 @@ public class FeatureVector {
 			"SoonStr"         , // {C,I}
 			"Pronoun1"        , // {Y,N}
 			"Pronoun2"        , // {Y,N}
-			"Definite2"       , // {Y,N}
-			"Demonstrative2"  , // {Y,N}      10
+			"Definite2"       , // {Y,N}      10
+			"Demonstrative2"  , // {Y,N}      
 			//"NumberMatch"     , // {C,I,NA}
 			"NumberMatchC"    , // {Y,N}
 			"NumberMatchI"    , // {Y,N}
@@ -59,7 +60,7 @@ public class FeatureVector {
 			"WnClassNA"       , // {Y,N}
 			"Alias"           , // {C,I}
 			"ProStr"          , // {C,I}
-			"SoonStrNonpro"   , // {C,I}      
+			"SoonStrNonpro"   , // {C,I}      20
 			"WordOverlap"     , // {C,I}
 			"WordsSubstr"     , // {C,I}
 			//"BothDefinites"   , // {C,I,NA}
@@ -72,16 +73,21 @@ public class FeatureVector {
 			"BothEmbeddedNA"  , // {Y,N}
 			//"BothPronouns"    , // {C,I,NA}
 			"BothPronounsC"   , // {Y,N}
-			"BothPronounsI"   , // {Y,N}
-			"BothPronounsNA"  , // {Y,N}   30
+			"BothPronounsI"   , // {Y,N}   30
+			"BothPronounsNA"  , // {Y,N}
 			"Indefinite"      , // {I,C}
 			"Pronoun"         , // {I,C}
 			"Definite1"       , // {Y,N}
 			"ClosestComp"     , // {C,I}
+			"IsDrug"           , // {Y,N}
+			"IsDisorder"       , // {Y,N}
+			"IsFinding"        , // {Y,N}
+			"IsProcedure"      , // {Y,N}
+			"IsAnatomicalSite" , // {Y,N}   40
 			"NPHead"          , // {yes, no}
-			"Anaph"           , // numeric
-			"PermStrDist"	  , //             
-			"PathLength"	  , // number of nodes in full path
+//			"Anaph"           , // numeric
+//			"PermStrDist"	  , //             
+			"PathLength"	  , // number of nodes in full path 37
 			"NPunderVP1"	  , // NP object?
 			"NPunderVP2"	  , //
 			"NPunderS1"		  , // NP subject?
@@ -89,9 +95,14 @@ public class FeatureVector {
 			"NPunderPP1"	  , // PP object?  
 			"NPunderPP2"      , //             
 			"NPSubj1"		  , //			   
-			"NPSubj2"		  , //             
+			"NPSubj2"		  , //             50 
 			"NPSubjBoth"	  , //			   
-			"Cat:Ngrams"      , //			   :n-1
+//			"NegatedBoth"	  , //
+//			"NonNegatedBoth"  ,
+			//"NPSubjBoth"    , //             
+//			"Cat:Ngrams"      , //			   :n-1
+//			"TK"			  ,
+//			"WordsStr"			// not used, why?		 
 	};
 
 	final static String[] pron_coref_feats = ne_coref_feats;

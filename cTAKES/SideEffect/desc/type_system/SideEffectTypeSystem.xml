@@ -4,7 +4,7 @@
   <description/>
   <version>1.0</version>
   <imports>
-    <import location="../../../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
+    <import location="../../../common-type-system/desc/common_type_system.xml"/>
   </imports>
   <types>
     <typeDescription>
@@ -15,12 +15,12 @@
         <featureDescription>
           <name>sideEffect</name>
           <description>side effect mention in NamedEntity</description>
-          <rangeTypeName>edu.mayo.bmi.uima.core.type.NamedEntity</rangeTypeName>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>drug</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.core.type.NamedEntity</rangeTypeName>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>sentence</name>

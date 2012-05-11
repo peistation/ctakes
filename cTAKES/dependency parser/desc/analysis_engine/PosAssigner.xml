@@ -12,8 +12,6 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="../../../POS tagger/desc/TypeSystem.xml"/>
-        <import location="../TypeSystem.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

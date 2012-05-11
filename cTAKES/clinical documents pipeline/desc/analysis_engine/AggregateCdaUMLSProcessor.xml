@@ -45,6 +45,12 @@
 <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
 <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
 </delegateAnalysisEngine>
+<delegateAnalysisEngine key="AssertionAnnotator">
+<import location="../../../assertion/desc/AssertionMiniPipelineAnalysisEngine.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="DependencyParser">
+<import location="../../../dependency parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+</delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
 <name>AggregateCdaUMLSProcessor</name>
@@ -86,8 +92,12 @@ Please update DictionaryLookupAnnotatorUMLS.xml file with your UMLS username and
 <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
 <node>LookupWindowAnnotator</node>
 <node>DictionaryLookupAnnotatorDB</node>
-<node>StatusAnnotator</node>
-<node>NegationAnnotator</node>
+<node>DependencyParser</node>
+<node>AssertionAnnotator</node>
+<!-- 
+	<node>StatusAnnotator</node>
+	<node>NegationAnnotator</node>
+ -->
 <node>ExtractionPrepAnnotator</node>
 </fixedFlow>
 </flowConstraints>
@@ -179,6 +189,14 @@ Please update DictionaryLookupAnnotatorUMLS.xml file with your UMLS username and
 </sofaMapping>
 <sofaMapping>
 <componentKey>LvgAnnotator</componentKey>
+<aggregateSofaName>plaintext</aggregateSofaName>
+</sofaMapping>
+<sofaMapping>
+<componentKey>DependencyParser</componentKey>
+<aggregateSofaName>plaintext</aggregateSofaName>
+</sofaMapping>
+<sofaMapping>
+<componentKey>AssertionAnnotator</componentKey>
 <aggregateSofaName>plaintext</aggregateSofaName>
 </sofaMapping>
 </sofaMappings>

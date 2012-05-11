@@ -15,15 +15,33 @@
 */
 package org.chboston.cnlp.ctakes.parser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import opennlp.tools.lang.english.TreebankParser;
+//import opennlp.tools.lang.english.TreebankParser; // no longer part of OpenNLP as of 1.5
+import opennlp.model.AbstractModel;
+import opennlp.model.MaxentModel;
+import opennlp.tools.chunker.Chunker;
+import opennlp.tools.chunker.ChunkerME;
+import opennlp.tools.cmdline.parser.ParserTool;
+import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.parser.AbstractBottomUpParser;
+import opennlp.tools.parser.ChunkContextGenerator;
 import opennlp.tools.parser.Parse;
-import opennlp.tools.parser.Parser;
+import opennlp.tools.parser.ParserChunkerSequenceValidator;
+import opennlp.tools.parser.ParserModel;
+import opennlp.tools.parser.chunking.Parser;
+import opennlp.tools.parser.lang.en.HeadRules;
+import opennlp.tools.postag.POSDictionary;
+import opennlp.tools.postag.POSTagger;
+import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.postag.TagDictionary;
 import opennlp.tools.util.Span;
 
 import org.apache.log4j.Logger;
@@ -33,7 +51,6 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
 import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
@@ -53,7 +70,66 @@ public class MaxentParserWrapper implements ParserWrapper {
 	
 	public MaxentParserWrapper(String dataDir) {
 		try {
-			parser = TreebankParser.getParser(dataDir, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			//parser = TreebankParser.getParser(dataDir, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			
+			File d = new File(dataDir);
+			
+			MaxentModel buildModel = null;
+			MaxentModel checkModel = null;
+			POSTagger posTagger = null;
+			Chunker chunker = null;
+			HeadRules headRules = null;
+
+			if (!d.isDirectory()) {
+				FileInputStream fis = new FileInputStream(d);
+				ParserModel model = new ParserModel(fis);
+				parser = new Parser(model, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			} else {
+				// This branch is for handling models built with OpenNLp 1.4
+				// Once the models are rebuilt using OpenNLP 1.5 this code should be removed
+				// @see TreebankParser.java in OpenNLP 1.4
+				{
+					File f = new File(d, "build.bin.gz"); // TODO consider moving these literals to an XML file or properties file
+					buildModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
+				}
+				
+				{
+					File f = new File(d, "check.bin.gz");
+					checkModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
+				}
+				
+				{
+					File f = new File(d, "pos.model.bin");
+					//File f = new File(d, "tag.bin.gz");
+					MaxentModel posModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
+					if (useTagDictionary) {
+						File td = new File(d, "tagdict");
+						TagDictionary tagDictionary = new POSDictionary(td.getAbsolutePath()); //null;
+						posTagger = new POSTaggerME((AbstractModel) posModel, tagDictionary);
+					} else {
+						// f = new File(d, "dict.bin.gz");
+						Dictionary dictionary = null; // new Dictionary();
+						posTagger = new POSTaggerME((AbstractModel) posModel, dictionary);
+
+					}
+				}
+				
+				
+				{
+					File f = new File(d, "chunk.bin.gz");
+					MaxentModel chunkModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
+					chunker = new ChunkerME(chunkModel);
+				}
+			
+				{
+					FileReader fr = new FileReader(new File(d, "head_rules"));
+					headRules = new HeadRules(fr);
+				}
+
+				parser = new Parser(buildModel, checkModel, posTagger, chunker, headRules); //TreebankParser.getParser(modelFileOrDirname, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			}
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,7 +180,7 @@ public class MaxentParserWrapper implements ParserWrapper {
 				parseBuff.append("");
 				parse = null;
 			}else{
-				parse = TreebankParser.parseLine(sentStr, parser, 1)[0];
+				parse = ParserTool.parseLine(sentStr, parser, 1)[0];
 				parse.show(parseBuff);
 			}
 //			Span span = parse.getSpan();

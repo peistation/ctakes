@@ -10,7 +10,7 @@
     <configurationParameters>
       <configurationParameter>
         <name>OutputDirectory</name>
-        <description>testdata/drugnertest/testoutput</description>
+        <description>Directory where the cvs file will be written</description>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
@@ -64,13 +64,18 @@
         </value>
       </nameValuePair>
     </configurationParameterSettings>
-    <typeSystemDescription/>
+    <typeSystemDescription>
+      <imports>
+        <import location="../type_system/NERTypeSystem.xml"/>
+        <import location="../../../clinical documents pipeline/desc/CDAToTextTypeSystem.xml"/>
+      </imports>
+    </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
         </inputs>
         <outputs/>
         <inputSofas>

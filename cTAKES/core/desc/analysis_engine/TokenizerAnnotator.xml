@@ -2,11 +2,11 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.TokenizerAnnotator</annotatorImplementationName>
+<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.TokenizerAnnotatorPTB</annotatorImplementationName>
 <analysisEngineMetaData>
-<name>TokenizerAnnotator</name>
-<description>Discovers tokens in the given text.  These tokens consist of words, punctuation, etc...</description>
-<version>2.2</version>
+<name>TokenizerAnnotatorPTB</name>
+<description>Discovers tokens in the given text, following Penn TreeBank tokenization rules.  These tokens consist of words, punctuation, etc...</description>
+<version>2.3</version>
 <vendor>Mayo Clinic</vendor>
 <configurationParameters>
 <configurationParameter>
@@ -16,13 +16,6 @@
 <multiValued>true</multiValued>
 <mandatory>false</mandatory>
 </configurationParameter>
-<configurationParameter>
-<name>FreqCutoff</name>
-<description>Frequency cutoff for hyphen entries.</description>
-<type>Integer</type>
-<multiValued>false</multiValued>
-<mandatory>true</mandatory>
-</configurationParameter>
 </configurationParameters>
 <configurationParameterSettings>
 <nameValuePair>
@@ -31,16 +24,10 @@
 <array/>
 </value>
 </nameValuePair>
-<nameValuePair>
-<name>FreqCutoff</name>
-<value>
-<integer>0</integer>
-</value>
-</nameValuePair>
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../src/edu/mayo/bmi/uima/core/type/TypeSystem.xml"/>
+<import location="../../../common-type-system/desc/common_type_system.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -48,10 +35,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Segment</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </outputs>
 <languagesSupported/>
 </capability>
@@ -63,29 +50,7 @@
 </operationalProperties>
 </analysisEngineMetaData>
 <externalResourceDependencies>
-<externalResourceDependency>
-<key>HyphFreqTable</key>
-<description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResource</interfaceName>
-<optional>true</optional>
-</externalResourceDependency>
 </externalResourceDependencies>
 <resourceManagerConfiguration>
-<externalResources>
-<externalResource>
-<name>HyphFreqFile</name>
-<description></description>
-<fileResourceSpecifier>
-<fileUrl>file:tokenizer/hyphenated.txt</fileUrl>
-</fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResourceImpl</implementationName>
-</externalResource>
-</externalResources>
-<externalResourceBindings>
-<externalResourceBinding>
-<key>HyphFreqTable</key>
-<resourceName>HyphFreqFile</resourceName>
-</externalResourceBinding>
-</externalResourceBindings>
 </resourceManagerConfiguration>
 </taeDescription>

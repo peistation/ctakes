@@ -18,6 +18,7 @@ package edu.mayo.bmi.coref.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.HashSet;
 
@@ -25,18 +26,21 @@ import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
 
+import opennlp.tools.parser.Parse;
+
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
+import org.chboston.cnlp.ctakes.parser.treekernel.TreeExtractor;
+import org.chboston.cnlp.ctakes.parser.util.TreeUtils;
+import org.chboston.cnlp.util.FragmentUtils;
+import org.chboston.cnlp.util.SimpleTree;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.coref.type.AnaphoricityVecInstance;
 import edu.mayo.bmi.uima.coref.type.Markable;
-import edu.mayo.bmi.uima.coref.type.VecInstance;
 
 public class SvmVectorCreator {
 	HashSet<String> stopwords = null;
 	private svm_model anaph_model = null;
+	ArrayList<SimpleTree> frags = new ArrayList<SimpleTree>();
 	
 	public SvmVectorCreator(HashSet<String> stopwords){
 		this.stopwords = stopwords;
@@ -181,7 +185,31 @@ public class SvmVectorCreator {
 				}
 			} catch (Exception e) { e.printStackTrace(); }
 		}
-
+		
+		if(frags != null && frags.size() > 0){
+			SimpleTree tn = TreeExtractor.extractPathTree(MarkableTreeUtils.markableNode(aJCas, antecedent.getBegin(), antecedent.getEnd()),
+					MarkableTreeUtils.markableNode(aJCas, anaphor.getBegin(), anaphor.getEnd()));
+//			SimpleTree tn = TreeExtractor.extractPathEnclosedTree(MarkableTreeUtils.markableNode(aJCas, antecedent.getBegin(), antecedent.getEnd()),
+//					MarkableTreeUtils.markableNode(aJCas, anaphor.getBegin(), anaphor.getEnd()),
+//					aJCas);
+			// now go over the tree fragment features:
+			for(SimpleTree frag : frags){
+				if(TreeUtils.contains(tn, frag)){
+					svm_node n = new svm_node();
+					n.index = ind+1;
+					n.value = 1.0;
+					nodes.add(n);
+				}
+				ind++;
+			}
+		}
 		return nodes.toArray(new svm_node[]{});
+	}
+
+
+	public void setFrags(Collection<String> treeFrags) {
+		for(String frag : treeFrags){
+			frags.add(FragmentUtils.frag2tree(frag));
+		}
 	}
 }

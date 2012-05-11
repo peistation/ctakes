@@ -5,9 +5,9 @@
 <uima.tcas.DocumentAnnotation _indexed="1" _id="13" _ref_sofa="6" begin="0" end="7875" language="x-unspecified"/>
 <edu.mayo.bmi.uima.core.type.DocumentID _indexed="1" _id="1" _ref_sofa="6" begin="0" end="0" documentID="testpatient_cn_1.xml"/>
 <uima.tcas.DocumentAnnotation _indexed="2" _id="25" _ref_sofa="18" begin="0" end="855" language="x-unspecified"/>
-<edu.mayo.bmi.uima.core.type.Segment _indexed="2" _id="30" _ref_sofa="18" begin="198" end="828" id="20103"/>
-<edu.mayo.bmi.uima.core.type.Segment _indexed="2" _id="35" _ref_sofa="18" begin="28" end="43" id="20101"/>
-<edu.mayo.bmi.uima.core.type.Segment _indexed="2" _id="40" _ref_sofa="18" begin="98" end="143" id="20102"/>
+<edu.mayo.bmi.uima.core.type.textspan.Segment _indexed="2" _id="30" _ref_sofa="18" begin="198" end="828" id="20103"/>
+<edu.mayo.bmi.uima.core.type.textspan.Segment _indexed="2" _id="35" _ref_sofa="18" begin="28" end="43" id="20101"/>
+<edu.mayo.bmi.uima.core.type.textspan.Segment _indexed="2" _id="40" _ref_sofa="18" begin="98" end="143" id="20102"/>
 <edu.mayo.bmi.uima.core.type.Properties _indexed="2" _id="45" _ref_sofa="18" begin="0" end="0" _ref_propArr="50"/>
 <edu.mayo.bmi.uima.core.type.Property _id="200" _ref_sofa="18" begin="0" end="0" key="EVENT_TYPE_CODE" value="CON"/>
 <edu.mayo.bmi.uima.core.type.Property _id="194" _ref_sofa="18" begin="0" end="0" key="DOC_ID" value="000000000"/>

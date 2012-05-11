@@ -19,10 +19,10 @@ package edu.mayo.bmi.coref.util;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.chboston.cnlp.ctakes.parser.uima.type.TerminalTreebankNode;
-import org.chboston.cnlp.ctakes.parser.uima.type.TreebankNode;
 
-import edu.mayo.bmi.nlp.parser.type.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
+import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 
 public class MarkableDepUtils {
 

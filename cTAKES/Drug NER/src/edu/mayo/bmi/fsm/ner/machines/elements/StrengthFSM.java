@@ -107,7 +107,7 @@ public class StrengthFSM {
 		startState.addTransition(new StrengthUnitCombinedCondition(), endState);
 		startState.addTransition(new AnyCondition(), startState);
 		
-		dateState.addTransition(new NegateCondition( new PunctuationValueCondition('/')), endState);
+		dateState.addTransition(new NegateCondition( new PunctuationValueCondition('/')), connectState);
 		dateState.addTransition(new AnyCondition(), startState);
 		
 		//Mayo SPM 2/20/2012 Changed due to separation of strength tokens

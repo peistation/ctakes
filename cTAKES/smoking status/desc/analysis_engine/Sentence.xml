@@ -6,7 +6,7 @@
 <vendor></vendor>
 <types>
 <typeDescription>
-<name>edu.mayo.bmi.uima.core.type.Sentence</name>
+<name>edu.mayo.bmi.uima.core.type.textspan.Sentence</name>
 <description></description>
 <supertypeName>uima.tcas.Annotation</supertypeName>
 <features>

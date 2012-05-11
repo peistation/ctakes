@@ -18,29 +18,19 @@ package edu.mayo.bmi.coref.util;
 
 public class CorefConsts {
 
-	public static String NE = "ne";
-	public static String DEM = "dem";
-	public static String PRON = "pronoun";
+	public final static String NE = "ne";
+	public final static String DEM = "dem";
+	public final static String PRON = "pronoun";
 	
 	// Max length of sentences to go back when generating a markable pair
-	public static int NEDIST = 10;
-	public static int PRODIST = 3;
+	public final static int NEDIST = 20;
+	public final static int PRODIST = 3;
 	
 	// Normalization constants in the attribute calculators (move into there?)
-	public static int TOKDIST = 600;
-	public static int SENTDIST = NEDIST;
+	public final static int TOKDIST = 600;
+	public final static int SENTDIST = NEDIST;
 	
 	// threshold
-	public static double COREF_THRESHOLD = 0.5;
+	public final static double COREF_THRESHOLD = 0.5;
 	
-	public static void main(String[] args){
-		Double testDouble = new Double(0.0);
-		System.out.println("Double value is : " + testDouble);
-		changeValue(testDouble);
-		System.out.println("Double value after function is: " + testDouble);
-	}
-	
-	public static void changeValue(Double test){
-		test = 0.5;
-	}
 }

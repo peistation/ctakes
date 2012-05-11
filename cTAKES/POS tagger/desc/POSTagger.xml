@@ -34,7 +34,7 @@
 <nameValuePair>
 <name>PosModelFile</name>
 <value>
-<string>models/postagger.model.bin.gz</string>
+<string>models/mayo-pos.zip</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -52,15 +52,6 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/BaseToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/ContractionToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/NewlineToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/NumToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/PunctuationToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/SymbolToken.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/Sentence.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/Segment.xml"/>
-<import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -68,11 +59,11 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Sentence</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.BaseToken</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </outputs>
 <languagesSupported/>
 </capability>

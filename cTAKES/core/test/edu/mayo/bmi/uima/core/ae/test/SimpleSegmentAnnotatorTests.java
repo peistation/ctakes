@@ -33,7 +33,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 
 public class SimpleSegmentAnnotatorTests {
 

@@ -96,14 +96,13 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="file:../type_system/ContextTypeSystem.xml"/>
 </imports>
 </typeSystemDescription>
 <capabilities>
 <capability>
 <inputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.types.NamedEntityAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.types.BaseTokenAnnotation</type>
+<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ctx.types.ContextAnnotation</type>

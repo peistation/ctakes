@@ -26,16 +26,14 @@ package edu.mayo.bmi.uima.core.ae;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
+import org.apache.log4j.Logger;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**
@@ -45,47 +43,46 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  * 
  * @author Mayo Clinic
  */
-public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
+public class SimpleSegmentWithTagsAnnotator extends JCasAnnotator_ImplBase {
 	private String segmentId;
 
-	public void initialize(AnnotatorContext aContext) throws AnnotatorConfigurationException,
-			AnnotatorInitializationException {
+	private Logger logger = Logger.getLogger(getClass().getName());
+	
+	public void initialize(UimaContext aContext)
+			throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		try {
-			segmentId = (String) aContext.getConfigParameterValue("SegmentID");
-			if (segmentId == null) {
-				segmentId = "SIMPLE_SEGMENT";
-			}
-		} catch (AnnotatorContextException ace) {
-			throw new AnnotatorConfigurationException(ace);
+		segmentId = (String) aContext.getConfigParameterValue("SegmentID");
+		if (segmentId == null) {
+			segmentId = "SIMPLE_SEGMENT";
 		}
 	}
 
-    /**
-     * Entry point for processing.
-     */
-    public void process(JCas jcas, ResultSpecification resultSpec)
-            throws AnnotatorProcessException
-    {
-        //sa.setBegin(0);
-        String text = jcas.getDocumentText();
-        if(text == null)
-        {
-         	System.out.println("text == null in Segmentannotator");
-        	String docID = DocumentIDAnnotationUtil.getDocumentID(jcas);
-        	System.out.println(" \t\tdocID="+docID);
-        }
-        if (segmentId.compareTo("parseSectionTag")!=0){
-            // If the default segment ID or a segment ID other than "parseSectionTag",
-            // create 1 segment using the given segment ID.
-        	Segment sa = new Segment(jcas);
-           	sa.setBegin(0);
-        	sa.setEnd(jcas.getDocumentText().length());
-        	sa.setId(segmentId);
-        	sa.addToIndexes();
-        } else { // is "parseSectionTag", so search for the segment markers and annotate
-        	BufferedReader fileReader = new BufferedReader(new StringReader(text));
+	/**
+	 * Entry point for processing.
+	 */
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		logger.info("process(JCas)");
+		// sa.setBegin(0);
+		String text = jcas.getDocumentText();
+		if (text == null) {
+			System.out.println("text == null in Segmentannotator");
+			String docID = DocumentIDAnnotationUtil.getDocumentID(jcas);
+			System.out.println(" \t\tdocID=" + docID);
+		}
+		if (segmentId.compareTo("parseSectionTag") != 0) {
+			// If the default segment ID or a segment ID other than
+			// "parseSectionTag",
+			// create 1 segment using the given segment ID.
+			Segment sa = new Segment(jcas);
+			sa.setBegin(0);
+			sa.setEnd(jcas.getDocumentText().length());
+			sa.setId(segmentId);
+			sa.addToIndexes();
+		} else { // is "parseSectionTag", so search for the segment markers and
+					// annotate
+			BufferedReader fileReader = new BufferedReader(new StringReader(
+					text));
 
 			int charNum = 0;
 			int charPos = 0;
@@ -109,16 +106,16 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 								if (((charNum = fileReader.read()) == 'a')
 										|| (charNum == 'd')) {
 									charPos++;
-									
+
 									if ((charNum = fileReader.read()) == 'r') {
-										endStartSegment = charPos + 22; //Fix positioning of section
+										endStartSegment = charPos + 24;
 										fileReader.skip(14);
-										
+
 										fileReader.read(sectIdArr, 0, 5);
-										charPos = charPos +19;
+										charPos = charPos + 19;
 
 									} else if (charNum == ' ') {
-										beginEndSegment = charPos - 4;//Fix positioning of section
+										beginEndSegment = charPos - 5;
 										Segment sa = new Segment(jcas);
 										sa.setBegin(endStartSegment);
 										sa.setEnd(beginEndSegment);
@@ -126,7 +123,7 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 										for (int i = 0; i < sectIdArr.length; i++)
 											sectIdArr[i] = ' ';
 										sa.addToIndexes();
-									} 
+									}
 									charPos++;
 								}
 							}
@@ -135,10 +132,9 @@ public class SimpleSegmentWithTagsAnnotator extends JTextAnnotator_ImplBase {
 						charPos++;
 				}
 			} catch (Exception e) {
-				throw new AnnotatorProcessException(e);
+				throw new AnalysisEngineProcessException(e);
 			}
-        }
-        
+		}
 
-    }
+	}
 }

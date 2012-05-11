@@ -4,16 +4,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.SmokingStatus.type.UnknownSmokerNamedEntityAnnotation;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
 
 /**
  * copied from edu.may.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl in the "Dictionary Lookup" project
@@ -28,14 +28,14 @@ public class UnknownSmokerNamedEntityLookupConsumerImpl extends BaseLookupConsum
 
 	private Properties iv_props;
 
-	public UnknownSmokerNamedEntityLookupConsumerImpl(AnnotatorContext aCtx, Properties props)
+	public UnknownSmokerNamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props)
 	{
 		// TODO property validation
 		iv_props = props;
 	}
 
 	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnnotatorProcessException
+			throws AnalysisEngineProcessException
 	{
 		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
 		while (hitsByOffsetItr.hasNext())
@@ -70,7 +70,7 @@ public class UnknownSmokerNamedEntityLookupConsumerImpl extends BaseLookupConsum
 			UnknownSmokerNamedEntityAnnotation neAnnot = new UnknownSmokerNamedEntityAnnotation(jcas); //modification
 			neAnnot.setBegin(neBegin);
 			neAnnot.setEnd(neEnd);
-			neAnnot.setDiscoveryTechnique(TypeSystemConst.NE_DISCOVERY_TECH_DICT_LOOKUP);
+			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
 			neAnnot.setOntologyConceptArr(ocArr);
 			neAnnot.addToIndexes();
 		}

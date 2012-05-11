@@ -22,83 +22,75 @@
  * limitations under the License. 
  */
 package edu.mayo.bmi.uima.core.ae;
+
 /**
  * This simple implementation is intended to remove annotations other 
  * than the one specified form CAS.
  * 
  * @author m039575 
  */
-import java.util.Iterator;
-
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
-import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
-public class FilterAnnotator extends JTextAnnotator_ImplBase
-{
-  //TODO parameterize retainAttrTypeId = DISORDER_ANNOTATIONS = 2
-  private static int DISORDER_ANNOTATIONS = 2;
-  
-  public FilterAnnotator()
-  { 
-    super();
-    
-    retainAnnType = NamedEntity.type;
-    retainAttrTypeId = DISORDER_ANNOTATIONS;
-  }
+public class FilterAnnotator extends JCasAnnotator_ImplBase {
+	// TODO parameterize retainAttrTypeId = DISORDER_ANNOTATIONS = 2
+	private static int DISORDER_ANNOTATIONS = 2;
 
-  public void initialize(AnnotatorContext annotCtx)
-  throws AnnotatorInitializationException, AnnotatorConfigurationException
-  { 
-    super.initialize(annotCtx);
-    
-    removeList = new java.util.ArrayList();
-  }
+	public FilterAnnotator() {
+		super();
 
-  /**
-   * Checks if the annotation is of the type to be retained. If not, 
-   * removes it from the index. 
-   * Uses helper method isValid(Annotation).
-   */
-  public void process(JCas jcas, ResultSpecification resultSpec)
-      throws AnnotatorProcessException
-  {
-    removeList.clear();
-    
-    // iterate over source objects in JCas
-    JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-    Iterator srcObjItr = indexes.getAnnotationIndex(retainAnnType).iterator();
-    
-    while(srcObjItr.hasNext())
-    {
-      Annotation ann = (Annotation)srcObjItr.next();
-      if(!isValid(ann))
-        removeList.add(ann);
-    }
-    
-    for(int i = 0; i< removeList.size(); i++)
-      ((Annotation)removeList.get(i)).removeFromIndexes();
-    
-  }
+		retainAnnType = EntityMention.type;
+		retainAttrTypeId = DISORDER_ANNOTATIONS;
+	}
 
-  private boolean isValid(Annotation ann)
-  {
-    if( ((NamedEntity)ann).getTypeID() != retainAttrTypeId )
-      return false;
-    
-    return true;
-  }
-  
-  //-- private datamembers ----
-  private int retainAnnType;          //annotation type you want to retain
-  private int retainAttrTypeId;       //annotation type id you want to retain
-  private java.util.List removeList;  //collection to hold annotations to be removed
+	public void initialize(UimaContext annotCtx)
+			throws ResourceInitializationException {
+		super.initialize(annotCtx);
+
+		removeList = new java.util.ArrayList<Annotation>();
+	}
+
+	/**
+	 * Checks if the annotation is of the type to be retained. If not, removes
+	 * it from the index. Uses helper method isValid(Annotation).
+	 */
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		removeList.clear();
+
+		// iterate over source objects in JCas
+		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+		FSIterator<Annotation> srcObjItr = indexes.getAnnotationIndex(
+				retainAnnType).iterator();
+
+		while (srcObjItr.hasNext()) {
+			Annotation ann = (Annotation) srcObjItr.next();
+			if (!isValid(ann))
+				removeList.add(ann);
+		}
+
+		for (int i = 0; i < removeList.size(); i++)
+			removeList.get(i).removeFromIndexes();
+
+	}
+
+	private boolean isValid(Annotation ann) {
+		if (((EntityMention) ann).getTypeID() != retainAttrTypeId)
+			return false;
+
+		return true;
+	}
+
+	// -- private datamembers ----
+	private int retainAnnType; // annotation type you want to retain
+	private int retainAttrTypeId; // annotation type id you want to retain
+	private java.util.List<Annotation> removeList; // collection to hold
+													// annotations to be removed
 }

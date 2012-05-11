@@ -13,23 +13,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.collection.CasConsumer_ImplBase;
-import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
-import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.Properties;
-import edu.mayo.bmi.uima.core.type.Property;
 import edu.mayo.bmi.uima.core.cc.NonTerminalConsumer;
-import edu.mayo.bmi.uima.core.type.DocumentID;
+import edu.mayo.bmi.uima.core.type.structured.DocumentID;
 import edu.mayo.bmi.uima.pad.type.PADHit;
 import edu.mayo.bmi.uima.pad.type.PADLocation;
 import edu.mayo.bmi.uima.pad.type.PADTerm;
@@ -111,29 +107,32 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 		return System.getProperty(OS_NAME).startsWith(OS_WINDOWS);
 	}
 
-	private void addPatientMetaData(JCas jcas) {
-		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator<?> annotItr = indexes.getAnnotationIndex(Properties.type)
-				.iterator();
-		if (annotItr.hasNext()) {
-			Properties props = (Properties) annotItr.next();
-			FSArray fsArr = props.getPropArr();
-			for (int i = 0; i < fsArr.size(); i++) {
-				Property prop = (Property) fsArr.get(i);
-				if (prop == null)
-					continue;
+	private void addPatientMetaData(JCas jcas) {	
+//		TODO:  Need to upgrade to Common Type System compliant
+//		
+//		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+//		Iterator<?> annotItr = indexes.getAnnotationIndex(Hash.type)
+//				.iterator();
+//		if (annotItr.hasNext()) {
+//			Properties props = (Properties) annotItr.next();
+//			FSArray fsArr = props.getPropArr();
+//			for (int i = 0; i < fsArr.size(); i++) {
+//				Property prop = (Property) fsArr.get(i);
+//				if (prop == null)
+//					continue;
+//
+//				String key = prop.getKey();
+//				if (key != null && key.equalsIgnoreCase("CLINICAL_NUMBER"))
+//					casConsumerOffSetData.append(FIELD_SEPARATOR
+//							+ prop.getValue());
+//
+//				if (key != null && key.equalsIgnoreCase("NOTE_DATE"))
+//					;
+//				casConsumerOffSetData.append(FIELD_SEPARATOR + prop.getValue());
+//
+//			}
+//		}
 
-				String key = prop.getKey();
-				if (key != null && key.equalsIgnoreCase("CLINICAL_NUMBER"))
-					casConsumerOffSetData.append(FIELD_SEPARATOR
-							+ prop.getValue());
-
-				if (key != null && key.equalsIgnoreCase("NOTE_DATE"))
-					;
-				casConsumerOffSetData.append(FIELD_SEPARATOR + prop.getValue());
-
-			}
-		}
 	}
 
 	// -- private data members ---------------
@@ -169,9 +168,9 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 			// Not needed for production use - add documentId that was collected
 			// in the CAS initializer
 			// if (isWindows()) {
-			annotItr = indexes.getAnnotationIndex(DocumentID.type).iterator();
-			if (annotItr.hasNext()) {
-				DocumentID did = (DocumentID) annotItr.next();
+		 	FSIterator<TOP> documentIDIterator = indexes.getAllIndexedFS(DocumentID.type);
+			if (documentIDIterator.hasNext()) {
+				DocumentID did = (DocumentID) documentIDIterator.next();
 				casConsumerOffSetData.append(did.getDocumentID());
 
 			}
@@ -258,15 +257,15 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 							+ ual.getCoveredText());
 					casConsumerOffSetData.append(ual.getBegin() + "-"
 							+ ual.getEnd() + ":");
-					if (ual.getCertainty() == -1
+					if (ual.getPolarity() == -1
 							&& uat == null
-							|| (ual.getCertainty() == -1 && uat != null
+							|| (ual.getPolarity() == -1 && uat != null
 									&& uat.getTypeID() != disorderStenosis && ual
-									.getCertainty() == -1)) {
+									.getPolarity() == -1)) {
 						negatedCase = true;
 					} else if (ual.getIsStandAlone() != 1
-							&& ual.getCertainty() != -1
-							&& ual.getStatus() == disorderPatent) {
+							&& ual.getPolarity() != -1
+							&& ual.getUncertainty() == disorderPatent) {
 						probableCase = true;
 						probableCount++;
 					} else
@@ -275,15 +274,15 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 					casConsumerOutData.append(COLLECTION_SEPARATOR + " ");
 					casConsumerOffSetData.append("-1:");
 					if (uat.getTypeID() == disorderStenosis
-							&& uat.getCertainty() != -1)
+							&& uat.getPolarity() != -1)
 						noStenosis = false;
-					if (uat != null && uat.getCertainty() == -1
+					if (uat != null && uat.getPolarity() == -1
 							&& uat.getTypeID() != disorderStenosis
 							&& uat.getTypeID() != anatomicalSiteExclusion)
 						negatedCase = true;
 					else if (uat != null
 							&& ((uat.getIsStandAlone() != 1 || uat.getTypeID() == disorderPatent) && uat
-									.getCertainty() != -1)) {
+									.getPolarity() != -1)) {
 						probableCase = true;
 						probableCount++;
 					} else
@@ -296,16 +295,16 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 					casConsumerOffSetData.append(uat.getBegin() + "-"
 							+ uat.getEnd() + ")");
 					if (uat.getTypeID() == disorderStenosis
-							&& uat.getCertainty() != -1)
+							&& uat.getPolarity() != -1)
 						noStenosis = false;
-					if (uat.getCertainty() == -1
+					if (uat.getPolarity() == -1
 							&& uat.getTypeID() != disorderStenosis
-							&& uat.getStatus() != disorderPatent
+							&& uat.getUncertainty() != disorderPatent
 							&& uat.getTypeID() != anatomicalSiteExclusion
 							&& uat.getIsStandAlone() != 1)
 
 						negatedCase = true;
-					else if (uat.getStatus() == disorderPatent
+					else if (uat.getUncertainty() == disorderPatent
 							&& uat.getIsStandAlone() != 1) {
 						probableCase = true;
 						probableCount++;
@@ -314,12 +313,12 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 				} else {
 					casConsumerOutData.append(COLLECTION_SEPARATOR + " ");
 					casConsumerOffSetData.append("-1)");
-					if (ual != null && ual.getCertainty() == -1
-							&& ual.getStatus() != disorderPatent)
+					if (ual != null && ual.getPolarity() == -1
+							&& ual.getUncertainty() != disorderPatent)
 						negatedCase = true;
 					else if (ual.getIsStandAlone() != 1
-							&& ual.getCertainty() != -1
-							&& ual.getStatus() == disorderPatent) {
+							&& ual.getPolarity() != -1
+							&& ual.getUncertainty() == disorderPatent) {
 						probableCase = true;
 						probableCount++;
 					}
@@ -338,7 +337,7 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 							&& uat.getTypeID() != disorderPatent) {
 						if (ual == null || (ual != null)
 								&& ual.getTypeID() != disorderPatent
-								&& ual.getCertainty() == -1)
+								&& ual.getPolarity() == -1)
 							balanceCount--;
 
 					}
@@ -365,11 +364,11 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 
 				}
 				if (!skip) {
-					if (location.getCertainty() == -1) {
+					if (location.getPolarity() == -1) {
 						locTermsOnly = true;
 					}
 
-					if (location.getCertainty() != -1) {
+					if (location.getPolarity() != -1) {
 
 						locOnlyCount++;
 						casConsumerOffSetData.append("(");
@@ -384,10 +383,10 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 						casConsumerOutData.append(COLLECTION_SEPARATOR
 								+ location.getCoveredText());
 
-					} else if (location.getCertainty() != -1
+					} else if (location.getPolarity() != -1
 							&& location.getTypeID() != disorderStenosis
 							&& location.getTypeID() != anatomicalSiteExclusion
-							&& location.getStatus() == disorderPatent)
+							&& location.getUncertainty() == disorderPatent)
 						locOnlyCount--;
 				}
 			}
@@ -406,12 +405,12 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 				if (!skip) {
 					locTermsOnly = false;
 					if (term.getTypeID() == disorderStenosis
-							&& term.getCertainty() != -1)
+							&& term.getPolarity() != -1)
 						noStenosis = false;
-					if (term.getStatus() == disorderPatent
-							&& (term.getCertainty() != -1 || term.getTypeID() == disorderStenosis
+					if (term.getUncertainty() == disorderPatent
+							&& (term.getPolarity() != -1 || term.getTypeID() == disorderStenosis
 									&& term.getTypeID() != anatomicalSiteExclusion)) {
-						if (term.getStatus() == disorderPatent && count == 0) {
+						if (term.getUncertainty() == disorderPatent && count == 0) {
 							globalProbable = true;
 							if (term.getCoveredText().compareToIgnoreCase(
 									"stent") == 0
@@ -433,7 +432,7 @@ public class PADOffSetsRecord extends CasConsumer_ImplBase implements
 						casConsumerOutData.append(COLLECTION_SEPARATOR
 								+ "**NO LOC**");
 
-					} else if (term.getCertainty() != -1
+					} else if (term.getPolarity() != -1
 							&& term.getTypeID() != disorderStenosis
 							&& term.getTypeID() != anatomicalSiteExclusion
 							&& term.getTypeID() == disorderPatent)

@@ -105,7 +105,7 @@ public class TreeUtils {
 		if(fragmentMatch(node,frag)) return true;
 		
 		for(int i = 0; i < node.children.size(); i++){
-			if(fragmentMatch(node.children.get(i), frag)) return true;
+			if(contains(node.children.get(i), frag)) return true;
 		}
 		return false;
 	}

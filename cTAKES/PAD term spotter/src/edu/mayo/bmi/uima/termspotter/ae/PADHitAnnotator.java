@@ -20,29 +20,25 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
 import edu.mayo.bmi.uima.pad.type.PADHit;
 import edu.mayo.bmi.uima.pad.type.PADLocation;
 import edu.mayo.bmi.uima.pad.type.PADTerm;
 import edu.mayo.bmi.uima.pad.util.JCasUtil;
 
-public class PADHitAnnotator extends JTextAnnotator_ImplBase
+public class PADHitAnnotator extends JCasAnnotator_ImplBase
 {
   public static Logger iv_logger = Logger.getLogger(PADHitAnnotator.class);
 
@@ -102,8 +98,8 @@ public class PADHitAnnotator extends JTextAnnotator_ImplBase
   public static int NO_WINDOW_SIZE_SPECIFIED = -1;
   public static int NO_ANNOTATION_TYPE_SPECIFIED = -1;
   
-  public void initialize(AnnotatorContext aCtx) 
-  throws AnnotatorInitializationException, AnnotatorConfigurationException
+  public void initialize(UimaContext aCtx) 
+  throws ResourceInitializationException
   {
     try
     {
@@ -168,14 +164,12 @@ public class PADHitAnnotator extends JTextAnnotator_ImplBase
       
       loadStopWords(stopWordsFile);
     }
-    catch(AnnotatorContextException ace)
-    { throw new AnnotatorInitializationException(ace); }
-    catch(IOException ioe)
-    { throw new AnnotatorInitializationException(ioe); }
+    catch(Exception e)
+    { throw new ResourceInitializationException(e); }
   }
 
-  public void process(JCas jcas, ResultSpecification arg1) 
-  throws AnnotatorProcessException
+  public void process(JCas jcas) 
+  throws AnalysisEngineProcessException
   {
     try
     {
@@ -187,13 +181,13 @@ public class PADHitAnnotator extends JTextAnnotator_ImplBase
       createUAHit(jcas);
     }
     catch(CASException ce)
-    { throw new AnnotatorProcessException(ce); }
+    { throw new AnalysisEngineProcessException(ce); }
     catch(IllegalAccessException iae)
-    { throw new AnnotatorProcessException(iae); }
+    { throw new AnalysisEngineProcessException(iae); }
     catch(NoSuchFieldException nsfe)
-    { throw new AnnotatorProcessException(nsfe); }
+    { throw new AnalysisEngineProcessException(nsfe); }
     catch(ClassNotFoundException cnfe)
-    { throw new AnnotatorProcessException(cnfe); }
+    { throw new AnalysisEngineProcessException(cnfe); }
   }
   
   /**
@@ -624,7 +618,7 @@ public class PADHitAnnotator extends JTextAnnotator_ImplBase
     {
       PADTerm uaTerm = (PADTerm)annotItr.next();
 
-      if((uaTerm.getCertainty()<0 && filterOutNegated) || isInIgnoreTypesPartOne(uaTerm))//negated, so get next
+      if((uaTerm.getPolarity()<0 && filterOutNegated) || isInIgnoreTypesPartOne(uaTerm))//negated, so get next
       {
         iv_logger.info(uaTerm.getHitDictionaryValue() + " ignoring because negated");
         continue;
@@ -646,7 +640,7 @@ public class PADHitAnnotator extends JTextAnnotator_ImplBase
     {
       PADLocation uaLoc = (PADLocation)annotItr.next();
 
-      if((uaLoc.getCertainty()<0 && filterOutNegated) || isInIgnoreTypesPartTwo(uaLoc))//negated, so get next
+      if((uaLoc.getPolarity()<0 && filterOutNegated) || isInIgnoreTypesPartTwo(uaLoc))//negated, so get next
       {
         iv_logger.info(uaLoc.getHitDictionaryValue() + " ignoring because negated");
         continue;

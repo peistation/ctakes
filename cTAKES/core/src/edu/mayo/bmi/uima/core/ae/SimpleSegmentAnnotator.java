@@ -23,16 +23,13 @@
  */
 package edu.mayo.bmi.uima.core.ae;
 
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.Segment;
+import edu.mayo.bmi.uima.core.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**
@@ -42,33 +39,30 @@ import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
  * 
  * @author Mayo Clinic
  */
-public class SimpleSegmentAnnotator extends JTextAnnotator_ImplBase {
+public class SimpleSegmentAnnotator extends JCasAnnotator_ImplBase {
 	private String segmentId;
 
-	public void initialize(AnnotatorContext aContext) throws AnnotatorConfigurationException,
-			AnnotatorInitializationException {
+	public void initialize(UimaContext aContext)
+			throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		try {
-			segmentId = (String) aContext.getConfigParameterValue("SegmentID");
-			if (segmentId == null) {
-				segmentId = "SIMPLE_SEGMENT";
-			}
-		} catch (AnnotatorContextException ace) {
-			throw new AnnotatorConfigurationException(ace);
+		segmentId = (String) aContext.getConfigParameterValue("SegmentID");
+		if (segmentId == null) {
+			segmentId = "SIMPLE_SEGMENT";
 		}
 	}
 
 	/**
 	 * Entry point for processing.
 	 */
-	public void process(JCas jCas, ResultSpecification resultSpecification) throws AnnotatorProcessException {
+	public void process(JCas jCas) throws AnalysisEngineProcessException {
 		Segment segment = new Segment(jCas);
 		segment.setBegin(0);
 		String text = jCas.getDocumentText();
 		if (text == null) {
 			String docId = DocumentIDAnnotationUtil.getDocumentID(jCas);
-			throw new AnnotatorProcessException("text is null for docId="+docId, null);
+			throw new AnalysisEngineProcessException("text is null for docId="
+					+ docId, null);
 		}
 		segment.setEnd(jCas.getDocumentText().length());
 		segment.setId(segmentId);

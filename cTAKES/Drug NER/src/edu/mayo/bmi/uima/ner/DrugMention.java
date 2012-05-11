@@ -10,7 +10,7 @@ import edu.mayo.bmi.fsm.ner.output.elements.DrugChangeStatusToken;
 import edu.mayo.bmi.fsm.ner.output.elements.FrequencyUnitToken;
 import edu.mayo.bmi.fsm.ner.output.elements.RouteToken;
 import edu.mayo.bmi.fsm.output.DateToken;
-import edu.mayo.bmi.uima.cdt.type.DateAnnotation;
+import edu.mayo.bmi.uima.core.type.textsem.DateAnnotation;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.DosagesAnnotation;
 import edu.mayo.bmi.uima.drugner.type.DrugChangeStatusAnnotation;
