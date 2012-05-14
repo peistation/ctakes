@@ -1,4 +1,4 @@
-<root suffix="[:]" case_insensitive="yes" lists="no" >
+<root suffix=" ?[:]" case_insensitive="yes" lists="no" >
     <report>
  	    <!-- RECORD INFO START -->
             <record/>
@@ -36,12 +36,14 @@
             <review_of_systems/>
             <physical_examination_on_admission/>
 	    <physical_examination/>
+	    <physical_exam/>
 	    <studies/>
 
 	    <!-- PROCEDURES/LABS -->
             <hospital_course/>
 	    <operations_and_procedures/>
             <laboratory_data/>
+            <laboratories/>
 
 	    <!-- OTHER -->
 	    <diet/>
@@ -66,6 +68,8 @@
 	    <advanced_directives/>
 	    <conditions_on_discharge/>
 	    <follow-up/>
+	    <followup/>
+	    <discharge_status/>
 
 	    <!-- RECORD INFO END -->
   	    <additional_comments/>
