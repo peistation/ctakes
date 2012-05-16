@@ -24,6 +24,14 @@ public class SimpleTree {
 		children.add(t);
 	}
 	
+	public void insertChild(int index, SimpleTree t){
+		children.add(index, t);
+	}
+	
+	public SimpleTree removeChild(int index){
+		return children.remove(index);
+	}
+	
 	@Override
 	public String toString(){
 		StringBuffer buff = new StringBuffer();
