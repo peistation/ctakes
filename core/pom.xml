@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>core</artifactId>
+	<artifactId>ctakes-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	
 	<scm>
@@ -14,6 +14,7 @@
 		<groupId>net.sourceforge.ohnlp</groupId>
 		<artifactId>ctakes-parent</artifactId>
 		<version>2.6.0-SNAPSHOT</version>
+		<relativePath />
 	</parent>
 	
 	
@@ -52,7 +53,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
-			<artifactId>common-type-system</artifactId>
+			<artifactId>ctakes-common-type-system</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
