@@ -24,8 +24,13 @@
 		<module>core</module>
 		<module>common-type-system</module>
 		<module>POS tagger</module>
+		<module>chunker</module>
 		<module>document preprocessor</module>
 		<module>dictionary lookup</module>
+		<module>context dependent tokenizer</module>
+		<module>LVG</module>
+		<module>NE contexts</module>
+		<module>Constituency Parser</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -57,6 +62,11 @@
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.ohnlp</groupId>
+				<artifactId>ctakes-chunker</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.ohnlp</groupId>
 				<artifactId>ctakes-test-utils</artifactId>
 				<version>${ctakes.version}</version>
 				<scope>test</scope>
@@ -71,7 +81,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.10</version>
+				<version>[4.10]</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
