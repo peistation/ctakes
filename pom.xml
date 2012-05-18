@@ -7,9 +7,10 @@
 	<packaging>pom</packaging>
 	<name>cTAKES</name>
 	<scm>
-		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</connection>
-		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</developerConnection>
-		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</url>
+		<!-- In child modules, Maven will append ${artifactId} to the following URLs -->
+		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</connection>
+		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</developerConnection>
+		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</url>
 	</scm>
 	<properties>
 		<ctakes.version>2.6.0-SNAPSHOT</ctakes.version>
