@@ -29,6 +29,7 @@
 	</modules>
 	<dependencyManagement>
 		<dependencies>
+			<!-- cTAKES module versions -->
 			<dependency>
 				<groupId>net.sourceforge.ohnlp</groupId>
 				<artifactId>ctakes-common-type-system</artifactId>
@@ -61,6 +62,7 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- cTAKES third party dependency versions -->
 			<dependency>
 				<groupId>jdom</groupId>
 				<artifactId>jdom</artifactId>
@@ -121,6 +123,7 @@
 		</dependencies>
 	</dependencyManagement>
 	<build>
+		<!-- It's good practice to explicitly declare versions for all plugins -->
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -175,6 +178,8 @@
 					<artifactId>maven-source-plugin</artifactId>
 					<version>2.1.2</version>
 				</plugin>
+				<!-- Maven expects tests to start or end with "Test", not "Tests", so 
+					explicitly include files ending in "Tests" -->
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.12</version>
