@@ -12,6 +12,7 @@
 
     <modules>
     	<module>core</module>
+    	<module>ctakes-test-utils</module>
     	<module>common-type-system</module>
     	<module>POS tagger</module>
     	<module>document preprocessor</module>
