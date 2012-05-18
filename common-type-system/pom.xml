@@ -22,12 +22,6 @@
 	<properties>
 		<jcasgen.typesystem>net/sourceforge/ohnlp/common_type_system.xml</jcasgen.typesystem>
 	</properties>
-	<!--
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test/src</testSourceDirectory>
-	</build>
-	 -->
 	<dependencies>
 		<dependency>
 			<groupId>org.uimafit</groupId>
