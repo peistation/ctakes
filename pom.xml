@@ -7,7 +7,8 @@
 	<packaging>pom</packaging>
 	<name>cTAKES</name>
 	<scm>
-		<!-- In child modules, Maven will append ${artifactId} to the following URLs -->
+		<!-- In child modules, Maven will append ${artifactId} to the following 
+			URLs -->
 		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</connection>
 		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</developerConnection>
 		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</url>
@@ -35,14 +36,29 @@
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.ohnlp</groupId>
-				<artifactId>ctakes-test-utils</artifactId>
+				<artifactId>ctakes-core</artifactId>
 				<version>${ctakes.version}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.ohnlp</groupId>
-				<artifactId>ctakes-core</artifactId>
+				<artifactId>ctakes-dictionary-lookup</artifactId>
 				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.ohnlp</groupId>
+				<artifactId>ctakes-document-preprocessor</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.ohnlp</groupId>
+				<artifactId>ctakes-postagger</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.ohnlp</groupId>
+				<artifactId>ctakes-test-utils</artifactId>
+				<version>${ctakes.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
