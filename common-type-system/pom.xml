@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>common-type-system</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<scm>
+		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</connection>
+		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</developerConnection>
+		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</url>
+	</scm>
+	<parent>
+		<groupId>net.sourceforge.ohnlp</groupId>
+		<artifactId>ctakes-parent</artifactId>
+		<version>2.6.0-SNAPSHOT</version>
+		<relativePath />
+	</parent>
+	<packaging>pom</packaging>
+	<name>common-type-system</name>
+	<description>Defines the cTAKES type system UIMA annotation classes.</description>
+	
+	
+	<properties>
+		<jcasgen.typesystem>net/sourceforge/ohnlp/common_type_system.xml</jcasgen.typesystem>
+	</properties>
+	<!--
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test/src</testSourceDirectory>
+	</build>
+	 -->
+	<dependencies>
+		<dependency>
+			<groupId>org.uimafit</groupId>
+			<artifactId>uimafit</artifactId>
+			<version>1.3.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>tw.edu.ntu.csie</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.uima</groupId>
+			<artifactId>uimaj-core</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
