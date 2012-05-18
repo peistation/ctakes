@@ -4,7 +4,7 @@
   <description/>
   <version>1.0</version>
   <imports>
-    <import location="../../../common-type-system/desc/common_type_system.xml"/>
+    <import location="../../../../../../common-type-system/src/main/resources/net/sourceforge/ohnlp/common_type_system.xml"/>
   </imports>
   <types>
     <typeDescription>
