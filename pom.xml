@@ -14,5 +14,7 @@
     	<module>core</module>
     	<module>common-type-system</module>
     	<module>POS tagger</module>
+    	<module>document preprocessor</module>
+    	<module>dictionary lookup</module>
     </modules>
 </project>
