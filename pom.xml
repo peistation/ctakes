@@ -5,6 +5,7 @@
 	<artifactId>ctakes</artifactId>
 	<version>2.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<name>cTAKES</name>
 	<scm>
 		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</connection>
 		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</developerConnection>
