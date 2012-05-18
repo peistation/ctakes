@@ -2,19 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ctakes-chunker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	
-	<scm>
-		<connection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</connection>
-		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</developerConnection>
-		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/${project.artifactId}</url>
-	</scm>
 	
 	<parent>
 		<groupId>net.sourceforge.ohnlp</groupId>
-		<artifactId>ctakes-parent</artifactId>
+		<artifactId>ctakes</artifactId>
 		<version>2.6.0-SNAPSHOT</version>
-		<relativePath />
 	</parent>
 	
 	
@@ -49,22 +42,18 @@
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
 			<artifactId>ctakes-common-type-system</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
 			<artifactId>ctakes-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
 			<artifactId>ctakes-test-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
 			<artifactId>ctakes-postagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -82,11 +71,6 @@
 			<version>1.5.2-incubating</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>3.5.0</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
@@ -94,4 +78,5 @@
 		</dependency>
 	</dependencies>
 	
+	<name>cTAKES chunker</name>
 </project>
