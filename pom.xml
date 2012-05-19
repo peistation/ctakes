@@ -32,6 +32,7 @@
 		<module>NE contexts</module>
 		<module>Constituency Parser</module>
 		<module>Drug NER</module>
+		<module>SideEffect</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
