@@ -2,42 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ctakes-lvg</artifactId>
-	
-	
+	<name>cTAKES LVG lexical tools</name>
+	<description>cTAKES wrapper for the National Library of Medicine (NLM) SPECIALIST lexical tools</description>
 	<parent>
 		<groupId>net.sourceforge.ohnlp</groupId>
 		<artifactId>ctakes</artifactId>
 		<version>2.6.0-SNAPSHOT</version>
 	</parent>
-	
-	
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>resources</directory>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
-				<configuration>
-					<includes>
-						<include>**/*Tests.java</include>
-					</includes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<repositories>
-		<repository>
-			<id>opennlp.sf.net</id>
-			<url>http://opennlp.sourceforge.net/maven2</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
@@ -68,6 +39,4 @@
 			<systemPath>${project.basedir}/lib/lvg2010dist.jar</systemPath>
 		</dependency>
 	</dependencies>
-	
-	<name>cTAKES LVG</name>
 </project>
