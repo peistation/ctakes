@@ -19,15 +19,37 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.ohnlp</groupId>
-			<artifactId>ctakes-test-utils</artifactId>
+			<artifactId>ctakes-lvg</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>clearparser</groupId>
-			<artifactId>clearparser</artifactId>
-			<version>0.33</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/clearparser-0.33.jar</systemPath>
+			<groupId>net.sourceforge.ohnlp</groupId>
+			<artifactId>ctakes-postagger</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.ohnlp</groupId>
+			<artifactId>ctakes-test-utils</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.googlecode.clearparser</groupId>
+			<artifactId>clearparser</artifactId>
+			<version>0.4.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.opennlp</groupId>
+					<artifactId>opennlp-maxent</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.opennlp</groupId>
+					<artifactId>opennlp-tools</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>

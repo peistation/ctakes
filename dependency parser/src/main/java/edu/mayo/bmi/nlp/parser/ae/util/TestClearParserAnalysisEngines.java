@@ -35,8 +35,8 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
  *
  */
 public class TestClearParserAnalysisEngines {
-	public static String DEP_DUMMY_MODEL_FILE = "src/resources/dependency/dummy.dep.mod.jar";
-	public static String SRL_DUMMY_MODEL_FILE = "src/resources/srl/dummy.srl.mod.jar";
+	public static String DEP_DUMMY_MODEL_FILE = "src/main/resources/dependency/dummy.dep.mod.jar";
+	public static String SRL_DUMMY_MODEL_FILE = "src/main/resources/srl/dummy.srl.mod.jar";
 	public static String INPUT_FILE = "../clinical documents pipeline/test/data/plaintext/testpatient_plaintext_1.txt";
 
 
@@ -98,7 +98,7 @@ public class TestClearParserAnalysisEngines {
 		File srlModelFile = options.srlModelFile;
 		File inputFile = options.inputFile;
 		
-		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml");
+		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescription("net.sourceforge.ohnlp.common_type_system");
 				
 		CollectionReader reader1 = CollectionReaderFactory.createCollectionReader(
 				FilesCollectionReader.class,

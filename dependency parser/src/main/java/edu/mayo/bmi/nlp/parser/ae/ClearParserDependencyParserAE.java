@@ -133,7 +133,10 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 			// Initialize parser
 			URL parserModelURL = this.parserModelFileName == null
 					? ClearParserDependencyParserAE.class.getResource(DEFAULT_MODEL_FILE_NAME)
+					//: ClearParserDependencyParserAE.class.getResource(parserModelFileName);
 					: new File(this.parserModelFileName).toURI().toURL();
+					System.out.println(this.parserModelFileName);
+					System.out.println(parserModelURL);
 			parser = ClearParserUtil.createParser(parserModelURL.openStream(), parserAlgorithmName);
 		} catch (MalformedURLException e) {
 			throw new ResourceInitializationException(e);

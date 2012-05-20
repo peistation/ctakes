@@ -62,7 +62,7 @@ public class WriteClearParserDescriptors {
 		Options options = new Options();
 		options.parseOptions(args);
 
-		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../../../common-type-system/desc/common_type_system.xml");
+		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescription("net.sourceforge.ohnlp.common_type_system");
 
 		AnalysisEngineDescription clearparserSRLDesc = AnalysisEngineFactory.createPrimitiveDescription(
 				ClearParserSemanticRoleLabelerAE.class,
