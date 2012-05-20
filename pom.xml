@@ -13,6 +13,12 @@
 		<developerConnection>scm:svn:https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</developerConnection>
 		<url>https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/maven-sandbox/</url>
 	</scm>
+	<repositories>
+  		<repository>
+    		<id>cleartk-googlecode</id>
+    		<url>http://cleartk.googlecode.com/svn/repo/</url>
+  		</repository>
+	</repositories>
 	<properties>
 		<ctakes.version>2.6.0-SNAPSHOT</ctakes.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
@@ -33,6 +39,8 @@
 		<module>Constituency Parser</module>
 		<module>Drug NER</module>
 		<module>SideEffect</module>
+		<module>dependency parser</module>
+		<module>relation-extractor</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -155,7 +163,83 @@
 				<artifactId>xercesImpl</artifactId>
 				<version>2.10.0</version>
 			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-chunker</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-eval</artifactId>
+				<version>0.8.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-ml</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-ml-libsvm</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-ml-opennlp-maxent</artifactId>
+				<version>1.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-test-util</artifactId>
+				<version>1.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cleartk</groupId>
+				<artifactId>cleartk-util</artifactId>
+				<version>0.8.1</version>
+			</dependency>
+			<dependency>
+				<groupId>args4j</groupId>
+				<artifactId>args4j</artifactId>
+				<version>2.0.16</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>10.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.carrotsearch</groupId>
+				<artifactId>hppc</artifactId>
+				<version>0.4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>3.0.3.RELEASE</version>
+			</dependency>
 
+
+			<dependency>
+				<groupId>net.sourceforge.ohnlp</groupId>
+				<artifactId>ctakes-lvg</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
