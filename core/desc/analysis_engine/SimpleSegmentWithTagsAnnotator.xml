@@ -28,7 +28,7 @@ However, the section ids are specific to Mayo data. This is provided just as an 
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import name="net.sourceforge.ohnlp.common_type_system"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

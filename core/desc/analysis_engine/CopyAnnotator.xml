@@ -56,7 +56,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import name="net.sourceforge.ohnlp.common_type_system"/>
       </imports>
       <types>
         <typeDescription>

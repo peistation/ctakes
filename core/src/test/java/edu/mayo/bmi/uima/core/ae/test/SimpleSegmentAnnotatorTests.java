@@ -40,10 +40,10 @@ public class SimpleSegmentAnnotatorTests {
 	@Test
     public void testSimpleSegment() throws ResourceInitializationException {
 		AnalysisEngine ae = TestUtil.getAE(new File("desc/test/analysis_engine/SimpleSegmentAnnotator.xml"));
-		JCas jCas = TestUtil.processAE(ae, "data/test/mother_goose/OneMistyMorning.txt");
+		JCas jCas = TestUtil.processAE(ae, "src/test/resources/data/test/mother_goose/OneMistyMoistyMorning.txt");
 		Segment segment = TestUtil.getFeatureStructureAtIndex(jCas, Segment.class, 0);
 		assertEquals(0, segment.getBegin());
-		assertEquals(42, segment.getEnd());
+		assertEquals(67, segment.getEnd());
 		assertEquals("seg1234", segment.getId());
 	}
 }
