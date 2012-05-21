@@ -112,6 +112,11 @@ public class ConceptLookup
     boolean isUmls = false;
 
     UmlsConcept umlsConcept = null;
+    if (ontologyConcept == null)
+    {
+    	// do nothing -- leave isRxnorm and isUmls as false
+    	return null;
+    }
     if (ontologyConcept instanceof UmlsConcept)
     {
       isUmls = true;
