@@ -226,7 +226,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
     // add the relation extractor, configured for training mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -255,7 +255,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
     // add the relation extractor, configured for classification mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -538,15 +538,36 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
               argClass,
               goldArg);
 
+          // no ctakes annotation found
+          if (systemArgs.size() == 0) {
+            String word = "no";
+            String className = argClass.getSimpleName();
+            String argText = goldArg.getCoveredText();
+            String message = String.format("%s %s for \"%s\"", word, className, argText);
+            this.getContext().getLogger().log(Level.FINE, message);
+            continue;
+          }
+          
           // if there's exactly one annotation, replace the gold one with that
           if (systemArgs.size() == 1) {
             relArg.setArgument(systemArgs.get(0));
             replacedArgumentCount += 1;
           }
 
-          // otherwise, issue a warning message
           else {
-            String word = systemArgs.size() == 0 ? "no" : "multiple";
+          	// multiple ctakes arguments found; look for one that matches exactly
+          	// e.g. gold: "right breast", ctakes: "right breast", "breast"                                             
+          	for (Annotation systemArg : systemArgs) {
+          		String goldArgText = goldArg.getCoveredText();
+          		String systemArgText = systemArg.getCoveredText();
+          		if (systemArgText.equals(goldArgText)) {
+          			relArg.setArgument(systemArg);
+          			replacedArgumentCount += 1;
+          		}
+          	}
+          	
+          	// issue a warning message
+            String word = "multiple";
             String className = argClass.getSimpleName();
             String argText = goldArg.getCoveredText();
             String message = String.format("%s %s for \"%s\"", word, className, argText);
