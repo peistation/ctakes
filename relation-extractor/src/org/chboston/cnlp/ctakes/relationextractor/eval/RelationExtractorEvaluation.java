@@ -566,12 +566,22 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           		}
           	}
           	
-          	// issue a warning message
-            String word = "multiple";
-            String className = argClass.getSimpleName();
-            String argText = goldArg.getCoveredText();
-            String message = String.format("%s %s for \"%s\"", word, className, argText);
-            this.getContext().getLogger().log(Level.FINE, message);
+          	if(replacedArgumentCount < 1) {
+          		// issue a warning message
+          		String word = "multiple";
+          		String className = argClass.getSimpleName();
+          		String argText = goldArg.getCoveredText();
+          		String message = String.format("%s %s for \"%s\"", word, className, argText);
+          		this.getContext().getLogger().log(Level.FINE, message);
+
+          		System.out.println("gold argument: " + goldArg.getCoveredText());
+          		System.out.println("gold type: " + ((IdentifiedAnnotation)goldArg).getTypeID());
+          		for(Annotation systemArg : systemArgs) {
+          			System.out.println("ctakes argument: " + systemArg.getCoveredText());
+          			System.out.println("ctakes type: " + ((IdentifiedAnnotation)systemArg).getTypeID());
+          		}
+          		System.out.println();
+          	}
           }
         }
 
