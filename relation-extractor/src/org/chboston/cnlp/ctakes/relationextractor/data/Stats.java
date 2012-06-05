@@ -37,9 +37,9 @@ public class Stats {
 				return name.endsWith(".xml");
 			}
 		};
-		
-		for(String file : dir.list(filter)) {
 
+		for(String file : dir.list(filter)) {
+			
 			SAXBuilder builder = new SAXBuilder();
 			Document document = builder.build(new File(inputDir, file));
 
@@ -77,9 +77,6 @@ public class Stats {
   
 	public static void main(String[] args) throws JDOMException, IOException {
 		
-		Stats.compute(Constants.shareAllXmlPath);
-		Stats.compute(Constants.shareTrainXmlPath);
-		Stats.compute(Constants.shareDevXmlPath);
-		Stats.compute(Constants.shareTestXmlPath);
+		Stats.compute(Constants.sharpTrainXmlPath);
 	}
 }
