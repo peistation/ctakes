@@ -226,7 +226,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
     // add the relation extractor, configured for training mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -255,7 +255,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
     // add the relation extractor, configured for classification mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
