@@ -13,14 +13,20 @@ import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 /**
  * Features based on wikipedia
  */
-public class WikipediaFeatureExtractor {
+public class WikiFeatureExtractor {
 
-  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2, WikipediaIndex wikipediaIndex) {
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2, WikiIndex wikiIndex) {
 
   	List<Feature> features = new ArrayList<Feature>();
   	
   	try {
-	    features.add(new Feature("wikisim", wikipediaIndex.getCosineSimilarityUsingNHits(arg1.getCoveredText(), arg2.getCoveredText())));
+  		String text1 = arg1.getCoveredText();
+  		String text2 = arg2.getCoveredText();
+   		
+  		double cosineSimilarity = wikiIndex.getCosineSimilarity(text1, text2);
+	    features.add(new Feature("wikisim", cosineSimilarity));
+	    
+	    System.out.println(text1 + ", " + text2 + " -> " + cosineSimilarity);
     } catch (ParseException e) {
 	    e.printStackTrace();
     } catch (IOException e) {
