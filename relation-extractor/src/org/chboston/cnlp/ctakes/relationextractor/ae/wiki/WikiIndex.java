@@ -100,32 +100,38 @@ public class WikiIndex {
   	String escaped1 = QueryParser.escape(queryText1);
   	Query query1 = queryParser.parse(escaped1);
   	ScoreDoc[] scoreDocs1 = indexSearcher.search(query1, null, maxHits).scoreDocs;
-  	
   	if(scoreDocs1.length == 0) {
   		return 0;
   	}
 
   	ArrayList<TermFreqVector> termFreqVectors1 = new ArrayList<TermFreqVector>();
   	for(ScoreDoc scoreDoc : scoreDocs1) {
-  		ScoreDoc redirectScoreDoc = handlePossibleRedirect(scoreDoc); 
-  		termFreqVectors1.add(indexReader.getTermFreqVector(redirectScoreDoc.doc, "text"));
+  		ScoreDoc redirectScoreDoc = handlePossibleRedirect(scoreDoc);
+  		TermFreqVector termFreqVector = indexReader.getTermFreqVector(redirectScoreDoc.doc, "text");
+  		termFreqVectors1.add(termFreqVector);
   	}
   	HashMap<String, Double> vector1 = makeTfIdfVector(termFreqVectors1);
+  	if(vector1.size() == 0) {
+  		return 0; // e.g. redirects to a non-existent page
+  	}
   	
   	String escaped2 = QueryParser.escape(queryText2);
   	Query query2 = queryParser.parse(escaped2);
   	ScoreDoc[] scoreDocs2 = indexSearcher.search(query2, null, maxHits).scoreDocs;
-  	
   	if(scoreDocs2.length == 0) {
   		return 0;
   	}
   	
   	ArrayList<TermFreqVector> termFreqVectors2 = new ArrayList<TermFreqVector>();
   	for(ScoreDoc scoreDoc : scoreDocs2) {
-  		ScoreDoc redirectScoreDoc = handlePossibleRedirect(scoreDoc); 
-  		termFreqVectors2.add(indexReader.getTermFreqVector(redirectScoreDoc.doc, "text"));
+  		ScoreDoc redirectScoreDoc = handlePossibleRedirect(scoreDoc);
+  		TermFreqVector termFreqVector = indexReader.getTermFreqVector(redirectScoreDoc.doc, "text");
+  		termFreqVectors2.add(termFreqVector);
   	}
   	HashMap<String, Double> vector2 = makeTfIdfVector(termFreqVectors2);
+  	if(vector2.size() == 0) {
+  		return 0; // e.g. redirects to a non-existent page
+  	}
   	
   	double dotProduct = computeDotProduct(vector1, vector2);
   	double norm1 = computeEuclideanNorm(vector1);
@@ -311,3 +317,4 @@ public class WikiIndex {
   	standardAnalyzer.close();
   }
 }
+
