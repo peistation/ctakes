@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.uima.jcas.JCas;
+import org.chboston.cnlp.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.cleartk.classifier.Feature;
 
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
@@ -14,7 +15,7 @@ import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
  * Features based on wikipedia
  */
 public class WikiFeatureExtractor {
-
+	
   public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2, WikiIndex wikiIndex) {
 
   	List<Feature> features = new ArrayList<Feature>();
@@ -25,8 +26,6 @@ public class WikiFeatureExtractor {
    		
   		double cosineSimilarity = wikiIndex.getCosineSimilarity(text1, text2);
 	    features.add(new Feature("wikisim", cosineSimilarity));
-	    
-	    System.out.println(text1 + ", " + text2 + " -> " + cosineSimilarity);
     } catch (ParseException e) {
 	    e.printStackTrace();
     } catch (IOException e) {
