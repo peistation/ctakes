@@ -233,6 +233,10 @@ public class WikiIndex {
 			Query redirectQuery  = redirectQueryParser.parse(redirectTitleEscaped);
 			
 			ScoreDoc[] redirectScoreDocs = indexSearcher.search(redirectQuery, null, 1).scoreDocs; 
+			if(redirectScoreDocs.length < 1) {
+				System.out.println("failed redirect: " + redirectQuery);
+				return scoreDoc; // redirect query did not return any results
+			}
 			ScoreDoc redirectScoreDoc = redirectScoreDocs[0];
 			
 			return redirectScoreDoc;
