@@ -36,7 +36,7 @@ import com.google.common.collect.Ordering;
 public class WikiIndex {
 
 	public static int defaultMaxHits = 10;
-	public static String defaultIndexPath = "/home/dima/mnt/pub/resources/wikipedia/index_nometa";
+	public static String defaultIndexPath = "/home/dima/i2b2/wiki-index/index_nometa";
 	public static String defaultSearchField = "text";
 	
 	private int maxHits;
@@ -234,7 +234,7 @@ public class WikiIndex {
 			
 			ScoreDoc[] redirectScoreDocs = indexSearcher.search(redirectQuery, null, 1).scoreDocs; 
 			if(redirectScoreDocs.length < 1) {
-				System.out.println("failed redirect: " + redirectQuery);
+				System.out.println("failed redirect: " + redirectTitle + " -> " + redirectTitle);
 				return scoreDoc; // redirect query did not return any results
 			}
 			ScoreDoc redirectScoreDoc = redirectScoreDocs[0];
@@ -321,4 +321,3 @@ public class WikiIndex {
   	standardAnalyzer.close();
   }
 }
-
