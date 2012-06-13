@@ -337,7 +337,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         }
       }
     } else {
-      possibleParams.add(new ParameterSettings(true, 0.15f, "linear", 0.05, 1.0));
+      possibleParams.add(new ParameterSettings(true, 0.5f, "linear", 0.05, 1.0));
     }
     return possibleParams;
 
