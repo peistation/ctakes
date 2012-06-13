@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.uima.jcas.JCas;
-import org.chboston.cnlp.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.cleartk.classifier.Feature;
 
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
