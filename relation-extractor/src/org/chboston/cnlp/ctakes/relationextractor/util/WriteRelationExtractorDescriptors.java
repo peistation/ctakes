@@ -30,11 +30,17 @@ public class WriteRelationExtractorDescriptors {
 				required = false)
 		public File outputRoot = new File("desc/analysis_engine");
 		
-		@Option(name = "-m",
-				aliases = "--modelFile",
+		@Option(name = "-me",
+				aliases = "--modelFileEmPair",
 				usage = "specify the path to the relation extractor model jar file",
 				required = false)
-		public File modelFile = new File("resources/models/em_pair/model.jar");
+		public File modelFileEmPair = new File("resources/models/em_pair/model.jar");
+		
+		@Option(name = "-md",
+				aliases = "--modelFileDegreeOf",
+				usage = "specify the path to the relation extractor model jar file",
+				required = false)
+		public File modelFileDegreeOf = new File("resources/models/degree_of/model.jar");
 	}
 	
 
@@ -49,22 +55,22 @@ public class WriteRelationExtractorDescriptors {
 	    options.parseOptions(args);
     
 	    File outputRoot = options.outputRoot;
-	    File modelFile = options.modelFile;
+	    File modelFileEmPair = options.modelFileEmPair;
+	    File modelFileDegreeOf = options.modelFileDegreeOf;
 	    
 	    AnalysisEngineDescription entityMentionPairRelationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
 	    		EntityMentionPairRelationExtractorAnnotator.class,
 	    		GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	    		modelFile.getPath());
+	    		modelFileEmPair.getPath());
 	    
 	    FileOutputStream output = new FileOutputStream(new File(outputRoot, "EntityMentionPairRelationExtractorAnnotator.xml"));
 	    entityMentionPairRelationExtractorDesc.toXML(output);
 	    output.close();
 	    
-	    
 	    AnalysisEngineDescription degreeOfRelationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
 	    		DegreeOfRelationExtractorAnnotator.class,
 	    		GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	    		modelFile.getPath());
+	    		modelFileDegreeOf.getPath());
 	    
 	    output = new FileOutputStream(new File(outputRoot, "DegreeOfRelationExtractorAnnotator.xml"));
 	    degreeOfRelationExtractorDesc.toXML(output);
