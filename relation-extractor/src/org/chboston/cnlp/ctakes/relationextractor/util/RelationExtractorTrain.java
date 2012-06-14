@@ -1,4 +1,4 @@
-package org.chboston.cnlp.ctakes.relationextractor.eval;
+package org.chboston.cnlp.ctakes.relationextractor.util;
 
 import java.io.File;
 import java.util.Arrays;
@@ -8,6 +8,8 @@ import org.apache.uima.collection.CollectionReader;
 import org.chboston.cnlp.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.chboston.cnlp.ctakes.relationextractor.eval.MultiClassLIBSVMDataWriterFactory;
+import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
 import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
 import org.cleartk.classifier.DataWriterFactory;
 import org.cleartk.util.Options_ImplBase;
