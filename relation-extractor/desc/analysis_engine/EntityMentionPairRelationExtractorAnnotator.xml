@@ -86,9 +86,21 @@
                 </value>
             </nameValuePair>
             <nameValuePair>
+                <name>ProbabilityOfKeepingANegativeExample</name>
+                <value>
+                    <float>0.5</float>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
                 <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                 <value>
-                    <string>model.jar</string>
+                    <string>resources/models/em_pair/model.jar</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>ClassifyBothDirections</name>
+                <value>
+                    <boolean>true</boolean>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>
