@@ -208,7 +208,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   private String[] trainingArguments;
 
   @Override
-  protected CollectionReader getCollectionReader(List<File> items) throws Exception {
+  public CollectionReader getCollectionReader(List<File> items) throws Exception {
     // convert the List<File> to a String[]
     String[] paths = new String[items.size()];
     for (int i = 0; i < paths.length; ++i) {
@@ -223,7 +223,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   @Override
-  protected void train(CollectionReader collectionReader, File directory) throws Exception {
+  public void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
@@ -373,7 +373,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   /**
    * Holds a set of parameters for a relation extraction model
    */
-  private static class ParameterSettings {
+  public static class ParameterSettings {
     public boolean classifyBothDirections;
 
     public float probabilityOfKeepingANegativeExample;
