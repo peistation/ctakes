@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.chboston.cnlp.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.util.Options_ImplBase;
@@ -61,7 +62,7 @@ public class WriteRelationExtractorDescriptors {
 	    
 	    
 	    AnalysisEngineDescription degreeOfRelationExtractorDesc = AnalysisEngineFactory.createPrimitiveDescription(
-	    		EntityMentionPairRelationExtractorAnnotator.class,
+	    		DegreeOfRelationExtractorAnnotator.class,
 	    		GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 	    		modelFile.getPath());
 	    
