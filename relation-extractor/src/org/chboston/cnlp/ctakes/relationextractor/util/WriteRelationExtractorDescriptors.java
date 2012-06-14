@@ -34,7 +34,7 @@ public class WriteRelationExtractorDescriptors {
 				aliases = "--modelFile",
 				usage = "specify the path to the relation extractor model jar file",
 				required = false)
-		public File modelFile = new File("model.jar");
+		public File modelFile = new File("resources/models/em_pair/model.jar");
 	}
 	
 
