@@ -13,6 +13,12 @@ import org.cleartk.classifier.DataWriterFactory;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 
+/**
+ * This class is intended for training production models.
+ * 
+ * @author dmitriy dligach
+ *
+ */
 public class RelationExtractorTrain {
 
   public static class Options extends Options_ImplBase {
@@ -49,7 +55,7 @@ public class RelationExtractorTrain {
     // determine the type of classifier to be trained
     Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = MultiClassLIBSVMDataWriterFactory.class;
 
-    // best training parameters to use for production models
+    // training parameters (presumably determined via cross-validation)
     ParameterSettings params = options.runDegreeOf
     		? new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0)
         : new ParameterSettings(true, 0.5f, "linear", 0.05, 1.0);
@@ -76,10 +82,10 @@ public class RelationExtractorTrain {
     		dataWriterFactoryClass,
     		additionalParameters,
     		trainingArguments);
-    
+
     CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);
     evaluation.train(collectionReader, modelsDir);
-    
+
     System.out.println("model written to " + modelsDir.getAbsolutePath());
 	}
 }
