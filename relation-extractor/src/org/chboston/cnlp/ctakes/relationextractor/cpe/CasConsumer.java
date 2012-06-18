@@ -21,6 +21,7 @@ public class CasConsumer extends CasConsumer_ImplBase
     // LOG4J logger based on class name
     private Logger iv_logger = Logger.getLogger(getClass().getName());
 
+    // FIXME: this should become a configuration parameter
     private String iv_outputDir = "/home/dima/temp/out";
     
     // iv_procCount is used to name the output files sequentially if there 
