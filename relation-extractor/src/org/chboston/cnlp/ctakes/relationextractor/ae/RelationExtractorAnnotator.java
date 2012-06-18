@@ -151,7 +151,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
   	HashMap<HashableArguments, String> categoryLookup = new HashMap<HashableArguments, String>();
   	
   	// get gold standard relation instances during testing for error analysis
-  	if (! this.isTraining()) {
+  	if (! this.isTraining() && printErrors) {
   		JCas goldView;
   		try {
   			goldView = jCas.getView("GoldView");
@@ -218,15 +218,17 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     		else {
     			String predictedCategory = this.classifier.classify(features);
 
-    			String goldCategory; // gold standard relation category
-    			if (categoryLookup.containsKey(new HashableArguments(arg1, arg2))) {
-    				goldCategory = categoryLookup.get(new HashableArguments(arg1, arg2));
-    			} else {
-    				goldCategory = NO_RELATION_CATEGORY;
+    			if(printErrors) {
+    				String goldCategory; // gold standard relation category
+    				if (categoryLookup.containsKey(new HashableArguments(arg1, arg2))) {
+    					goldCategory = categoryLookup.get(new HashableArguments(arg1, arg2));
+    				} else {
+    					goldCategory = NO_RELATION_CATEGORY;
+    				}
+
+    				logResults(sentence, arg1, arg2, features, predictedCategory, goldCategory);
     			}
-
-    			logResults(sentence, arg1, arg2, features, predictedCategory, goldCategory);
-
+    			
     			// add a relation annotation if a true relation was predicted
     			if (!predictedCategory.equals(NO_RELATION_CATEGORY)) {
 
