@@ -41,6 +41,7 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
     	int type1 = entity1.getTypeID();
     	int type2 = entity2.getTypeID();
     	
+    	// print things like: location_of(colon/6, colon cancer/2)
     	System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
     }
   }
