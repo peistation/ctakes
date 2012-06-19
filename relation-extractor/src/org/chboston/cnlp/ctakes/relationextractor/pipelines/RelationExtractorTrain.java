@@ -1,4 +1,4 @@
-package org.chboston.cnlp.ctakes.relationextractor.util;
+package org.chboston.cnlp.ctakes.relationextractor.pipelines;
 
 import java.io.File;
 import java.io.FileOutputStream;

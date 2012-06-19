@@ -1,15 +1,12 @@
-package org.chboston.cnlp.ctakes.relationextractor.cpe;
+package org.chboston.cnlp.ctakes.relationextractor.pipelines;
 
 import java.io.IOException;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReader;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
-import org.chboston.cnlp.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -22,11 +19,11 @@ public class RelationExtractorTest {
 	public static void main(String[] args) throws UIMAException, IOException {
 		
 		TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-				"/home/dima/workspaces/ctakes/common-type-system/desc/common_type_system.xml");
+				"../common-type-system/desc/common_type_system.xml");
     
 		CollectionReader collectionReader = CollectionReaderFactory.createCollectionReaderFromPath(
-				"/home/dima/workspaces/ctakes/core/desc/collection_reader/FilesInDirectoryCollectionReader.xml",
-				"InputDirectory",
+				"../core/desc/collection_reader/FilesInDirectoryCollectionReader.xml",
+				FilesInDirectoryCollectionReader.PARAM_INPUTDIR,
 				"/home/dima/sharp/cloud/mipacq/text/dev");
 		
 		AnalysisEngine relationExtractor = AnalysisEngineFactory.createAnalysisEngineFromPath(
