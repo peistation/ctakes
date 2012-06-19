@@ -32,8 +32,16 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
     for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
     	String category = binaryTextRelation.getCategory();
     	
-    	IdentifiedAnnotation entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
-    	IdentifiedAnnotation entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+    	IdentifiedAnnotation entity1; // entity whose role is "Argument"
+    	IdentifiedAnnotation entity2; // entity whose role is "Related_to"
+    	
+    	if(binaryTextRelation.getArg1().getRole().equals("Argument")) {
+    		entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+    		entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+    	} else {
+    		entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+    		entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+    	}
     	
     	String arg1 = entity1.getCoveredText();
     	String arg2 = entity2.getCoveredText();
