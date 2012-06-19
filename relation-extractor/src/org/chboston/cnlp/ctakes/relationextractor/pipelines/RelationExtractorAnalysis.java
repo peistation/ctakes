@@ -1,24 +1,18 @@
 package org.chboston.cnlp.ctakes.relationextractor.pipelines;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
-import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.chboston.cnlp.ctakes.relationextractor.eval.XMIReader;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
-import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
-import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 
 /**
  * 
