@@ -14,6 +14,14 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
 
+/**
+ * 
+ * A class for testing the reader for the gold standard relation data. 
+ * Currently this class runs the reader and saves the resulting annotations as xmi files.
+ * 
+ * @author dmitriy dligach
+ *
+ */
 public class TestGoldEntityAndRelationReader {
 
 	public static void main(String[] args) throws UIMAException, IOException {
