@@ -66,7 +66,7 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   @Override
-  protected CollectionReader getCollectionReader(List<File> items)
+  public CollectionReader getCollectionReader(List<File> items)
       throws ResourceInitializationException {
     String[] paths = new String[items.size()];
     for (int i = 0; i < paths.length; ++i) {
@@ -80,7 +80,7 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   @Override
-  protected void train(CollectionReader collectionReader, File directory) throws Exception {
+  public void train(CollectionReader collectionReader, File directory) throws Exception {
     SimplePipeline.runPipeline(
         collectionReader,
         AnalysisEngineFactory.createPrimitiveDescription(OnlyGoldModifiers.class),
