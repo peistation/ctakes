@@ -64,8 +64,11 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 			EntityMention arg1 = args.get(i);
 			int jStart = this.classifyBothDirections ? 0 : i + 1;
 			for (int j = jStart; j < args.size(); ++j) {
-				if (i == j) { continue; }
-				EntityMention arg2 = args.get(j);
+        EntityMention arg2 = args.get(j);
+			  // skip identical entity mentions and mentions with identical spans
+				if (i == j || (arg1.getBegin() == arg2.getBegin() && arg1.getEnd() == arg2.getEnd())) {
+				  continue;
+				}
 				pairs.add(new IdentifiedAnnotationPair(arg1, arg2));
 			}
 		}
