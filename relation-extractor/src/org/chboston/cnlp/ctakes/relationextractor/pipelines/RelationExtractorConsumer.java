@@ -1,5 +1,7 @@
 package org.chboston.cnlp.ctakes.relationextractor.pipelines;
 
+import java.util.List;
+
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -9,6 +11,7 @@ import org.uimafit.util.JCasUtil;
 
 import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
 import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 /**
  * This is a sample relation annotation consumer. 
@@ -30,6 +33,7 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
     }	  
     
     for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
+    	    	
     	String category = binaryTextRelation.getCategory();
     	
     	IdentifiedAnnotation entity1; // entity whose role is "Argument"
@@ -49,8 +53,15 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
     	int type1 = entity1.getTypeID();
     	int type2 = entity2.getTypeID();
     	
-    	// print things like: location_of(colon/6, colon cancer/2)
+    	// print relation and its arguments: location_of(colon/6, colon cancer/2)
     	System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
+    	
+    	// print the sentence containing this instance
+    	List<Sentence> list = JCasUtil.selectCovering(jCas, Sentence.class, entity1.getBegin(), entity1.getEnd());
+    	for(Sentence s : list) {
+    		System.out.println(s.getCoveredText());
+    	}
+    	System.out.println();
     }
   }
 
