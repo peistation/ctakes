@@ -151,8 +151,11 @@ public class RelationExtractorTrain {
         
     // Train and write models
     AnalysisEngineDescription modifierExtractorDesc = trainModifierExtractor(modelsDirModExtractor, trainFiles, dataWriterFactoryClass);
+    writeDesc(modelsDirModExtractor, "ModifierExtractorAnnotator", modifierExtractorDesc);
     AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterFactoryClass, degreeOfParams);
+    writeDesc(modelsDirDegreeOf, "DegreeOfRelationExtractorAnnotator", degreeOfRelationExtractorDesc);
     AnalysisEngineDescription empairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterFactoryClass, emPairParams);
+    writeDesc(modelsDirEMPair, "EntityMentionPairRelationExtractorAnnotator", empairRelationExtractorDesc);
 
     // create the aggregate description
     AggregateBuilder builder = new AggregateBuilder();
