@@ -1152,6 +1152,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 		return list;
 	}
 
+
 	/**
 	 * finds drug attributes using the given range, this method uses FSM
 	 * 
@@ -1160,14 +1161,14 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 	 * @param end
 	 * @throws Exception
 	 */
-
+	
 	private void findDrugAttributesInRange(JCas jcas, int begin, int end)
 	throws Exception
 	{
 		List baseTokenList = getAnnotationsInSpanWithAdaptToBaseTokenFSM(jcas, BaseToken.type, begin, end + 1);
 		List<Annotation> neTokenList = getAnnotationsInSpan(jcas, MedicationEventMention.type, begin, end + 1);
 		List<Annotation> weTokenList = getAnnotationsInSpan(jcas, WordToken.type, begin, end + 1);
-
+	
 		// execute FSM logic
 		executeFSMs(jcas, baseTokenList, neTokenList, weTokenList);
 	}
@@ -2738,6 +2739,16 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 					lastLocation[1] = nea.getEnd();
 				}
 			}
+		} else if (elementType == StrengthAnnotation.type) {
+			while (neItr.hasNext() && wantMuliple) {
+				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
+
+				if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
+					if (!highest) wantMuliple = false;
+					lastLocation[0] = nea.getBegin();
+					lastLocation[1] = nea.getEnd();
+				}
+			}
 		} else if (elementType == FrequencyAnnotation.type) {
 			while (neItr.hasNext()&& wantMuliple) {
 				FrequencyAnnotation nea = (FrequencyAnnotation) neItr.next();
@@ -2747,7 +2758,16 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 					lastLocation[0] = nea.getBegin();
 					lastLocation[1] = nea.getEnd();
 				}			}
-		}  else if (elementType == DosagesAnnotation.type) {
+		} else if (elementType == FrequencyUnitAnnotation.type) {
+			while (neItr.hasNext()&& wantMuliple) {
+				FrequencyUnitAnnotation nea = (FrequencyUnitAnnotation) neItr.next();
+
+				if (nea.getBegin()>=begin && nea.getEnd() <= end ) {
+					if (!highest) wantMuliple = false;
+					lastLocation[0] = nea.getBegin();
+					lastLocation[1] = nea.getEnd();
+				}			}
+		} else if (elementType == DosagesAnnotation.type) {
 			while (neItr.hasNext()&& wantMuliple) {
 				DosagesAnnotation nea = (DosagesAnnotation) neItr.next();
 
@@ -2785,12 +2805,24 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 
 		int  beginSpan = senSpan[0], endSpan = senSpan[1];
 
-		freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
+	
 		doseSpanLength = findInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan);
 		int parenthesisSpanLength = findInPattern(jcas, beginSpan, endSpan, PunctuationToken.type, parenthesisSpan);
-		strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan);
-		spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
-		spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange); 
+		
+		if (highestRange) {
+			freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, freqSpan);
+			spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyAnnotation.type, strengthSpan, highestRange);
+			strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan);
+			spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthAnnotation.type, strengthSpan, highestRange);
+		} else {
+			freqSpanLength = findInPattern(jcas, beginSpan, endSpan, FrequencyUnitAnnotation.type, freqSpan);
+			spanFrequency = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyUnitAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, FrequencyUnitAnnotation.type, strengthSpan, highestRange);
+			strengthSpanLength = findInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan);
+			spanStrength =  highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, StrengthUnitAnnotation.type, strengthSpan, highestRange);
+
+		}
+		
+		 
 		spanDose = highestRange?findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange):findOffsetsInPattern(jcas, beginSpan, endSpan, DosagesAnnotation.type, doseSpan, highestRange);
 
 		if (spanStrength[0] == -1 && spanFrequency[0] == -1 && spanDose[0] == -1)
@@ -2819,6 +2851,17 @@ private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
 		if (elementType == StrengthUnitAnnotation.type) {
 			while (neItr.hasNext()) {
 				StrengthUnitAnnotation nea = (StrengthUnitAnnotation) neItr.next();
+				lastLocation[0] = nea.getBegin();
+				lastLocation[1] = nea.getEnd();
+				if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
+					location[counter][0]= lastLocation[0];
+					location[counter][1]= lastLocation[1];
+					counter++;
+				}
+			}
+		} else	if (elementType == StrengthAnnotation.type) {
+			while (neItr.hasNext()) {
+				StrengthAnnotation nea = (StrengthAnnotation) neItr.next();
 				lastLocation[0] = nea.getBegin();
 				lastLocation[1] = nea.getEnd();
 				if (nea.getBegin()>=begin && nea.getEnd() <= end && (counter == 0  || (counter> 0 && lastLocation[0] !=  location[counter - 1][0]))) {
