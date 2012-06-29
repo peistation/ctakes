@@ -22,6 +22,10 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
  */
 public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
 
+	// TODO: turn these into configuration parameters
+	public final boolean displayEntities = false;
+	public final boolean displayContext = false;
+	
 	@Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
 
@@ -32,6 +36,18 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
       throw new AnalysisEngineProcessException(e);
     }	  
     
+    if(displayEntities) {
+    	System.out.println();
+    	for(IdentifiedAnnotation identifiedAnnotation : JCasUtil.select(systemView, IdentifiedAnnotation.class)) {
+    		String text = identifiedAnnotation.getCoveredText();
+    		int type = identifiedAnnotation.getTypeID();
+    		System.out.format("%s/%d\n", text, type);
+    	}
+    	System.out.println();
+    }
+
+    // print relations
+    System.out.println();
     for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
     	    	
     	String category = binaryTextRelation.getCategory();
@@ -55,14 +71,16 @@ public class RelationExtractorConsumer extends JCasAnnotator_ImplBase {
     	
     	// print relation and its arguments: location_of(colon/6, colon cancer/2)
     	System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
-    	
-    	// print the sentence containing this instance
-    	List<Sentence> list = JCasUtil.selectCovering(jCas, Sentence.class, entity1.getBegin(), entity1.getEnd());
-    	for(Sentence s : list) {
-    		System.out.println(s.getCoveredText());
+
+    	if(displayContext) {
+    		List<Sentence> list = JCasUtil.selectCovering(jCas, Sentence.class, entity1.getBegin(), entity1.getEnd());
+    		
+    		// print the sentence containing this instance
+    		for(Sentence s : list) {
+    			System.out.println(s.getCoveredText());
+    		}
+    		System.out.println();
     	}
-    	System.out.println();
     }
   }
-
 }
