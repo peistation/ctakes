@@ -9,9 +9,6 @@
     <delegateAnalysisEngine key="ContextDependentTokenizerAnnotator">
       <import location="../../../context dependent tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ConstituencyParser">
-      <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="StatusAnnotator">
       <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -33,14 +30,11 @@
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../POS tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="RemoteDictionary">
-      <import location="RemoteDictionary.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="Chunker">
       <import location="../../../chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ClearParserAE">
-      <import location="../../../dependency parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+    <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
+      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
       <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
@@ -50,6 +44,12 @@
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
       <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ClearParserAE">
+      <import location="../../../dependency parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ConstituencyParser">
+      <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -85,6 +85,12 @@
           <string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
         </value>
       </nameValuePair>
+      <!--<nameValuePair>
+        <name>modelFilename</name>
+        <value>
+          <string>parsermodel</string>
+        </value>
+      </nameValuePair>-->
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
@@ -100,7 +106,7 @@
         <node>AdjustNounPhraseToIncludeFollowingNP</node>
         <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
         <node>LookupWindowAnnotator</node>
-        <node>RemoteDictionary</node>
+        <node>DictionaryLookupAnnotatorDB</node>
         <node>StatusAnnotator</node>
         <node>NegationAnnotator</node>
         <node>ExtractionPrepAnnotator</node>
@@ -134,15 +140,21 @@
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.TimeAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.SymbolToken</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspanSegment</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.SBAR</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RangeAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PunctuationToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Property</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Properties</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.PersonTitleAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PRT</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PP</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.OntologyConcept</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.NumToken</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.MeasurementAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Lemma</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.LST</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.INTJ</type>
@@ -152,6 +164,7 @@
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.DateAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopySrcAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopyDestAnnotation</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.ContractionToken</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.ContextAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Chunk</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.CONJP</type>
