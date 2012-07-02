@@ -123,8 +123,7 @@ public class RelationExtractorTrain {
 	          relationExtractorDescription,
 	          EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
 	          params.classifyBothDirections);
-	    }
-	    
+	    }    
 	    
 	    return relationExtractorDescription;
   }
@@ -144,7 +143,7 @@ public class RelationExtractorTrain {
     
     // Initialize component parameters
     ParameterSettings degreeOfParams = new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0);
-    ParameterSettings emPairParams = new ParameterSettings(false, 0.5f, "linear", 0.05, 1.0);
+    ParameterSettings emPairParams = new ParameterSettings(true, 0.5f, "linear", 0.05, 1.0);
 
     // For now all three components use MultiClass SVMs for classification
     Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = MultiClassLIBSVMDataWriterFactory.class;
@@ -154,8 +153,8 @@ public class RelationExtractorTrain {
     writeDesc(options.descDir, "ModifierExtractorAnnotator", modifierExtractorDesc);
     AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterFactoryClass, degreeOfParams);
     writeDesc(options.descDir, "DegreeOfRelationExtractorAnnotator", degreeOfRelationExtractorDesc);
-    AnalysisEngineDescription empairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterFactoryClass, emPairParams);
-    writeDesc(options.descDir, "EntityMentionPairRelationExtractorAnnotator", empairRelationExtractorDesc);
+    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterFactoryClass, emPairParams);
+    writeDesc(options.descDir, "EntityMentionPairRelationExtractorAnnotator", emPairRelationExtractorDesc);
 
     // create the aggregate description
     AggregateBuilder builder = new AggregateBuilder();
@@ -165,7 +164,7 @@ public class RelationExtractorTrain {
     builder.add(parser.parseAnalysisEngineDescription(source));
     builder.add(modifierExtractorDesc);
     builder.add(degreeOfRelationExtractorDesc);
-    builder.add(empairRelationExtractorDesc);
+    builder.add(emPairRelationExtractorDesc);
     AnalysisEngineDescription aggregateDescription = builder.createAggregateDescription();
     
     // write out the XML version of the aggregate description
