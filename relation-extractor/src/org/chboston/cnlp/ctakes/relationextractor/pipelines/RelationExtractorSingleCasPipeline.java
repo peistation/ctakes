@@ -19,7 +19,7 @@ import org.uimafit.pipeline.SimplePipeline;
  * @author dmitriy dligach
  *
  */
-public class RelationExtractorSingleCasTest {
+public class RelationExtractorSingleCasPipeline {
 
 	public static class Options extends Options_ImplBase {
 
