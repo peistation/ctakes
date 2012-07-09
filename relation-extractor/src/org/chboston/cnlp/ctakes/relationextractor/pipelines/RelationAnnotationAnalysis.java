@@ -16,13 +16,13 @@ import org.uimafit.pipeline.SimplePipeline;
 
 /**
  * 
- * Analyze the annotation obtained by running the relation extractor on clinical notes.
+ * Analyze the annotations obtained by running the relation extractor on clinical notes.
  * The results of running the relation extractor are expected to be saved in xmi files.
  * 
  * @author dmitriy dligach
  *
  */
-public class RelationExtractorAnalysis {
+public class RelationAnnotationAnalysis {
 
   public static class Options extends Options_ImplBase {
 
