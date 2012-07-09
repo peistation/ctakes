@@ -1,10 +1,10 @@
 Knowtator XML Files
 -------------------
 
-Some examples of how knowtator represents relations and entity categories in XML files will be shown below. 
-Looking at these examples can be useful for understanding the code of the collection reader.
+Some examples of how knowtator represents relations and entity categories in XML files are shown below. 
+Looking at these examples can be useful for understanding the code of the gold annotation reader.
 
-********** Entity and Entity Types **********
+1. Entity and entity type representation
 
 <annotations textSource="2290848406_2">
 
@@ -34,7 +34,7 @@ Looking at these examples can be useful for understanding the code of the collec
 </annotations>
 
 
-********** Relations **********
+2. Relation representation
 
 E.g. "soar throat" co_occurs_with "headache"
 
@@ -85,9 +85,3 @@ that have two hasSlotMention(s), which in turn lead to the actual arguments.
     <complexSlotMentionValue value="Relations_Sept21_Schema_Instance_30340" />
   </complexSlotMention>
 
-
-*******************************
-
-In the example above, Relations_Sept21_Schema_Instance_30350 and
-Relations_Sept21_Schema_Instance_30340 become relation arguments
- and the key of the relation index hash table (kid1-kid2).
