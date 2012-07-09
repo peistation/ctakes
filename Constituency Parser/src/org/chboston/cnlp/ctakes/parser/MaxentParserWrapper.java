@@ -60,82 +60,26 @@ import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
-public class MaxentParserWrapper implements ParserWrapper {
+public class MaxentParserWrapper extends ParserWrapper {
 
 	Parser parser = null;
-	private boolean useTagDictionary = true;
-	private boolean useCaseSensitiveTagDictionary = true;
 	private String parseStr = "";
 	Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public MaxentParserWrapper(String dataDir) {
 		try {
-			//parser = TreebankParser.getParser(dataDir, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
-			
 			File d = new File(dataDir);
 			
-			MaxentModel buildModel = null;
-			MaxentModel checkModel = null;
-			POSTagger posTagger = null;
-			Chunker chunker = null;
-			HeadRules headRules = null;
-
 			if (!d.isDirectory()) {
 				FileInputStream fis = new FileInputStream(d);
 				ParserModel model = new ParserModel(fis);
 				parser = new Parser(model, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
-			} else {
-				// This branch is for handling models built with OpenNLp 1.4
-				// Once the models are rebuilt using OpenNLP 1.5 this code should be removed
-				// @see TreebankParser.java in OpenNLP 1.4
-				{
-					File f = new File(d, "build.bin.gz"); // TODO consider moving these literals to an XML file or properties file
-					buildModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
-				}
-				
-				{
-					File f = new File(d, "check.bin.gz");
-					checkModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
-				}
-				
-				{
-					File f = new File(d, "pos.model.bin");
-					//File f = new File(d, "tag.bin.gz");
-					MaxentModel posModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
-					if (useTagDictionary) {
-						File td = new File(d, "tagdict");
-						TagDictionary tagDictionary = new POSDictionary(td.getAbsolutePath()); //null;
-						posTagger = new POSTaggerME((AbstractModel) posModel, tagDictionary);
-					} else {
-						// f = new File(d, "dict.bin.gz");
-						Dictionary dictionary = null; // new Dictionary();
-						posTagger = new POSTaggerME((AbstractModel) posModel, dictionary);
-
-					}
-				}
-				
-				
-				{
-					File f = new File(d, "chunk.bin.gz");
-					MaxentModel chunkModel = new opennlp.maxent.io.SuffixSensitiveGISModelReader(f).getModel();
-					chunker = new ChunkerME(chunkModel);
-				}
-			
-				{
-					FileReader fr = new FileReader(new File(d, "head_rules"));
-					headRules = new HeadRules(fr);
-				}
-
-				parser = new Parser(buildModel, checkModel, posTagger, chunker, headRules); //TreebankParser.getParser(modelFileOrDirname, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
-			}
-			
-			
+			}	
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
 	public String getParseString(FSIterator tokens) {
 		return parseStr;
 	}
@@ -159,31 +103,20 @@ public class MaxentParserWrapper implements ParserWrapper {
 		
 		while(iterator.hasNext()){
 			Sentence sentAnnot = (Sentence) iterator.next();
-//			if(parser == null){
-//				sentAnnot.setParse("Parser not initialized properly.");
-//			}
 			if(sentAnnot.getCoveredText().length() == 0){
 				continue;
 			}
 			indexMap.clear();
-//			if(sentAnnot.getBegin() == 5287){
-//				System.err.println("At the beginning point...");
-//			}
 			FSArray termArray = getTerminals(jcas, sentAnnot);
-//			if(termArray.size() == 0){
-//				System.err.println("Array ofl ength 0");
-//			}
 			String sentStr = getSentence(termArray, indexMap);
 			StringBuffer parseBuff = new StringBuffer();
 			if(sentStr.length() == 0){
-//				System.err.println("String of length 0");
 				parseBuff.append("");
 				parse = null;
 			}else{
 				parse = ParserTool.parseLine(sentStr, parser, 1)[0];
 				parse.show(parseBuff);
 			}
-//			Span span = parse.getSpan();
 			parseStr = parseBuff.toString();
 			TopTreebankNode top = new TopTreebankNode(jcas, sentAnnot.getBegin(), sentAnnot.getEnd());
 			top.setTreebankParse(parseBuff.toString());
@@ -255,45 +188,4 @@ public class MaxentParserWrapper implements ParserWrapper {
 		return sent.toString();
 	}
 	
-	private FSArray getTerminals(JCas jcas, Sentence sent){
-		ArrayList<BaseToken> wordList = new ArrayList<BaseToken>();
-		FSIterator<Annotation> iterator = jcas.getAnnotationIndex(BaseToken.type).subiterator(sent);
-		while(iterator.hasNext()){
-			BaseToken w = (BaseToken)iterator.next();
-			if(w instanceof NewlineToken) continue;
-			wordList.add(w);
-		}
-		
-		FSArray terms = new FSArray(jcas, wordList.size());
-		for(int i = 0; i < wordList.size(); i++){
-			BaseToken w = (BaseToken) wordList.get(i);
-			TerminalTreebankNode ttn = new TerminalTreebankNode(jcas, w.getBegin(), w.getEnd());
-			ttn.setChildren(null);
-			ttn.setIndex(i);
-			ttn.setTokenIndex(i);
-			ttn.setLeaf(true);
-			ttn.setNodeTags(null);
-			if(w instanceof PunctuationToken){
-				String tokStr = w.getCoveredText();
-				if(tokStr.equals("(") || tokStr.equals("[")){
-					ttn.setNodeType("-LRB-");
-				}else if(tokStr.equals(")") || tokStr.equals("]")){
-					ttn.setNodeType("-RRB-");
-				}else if(tokStr.equals("{")){
-					ttn.setNodeType("-LCB-");
-				}else if(tokStr.equals("}")){
-					ttn.setNodeType("-RCB-");
-				}else{
-					ttn.setNodeType(w.getCoveredText());
-				}
-			}else{
-				ttn.setNodeType(w.getCoveredText());
-			}
-			ttn.setNodeValue(ttn.getNodeType());
-			ttn.addToIndexes();
-			terms.set(i, ttn);
-		}
-		
-		return terms;
-	}
 }
