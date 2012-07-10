@@ -22,7 +22,7 @@ import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
  * @author dmitriy dligach
  *
  */
-public class TestGoldEntityAndRelationReader {
+public class GoldEntityAndRelationReaderPipeline {
 
 	public static void main(String[] args) throws UIMAException, IOException {
 		
