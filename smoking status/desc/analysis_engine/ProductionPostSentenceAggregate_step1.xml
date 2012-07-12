@@ -9,6 +9,9 @@
 <delegateAnalysisEngine key="TokenizerAnnotator">
 <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
 </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SentDetectAnnotator">
+<import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+</delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
 <name>ProductionPostSentenceAggregate_step1</name>
@@ -19,6 +22,7 @@
 <configurationParameterSettings/>
 <flowConstraints>
 <fixedFlow>
+<node>SentDetectAnnotator</node>
 <node>TokenizerAnnotator</node>
 <node>KuRuleBasedClassifierAnnotator</node>
 </fixedFlow>
