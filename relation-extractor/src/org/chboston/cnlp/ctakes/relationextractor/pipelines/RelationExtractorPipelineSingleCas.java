@@ -43,7 +43,7 @@ import org.uimafit.pipeline.SimplePipeline;
  * @author dmitriy dligach
  *
  */
-public class RelationExtractorSingleCasPipeline {
+public class RelationExtractorPipelineSingleCas {
 
 	public static class Options extends Options_ImplBase {
 
@@ -57,15 +57,8 @@ public class RelationExtractorSingleCasPipeline {
 			JCas jCas = JCasFactory.createJCas(typeSystemDescription);
 			jCas.setDocumentText(sampleSentence);
 
-			// the parameters must match the training parameters
 			AnalysisEngine relationExtractor = AnalysisEngineFactory.createAnalysisEngineFromPath(
-					"desc/analysis_engine/RelationExtractorAggregate.xml",
-					EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-					true,
-					EntityMentionPairRelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-					false,
-					EntityMentionPairRelationExtractorAnnotator.PARAM_IS_TRAINING,
-					false);
+					"desc/analysis_engine/RelationExtractorAggregate.xml");
 
 		  AnalysisEngine relationConsumer = AnalysisEngineFactory.createPrimitive(
 	    		RelationExtractorConsumer.class);
