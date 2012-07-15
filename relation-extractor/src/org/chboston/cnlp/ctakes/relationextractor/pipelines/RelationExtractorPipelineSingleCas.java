@@ -30,7 +30,6 @@ import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
-import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.cleartk.util.Options_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.JCasFactory;

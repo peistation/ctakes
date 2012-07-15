@@ -29,7 +29,6 @@ import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
-import org.chboston.cnlp.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.xwriter.XWriter;
