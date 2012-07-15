@@ -34,6 +34,6 @@ To train a new model, perform the following sequence of steps:
 Extracting Relations
 --------------------
 
-RelationExtractorPipeline in the pipelines package is a good example of using the relation extraction module. It defines a pipeline consisiting of a collection reader that reads all files in a directory, the aggregate relation extraction AE that discovers relations, and a writer that saves the resulting annotations as xmi files.
+RelationExtractorPipeline in the pipelines package is a good example of using the relation extraction module. It defines a pipeline consisting of a collection reader that reads all files in a directory, the aggregate relation extraction AE that discovers relations, and a writer that saves the resulting annotations as xmi files.
 
 In the same package, a sample pipeline for consuming relation annotations is also provided. Please see RelationExtractorAnalysis class for details.
