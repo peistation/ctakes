@@ -114,6 +114,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import location="../../../common-type-system/desc/common_type_system.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
