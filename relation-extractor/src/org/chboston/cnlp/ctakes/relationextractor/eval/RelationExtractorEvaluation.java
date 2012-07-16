@@ -134,6 +134,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Object[] additionalParameters = new Object[] {
           RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
           params.probabilityOfKeepingANegativeExample,
+          EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+  			  params.classifyBothDirections,
           RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
           false };
 
