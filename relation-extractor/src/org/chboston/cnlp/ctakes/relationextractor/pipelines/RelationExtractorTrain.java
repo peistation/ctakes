@@ -76,7 +76,6 @@ public class RelationExtractorTrain {
     public File descDir = new File("desc/analysis_engine");
   }
   
-  
   public static AnalysisEngineDescription trainModifierExtractor(
 		  File modelsDir,
 		  List<File> trainFiles,
@@ -99,8 +98,6 @@ public class RelationExtractorTrain {
 	  return modifierExtractorDescription;
   }
   
-		  
-  
   public static AnalysisEngineDescription trainRelationExtractor(
 		  File modelsDir, 
 		  List<File> trainFiles,
@@ -112,6 +109,8 @@ public class RelationExtractorTrain {
 	  Object[] additionalParameters = new Object[] {
 			  RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
 			  params.probabilityOfKeepingANegativeExample,
+        EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+			  params.classifyBothDirections,
 			  RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
 			  false };
   
@@ -151,7 +150,6 @@ public class RelationExtractorTrain {
 	    return relationExtractorDescription;
   }
 	
-  
   public static void main(String[] args) throws Exception {
 		
     Options options = new Options();
