@@ -24,6 +24,8 @@ package org.mitre.medfacts.i2b2.api.ctakes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.uima.cas.ConstraintFactory;
@@ -56,6 +58,8 @@ import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
 
 public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
 {
+	
+  Logger logger = Logger.getLogger(SingleDocumentProcessorCtakes.class.getName());
   
   protected JCas jcas;
 
@@ -238,7 +242,8 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     ///
     if (!filteredIterator.hasNext())
     {
-      throw new RuntimeException("Surrounding sentence annotation not found!!");
+      return null;
+      //throw new RuntimeException("Surrounding sentence annotation not found!!");
     }
     Annotation sentenceAnnotation = filteredIterator.next();
     Sentence sentence = (Sentence)sentenceAnnotation;
@@ -250,7 +255,10 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     
     if (!tokensInSentenceIterator.hasNext())
     {
-      throw new RuntimeException("First token in sentence not found!!");
+      String message = "First token in sentence not found [#1]!!";
+      Exception e = new RuntimeException(message);
+      logger.log(Level.SEVERE, message, e);
+      return null;
     }
     Annotation firstTokenAnnotation = tokensInSentenceIterator.next();
     BaseToken firstToken = (BaseToken)firstTokenAnnotation;
@@ -263,7 +271,10 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     
     if (!beginTokenInSentenceIterator.hasNext())
     {
-      throw new RuntimeException("First token in sentence not found!!");
+        String message = "First token in sentence not found [#2]!!";
+        Exception e = new RuntimeException(message);
+        logger.log(Level.SEVERE, message, e);
+        return null;
     }
     Annotation beginTokenAnnotation = beginTokenInSentenceIterator.next();
     BaseToken beginToken = (BaseToken)beginTokenAnnotation;
@@ -274,7 +285,10 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     beginTokenInSentenceIterator.moveToLast();
     if (!beginTokenInSentenceIterator.hasNext())
     {
-      throw new RuntimeException("First token in sentence not found!!");
+        String message = "First token in sentence not found [#3]!!";
+        Exception e = new RuntimeException(message);
+        logger.log(Level.SEVERE, message, e);
+        return null;
     }
     Annotation endTokenAnnotation = beginTokenInSentenceIterator.next();
     BaseToken endToken = (BaseToken)endTokenAnnotation;
