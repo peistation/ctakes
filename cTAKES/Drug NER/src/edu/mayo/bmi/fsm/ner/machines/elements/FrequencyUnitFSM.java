@@ -137,6 +137,14 @@ public class FrequencyUnitFSM {
 		iv_dailyWordSet.add("evening");
 		iv_dailyWordSet.add("am");
 		iv_dailyWordSet.add("pm");
+		iv_dailyWordSet.add("a.m.");// TokenizerPTB handles abbreviations as tokens now.
+		iv_dailyWordSet.add("p.m.");
+		iv_dailyWordSet.add("q.a.m.");
+		iv_dailyWordSet.add("q.p.m.");
+		iv_dailyWordSet.add("a.m");
+		iv_dailyWordSet.add("p.m");
+		iv_dailyWordSet.add("q.a.m");
+		iv_dailyWordSet.add("q.p.m");
 		iv_dailyWordSet.add("bedtime");
 		iv_dailyWordSet.add("specified");
 		iv_dailyWordSet.add("day");
@@ -150,6 +158,15 @@ public class FrequencyUnitFSM {
 		iv_perDayWordSet.add("daily");
 		iv_perDayWordSet.add("nightly");
 		iv_perDayWordSet.add("od");		
+		iv_perDayWordSet.add("q.d.");// TokenizerPTB handles abbreviations as tokens now.
+		iv_perDayWordSet.add("q.d");
+		iv_perDayWordSet.add("q.n.");
+		iv_perDayWordSet.add("q.n");
+		iv_perDayWordSet.add("q.h.s.");
+		iv_perDayWordSet.add("q.h.s");
+		iv_perDayWordSet.add("q.day");
+		iv_perDayWordSet.add("o.d.");	
+		iv_perDayWordSet.add("o.d");
 		
 		iv_postEightWordSet.add("nine");
 		iv_postEightWordSet.add("ten");
@@ -165,6 +182,8 @@ public class FrequencyUnitFSM {
 		iv_postSixWordSet.add("nine");
 
 		iv_fourTimesPerDayWordSet.add("qid");
+		iv_fourTimesPerDayWordSet.add("q.i.d.");
+		iv_fourTimesPerDayWordSet.add("q.i.d");
 		iv_fourTimesPerDayWordSet.add("q6");
 		iv_fourTimesPerDayWordSet.add("q6h");
 		iv_fourTimesPerDayWordSet.add("qds");
@@ -198,6 +217,8 @@ public class FrequencyUnitFSM {
 		iv_twiceADayWordSet.add("10-12");
 		iv_twiceADayWordSet.add("10h-12h");
 		iv_twiceADayWordSet.add("bid");
+		iv_twiceADayWordSet.add("b.i.d.");
+		iv_twiceADayWordSet.add("b.i.d");
 		
 		iv_threeTimesADayWordSet.add("q8-12h");
 		iv_threeTimesADayWordSet.add("q8-12");
@@ -206,6 +227,8 @@ public class FrequencyUnitFSM {
 		iv_threeTimesADayWordSet.add("8-12");
 		iv_threeTimesADayWordSet.add("8h-12h");
 		iv_threeTimesADayWordSet.add("tid");
+		iv_threeTimesADayWordSet.add("t.i.d.");
+		iv_threeTimesADayWordSet.add("t.i.d");
 		iv_threeTimesADayWordSet.add("q8");
 		iv_threeTimesADayWordSet.add("q8h");
 		iv_threeTimesADayWordSet.add("8h");
@@ -275,11 +298,14 @@ public class FrequencyUnitFSM {
 		iv_textSuffixSet.add("min");
 
 		iv_singleWordSet.add("hs");
+		iv_singleWordSet.add("h.s.");
 		iv_singleWordSet.add("q");
 		iv_singleWordSet.add("monthly");
 		iv_singleWordSet.add("biweekly");
 		
 		iv_prnWordSet.add("prn");
+		iv_prnWordSet.add("p.r.n.");
+		iv_prnWordSet.add("p.r.n");
 		iv_prnWordSet.add("as-needed");
 		iv_prnWordSet.add("asneeded");
 		
@@ -680,6 +706,7 @@ public class FrequencyUnitFSM {
 		State startState = new NamedState("START_PRN");
 		State endState = new NamedState("END_PRN");
 		State asNeededState = new NamedState("PRN");
+		State asNeededHyphState = new NamedState("HYPHPRN");
         State startPState = new NamedState("PSTATE");
         State startPDOTState = new NamedState("PDOTSTATE");
         State startRState = new NamedState("RSTATE");
@@ -715,9 +742,12 @@ public class FrequencyUnitFSM {
 		
 		
 		asNeededState.addTransition(new TextValueCondition("needed", false), endState);
+		asNeededState.addTransition(new PunctuationValueCondition('-'), asNeededHyphState);
 		asNeededState.addTransition(new AnyCondition(), startState);
 		
-
+		asNeededHyphState.addTransition(new TextValueCondition("needed", false), endState);
+		asNeededHyphState.addTransition(new AnyCondition(), startState);
+		
 		endState.addTransition(new AnyCondition(), startState);
 		
 		return m;
