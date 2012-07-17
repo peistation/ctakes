@@ -122,7 +122,8 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 					Annotation window = (Annotation) windowItr.next();
 					List lookupTokensInWindow = constrainToWindow(
 							window,
-							lInit.getLookupTokenIterator(jcas));
+	                        lInit.getLookupTokenIterator(jcas),
+	                        true); // assume tokens are sorted
 
 					Map ctxMap = lInit.getContextMap(
 							jcas,
@@ -135,7 +136,48 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 		}
 		catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
-		}
+	    }
+	}
+
+	private void compareLists(List lookupTokensInWindow1, List lookupTokensInWindow2, Annotation window) {
+	    String PADS = "                                                                                 ";
+            int count1 = lookupTokensInWindow1.size();
+            int count2 = lookupTokensInWindow2.size();
+            
+            Iterator iter1 = lookupTokensInWindow1.iterator();
+            Iterator iter2 = lookupTokensInWindow2.iterator();
+            
+            iv_logger.info("     window " + window.getBegin() + ", " + window.getEnd() + "  " + window.getCoveredText());
+            if (count1!=count2) {
+                iv_logger.info("==>> count1!=count2 " + count1 + " " + count2);
+                iv_logger.info("==>> window " + window.getBegin() + ", " + window.getEnd() + "  " + window.getCoveredText());
+            }
+
+            for (int i=0; i<Math.max(count1, count2); i++) {
+                String msg1 = "";
+                String msg2 = "";
+                int LEN_COL1 = 80;
+                int LEN_COL2 = 80;
+                if (iter1.hasNext()) {
+                    LookupAnnotationToJCasAdapter t1 = (LookupAnnotationToJCasAdapter) iter1.next();
+                    msg1 += ("t1: " + t1.getText() + "  ");
+                    msg1 += ("t1: " + t1.getStartOffset() + ", " + t1.getEndOffset() + "  " );
+                    msg1 = msg1 + PADS.substring(0, Math.min(LEN_COL1-msg1.length(),0));
+                } else {
+                    msg1 += PADS.substring(0, LEN_COL1);
+                }
+                if (iter2.hasNext()) {
+                    LookupAnnotationToJCasAdapter t2 = (LookupAnnotationToJCasAdapter) iter2.next();
+                    msg2 += ("t2: " + t2.getText() + "  ");
+                    msg2 += ("t2: " + t2.getStartOffset() + ", " + t2.getEndOffset() + "  ");
+                    msg2 = msg2 + PADS.substring(0, Math.min(LEN_COL2-msg2.length(),0));
+                } else {
+                    msg2 += PADS.substring(0, LEN_COL2);
+                }
+                
+                iv_logger.info(msg1 + " | " + msg2);
+                
+            }
 	}
 
 	/**
@@ -220,15 +262,15 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 	}
 
 	/**
-	 * Gets a list of LookupToken objects within the specified window
-	 * annotation.
+	 * Gets a list of LookupToken objects within the specified window annotation.
 	 * 
 	 * @param window
 	 * @param lookupTokenItr
+	 * @param lookupTokensAreSorted if true, can be faster by stopping once find a token that is after the end of the lookup window
 	 * @return
 	 * @throws Exception
 	 */
-	private List constrainToWindow(Annotation window, Iterator lookupTokenItr)
+	private List constrainToWindow(Annotation window, Iterator lookupTokenItr, boolean lookupTokensAreSorted)
 			throws Exception
 	{
 		List ltObjectList = new ArrayList();
@@ -243,6 +285,12 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 			{
 				ltObjectList.add(lt);
 			}
+			
+			if (lookupTokensAreSorted && (lt.getStartOffset() >= window.getEnd())) {
+				// past the end of the window, don't need to keep going as long as the LookupToken are sorted
+				return ltObjectList;
+			}
+			
 		}
 		return ltObjectList;
 	}
