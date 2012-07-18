@@ -135,7 +135,7 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
 					oc.setCodingScheme(iv_props.getProperty(CODING_SCHEME_PRP_KEY));
 
 					if(iv_props.getProperty(TYPE_ID_FIELD) != null) {
-						typeId = mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
+						typeId = iv_props.getProperty(TYPE_ID_FIELD);//mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
 					}
 					
 					ocArr.set(ocArrIdx, oc);

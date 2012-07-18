@@ -138,7 +138,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
   	/**
   	 * Annotation type that defines the boundary within which the dictionary hits should be present. 
   	 */
-  	public static String BOUNDARY_ANN_TYPE = "BOUNDARY_ANN_TYPE";
+  	public static String BOUNDARY_ANN_TYPE = "STATUS_BOUNDARY_ANN_TYPE";
   	public static int NO_WINDOW_SIZE_SPECIFIED = -1;
   	public static int NO_ANNOTATION_TYPE_SPECIFIED = -1;
 
@@ -1220,7 +1220,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 				Iterator statusChangeItr = FSUtil.getAnnotationsIteratorInSpan(jcas, DrugChangeStatusAnnotation.type, holdLeftStart, holdRightEnd);
 				List holdStatusChanges = new ArrayList();
 				// Separate the subsection from the change status elements
-
+				int[] localSpan = getNarrativeSpansContainingGivenSpanType(jcas, drugTokenAnt.getBegin(), iBoundaryAnnType);
 				while (statusChangeItr.hasNext())
 				{
 					Iterator findSubSection = FSUtil.getAnnotationsIteratorInSpan(jcas, SubSectionAnnotation.type, holdLeftStart, holdRightEnd);
@@ -1231,11 +1231,13 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					{
 
 						DrugChangeStatusAnnotation dsa = (DrugChangeStatusAnnotation) statusChangeItr.next();
+
 						// Maximum case means the drug mention elements should
 						// be overridden by this value
-						if ((dsa.getChangeStatus().compareTo(
+						if (((dsa.getChangeStatus().compareTo(
 								DrugChangeStatusElement.MAXIMUM_STATUS) != 0)
-								&& dsa.getEnd() < holdRightEnd)
+								&& dsa.getEnd() < holdRightEnd) 
+								&& (localSpan[0]<dsa.getBegin() && localSpan[1]> dsa.getEnd()))
 						{
 							holdStatusChanges.add(dsa);
 						} else if (dsa.getChangeStatus().compareTo(
@@ -2640,10 +2642,10 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
    * @param end
    * @return int[] - int[0] is begin offset and int[1] is end offset of subsequent sentence end (if available)
    */
-private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin)
+private int[] getNarrativeSpansContainingGivenSpanType(JCas jcas, int begin, int annotType)
 {
   JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-  Iterator iter = indexes.getAnnotationIndex(iAnnotationType).iterator();
+  Iterator iter = indexes.getAnnotationIndex(annotType).iterator();
   int[] span = new int[2];
   boolean foundFirstTypeSpan = false;
   boolean foundSecondTypeSpan = false;
@@ -2995,7 +2997,7 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		int lastLineNum=0;
 		boolean haveNarrative = sectionType.compareTo("narrative") == 0;
 		if (haveNarrative) {
-			senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin);
+			senSpan = getNarrativeSpansContainingGivenSpanType(jcas, begin, iAnnotationType);
 			if (senSpan[0] < begin) senSpan[0] = begin;
 		}
 		boolean hasMultipleDrugs = multipleDrugsInSpan(jcas, senSpan[0], senSpan[1]);
@@ -3033,12 +3035,13 @@ private int[][] getWindowSpan(JCas jcas,  String sectionType, int typeAnnotation
 		Iterator neItr = FSUtil.getAnnotationsIteratorInSpan(jcas, MedicationEventMention.type, begin, end);
 
 		int numDrugs=0;
-
+		int beginOffset=0;
 		while (neItr.hasNext()) {
 			MedicationEventMention nea = (MedicationEventMention) neItr.next();
-
-			if(nea.getTypeID()==1  || nea.getTypeID()==0)   
+			
+			if((nea.getTypeID()==1  || nea.getTypeID()==0) && beginOffset != nea.getBegin())     
 				numDrugs++;
+			beginOffset = nea.getBegin();
 		}
 		if(numDrugs>1) return true;
 		else return false;       	

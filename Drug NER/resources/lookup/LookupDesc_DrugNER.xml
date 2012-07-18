@@ -121,6 +121,7 @@
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="codeRxNorm"/> <!--  change this to value="code" for UMLS CUIs -->
 					<property key="luceneFilterExtResrcKey" value="NamedEntityLookupConsumer"/>
+					<property key="typeIdField" value="1"/>
 				</properties>
 			</lookupConsumer>
 		</lookupBinding>
