@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CAS version="2">
+<uima.cas.Sofa _indexed="0" _id="6" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="S/P right knee arthroscopy.&#10;Knee x-ray.  Patient denies knee pain.&#10;"/>
+<uima.tcas.DocumentAnnotation _indexed="1" _id="13" _ref_sofa="6" begin="0" end="67" language="x-unspecified"/>
+<edu.mayo.bmi.uima.core.type.DocumentID _indexed="1" _id="1" _ref_sofa="6" begin="0" end="0" documentID="sample_note_plaintext"/>
+<edu.mayo.bmi.uima.core.type.textspan.Segment _indexed="1" _id="18" _ref_sofa="6" begin="0" end="67" id="SIMPLE_SEGMENT"/>
+<edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="23" _ref_sofa="6" begin="0" end="27" sentenceNumber="0"/>
+<edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="28" _ref_sofa="6" begin="28" end="39" sentenceNumber="1"/>
+<edu.mayo.bmi.uima.core.type.textspan.Sentence _indexed="1" _id="33" _ref_sofa="6" begin="41" end="66" sentenceNumber="2"/>
+</CAS>

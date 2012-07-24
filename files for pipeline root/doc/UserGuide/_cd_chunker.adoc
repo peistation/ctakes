@@ -1,0 +1,293 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+[[cd_chunker]]
+Chunker
+~~~~~~~
+
+////////////////////////////////////////////
+ - data/chunk/genia/README - how to prepare Genia chunk training data
+ - data/chunk/ptb/README - how to prepare PTB chunk training data
+ - data/treebank/genia/README - how to prepare Genia Treebank data for ChunkLink
+ - resources/models/README - how to build a chunker model
+ - scripts/perl/README - information on obtaining the chunklink script
+ - test/data/README - a description of the files used to unit test the Chunker annotator
+////////////////////////////////////////////
+
+In {osp-short} when we refer to a ``chunker'' we often mean a shallow
+parser -- i.e. a component that tags noun phrases, verb phrases, etc.
+
+This project supports three tasks:
+
+- Building a model from training data;
+- Tagging text, using a trained model;
+- Adjusting the end offset of certain chunks so they envelop
+  other chunks, for certain patterns of chunks.
+
+This project provides a UIMA wrapper around the popular OpenNLP
+chunker. The UIMA examples project provides default wrappers for
+several of the components in OpenNLP, but not for the chunker. We have
+borrowed from the UIMA examples project liberally. Our wrapper works
+with our type system. Additionally, we added features and supporting
+components.
+
+A chunker model
+footnoteref:[model_disclaimer]
+is included with this project.
+
+
+[[build_chunker_model]]
+Building a model
+^^^^^^^^^^^^^^^^
+
+[[prepare_genia_chunk]]
+Prepare GENIA training data
++++++++++++++++++++++++++++
+You need to download a copy of GENIA's Treebank corpus from
+http://www-tsujii.is.s.u-tokyo.ac.jp/~genia/topics/Corpus/GTB.html. The
+version we used is called ``beta''. This version is distributed in a
+set of two files, one dated Sept. 22, 2004, with 200 ``abstracts'',
+and the other July 11, 2005, with 300 ``abstracts''. Please download
+both. After extraction, place all the `.tree` files from the two
+download into one directory, which we'll refer to `<genia-trees>`.
+
+Please also download ``chunklink'' from
+http://ilk.uvt.nl/team/sabine/homepage/software.html. The version we
+used is `chunklink_2-2-2000_for_conll.pl`. This tool, from the
+link:{ilk-home}[Induction of Linguistic Knowledge] (ILK) group of
+Tilburg University, The Netherlands, converts Penn Treebank II files
+into a one-word-per-line format.
+
+Next, we'll use data.chunk.genia.Genia2PTB
+footnote:[This Java class a) renames the `.tree` files to files that
+look like `wsj_0001.mrg` and puts them in a directory structure
+expected by chunklink and creates a mapping of the original new names
+to the old names; b) reformats the way pos tags are formatted; c) adds
+an extra set of parentheses to each line of the data.]
+to convert Genia Treebank corpus to Penn Treebank II format, then
+use chunklink to convert to chunk data, and finally use
+data.chunk.Chunklink2OpenNLP to convert to OpenNLP format.
+
+. Run data.chunk.genia.Genia2PTB:
++
+--
+______________________________________________________________________________
++*java -cp <classpath> data.chunk.genia.Genia2PTB \
+                     <genia-trees> \ <1>
+                     <ptb-trees> \ <2>
+                     1 \
+                     <genia-ptb-name-mapping>*+ <3>
+______________________________________________________________________________
+
+<1> the directory which holds the GENIA corpus files;
+<2> the directory where the converted PTB trees will be written to;
+<3> a file that will created by Genia2PTB to save file name mappings.
+
+.Problematic sentences
+[IMPORTANT]
+========================================================
+
+There are a number of problematic sentences in the second set of 300
+treebanked abstracts (in `<ptb-trees>` after processed by
+data.chunk.genia.Genia2PTB) that caused the chunklink script to
+fail. We removed them when building our model. The original GENIA file
+names are listed below for your reference. You need to remove the
+lines from the output of Genia2PTB. To find out the converted file
+names, please look at +<genia-ptb-name-mapping>+. Line numbers are
+separated by commas.
+
+- `93123257.tree` - 6
+- `93172387.tree` - 3
+- `93186809.tree` - 5
+- `93280865.tree` - 7
+- `94085904.tree` - 6
+- `94193110.tree` - 2
+- `96247631.tree` - 3, 5
+- `96353916.tree` - 10
+- `96357043.tree` - 4
+- `97031819.tree` - 3, 4
+- `97054651.tree` - 7
+- `97074532.tree` - 6, 7
+========================================================
+--
++
+. Run chunklink:
++
+--
+___________________________________________________________________________
++*perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-trees>/wsj_????.mrg > \
+     <chunklink-chunks>*+ <1>
+___________________________________________________________________________
+
+<1> the redirected standard output from chunklink.
+
+NOTE: The chunklink script doesn't seem to work on Windows. But we did
+manage to run it in a Cygwin session.
+--
++
+. Run data.chunk.Chunklink2OpenNLP
++
+--
+_______________________________________________________________
++*java -cp <classpath> data.chunk.Chunklink2OpenNLP \
+                     <chunklink-chunks> \ <1>
+                     <training-data>*+ <2>
+_______________________________________________________________
+
+<1> the output of chunklink from the previous step.
+<2> the resulting training data file.
+--
+
+
+[[prepare_ptb_training_data]]
+Prepare Penn Treebank training data
++++++++++++++++++++++++++++++++++++
+Please refer to <<get_pos_training_data>> on <<get_ptb,how to obtain
+Penn Treebank corpus>>.
+
+//////////////////////////
+The version of Penn Treebank (PTB) that I ran contains ~2300
+treebanked files from the Wall Street Journal (WSJ) and I believe that
+is it is version 2.
+
+The folder contains some of the following file names:
+
+wsj/mrg/00/wsj_0001.mrg
+wsj/mrg/12/wsj_1231.mrg
+wsj/mrg/24/wsj_2454.mrg
+
+The size of the folder is:
+32.4MB (34,017,332 bytes)
+2,312 Files, 27 Folders
+//////////////////////////
+
+Preparing Penn Treebank data is similar to preparing GENIA data, as
+described in <<prepare_genia_chunk>>, except that the first step is
+not necessary.
+
+. Run chunklink:
++
+--
+____________________________________________________________________________
++*perl chunklink_2-2-2000_for_conll.pl -NHhftc <ptb-corpus>/wsj_????.mrg > \ <1>
+     <chunklink-chunks>*+ <2>
+____________________________________________________________________________
+
+<1> +<ptb-corpus>+ is your Penn Treebank corpus directory.
+<2> the redirected standard output.
+--
++
+. Run Chunklink2OpenNLP
++
+--
+____________________________________________________
++*java -cp <classpath> data.chunk.Chunklink2OpenNLP \
+                     <chunklink-chunks> \ <1>
+                     <training-data>*+ <2>
+____________________________________________________
+
+<1> the output of chunklink from the previous step.
+<2> the resulting training data file.
+--
+
+////////////////////
+The system output after the script finished was:
+2447 2448 2449 2450 2451 2452 2453 2454
+1173766 words processed
+////////////////////
+
+
+Build a model from your training data
++++++++++++++++++++++++++++++++++++++
+Building a chunker model is much easier than preparing the training
+data. After you have obtained training data, run the OpenNLP tool:
+
+__________________________________________________________
++*java -cp <classpath> opennlp.tools.chunker.ChunkerME \
+                     <training-data> \ <1>
+                     <model-name> \ <2>
+                     iterations \ <3>
+                     cutoff*+ <4>
+__________________________________________________________
+
+<1> an OpenNLP training data file.
+<2> the file name of the resulting model. The name should end with
+    either +.txt+ (for a plain text model) or +.bin.gz+ (for a
+    compressed binary model).
+<3> determines how many training iterations will be performed. The
+    default is 100.
+<4> determines the minimum number of times a feature has to be seen to
+    be considered for inclusion in the model. The default cutoff is 5.
+
+The iterations and cutoff arguments are, taken together, optional --
+i.e. you should provide both or provide neither.
+
+
+Analysis engines (annotators)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Chunker
++++++++
+- [[chunker_xml]] *Chunker.xml*
++
+The file +desc/Chunker.xml+ provides a descriptor for the Chunker
+analysis engine which is the UIMA component we have written that wraps
+the OpenNLP chunker. It calls ``edu.mayo.bmi.uima.chunker.Chunker'',
+whose Javadoc provides information on how to customize this descriptor.
++
+*Parameters*::
+ ModelFile;; the file that contains the chunker tagging model
+ ChunkerCreatorClass;; the full class name of an implementation of the interface edu.mayo.bmi.uima.chunker.ChunkerCreator
++
+- *ChunkerAggregate.xml*
++
+The file +desc/ChunkerAggregate.xml+ provides a descriptor that
+defines a pipeline for shallow parsing so that all the necessary
+inputs (e.g. tokens, sentences, and POS tags) have been added to the
+CAS. It inherits two parameters from +<<chunker_xml,Chunker.xml>>+ and
+three from +<<postagger_xml,POSTagger.xml>>+.
++
+- *ChunkerCPE.xml*
++
+--
+The file +desc/ChunkerCPE.xml+ provides an XML-specification of a
+collection processing engine (CPE). To run it:
+
+. Start UIMA CPE GUI.
++
+___________________________________________________________
++*java -cp {osp-cp} org.apache.uima.tools.cpm.CpmFrame*+
+___________________________________________________________
++
+. Open this file.
+. Set the parameters for the collection reader to point to a
+  local collection of files that you want shallow parsed.
+. Set the parameters for the Chunker as appropriate for your environment.
+. Set the output directory of the XCAS Writer CAS Consumer.
+
+The results of running the pipeline are written to the output
+directory as XCAS files. These files can be viewed in the CAS Visual
+Debugger.
+--
+
+Chunk adjuster
+++++++++++++++
+- *ChunkAdjuster.xml*
++
+Example of descriptor for the ChunkAdjuster.
++
+- *AdjustNounPhraseToIncludeFollowingNP.xml*
++
+Descriptor for the ChunkAdjuster, with parameters set so that
+consecutive noun phrase (NP) chunks are pseudo-merged -- the
+end-offset of the first NP is changed to match the end-offset of the
+last NP in a consecutive list of NPs.
++
+- *AdjustNounPhraseToIncludeFollowingPPNP.xml*
++
+Descriptor for the ChunkAdjuster, with parameters set so that a
+sequence of NP PP NP chunks are pseudo-merged -- the end-offset of the
+first NP is changed to match the end-offset of the last NP in NP PP
+NP.  This adjustment is applied repeatedly, so for a pattern of NP PP
+NP PP NP, the end offset for the first NP is set to match the end
+offset of the last NP.
+
