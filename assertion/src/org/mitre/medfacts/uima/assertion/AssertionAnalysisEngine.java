@@ -20,6 +20,8 @@
  * limitations under the License. 
  */
 
+// test comment
+
 package org.mitre.medfacts.uima.assertion;
 
 import java.io.File;
