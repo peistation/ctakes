@@ -88,6 +88,12 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         required = true)
     public File trainDirectory;
 
+    @Option(
+        name = "--test-dir",
+        usage = "specify the directory contraining the XMI testing files (for example, /NLP/Corpus/Relations/mipacq/xmi/test)",
+        required = false)
+    public File testDirectory;
+    
     @Option(name = "--grid-search", usage = "run a grid search to select the best parameters")
     public boolean gridSearch = false;
 
@@ -105,7 +111,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     Options options = new Options();
     options.parseOptions(args);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-
+    
     // define the output directory for models
     File modelsDir = options.runDegreeOf
         ? new File("models/degree_of")
@@ -155,16 +161,30 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           dataWriterFactoryClass,
           additionalParameters,
           trainingArguments);
-      List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
-      params.stats = AnnotationStatistics.addAll(foldStats);
+      
+      if(options.testDirectory == null) {
+      	// run n-fold cross-validation
+      	List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
+      	params.stats = AnnotationStatistics.addAll(foldStats);
+        
+      	System.err.println("overall:");
+        System.err.print(params.stats);
+        System.err.println(params.stats.confusions());
+        System.err.println();
 
-      System.err.println("overall:");
-      System.err.print(params.stats);
-      System.err.println(params.stats.confusions());
-      System.err.println();
-
-      // store these parameter settings
-      scoredParams.put(params, params.stats.f1());
+        // store these parameter settings
+        scoredParams.put(params, params.stats.f1());
+      } else {
+      	// train on the entire training set and evaluate on the test set
+      	List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
+      	
+      	CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
+      	evaluation.train(trainCollectionReader, modelsDir);
+      	
+      	CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
+      	AnnotationStatistics stats = evaluation.test(testCollectionReader, modelsDir);
+      	return;
+      }
     }
 
     // print parameters sorted by F1
