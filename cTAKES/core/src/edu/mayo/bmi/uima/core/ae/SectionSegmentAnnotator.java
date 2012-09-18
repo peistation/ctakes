@@ -121,6 +121,7 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 				segment.setEnd(index+content.length());
 				segment.setId(sct.getHeader());
 				segment.addToIndexes();
+				index = index + content.length();
 				//			DocumentSection section = 
 				//					new DocumentSection(startLine, endLine, content);
 				//			section.setSectionName(nodeName);
