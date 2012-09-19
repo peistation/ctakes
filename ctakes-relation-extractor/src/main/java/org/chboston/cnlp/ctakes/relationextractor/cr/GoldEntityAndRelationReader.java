@@ -121,9 +121,7 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 		Document document;
 		try {
 			document = builder.build(goldFile);
-		} catch (JDOMException e) {
-			throw new AnalysisEngineProcessException(e);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 

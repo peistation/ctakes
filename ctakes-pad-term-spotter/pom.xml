@@ -7,8 +7,12 @@
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
+
+	<properties>
+	<jcasgen.typesystem>desc/type_system/PADSiteAndTerm.xml</jcasgen.typesystem>
+	</properties>
+		
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -23,6 +27,10 @@
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup</artifactId>
+		</dependency>		
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
@@ -31,4 +39,19 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
+	
+		<build>
+		<plugins>
+			<!-- Invoke JCasGen on the type system (see properties above) -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

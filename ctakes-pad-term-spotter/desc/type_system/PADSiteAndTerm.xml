@@ -5,7 +5,7 @@
   <version>1.0</version>
   <vendor>Mayo</vendor>
   <imports>
-    <import location="../../../common-type-system/desc/common_type_system.xml"/>
+    <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
     <import location="SubSection.xml"/>
   </imports>
   <types>
