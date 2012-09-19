@@ -29,7 +29,11 @@
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-dictionary-lookup</artifactId>
-		</dependency>		
+		</dependency>	
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-ne-contexts</artifactId>
+		</dependency>			
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
