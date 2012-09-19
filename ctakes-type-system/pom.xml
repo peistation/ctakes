@@ -10,7 +10,7 @@
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 	<properties>
-		<jcasgen.typesystem>org/apache/ctakes/common_type_system.xml</jcasgen.typesystem>
+		<jcasgen.typesystem>desc/common_type_system.xml</jcasgen.typesystem>
 	</properties>
 	<dependencies>
 		<dependency>
