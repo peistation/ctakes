@@ -60,12 +60,12 @@
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.NonSmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.smoking.type.SmokingDocumentClassification</name>
@@ -87,7 +87,7 @@
     <typeDescription>
       <name>edu.mayo.bmi.uima.SmokingStatus.type.UnknownSmokerNamedEntityAnnotation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

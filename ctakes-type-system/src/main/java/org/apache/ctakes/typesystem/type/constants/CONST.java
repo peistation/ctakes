@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.core.type.constants;
+package org.apache.ctakes.typesystem.type.constants;
 /**
  * Contains a set of constants for feature values.
  * 

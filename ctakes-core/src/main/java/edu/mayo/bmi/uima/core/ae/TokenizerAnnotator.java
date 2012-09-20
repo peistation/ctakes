@@ -37,8 +37,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import edu.mayo.bmi.nlp.tokenizer.Token;
 import edu.mayo.bmi.nlp.tokenizer.Tokenizer;
 import edu.mayo.bmi.uima.core.resource.StringIntegerMapResource;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 
 /**

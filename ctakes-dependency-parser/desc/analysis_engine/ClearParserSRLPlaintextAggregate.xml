@@ -79,11 +79,11 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:normalizedForm</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:end</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:partOfSpeech</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:normalizedForm</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:tokenNumber</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:end</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:begin</feature>
                             </inputs>
                             <outputs/>
                             <languagesSupported/>
@@ -292,10 +292,10 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.WordToken</type>
                             </inputs>
                             <outputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.WordToken</type>
                             </outputs>
                             <languagesSupported/>
                         </capability>
@@ -371,10 +371,10 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Segment</type>
                             </inputs>
                             <outputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
                             </outputs>
                             <languagesSupported/>
                         </capability>
@@ -431,11 +431,11 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:end</feature>
-                                <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin</feature>
-                                <type>edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode</type>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:partOfSpeech</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:tokenNumber</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:end</feature>
+                                <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:begin</feature>
+                                <type>org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode</type>
                             </inputs>
                             <outputs/>
                             <languagesSupported/>
@@ -481,10 +481,10 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
                             </inputs>
                             <outputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
                             </outputs>
                             <languagesSupported/>
                         </capability>
@@ -550,7 +550,7 @@
                         <capability>
                             <inputs/>
                             <outputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Segment</type>
                             </outputs>
                             <languagesSupported/>
                         </capability>
@@ -622,11 +622,11 @@
                     <capabilities>
                         <capability>
                             <inputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
                             </inputs>
                             <outputs>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
                             </outputs>
                             <languagesSupported/>
                         </capability>

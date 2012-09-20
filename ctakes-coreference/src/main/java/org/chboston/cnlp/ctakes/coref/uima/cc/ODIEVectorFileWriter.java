@@ -63,7 +63,7 @@ import edu.mayo.bmi.coref.util.SvmUtils;
 import edu.mayo.bmi.coref.util.SvmVectorCreator;
 import edu.mayo.bmi.uima.core.resource.FileLocator;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.coref.type.MarkablePairSet;
 import edu.mayo.bmi.uima.coref.type.Markable;

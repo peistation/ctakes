@@ -37,7 +37,7 @@ import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 import edu.mayo.bmi.uima.core.util.DocumentSection;
 import findstruct.Section;

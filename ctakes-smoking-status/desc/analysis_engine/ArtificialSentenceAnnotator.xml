@@ -61,7 +61,7 @@
 <nameValuePair>
 <name>destObjClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+<string>org.apache.ctakes.typesystem.type.textspan.Sentence</string>
 </value>
 </nameValuePair>
 <nameValuePair>

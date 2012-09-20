@@ -27,9 +27,9 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-//import edu.mayo.bmi.uima.core.type.NamedEntity;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+//import org.apache.ctakes.typesystem.type.NamedEntity;
 import edu.mayo.bmi.uima.coref.type.Markable;
 
 public class AttributeCalculator {

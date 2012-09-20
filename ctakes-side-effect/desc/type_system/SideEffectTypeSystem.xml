@@ -35,12 +35,12 @@
         <featureDescription>
           <name>sideEffect</name>
           <description>side effect mention in NamedEntity</description>
-          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>drug</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>sentence</name>

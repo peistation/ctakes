@@ -31,8 +31,8 @@ import org.cleartk.classifier.feature.extractor.annotationpair.DistanceExtractor
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class NamedEntityFeaturesExtractor implements RelationFeaturesExtractor {
 

@@ -20,7 +20,7 @@ package edu.mayo.bmi.nlp.parser.util;
 
 import java.util.LinkedList;
 
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 
 public class DependencyPath extends LinkedList<ConllDependencyNode>{
 	

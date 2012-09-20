@@ -30,7 +30,7 @@ import edu.mayo.bmi.fsm.token.PunctuationToken;
 public class PunctuationTokenAdapter extends CharacterTokenAdapter implements
 		PunctuationToken
 {
-	public PunctuationTokenAdapter(edu.mayo.bmi.uima.core.type.syntax.PunctuationToken pta)
+	public PunctuationTokenAdapter(org.apache.ctakes.typesystem.type.syntax.PunctuationToken pta)
 	{
 		super(pta);
 	}

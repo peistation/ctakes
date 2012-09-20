@@ -50,7 +50,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import edu.mayo.bmi.uima.pad.type.PADHit;
 import edu.mayo.bmi.uima.pad.type.PADLocation;
 import edu.mayo.bmi.uima.pad.type.PADTerm;

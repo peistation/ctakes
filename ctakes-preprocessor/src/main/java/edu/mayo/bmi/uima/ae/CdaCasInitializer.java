@@ -42,10 +42,10 @@ import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
 import edu.mayo.bmi.uima.core.ci.TextModification;
 import edu.mayo.bmi.uima.core.ci.TextModifier;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.util.Pair;
-import edu.mayo.bmi.uima.core.type.util.Pairs;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.util.Pair;
+import org.apache.ctakes.typesystem.type.util.Pairs;
 
 
 /**

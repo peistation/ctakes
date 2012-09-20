@@ -25,13 +25,13 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import edu.mayo.bmi.uima.coref.type.Markable;
 
 public class AnaphoricityAttributeCalculator extends AttributeCalculator {

@@ -23,23 +23,23 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.syntax.ADJP;
-import edu.mayo.bmi.uima.core.type.syntax.ADVP;
-import edu.mayo.bmi.uima.core.type.syntax.CONJP;
-import edu.mayo.bmi.uima.core.type.syntax.INTJ;
-import edu.mayo.bmi.uima.core.type.syntax.LST;
-import edu.mayo.bmi.uima.core.type.syntax.NP;
-import edu.mayo.bmi.uima.core.type.syntax.O;
-import edu.mayo.bmi.uima.core.type.syntax.PP;
-import edu.mayo.bmi.uima.core.type.syntax.PRT;
-import edu.mayo.bmi.uima.core.type.syntax.SBAR;
-import edu.mayo.bmi.uima.core.type.syntax.UCP;
-import edu.mayo.bmi.uima.core.type.syntax.VP;
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.ADJP;
+import org.apache.ctakes.typesystem.type.syntax.ADVP;
+import org.apache.ctakes.typesystem.type.syntax.CONJP;
+import org.apache.ctakes.typesystem.type.syntax.INTJ;
+import org.apache.ctakes.typesystem.type.syntax.LST;
+import org.apache.ctakes.typesystem.type.syntax.NP;
+import org.apache.ctakes.typesystem.type.syntax.O;
+import org.apache.ctakes.typesystem.type.syntax.PP;
+import org.apache.ctakes.typesystem.type.syntax.PRT;
+import org.apache.ctakes.typesystem.type.syntax.SBAR;
+import org.apache.ctakes.typesystem.type.syntax.UCP;
+import org.apache.ctakes.typesystem.type.syntax.VP;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
 
 
 /**
- * This chunker creator creates annotations of type edu.mayo.bmi.uima.core.type.* and
+ * This chunker creator creates annotations of type org.apache.ctakes.typesystem.type.* and
  * sets the chunkType feature of the annotation to the passed in parameter chunkType. 
  * @author Philip
  * @see edu.mayo.bmi.uima.chunker.type

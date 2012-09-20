@@ -26,8 +26,8 @@ import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 /**
  * Features that capture punctuation marks between the two arguments.

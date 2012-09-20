@@ -33,10 +33,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 public class ContextAnnotatorTests {
 
@@ -63,7 +63,7 @@ public class ContextAnnotatorTests {
 		contextAnnotator.initialize(uimaContext);
 
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_LEFT_SCOPE_SIZE_PARAM, new Integer(8));
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
@@ -251,7 +251,7 @@ public class ContextAnnotatorTests {
 		contextAnnotator.initialize(uimaContext);
 
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_RIGHT_SCOPE_SIZE_PARAM, new Integer(4));
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
@@ -416,7 +416,7 @@ public class ContextAnnotatorTests {
 		ContextAnnotator contextAnnotator = new ContextAnnotator();
 		contextAnnotator.initialize(uimaContext);
 
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "edu.mayo.bmi.uima.core.type.syntax.BaseToken");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
 
 		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));

@@ -42,7 +42,7 @@ import edu.mayo.bmi.nlp.parser.ae.ClearParserDependencyParserAE;
 import edu.mayo.bmi.nlp.parser.ae.ClearParserSemanticRoleLabelerAE;
 import edu.mayo.bmi.nlp.parser.util.DependencyUtility;
 import edu.mayo.bmi.nlp.parser.util.SRLUtility;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * This class illustrates the pipeline needed to run the ClearParser dependency parser and SRL systems

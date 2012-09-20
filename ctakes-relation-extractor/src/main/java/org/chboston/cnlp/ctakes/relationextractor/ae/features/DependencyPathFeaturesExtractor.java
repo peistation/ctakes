@@ -26,8 +26,8 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
 
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class DependencyPathFeaturesExtractor implements RelationFeaturesExtractor {
 	

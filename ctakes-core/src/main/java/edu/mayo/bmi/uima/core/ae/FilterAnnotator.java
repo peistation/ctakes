@@ -33,7 +33,7 @@ import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 
 public class FilterAnnotator extends JCasAnnotator_ImplBase {
 	// TODO parameterize retainAttrTypeId = DISORDER_ANNOTATIONS = 2

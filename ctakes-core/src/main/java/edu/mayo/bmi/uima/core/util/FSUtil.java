@@ -35,7 +35,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class FSUtil {
 	

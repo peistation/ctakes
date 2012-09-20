@@ -21,7 +21,7 @@ package edu.mayo.bmi.uima.pad.impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.context.ContextHitConsumer;
 import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
 import edu.mayo.bmi.uima.context.ContextHit;

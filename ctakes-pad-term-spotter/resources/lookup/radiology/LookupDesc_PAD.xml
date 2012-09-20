@@ -52,7 +52,7 @@
 				<properties>
 					<property key="textMetaFields" value="1"/>
 					<property key="maxPermutationLevel" value="7"/>
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.Sentence"/>
+					<property key="windowAnnotations" value="org.apache.ctakes.typesystem.type.textspan.Sentence"/>
 				</properties>
 			</lookupInitializer>
 			<lookupConsumer className="edu.mayo.bmi.uima.pad.impl.PADTermConsumerImpl">
@@ -68,7 +68,7 @@
 				<properties>
 					<property key="textMetaFields" value="1"/>
 					<property key="maxPermutationLevel" value="7"/>
-					<property key="windowAnnotations" value="edu.mayo.bmi.uima.core.type.textspan.Sentence"/>
+					<property key="windowAnnotations" value="org.apache.ctakes.typesystem.type.textspan.Sentence"/>
 				</properties>
 			</lookupInitializer>
 			<lookupConsumer className="edu.mayo.bmi.uima.pad.impl.PADLocationConsumerImpl">

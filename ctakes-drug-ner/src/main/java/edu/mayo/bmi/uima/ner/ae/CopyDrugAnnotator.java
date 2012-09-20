@@ -127,8 +127,8 @@ public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
 	{
 		// iterate over source objects in JCas
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator srcObjItr = indexes.getAnnotationIndex(edu.mayo.bmi.uima.core.type.textspan.Segment.type).iterator();
-		edu.mayo.bmi.uima.core.type.textspan.Segment segment = null;
+		Iterator srcObjItr = indexes.getAnnotationIndex(org.apache.ctakes.typesystem.type.textspan.Segment.type).iterator();
+		org.apache.ctakes.typesystem.type.textspan.Segment segment = null;
 		
 		while (srcObjItr.hasNext())
 		{
@@ -145,7 +145,7 @@ public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
                 boolean segmentMissing = iv_skipSegmentsSet.isEmpty();
 				if (!segmentMissing){
 					Iterator getSkipSegs = iv_skipSegmentsSet.iterator();
-					segment = (edu.mayo.bmi.uima.core.type.textspan.Segment) srcObj;
+					segment = (org.apache.ctakes.typesystem.type.textspan.Segment) srcObj;
 					while (getSkipSegs.hasNext()  && !okayToSkip){
 						if (getSkipSegs.next().equals(segment.getId())){
 
@@ -172,9 +172,9 @@ public class CopyDrugAnnotator extends JCasAnnotator_ImplBase
 				if (okayToSkip) {
 					destObj.addToIndexes();
 				} else {
-					Iterator lookupWindows = FSUtil.getAnnotationsInSpanIterator(jcas, edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation.type, segment.getBegin(), segment.getEnd());
+					Iterator lookupWindows = FSUtil.getAnnotationsInSpanIterator(jcas, org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation.type, segment.getBegin(), segment.getEnd());
 					while (lookupWindows.hasNext()){
-						edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation lookup = (edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation) lookupWindows.next();
+						org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation lookup = (org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation) lookupWindows.next();
 						edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation drugLookup = new edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation(jcas, lookup.getBegin(), lookup.getEnd());
 						drugLookup.addToIndexes();
 					}

@@ -29,7 +29,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
 
 public class ChunkAdjusterTests {
 

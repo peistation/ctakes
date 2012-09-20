@@ -45,17 +45,17 @@ import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.refsem.Date;
-import edu.mayo.bmi.uima.core.type.refsem.MedicationStrength;
-import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.refsem.Date;
+import org.apache.ctakes.typesystem.type.refsem.MedicationStrength;
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.drugner.type.ChunkAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
-import edu.mayo.bmi.uima.core.type.util.Pair;
-import edu.mayo.bmi.uima.core.type.util.Pairs;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
+import org.apache.ctakes.typesystem.type.util.Pair;
+import org.apache.ctakes.typesystem.type.util.Pairs;
 //import edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation;
 import edu.mayo.bmi.uima.drugner.type.SubSectionAnnotation;
 

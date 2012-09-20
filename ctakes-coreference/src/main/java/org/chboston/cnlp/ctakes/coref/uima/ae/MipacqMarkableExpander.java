@@ -33,8 +33,8 @@ import org.chboston.cnlp.ctakes.coref.eval.helpers.Span;
 
 import edu.mayo.bmi.coref.util.FSIteratorToList;
 import edu.mayo.bmi.coref.util.MarkableTreeUtils;
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import edu.mayo.bmi.uima.coref.type.DemMarkable;
 import edu.mayo.bmi.uima.coref.type.Markable;
 import edu.mayo.bmi.uima.coref.type.NEMarkable;

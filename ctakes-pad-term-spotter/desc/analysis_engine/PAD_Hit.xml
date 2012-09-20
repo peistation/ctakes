@@ -122,7 +122,7 @@
 <nameValuePair>
 <name>DISTANCE_ANN_TYPE</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+<string>org.apache.ctakes.typesystem.type.textspan.Sentence</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -134,7 +134,7 @@
 <nameValuePair>
 <name>BACKUP_BOUNDARY_ANN_TYPE</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textspan.Segment</string>
+<string>org.apache.ctakes.typesystem.type.textspan.Segment</string>
 </value>
 </nameValuePair>
 <nameValuePair>

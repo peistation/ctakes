@@ -67,11 +67,11 @@ import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Ordering;
 
-import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
-import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 
 public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
 

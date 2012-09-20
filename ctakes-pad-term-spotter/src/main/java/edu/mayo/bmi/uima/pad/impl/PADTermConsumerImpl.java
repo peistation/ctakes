@@ -34,7 +34,7 @@ import org.apache.uima.jcas.cas.FSArray;
 
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import edu.mayo.bmi.uima.pad.type.PADTerm;
 
 public class PADTermConsumerImpl 

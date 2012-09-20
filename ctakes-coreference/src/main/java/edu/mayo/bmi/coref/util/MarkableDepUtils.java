@@ -22,9 +22,9 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 
 public class MarkableDepUtils {
 

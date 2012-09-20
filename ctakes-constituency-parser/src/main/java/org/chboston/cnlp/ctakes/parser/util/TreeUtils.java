@@ -4,8 +4,8 @@ import opennlp.tools.parser.Parse;
 
 import org.chboston.cnlp.util.SimpleTree;
 
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 
 import java.util.List;
 import java.util.ArrayList;

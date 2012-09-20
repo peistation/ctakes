@@ -36,13 +36,13 @@ import edu.mayo.bmi.lookup.algorithms.LookupAlgorithm;
 import edu.mayo.bmi.lookup.phrasebuilder.PhraseBuilder;
 import edu.mayo.bmi.lookup.phrasebuilder.VariantPhraseBuilderImpl;
 import edu.mayo.bmi.lookup.vo.LookupToken;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
+import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
 
 /**
  * @author Mayo Clinic

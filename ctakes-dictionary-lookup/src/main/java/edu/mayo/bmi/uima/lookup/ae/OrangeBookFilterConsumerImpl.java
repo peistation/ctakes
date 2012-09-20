@@ -39,11 +39,11 @@ import org.apache.uima.jcas.cas.FSArray;
 import edu.mayo.bmi.dictionary.MetaDataHit;
 import edu.mayo.bmi.lookup.vo.LookupHit;
 import edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource;
-import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.textsem.EventMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention;
-import edu.mayo.bmi.uima.core.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 
 /**
  * Implementation that takes Rxnorm dictionary lookup hits and stores only the

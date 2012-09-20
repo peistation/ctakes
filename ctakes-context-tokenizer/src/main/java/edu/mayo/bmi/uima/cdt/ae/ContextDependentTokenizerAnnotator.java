@@ -56,20 +56,20 @@ import edu.mayo.bmi.uima.core.fsm.adapters.NewlineTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.PunctuationTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.SymbolTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.WordTokenAdapter;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.syntax.NumToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textsem.DateAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.FractionAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.MeasurementAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.PersonTitleAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.RangeAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation;
-import edu.mayo.bmi.uima.core.type.textsem.TimeAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
+import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
+import org.apache.ctakes.typesystem.type.syntax.NumToken;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.textsem.DateAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.FractionAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.PersonTitleAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.RangeAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.TimeAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * Finds tokens based on context.
@@ -110,7 +110,7 @@ public class ContextDependentTokenizerAnnotator extends JCasAnnotator_ImplBase {
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
 			Iterator<?> sentItr = indexes.getAnnotationIndex(Sentence.type).iterator();
 			AnnotationIndex baseTokenIndex = jcas.getJFSIndexRepository().getAnnotationIndex(
-					edu.mayo.bmi.uima.core.type.syntax.BaseToken.type);
+					org.apache.ctakes.typesystem.type.syntax.BaseToken.type);
 			
 			while (sentItr.hasNext()) {
 				Sentence sentAnnot = (Sentence) sentItr.next();
@@ -120,7 +120,7 @@ public class ContextDependentTokenizerAnnotator extends JCasAnnotator_ImplBase {
 				// machines
 				List<BaseToken> baseTokenList = new ArrayList<BaseToken>();
 				while (btaItr.hasNext()) {
-					edu.mayo.bmi.uima.core.type.syntax.BaseToken bta = (edu.mayo.bmi.uima.core.type.syntax.BaseToken) btaItr
+					org.apache.ctakes.typesystem.type.syntax.BaseToken bta = (org.apache.ctakes.typesystem.type.syntax.BaseToken) btaItr
 							.next();
 					baseTokenList.add(adaptToBaseToken(bta));
 				}
@@ -202,7 +202,7 @@ public class ContextDependentTokenizerAnnotator extends JCasAnnotator_ImplBase {
 	 * @param obj
 	 * @return
 	 */
-	private BaseToken adaptToBaseToken(edu.mayo.bmi.uima.core.type.syntax.BaseToken obj) throws Exception {
+	private BaseToken adaptToBaseToken(org.apache.ctakes.typesystem.type.syntax.BaseToken obj) throws Exception {
 		if (obj instanceof WordToken) {
 			WordToken wta = (WordToken) obj;
 			return new WordTokenAdapter(wta);

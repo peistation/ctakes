@@ -37,8 +37,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**

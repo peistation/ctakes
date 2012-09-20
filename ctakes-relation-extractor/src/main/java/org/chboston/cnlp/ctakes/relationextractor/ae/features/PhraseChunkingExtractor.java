@@ -25,9 +25,9 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 	  

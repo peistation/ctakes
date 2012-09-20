@@ -46,7 +46,7 @@ import org.apache.uima.util.ProgressImpl;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
 import edu.mayo.bmi.uima.core.resource.JdbcConnectionResource;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 
 /**
  * Collection Reader that pulls documents to be processed from a database.

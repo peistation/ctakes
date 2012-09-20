@@ -137,13 +137,13 @@
       <description>For subiterator</description>
       <version>1.0</version>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.textspan.Segment</type>
-        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+        <type>org.apache.ctakes.typesystem.type.textspan.Segment</type>
+        <type>org.apache.ctakes.typesystem.type.textspan.Sentence</type>
+        <type>org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
       </priorityList>
       <priorityList>
-        <type>edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
-        <type>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
+        <type>org.apache.ctakes.typesystem.type.textspan.Sentence</type>
+        <type>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</type>
       </priorityList>
     </typePriorities>
     <fsIndexCollection/>
@@ -151,48 +151,48 @@
       <capability>
         <inputs/>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.NewlineToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.VP</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.refsem.UmlsConcept</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.UCP</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.TimeAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.SymbolToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspanSegment</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.SBAR</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RangeAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PunctuationToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Property</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.Properties</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.PersonTitleAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PRT</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.PP</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.OntologyConcept</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.NumToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.MeasurementAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.NewlineToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.WordToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.VP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.refsem.UmlsConcept</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.UCP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.TimeAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.SymbolToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspanSegment</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.SBAR</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RangeAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PunctuationToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.Property</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.Properties</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.PersonTitleAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PRT</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.OntologyConcept</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.NumToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Lemma</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.LST</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.INTJ</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.FractionAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.structured.DocumentID</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.Lemma</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.LST</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.INTJ</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.FractionAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.structured.DocumentID</type>
           <type allAnnotatorFeatures="true">uima.tcas.DocumentAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.DateAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopySrcAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopyDestAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.ContractionToken</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.ContextAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Chunk</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.CONJP</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.DateAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopySrcAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopyDestAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.ContractionToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.ContextAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.Chunk</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.CONJP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
           <type allAnnotatorFeatures="true">uima.cas.AnnotationBase</type>
           <type allAnnotatorFeatures="true">uima.tcas.Annotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.ADVP</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.ADJP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.ADVP</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.ADJP</type>
         </outputs>
         <languagesSupported/>
       </capability>

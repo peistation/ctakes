@@ -57,7 +57,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import edu.mayo.bmi.uima.core.cr.FilesInDirectoryCollectionReader;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 

@@ -30,9 +30,9 @@ import edu.mayo.bmi.uima.core.ae.TokenizerAnnotator;
  */
 public class WordTokenAdapter extends TextTokenAdapter implements WordToken
 {
-	private edu.mayo.bmi.uima.core.type.syntax.WordToken iv_wta;
+	private org.apache.ctakes.typesystem.type.syntax.WordToken iv_wta;
 
-	public WordTokenAdapter(edu.mayo.bmi.uima.core.type.syntax.WordToken wta)
+	public WordTokenAdapter(org.apache.ctakes.typesystem.type.syntax.WordToken wta)
 	{
 		super(wta);
 		iv_wta = wta;

@@ -48,7 +48,7 @@
       <capability>
         <inputs/>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.Segment</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.Segment</type>
         </outputs>
         <languagesSupported/>
       </capability>

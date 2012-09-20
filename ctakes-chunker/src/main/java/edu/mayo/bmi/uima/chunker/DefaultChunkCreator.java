@@ -23,13 +23,13 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
 
 /**
  * This chunker creator simply creates annotations of type edu.mayo.bmi.chunker.type.Chunk and
  * sets the chunkType feature of the annotation to the passed in parameter chunkType.  
  * @author Philip
- * @see edu.mayo.bmi.uima.core.type.Chunk
+ * @see org.apache.ctakes.typesystem.type.Chunk
  */
 public class DefaultChunkCreator implements ChunkCreator {
 

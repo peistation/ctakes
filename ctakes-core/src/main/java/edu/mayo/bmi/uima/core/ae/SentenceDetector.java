@@ -43,8 +43,8 @@ import edu.mayo.bmi.uima.core.resource.MaxentModelResource;
 import edu.mayo.bmi.uima.core.sentence.EndOfSentenceScannerImpl;
 import edu.mayo.bmi.uima.core.sentence.SentenceDetectorCtakes;
 import edu.mayo.bmi.uima.core.sentence.SentenceSpan;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.ParamUtil;
 
 /**

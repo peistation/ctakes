@@ -30,12 +30,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NumToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
+import org.apache.ctakes.typesystem.type.syntax.NumToken;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
 
 public class TokenizerAnnotatorPTBTests {
 

@@ -43,7 +43,7 @@
 <nameValuePair>
 <name>NormalizedTokenClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+<string>org.apache.ctakes.typesystem.type.syntax.BaseToken</string>
 </value>
 </nameValuePair>
 <nameValuePair>

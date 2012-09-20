@@ -43,7 +43,7 @@ import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.uima.core.cc.NonTerminalConsumer;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import edu.mayo.bmi.uima.pad.type.PADHit;
 import edu.mayo.bmi.uima.pad.type.PADLocation;
 import edu.mayo.bmi.uima.pad.type.PADTerm;

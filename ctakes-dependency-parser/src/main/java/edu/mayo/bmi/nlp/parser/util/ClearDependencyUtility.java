@@ -27,11 +27,11 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import clear.dep.DepNode;
 import clear.dep.DepTree;
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.Predicate;
-import edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textsem.Predicate;
+import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * @author m081914

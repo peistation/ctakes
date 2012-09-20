@@ -59,7 +59,7 @@
           <type allAnnotatorFeatures="true">uima.tt.NPListAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.NPAnnotation</type>
           <type allAnnotatorFeatures="true">uima.tt.CNPAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Segment</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Segment</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.chunker.type.NP</type>
         </inputs>
         <outputs>

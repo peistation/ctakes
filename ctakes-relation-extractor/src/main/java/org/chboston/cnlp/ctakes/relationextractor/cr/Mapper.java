@@ -18,7 +18,7 @@
  */
 package org.chboston.cnlp.ctakes.relationextractor.cr;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 
 /**
  * Map various category names to their ctakes integer id. 

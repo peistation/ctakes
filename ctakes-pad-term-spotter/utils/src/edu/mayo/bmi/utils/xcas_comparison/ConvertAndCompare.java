@@ -31,7 +31,7 @@ public class ConvertAndCompare {
 		Hashtable<String, String> map = new Hashtable<String, String>();
 		map.put("edu.mayo.bmi.uima.common.type.DocumentID",
 				"edu.mayo.bmi.uima.common.types.DocumentIDAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.LookupWindowAnnotation",
+		map.put("org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation",
 				"edu.mayo.bmi.uima.lookup.types.LookupWindowAnnotation");
 //		Specify your mappings here
 /*		map.put("",
@@ -75,25 +75,25 @@ public class ConvertAndCompare {
 				"edu.mayo.bmi.uima.cdt.types.MeasurementAnnotation");
 		map.put("edu.mayo.bmi.uima.cdt.type.PersonTitleAnnotation",
 				"edu.mayo.bmi.uima.cdt.types.PersonTitleAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.Segment",
+		map.put("org.apache.ctakes.typesystem.type.textspan.Segment",
 				"edu.mayo.bmi.uima.common.types.SegmentAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textspan.Sentence",
+		map.put("org.apache.ctakes.typesystem.type.textspan.Sentence",
 				"edu.mayo.bmi.uima.common.types.SentenceAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.syntax.WordToken",
+		map.put("org.apache.ctakes.typesystem.type.syntax.WordToken",
 				"edu.mayo.bmi.uima.common.types.WordTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.NumToken",
+		map.put("org.apache.ctakes.typesystem.type.NumToken",
 				"edu.mayo.bmi.uima.common.types.NumTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.PunctuationToken",
+		map.put("org.apache.ctakes.typesystem.type.PunctuationToken",
 				"edu.mayo.bmi.uima.common.types.PunctTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.SymbolToken",
+		map.put("org.apache.ctakes.typesystem.type.SymbolToken",
 				"edu.mayo.bmi.uima.common.types.SymbolTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.NewlineToken",
+		map.put("org.apache.ctakes.typesystem.type.NewlineToken",
 				"edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation",
+		map.put("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation",
 				"edu.mayo.bmi.uima.common.types.NamedEntityAnnotation");
-		map.put("edu.mayo.bmi.uima.core.type.UmlsConcept",
+		map.put("org.apache.ctakes.typesystem.type.UmlsConcept",
 				"edu.mayo.bmi.uima.common.types.UmlsConcept");
-		map.put("edu.mayo.bmi.uima.core.type.OntologyConcept",
+		map.put("org.apache.ctakes.typesystem.type.OntologyConcept",
 				"edu.mayo.bmi.uima.common.types.OntologyConcept");
 
 //		Prepare the list of attributes to ignore when comparing elements

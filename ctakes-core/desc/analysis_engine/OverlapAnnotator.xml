@@ -98,13 +98,13 @@ selector=A or B or BOTH</description>
 <nameValuePair>
 <name>A_ObjectClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+<string>org.apache.ctakes.typesystem.type.syntax.BaseToken</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>B_ObjectClass</name>
 <value>
-<string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+<string>org.apache.ctakes.typesystem.type.textspan.Sentence</string>
 </value>
 </nameValuePair>
 <nameValuePair>

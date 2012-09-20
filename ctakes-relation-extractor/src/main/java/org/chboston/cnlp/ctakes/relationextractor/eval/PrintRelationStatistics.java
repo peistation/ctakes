@@ -37,8 +37,8 @@ import org.uimafit.util.JCasUtil;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
-import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 
 public class PrintRelationStatistics {
 

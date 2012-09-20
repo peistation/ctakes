@@ -58,14 +58,14 @@ import edu.mayo.bmi.uima.core.fsm.adapters.SymbolTokenAdapter;
 import edu.mayo.bmi.uima.core.fsm.adapters.WordTokenAdapter;
 import edu.mayo.bmi.fsm.token.BaseToken;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.ContractionToken;
-import edu.mayo.bmi.uima.core.type.syntax.NumToken;
-import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
-import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
+import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
+import org.apache.ctakes.typesystem.type.syntax.NumToken;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
 import edu.mayo.bmi.uima.core.util.FSUtil;
 import edu.mayo.bmi.uima.pad.type.SubSection;
 
@@ -112,10 +112,10 @@ public class SubSectionAnnotator extends JCasAnnotator_ImplBase {
 	private void createSubSections(JCas jcas) throws Exception {
 		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
 		Iterator<?> subSectItr = indexes.getAnnotationIndex(
-				edu.mayo.bmi.uima.core.type.syntax.BaseToken.type).iterator();
+				org.apache.ctakes.typesystem.type.syntax.BaseToken.type).iterator();
 		List<BaseToken> baseTokenList = new ArrayList<BaseToken>();
 		while (subSectItr.hasNext()) {
-			edu.mayo.bmi.uima.core.type.syntax.BaseToken bta = (edu.mayo.bmi.uima.core.type.syntax.BaseToken) subSectItr
+			org.apache.ctakes.typesystem.type.syntax.BaseToken bta = (org.apache.ctakes.typesystem.type.syntax.BaseToken) subSectItr
 					.next();
 			baseTokenList.add(adaptToBaseToken(bta));
 		}
@@ -222,12 +222,12 @@ public class SubSectionAnnotator extends JCasAnnotator_ImplBase {
 									Iterator<?> baseItr = FSUtil
 											.getAnnotationsInSpanIterator(
 													jcas,
-													edu.mayo.bmi.uima.core.type.syntax.BaseToken.type,
+													org.apache.ctakes.typesystem.type.syntax.BaseToken.type,
 													sentenceAnnotation.getEnd(),
 													subsectionNext
 															.getStartOffset() - 1);
 									while (baseItr.hasNext()) {
-										edu.mayo.bmi.uima.core.type.syntax.BaseToken checkToken = (edu.mayo.bmi.uima.core.type.syntax.BaseToken) baseItr
+										org.apache.ctakes.typesystem.type.syntax.BaseToken checkToken = (org.apache.ctakes.typesystem.type.syntax.BaseToken) baseItr
 												.next();
 										if ((checkToken instanceof NewlineToken)
 												|| (checkToken instanceof SymbolToken))
@@ -468,7 +468,7 @@ public class SubSectionAnnotator extends JCasAnnotator_ImplBase {
 
 	}
 
-	private BaseToken adaptToBaseToken(edu.mayo.bmi.uima.core.type.syntax.BaseToken bta)
+	private BaseToken adaptToBaseToken(org.apache.ctakes.typesystem.type.syntax.BaseToken bta)
 			throws Exception {
 		if (bta instanceof WordToken) {
 			WordToken wta = (WordToken) bta;

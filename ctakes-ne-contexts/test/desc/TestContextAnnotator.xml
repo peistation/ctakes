@@ -111,19 +111,19 @@
       <nameValuePair>
         <name>WindowAnnotationClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.textspan.Sentence</string>
+          <string>org.apache.ctakes.typesystem.type.textspan.Sentence</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>FocusAnnotationClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+          <string>org.apache.ctakes.typesystem.type.syntax.BaseToken</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>ContextAnnotationClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.syntax.BaseToken</string>
+          <string>org.apache.ctakes.typesystem.type.syntax.BaseToken</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -142,8 +142,8 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.context.type.ContextAnnotation</type>

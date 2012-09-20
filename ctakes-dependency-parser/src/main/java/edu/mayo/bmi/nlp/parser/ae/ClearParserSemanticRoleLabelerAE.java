@@ -46,12 +46,12 @@ import clear.dep.srl.SRLHead;
 import clear.morph.MorphEnAnalyzer;
 import clear.parse.AbstractSRLParser;
 import clear.reader.AbstractReader;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.textsem.Predicate;
-import edu.mayo.bmi.uima.core.type.textsem.SemanticArgument;
-import edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textsem.Predicate;
+import org.apache.ctakes.typesystem.type.textsem.SemanticArgument;
+import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import edu.mayo.bmi.uima.core.util.ListFactory;
 
 /**
@@ -72,11 +72,11 @@ import edu.mayo.bmi.uima.core.util.ListFactory;
  */
 @TypeCapability(
 		inputs = { 
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:end",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin",
-				"edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode"
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:partOfSpeech",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:tokenNumber",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:end",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:begin",
+				"org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode"
 		})
 public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
 

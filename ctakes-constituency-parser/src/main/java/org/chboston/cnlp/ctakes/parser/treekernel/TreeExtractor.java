@@ -24,9 +24,9 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.chboston.cnlp.util.SimpleTree;
 
-import edu.mayo.bmi.uima.core.type.syntax.TerminalTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 
 /*
  * This class extracts tree relations between two nodes in a tree (or from 2 separate trees).

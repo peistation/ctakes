@@ -75,5 +75,5 @@ The parameters are:
   LemmaCacheFileFrequencyCutoff - 
 
 Note: as distributed, PostLemmas is set to false.  This is done to reduce the size of the CAS.
-Set PostLemmas to true to have edu.mayo.bmi.uima.core.type.Lemma annotations added to the CAS. 
+Set PostLemmas to true to have org.apache.ctakes.typesystem.type.Lemma annotations added to the CAS. 
 

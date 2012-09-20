@@ -28,7 +28,7 @@ import java.util.Set;
 
 import org.apache.uima.jcas.JCas;
 
-import edu.mayo.bmi.uima.core.type.refsem.Date;
+import org.apache.ctakes.typesystem.type.refsem.Date;
 
 public class DateParser {
 

@@ -26,7 +26,7 @@
 <vendor></vendor>
 <types>
 <typeDescription>
-<name>edu.mayo.bmi.uima.core.type.textspan.Sentence</name>
+<name>org.apache.ctakes.typesystem.type.textspan.Sentence</name>
 <description></description>
 <supertypeName>uima.tcas.Annotation</supertypeName>
 <features>

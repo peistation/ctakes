@@ -45,7 +45,7 @@ import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 
 public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
 

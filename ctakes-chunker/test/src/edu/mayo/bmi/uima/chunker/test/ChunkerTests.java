@@ -29,19 +29,19 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
 import edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator;
-import edu.mayo.bmi.uima.core.type.syntax.ADJP;
-import edu.mayo.bmi.uima.core.type.syntax.ADVP;
-import edu.mayo.bmi.uima.core.type.syntax.CONJP;
-import edu.mayo.bmi.uima.core.type.syntax.INTJ;
-import edu.mayo.bmi.uima.core.type.syntax.LST;
-import edu.mayo.bmi.uima.core.type.syntax.NP;
-import edu.mayo.bmi.uima.core.type.syntax.PP;
-import edu.mayo.bmi.uima.core.type.syntax.PRT;
-import edu.mayo.bmi.uima.core.type.syntax.SBAR;
-import edu.mayo.bmi.uima.core.type.syntax.UCP;
-import edu.mayo.bmi.uima.core.type.syntax.VP;
+import org.apache.ctakes.typesystem.type.syntax.ADJP;
+import org.apache.ctakes.typesystem.type.syntax.ADVP;
+import org.apache.ctakes.typesystem.type.syntax.CONJP;
+import org.apache.ctakes.typesystem.type.syntax.INTJ;
+import org.apache.ctakes.typesystem.type.syntax.LST;
+import org.apache.ctakes.typesystem.type.syntax.NP;
+import org.apache.ctakes.typesystem.type.syntax.PP;
+import org.apache.ctakes.typesystem.type.syntax.PRT;
+import org.apache.ctakes.typesystem.type.syntax.SBAR;
+import org.apache.ctakes.typesystem.type.syntax.UCP;
+import org.apache.ctakes.typesystem.type.syntax.VP;
 import edu.mayo.bmi.uima.core.test.TestUtil;
-import edu.mayo.bmi.uima.core.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
 
 public class ChunkerTests {
 

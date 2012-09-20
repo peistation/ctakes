@@ -34,7 +34,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**

@@ -36,10 +36,10 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textspan.Sentence</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
 </outputs>
 <languagesSupported/>
 </capability>

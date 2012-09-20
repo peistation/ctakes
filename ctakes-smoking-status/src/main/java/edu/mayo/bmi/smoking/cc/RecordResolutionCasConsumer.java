@@ -36,7 +36,7 @@ import org.apache.uima.util.ProcessTrace;
 
 import edu.mayo.bmi.smoking.patientLevel.PatientLevelSmokingStatus;
 import edu.mayo.bmi.smoking.type.SmokingDocumentClassification;
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 
 public class RecordResolutionCasConsumer extends CasConsumer_ImplBase
 {

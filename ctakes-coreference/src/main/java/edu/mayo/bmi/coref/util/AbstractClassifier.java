@@ -29,7 +29,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.resource.ResourceAccessException;
 
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 
 public class AbstractClassifier {
 

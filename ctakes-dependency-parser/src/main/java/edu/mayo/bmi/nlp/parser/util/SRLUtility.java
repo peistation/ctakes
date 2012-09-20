@@ -21,8 +21,8 @@ package edu.mayo.bmi.nlp.parser.util;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.textsem.Predicate;
-import edu.mayo.bmi.uima.core.type.textsem.SemanticRoleRelation;
+import org.apache.ctakes.typesystem.type.textsem.Predicate;
+import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
 
 public class SRLUtility {
 	public static String dumpSRLOutput(Annotation annotation) {

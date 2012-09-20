@@ -31,7 +31,7 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 
 /**
  * Calculate relation frequencies in a data set that consists of XML files exported from Knowtator.

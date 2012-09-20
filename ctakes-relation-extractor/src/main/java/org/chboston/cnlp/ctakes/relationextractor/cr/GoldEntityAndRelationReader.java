@@ -38,11 +38,11 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 
-import edu.mayo.bmi.uima.core.type.constants.CONST;
-import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
-import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import edu.mayo.bmi.uima.core.util.DocumentIDAnnotationUtil;
 
 /**

@@ -61,11 +61,11 @@
         <capabilities>
             <capability>
                 <inputs>
-                    <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech</feature>
-                    <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber</feature>
-                    <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:end</feature>
-                    <feature>edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin</feature>
-                    <type>edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode</type>
+                    <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:partOfSpeech</feature>
+                    <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:tokenNumber</feature>
+                    <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:end</feature>
+                    <feature>org.apache.ctakes.typesystem.type.syntax.BaseToken:begin</feature>
+                    <type>org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode</type>
                 </inputs>
                 <outputs/>
                 <languagesSupported/>

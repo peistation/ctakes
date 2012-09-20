@@ -40,9 +40,9 @@ import clear.dep.DepTree;
 import clear.morph.MorphEnAnalyzer;
 import clear.parse.AbstractDepParser;
 import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * <br>
@@ -61,11 +61,11 @@ import edu.mayo.bmi.uima.core.type.textspan.Sentence;
  */
 @TypeCapability(
 		inputs = { 
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:partOfSpeech",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:normalizedForm",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:tokenNumber",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:end",
-				"edu.mayo.bmi.uima.core.type.syntax.BaseToken:begin"
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:partOfSpeech",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:normalizedForm",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:tokenNumber",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:end",
+				"org.apache.ctakes.typesystem.type.syntax.BaseToken:begin"
 		})
 public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 

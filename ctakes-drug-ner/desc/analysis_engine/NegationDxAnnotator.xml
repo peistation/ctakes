@@ -122,7 +122,7 @@
 <capability>
 <inputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.types.NamedEntityAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
 <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ctx.types.ContextAnnotation</type>

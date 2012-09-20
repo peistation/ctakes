@@ -26,7 +26,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 
 public class DependencyParseUtils {
 

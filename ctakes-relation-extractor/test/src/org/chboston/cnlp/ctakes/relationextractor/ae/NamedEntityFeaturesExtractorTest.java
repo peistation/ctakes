@@ -28,7 +28,7 @@ import org.cleartk.classifier.Feature;
 import org.junit.Test;
 import org.uimafit.factory.JCasFactory;
 
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 
 public class NamedEntityFeaturesExtractorTest {
 

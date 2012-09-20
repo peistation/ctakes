@@ -23,7 +23,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.cas.TOP;
 
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 
 public class DocumentIDAnnotationUtil 
 {

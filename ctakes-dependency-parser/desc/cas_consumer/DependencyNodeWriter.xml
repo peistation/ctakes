@@ -73,7 +73,7 @@ The default is CONLL-x tab-delimited format, with underscores for empty fields. 
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.DocumentID</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.DocumentID</type>
         </inputs>
         <outputs/>
         <inputSofas>

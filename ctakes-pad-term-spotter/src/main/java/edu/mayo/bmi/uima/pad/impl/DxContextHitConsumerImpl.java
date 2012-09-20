@@ -24,8 +24,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 import edu.mayo.bmi.uima.context.ContextHit;
 import edu.mayo.bmi.uima.context.ContextHitConsumer;
 import edu.mayo.bmi.uima.context.NamedEntityContextHitConsumer;
-import edu.mayo.bmi.uima.core.type.refsem.Element;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.refsem.Element;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 /**
  * @author Mayo Clinic

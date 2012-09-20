@@ -16,7 +16,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.ProcessTrace;
 
-import edu.mayo.bmi.uima.core.type.syntax.TopTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 
 public class ParserTreeWriterConsumer extends CasConsumer_ImplBase {
 

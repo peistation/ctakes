@@ -40,8 +40,8 @@ import edu.mayo.bmi.smoking.Const;
 import edu.mayo.bmi.uima.SmokingStatus.type.NonSmokerNamedEntityAnnotation;
 import edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation;
 import edu.mayo.bmi.uima.core.resource.FileResource;
-import edu.mayo.bmi.uima.core.type.syntax.WordToken;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
 
 /**

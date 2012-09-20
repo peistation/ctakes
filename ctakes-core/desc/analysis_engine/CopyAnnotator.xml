@@ -55,13 +55,13 @@
       <nameValuePair>
         <name>srcObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.syntax.WordToken</string>
+          <string>org.apache.ctakes.typesystem.type.syntax.WordToken</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>destObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.core.type.CopyDestAnnotation</string>
+          <string>org.apache.ctakes.typesystem.type.CopyDestAnnotation</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -80,12 +80,12 @@
       </imports>
       <types>
         <typeDescription>
-          <name>edu.mayo.bmi.uima.core.type.CopySrcAnnotation</name>
+          <name>org.apache.ctakes.typesystem.type.CopySrcAnnotation</name>
           <description>Used for testing CopyAnnotator.</description>
           <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
         <typeDescription>
-          <name>edu.mayo.bmi.uima.core.type.CopyDestAnnotation</name>
+          <name>org.apache.ctakes.typesystem.type.CopyDestAnnotation</name>
           <description>Used for testing CopyAnnotator.</description>
           <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
@@ -94,10 +94,10 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopySrcAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopySrcAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.CopyDestAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopyDestAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>

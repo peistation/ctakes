@@ -32,7 +32,7 @@
     <typeDescription>
       <name>edu.mayo.bmi.uima.pad.type.PADTerm</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
         <featureDescription>
           <name>hitDictionaryValue</name>
@@ -56,7 +56,7 @@ Valid values are 0 and 1. Where, 0 is false (not standalone) and 1 is true (is s
     <typeDescription>
       <name>edu.mayo.bmi.uima.pad.type.PADLocation</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
         <featureDescription>
           <name>hitDictionaryValue</name>
@@ -83,7 +83,7 @@ Valid values are 0 and 1. Where, 0 is false (not standalone) and 1 is true (is s
 Term (in the case of a stand alone term)
 Term + Location
 Location + term</description>
-      <supertypeName>edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation</supertypeName>
+      <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
         <featureDescription>
           <name>uaTerm</name>

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import clear.dep.DepLib;
 import clear.dep.DepNode;
 import clear.ftr.FtrLib;
-import edu.mayo.bmi.uima.core.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 
 /**
  * @author m081914

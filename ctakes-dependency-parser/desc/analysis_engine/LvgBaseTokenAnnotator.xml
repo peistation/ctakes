@@ -216,10 +216,10 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.WordToken</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.WordToken</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.WordToken</type>
         </outputs>
         <languagesSupported/>
       </capability>

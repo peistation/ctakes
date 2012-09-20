@@ -50,10 +50,10 @@ import org.uimafit.util.JCasUtil;
 import com.google.common.base.Objects;
 import com.google.common.io.Files;
 
-import edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation;
-import edu.mayo.bmi.uima.core.type.relation.RelationArgument;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String> {
 

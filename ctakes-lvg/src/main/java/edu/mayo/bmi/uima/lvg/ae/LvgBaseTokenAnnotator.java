@@ -18,9 +18,9 @@
  */
 package edu.mayo.bmi.uima.lvg.ae;
 
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.syntax.Lemma;
-import edu.mayo.bmi.uima.core.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.Lemma;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import edu.mayo.bmi.uima.core.util.ListFactory;
 import edu.mayo.bmi.uima.lvg.resource.LvgCmdApiResource;
 import gov.nih.nlm.nls.lvg.Api.LvgCmdApi;

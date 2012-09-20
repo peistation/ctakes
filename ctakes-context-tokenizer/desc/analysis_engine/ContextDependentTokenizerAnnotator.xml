@@ -36,12 +36,12 @@
 <capability>
 <inputs/>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.TimeAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RomanNumeralAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.RangeAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.PersonTitleAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.MeasurementAnnotation</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.FractionAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.TimeAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RangeAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.PersonTitleAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.FractionAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>
