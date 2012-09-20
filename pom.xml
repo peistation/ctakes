@@ -37,10 +37,10 @@
 		<module>ctakes-lvg</module>
 		<module>ctakes-ne-contexts</module>
 		<module>ctakes-constituency-parser</module>
-		<module>ctakes-coreference</module>		
+		<module>ctakes-coreference</module>
 		<module>ctakes-drug-ner</module>
 		<module>ctakes-side-effect</module>
-		<module>ctakes-smoking-status</module>		
+		<module>ctakes-smoking-status</module>
 		<module>ctakes-dependency-parser</module>
 		<module>ctakes-relation-extractor</module>
 		<module>ctakes-clinical-pipeline</module>
@@ -58,7 +58,7 @@
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>ctakes-utils</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>ctakes-core</artifactId>
@@ -88,7 +88,7 @@
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>ctakes-lvg</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
@@ -102,21 +102,21 @@
 					ctakes-ne-contexts
 				</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
 					ctakes-constituency-parser
 				</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>	
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
 					ctakes-coreference
 				</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>						
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
@@ -137,14 +137,14 @@
 					ctakes-smoking-status
 				</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>		
+			</dependency>
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
 					ctakes-relation-extractor
 				</artifactId>
 				<version>${ctakes.version}</version>
-			</dependency>						
+			</dependency>
 			<!-- cTAKES third party dependency versions -->
 			<dependency>
 				<groupId>jdom</groupId>
@@ -286,8 +286,19 @@
 				<plugin>
 					<groupId>com.mycila.maven-license-plugin</groupId>
 					<artifactId>maven-license-plugin</artifactId>
+					<version>1.9.0</version>
 					<configuration>
 						<header>license_header.txt</header>
+						<excludes>
+							<!-- We're disabling .txt files for now because some Annotators may 
+								not be able to handle standard comments in text files. This may break name 
+								values pairs such as stopWords.txt -->
+							<exclude>to-be-deleted-icTAKES/**</exclude>
+							<exclude>**.txt</exclude>
+						</excludes>
+						<useDefaultMapping>false</useDefaultMapping>
+						<quiet>false</quiet>
+						<failIfMissing>false</failIfMissing>
 						<mapping>
 							<java>JAVADOC_STYLE</java>
 							<groovy>JAVADOC_STYLE</groovy>
@@ -303,10 +314,6 @@
 							<apt>DOUBLETILDE_STYLE</apt>
 							<properties>SCRIPT_STYLE</properties>
 							<sh>SCRIPT_STYLE</sh>
-							<!-- We're disabling .txt files for now because some 
-							Annotators may not be able to handle standard comments
-							in text files. This may break name values pairs such as stopWords.txt
-							-->
 							<!-- <txt>TEXT</txt> -->
 							<bat>BATCH</bat>
 							<cmd>BATCH</cmd>
