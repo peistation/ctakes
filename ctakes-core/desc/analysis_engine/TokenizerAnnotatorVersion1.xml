@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.TokenizerAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.TokenizerAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>TokenizerAnnotator</name>
 <description>Tokenizer used for the first release of cTAKES.  This tokenizer was replaced by one that follows PTB rules as the default for verson 2 of cTAKES.</description>
@@ -60,7 +60,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../../common-type-system/desc/common_type_system.xml"/>
+<import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
@@ -86,7 +86,7 @@
 <externalResourceDependency>
 <key>HyphFreqTable</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.StringIntegerMapResource</interfaceName>
 <optional>true</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -98,7 +98,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:tokenizer/hyphenated.txt</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.StringIntegerMapResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

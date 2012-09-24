@@ -41,10 +41,10 @@
 	<lookupBindings>
 		<lookupBinding>
 			<dictionaryRef idRef="GAZ_SMOKING_STATUS"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.DirectLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.DirectLookupInitializerImpl">
 				<properties/>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.SmokerNamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.SmokerNamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="NONE"/>
 					<property key="codeMetaField" value="0"/>
@@ -53,10 +53,10 @@
 		</lookupBinding>
 		<lookupBinding>
 			<dictionaryRef idRef="GAZ_NONSMOKING_STATUS"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.DirectLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.DirectLookupInitializerImpl">
 				<properties/>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NonSmokerNamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.NonSmokerNamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="NONE"/>
 					<property key="codeMetaField" value="0"/>

@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.chboston.cnlp.ctakes.relationextractor.ae;
+package org.apache.ctakes.relationextractor.ae;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.apache.uima.jcas.JCas;
-import org.chboston.cnlp.ctakes.relationextractor.ae.features.NamedEntityFeaturesExtractor;
+import org.apache.ctakes.relationextractor.ae.features.NamedEntityFeaturesExtractor;
 import org.cleartk.classifier.Feature;
 import org.junit.Test;
 import org.uimafit.factory.JCasFactory;
@@ -35,7 +35,7 @@ public class NamedEntityFeaturesExtractorTest {
   @Test
   public void test() throws Exception {
     // create and populate a JCas with some EntityMention objects
-    JCas jCas = JCasFactory.createJCasFromPath("../common-type-system/desc/common_type_system.xml");
+    JCas jCas = JCasFactory.createJCasFromPath("../ctakes-type-system/desc/common_type_system.xml");
     jCas.setDocumentText("aaa bbb ccc ddd");
     EntityMention e1 = new EntityMention(jCas, 0, 3);
     e1.setTypeID(42);

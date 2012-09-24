@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.watson.ibm.com/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.smoking.ae.SentenceAdjuster</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.smokingstatus.ae.SentenceAdjuster</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>Sentence Adjuster</name>
     <description>This annotator expands sentence annotations of type "Tobacco: none" to allow the correct negation  recognition of the relevant NEs.</description>

@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.TokenizerAnnotatorPTB</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.TokenizerAnnotatorPTB</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>TokenizerAnnotatorPTB</name>
 <description>Discovers tokens in the given text, following Penn TreeBank tokenization rules.  These tokens consist of words, punctuation, etc...</description>
@@ -47,7 +47,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-<import location="../../../common-type-system/desc/common_type_system.xml"/>
+<import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>

@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.termspotter.cc.PADOffSetsRecord</implementationName>
+<implementationName>org.apache.ctakes.padtermspotter.cc.PADOffSetsRecord</implementationName>
 <processingResourceMetaData>
 <name>PADOffSetRecord</name>
 <description>Processes a given CAS to identify predetermined list of PAD terms</description>

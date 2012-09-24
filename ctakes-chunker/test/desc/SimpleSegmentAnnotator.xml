@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SimpleSegmentAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.core.ae.SimpleSegmentAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>SimpleSegmentAnnotator</name>
     <description/>

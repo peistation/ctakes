@@ -28,7 +28,7 @@ cd  /your_pipeline_installation_home/chunker
 
 
 pause
-java  -Xms1024M -Xmx1300M    -cp "../core/lib/opennlp-tools-1.4.0.jar;../core/lib/trove.jar;../core/lib/maxent-2.5.0.jar;%CLASSPATH%"  opennlp.tools.chunker.ChunkerME  "/EraseME/chunk/corpus.opennlp.chunks"  "/EraseME/chunk/corpus.chunk.model.bin.gz"
+java  -Xms1024M -Xmx1300M    -cp "../ctakes-core/lib/opennlp-tools-1.4.0.jar;../ctakes-core/lib/trove.jar;../ctakes-core/lib/maxent-2.5.0.jar;%CLASSPATH%"  opennlp.tools.chunker.ChunkerME  "/EraseME/chunk/corpus.opennlp.chunks"  "/EraseME/chunk/corpus.chunk.model.bin.gz"
 pause
  
 

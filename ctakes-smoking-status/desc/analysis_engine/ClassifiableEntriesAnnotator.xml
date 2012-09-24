@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.smoking.ae.ClassifiableEntries</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.smokingstatus.ae.ClassifiableEntries</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>ClassigiableEntriesAnnotator</name>
     <description>Converts Sentences to ClassifiableEntries (required by SmokingStatus pipeline) and ultimately to RecordSentence.
@@ -42,7 +42,7 @@ This param is optional.  If not specified, then the classification feature of th
       </configurationParameter>
       <configurationParameter>
         <name>AllowedClassifications</name>
-        <description>See edu.mayo.bmi.smoking.Const.java for permitted string values.</description>
+        <description>See org.apache.ctakes.smokingstatus.Const.java for permitted string values.</description>
         <type>String</type>
         <multiValued>true</multiValued>
         <mandatory>false</mandatory>
@@ -106,19 +106,19 @@ This param is optional.  If not specified, then the classification feature of th
     <externalResourceDependency>
       <key>UimaDescriptorStep1Key</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>UimaDescriptorStep2Key</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>negationContradictionWordsKey</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -130,7 +130,7 @@ This param is optional.  If not specified, then the classification feature of th
         <fileResourceSpecifier>
           <fileUrl>file:analysis_engine/ProductionPostSentenceAggregate_step1.xml</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>UimaDescriptorStep2</name>
@@ -138,7 +138,7 @@ This param is optional.  If not specified, then the classification feature of th
         <fileResourceSpecifier>
           <fileUrl>file:analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>negationContradictionWords</name>
@@ -146,7 +146,7 @@ This param is optional.  If not specified, then the classification feature of th
         <fileResourceSpecifier>
           <fileUrl>file:ss/data/context/negationContradictionWords.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.ner.ae.CopyDrugAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.drugner.ae.CopyDrugAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>CNP to DrugLookupWindow</name>
     <description>Copies Shallow Parse CNP annotations to be used as lookup windows for dictionary lookup.</description>

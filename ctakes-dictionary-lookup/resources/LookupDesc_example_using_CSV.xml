@@ -39,11 +39,11 @@
 
 <!-- NOTE: Only use if windowAnnotations have small # of tokens, sentences are not a good idea! -->
 
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.DirectLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.DirectLookupInitializerImpl">
 				<properties>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.DebugConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.DebugConsumerImpl">
 				<properties>
 				</properties>
 			</lookupConsumer>

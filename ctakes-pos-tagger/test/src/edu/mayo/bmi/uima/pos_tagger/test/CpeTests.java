@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.pos_tagger.test;
+package org.apache.ctakes.postagger.test;
 
 
 // from  org.apache.uima.examples.cpe.CpeTests.java in the %UIMA_HOME%\examples\src

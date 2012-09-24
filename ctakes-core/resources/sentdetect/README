@@ -29,7 +29,7 @@ To train a sentence detector that recognizes the same set of candidate
 end-of-sentence characters that the SentenceDetectorAnnotator uses, 
 using the included sample training sentences, use the included launch 
 called "SentenceDetector - train a new model", or use:
-  java edu.mayo.bmi.uima.core.ae.SentenceDetector 
+  java org.apache.ctakes.core.ae.SentenceDetector 
         data/test/sample_sd_training_sentences.txt 
         resources/sentdetect/sample_sd.mod
         
@@ -50,7 +50,7 @@ The third argument is the number of iterations for training
 The fourth argument is the cutoff value used
 
 An alternative to using the launch is to use:
-  java edu.mayo.bmi.uima.core.ae.SentenceDetector sents_file model iters? cut?
+  java org.apache.ctakes.core.ae.SentenceDetector sents_file model iters? cut?
 where sents_file contains one sentence per line,
 model is the file that is to be created, 
 and iters and cut are optional parameters.

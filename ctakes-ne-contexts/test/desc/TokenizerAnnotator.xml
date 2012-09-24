@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.TokenizerAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.core.ae.TokenizerAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>TokenizerAnnotator</name>
     <description>Discovers tokens in the given text.  These tokens consist of words, punctuation, etc...</description>
@@ -85,7 +85,7 @@
     <externalResourceDependency>
       <key>HyphFreqTable</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.StringIntegerMapResource</interfaceName>
       <optional>true</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -97,7 +97,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:tokenizer/hyphenated.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.StringIntegerMapResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.StringIntegerMapResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

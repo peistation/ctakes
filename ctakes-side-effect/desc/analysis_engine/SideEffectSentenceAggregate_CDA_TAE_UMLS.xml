@@ -24,31 +24,31 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SESentenceFeatureAnnotator">
       <import location="SESentenceFeatureAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ContextDependentTokenizerAnnotator">
-      <import location="../../../context dependent tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-context-tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="NegationAnnotator">
-      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
+      <import location="../../../ctakes-ne-contexts/desc/NegationAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentDetectAnnotator">
-      <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="StatusAnnotator">
-      <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
+      <import location="../../../ctakes-ne-contexts/desc/StatusAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
-      <import location="../../../POS tagger/desc/POSTagger.xml"/>
+      <import location="../../../ctakes-pos-tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DrugMentionAnnotator">
-      <import location="../../../Drug NER/desc/analysis_engine/DrugMentionAnnotator.xml"/>
+      <import location="../../../ctakes-drug-ner/desc/analysis_engine/DrugMentionAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="Chunker">
-      <import location="../../../chunker/desc/Chunker.xml"/>
+      <import location="../../../ctakes-chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="PSESentenceAnnotator">
       <import location="PSESentenceAnnotator.xml"/>
@@ -60,10 +60,10 @@
       <import location="SideEffectAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="CdaCasInitializer">
-      <import location="../../../document preprocessor/desc/CdaCasInitializer.xml"/>
+      <import location="../../../ctakes-preprocessor/desc/CdaCasInitializer.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LookupWindowAnnotator">
       <import location="LookupWindowAnnotator_sideEffect.xml"/>
@@ -72,7 +72,7 @@
       <import location="DictionaryLookupAnnotator_sideEffectUMLS.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+      <import location="../../../ctakes-lvg/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

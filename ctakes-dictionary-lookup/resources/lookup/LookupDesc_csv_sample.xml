@@ -50,18 +50,18 @@
 
 <!-- NOTE: Only use if windowAnnotations have small # of tokens, sentences are not a good idea! -->
 
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.DirectLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.DirectLookupInitializerImpl">
 				<properties>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.NamedEntityLookupConsumerImpl">
 				<properties>
 				</properties>
 			</lookupConsumer>
 		</lookupBinding>
 		<lookupBinding>
 			<dictionaryRef idRef="DICT_RXNORM"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="preferred_designation|other_designation"/>
 					<property key="maxPermutationLevel" value="7"/>
@@ -69,7 +69,7 @@
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.OrangeBookFilterConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.OrangeBookFilterConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="code"/>

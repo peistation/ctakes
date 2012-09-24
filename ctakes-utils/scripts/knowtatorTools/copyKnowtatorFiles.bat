@@ -21,10 +21,10 @@ REM @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 set UIMA_HOME=c:\tools\apache-uima
 SET CLASSPATH1=%UIMA_HOME%\lib\uima-core.jar;%UIMA_HOME%\lib\uima-cpe.jar;%UIMA_HOME%\lib\uima-tools.jar;%UIMA_HOME%\lib\uima-document-annotations.jar;%UIMA_HOME%\lib\uima-examples.jar;
-SET CLASSPATH2=chunker/bin;clinical documents pipeline/bin;context dependent tokenizer/bin;core/bin;dictionary lookup/bin;document preprocessor/bin;LVG/bin;NE contexts/bin;POS tagger/bin;core/lib/log4j-1.2.8.jar;
+SET CLASSPATH2=chunker/bin;ctakes-clinical-pipeline/bin;context dependent tokenizer/bin;core/bin;dictionary lookup/bin;document preprocessor/bin;LVG/bin;NE contexts/bin;POS tagger/bin;core/lib/log4j-1.2.8.jar;
 SET CLASSPATH3=core/lib/jdom.jar;core/lib/lucene-core-3.0.2.jar;core/lib/opennlp-tools-1.4.0.jar;core/lib/maxent-2.5.0.jar;core/lib/OpenAI_FSM.jar;core/lib/trove.jar;Drug NER/bin;Drug NER/resources;
 SET CLASSPATH4=LVG/lib/lvg2008dist.jar;document preprocessor/lib/xercesImpl.jar;document preprocessor/lib/xml-apis.jar;document preprocessor/lib/xmlParserAPIs.jar;smoking status/bin;smoking status/resources;
-SET CLASSPATH5=chunker/resources;clinical documents pipeline/resources;context dependent tokenizer/resources;core/resources;dictionary lookup/resources;document preprocessor/resources;LVG/resources;POS tagger/resources;KnowtatorUtils/bin;KnowtatorUtils/resourses;utils/lib/knowtator.jar;
+SET CLASSPATH5=chunker/resources;ctakes-clinical-pipeline/resources;context dependent tokenizer/resources;core/resources;dictionary lookup/resources;document preprocessor/resources;LVG/resources;POS tagger/resources;KnowtatorUtils/bin;KnowtatorUtils/resourses;utils/lib/knowtator.jar;
 SET CLASSPATH6=utils/lib/looks-2.1.3.jar;utils/lib/protege.jar
 
 FOR /F  %%G IN ('dir /b /on %1\Docset*') DO (

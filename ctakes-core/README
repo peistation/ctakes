@@ -56,7 +56,7 @@ It can extend an annotation to encompass overlapping annotations.
 It can be configured to delete annotations of type A that are subsumed by other annotations of type A 
 if you only want the longest annotations of the given type to be kept.
 
-See the javadoc for edu.mayo.bmi.uima.core.ae.OverlapAnnotator for more details.
+See the javadoc for org.apache.ctakes.core.ae.OverlapAnnotator for more details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +90,7 @@ Parameters:
 TokenizerAnnotator.xml
 
 Tokenizes text.    
-See classes edu.mayo.bmi.uima.core.ae.TokenizerAnnotatorPTB and edu.mayo.bmi.nlp.tokenizer.Tokenizer
+See classes org.apache.ctakes.core.ae.TokenizerAnnotatorPTB and org.apache.ctakes.core.nlp.tokenizer.Tokenizer
 for implementation details.
 
 Parameters:

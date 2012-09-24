@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.sideeffect.ae.PSESentenceAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.sideeffect.ae.PSESentenceAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>PSESentenceAnnotator</name>
     <description>Annotate spans of the sentence(s) that contains signs/symptoms or disease and drugs. But disregard the particular section(s).</description>

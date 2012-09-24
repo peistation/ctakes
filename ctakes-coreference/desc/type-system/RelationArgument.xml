@@ -26,7 +26,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.RelationArgument</name>
+      <name>org.apache.ctakes.coreference.type.RelationArgument</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
@@ -48,9 +48,9 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.mipacq.annotation.type.UnrelationArgument</name>
+      <name>org.apache.ctakes.coreference.type.UnrelationArgument</name>
       <description>A relation argument for a negative example.  Used mainly for debugging.</description>
-      <supertypeName>org.mipacq.annotation.type.RelationArgument</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.RelationArgument</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

@@ -21,7 +21,7 @@
 -->
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.uima.core.cr.JdbcCollectionReader</implementationName>
+  <implementationName>org.apache.ctakes.core.cr.JdbcCollectionReader</implementationName>
   <processingResourceMetaData>
     <name>JdbcCollectionReader</name>
     <description>Collection Reader that pulls documents to be processed from a database.</description>
@@ -119,7 +119,7 @@
     <externalResourceDependency>
       <key>DbConnection</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.JdbcConnectionResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.JdbcConnectionResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -198,7 +198,7 @@
             </configurationParameterSettings>
           </resourceMetaData>
         </configurableDataResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.JdbcConnectionResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.JdbcConnectionResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

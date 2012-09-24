@@ -26,7 +26,7 @@
 <vendor></vendor>
 <types>
 <typeDescription>
-<name>edu.mayo.bmi.uima.pad.type.SubSection</name>
+<name>org.apache.ctakes.padtermspotter.type.SubSection</name>
 <description></description>
 <supertypeName>uima.tcas.Annotation</supertypeName>
 <features>

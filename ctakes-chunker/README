@@ -69,15 +69,15 @@ engine which is the UIMA component we have written that wraps the OpenNLP
 chunker / shallow parser.  Open this file using the Component Descriptor 
 Editor as described in the tutorial.  Click on the tab labeled "Overview" 
 to observe that the class called by this descriptor is 
-"edu.mayo.bmi.uima.chunker.Chunker".  Click on the tab labeled 
+"org.apache.ctakes.chunker.ae.Chunker".  Click on the tab labeled 
 "Parameter Settings" to view the parameters required by the POSTagger 
 component.  The descriptor file does not document the parameters because 
 they are documented in the api javadocs for the class 
-edu.mayo.bmi.uima.chunker.Chunker.  Please consult that documentation for 
+org.apache.ctakes.chunker.ae.Chunker.  Please consult that documentation for 
 additional details.  The parameters are:
 - ModelFile - the file that contains the chunker tagging model
 - ChunkerCreatorClass - the full class name of an implementation of the 
-                        interface edu.mayo.bmi.uima.chunker.ChunkerCreator
+                        interface org.apache.ctakes.chunker.ae.ChunkerCreator
 
 %%%%%%%%%%%%%%%%%%%%%%
 ChunkerAggregate.xml

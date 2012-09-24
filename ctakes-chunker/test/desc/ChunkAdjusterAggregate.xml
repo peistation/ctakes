@@ -111,7 +111,7 @@
 <nameValuePair>
 <name>ChunkCreatorClass</name>
 <value>
-<string>edu.mayo.bmi.uima.chunker.DefaultChunkCreator</string>
+<string>org.apache.ctakes.chunker.ae.DefaultChunkCreator</string>
 </value>
 </nameValuePair>
 <nameValuePair>

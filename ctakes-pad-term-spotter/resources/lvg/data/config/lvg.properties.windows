@@ -9,7 +9,7 @@
 # LVG_NONINFO_WORD_FILE: the relative path (to LVG_DIR) of non-info word file.
 # LVG_CONJ_WORD_FILE: the relative path (to LVG_DIR) of conjuction file.
 #-------------------------------------------------------------------
-LVG_DIR=C:/external_workspace/TermSpotter/build/stagingArea/TermSpotter/resources/lvg/
+LVG_DIR=C:/external_workspace/TermSpotter/build/stagingArea/TermSpotter/resources/ctakes-lvg/
 LVG_STOP_WORD_FILE=data/misc/stopWords.data
 LVG_DIACRITICS_FILE=data/misc/diacritics.data
 LVG_LIGATURES_FILE=data/misc/ligatures.data

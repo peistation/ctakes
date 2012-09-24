@@ -25,17 +25,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.ctakes.core.fsm.condition.DisjoinCondition;
+import org.apache.ctakes.core.fsm.condition.NegateCondition;
+import org.apache.ctakes.core.fsm.condition.TextSetCondition;
+import org.apache.ctakes.core.fsm.output.NegationIndicator;
+import org.apache.ctakes.core.fsm.state.NamedState;
+import org.apache.ctakes.core.fsm.state.NonTerminalEndState;
+import org.apache.ctakes.core.fsm.token.BaseToken;
+
 import net.openai.util.fsm.AnyCondition;
 import net.openai.util.fsm.Condition;
 import net.openai.util.fsm.Machine;
 import net.openai.util.fsm.State;
-import edu.mayo.bmi.fsm.condition.DisjoinCondition;
-import edu.mayo.bmi.fsm.condition.NegateCondition;
-import edu.mayo.bmi.fsm.condition.TextSetCondition;
-import edu.mayo.bmi.fsm.output.NegationIndicator;
-import edu.mayo.bmi.fsm.state.NamedState;
-import edu.mayo.bmi.fsm.state.NonTerminalEndState;
-import edu.mayo.bmi.fsm.token.BaseToken;
 
 /**
  * Uses one or more finite state machines to detect dates in the given input of

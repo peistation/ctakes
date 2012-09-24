@@ -21,7 +21,7 @@
 -->
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.nlp.parser.DependencyFileCollectionReader</implementationName>
+  <implementationName>org.apache.ctakes.dependency.parser.DependencyFileCollectionReader</implementationName>
   <processingResourceMetaData>
     <name>DependencyCollectionReader</name>
     <description>For training dependency parsers.

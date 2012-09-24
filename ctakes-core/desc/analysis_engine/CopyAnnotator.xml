@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.CopyAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.core.ae.CopyAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>CopyAnnotator</name>
     <description>Utility annotator that copy's data from an existing JCas object into a new JCas object.</description>
@@ -76,7 +76,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
       </imports>
       <types>
         <typeDescription>

@@ -30,7 +30,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.pad.type.PADTerm</name>
+      <name>org.apache.ctakes.padtermspotter.type.PADTerm</name>
       <description/>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
@@ -54,7 +54,7 @@ Valid values are 0 and 1. Where, 0 is false (not standalone) and 1 is true (is s
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.pad.type.PADLocation</name>
+      <name>org.apache.ctakes.padtermspotter.type.PADLocation</name>
       <description/>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
@@ -78,7 +78,7 @@ Valid values are 0 and 1. Where, 0 is false (not standalone) and 1 is true (is s
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.pad.type.PADHit</name>
+      <name>org.apache.ctakes.padtermspotter.type.PADHit</name>
       <description>Would represent one of the following
 Term (in the case of a stand alone term)
 Term + Location
@@ -88,12 +88,12 @@ Location + term</description>
         <featureDescription>
           <name>uaTerm</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.pad.type.PADTerm</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.padtermspotter.type.PADTerm</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>uaLocation</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.pad.type.PADLocation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.padtermspotter.type.PADLocation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>

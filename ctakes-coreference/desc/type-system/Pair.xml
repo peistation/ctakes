@@ -26,7 +26,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.chboston.cnlp.ctakes.common.type.Pair</name>
+      <name>org.apache.ctakes.coreference.type.Pair</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>

@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.uima.core.cc.HtmlTableCasConsumer</implementationName>
+  <implementationName>org.apache.ctakes.core.cc.HtmlTableCasConsumer</implementationName>
   <processingResourceMetaData>
     <name>HtmlTableCasConsumer</name>
     <description>Outputs an HTML table that visualizes the specified Annotation objects over the document text.</description>

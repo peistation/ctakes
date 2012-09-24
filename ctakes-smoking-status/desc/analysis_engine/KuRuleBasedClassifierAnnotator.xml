@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.smoking.ae.KuRuleBasedClassifierAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.smokingstatus.ae.KuRuleBasedClassifierAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>KuRuleBasedClassifierAnnotator</name>
 <description>Known vs Unknow classifier using smoking related keywords</description>

@@ -27,49 +27,49 @@
       <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ContextDependentTokenizerAnnotator">
-      <import location="../../../context dependent tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-context-tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="NegationAnnotator">
-      <import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
+      <import location="../../../ctakes-ne-contexts/desc/NegationAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="StatusAnnotator">
-      <import location="../../../NE contexts/desc/StatusAnnotator.xml"/>
+      <import location="../../../ctakes-ne-contexts/desc/StatusAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkableExpander">
       <import location="../MipacqMarkableExpander.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
-      <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
-      <import location="../../../POS tagger/desc/POSTagger.xml"/>
+      <import location="../../../ctakes-pos-tagger/desc/POSTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="Chunker">
-      <import location="../../../chunker/desc/Chunker.xml"/>
+      <import location="../../../ctakes-chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkableCreator">
       <import location="../MipacqMarkableCreator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
-      <import location="../../../dictionary lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
+      <import location="../../../ctakes-dictionary-lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MipacqMarkablePairGenerator">
       <import location="../MipacqMarkablePairGenerator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LookupWindowAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/LookupWindowAnnotator.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/LookupWindowAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+      <import location="../../../ctakes-lvg/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -162,7 +162,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:stop.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
     </externalResources>
   </resourceManagerConfiguration>

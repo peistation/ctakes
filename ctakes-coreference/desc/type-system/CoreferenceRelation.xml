@@ -29,9 +29,9 @@
   </imports>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.CoreferenceRelation</name>
+      <name>org.apache.ctakes.coreference.type.CoreferenceRelation</name>
       <description/>
-      <supertypeName>org.mipacq.annotation.type.BinaryRelation</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.BinaryRelation</supertypeName>
       <features>
         <featureDescription>
           <name>coref_prob</name>
@@ -41,9 +41,9 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.mipacq.annotation.type.NonCoreferenceRelation</name>
+      <name>org.apache.ctakes.coreference.type.NonCoreferenceRelation</name>
       <description>Hypothesized but negative example of coreference.  Used for debugging coreference model.</description>
-      <supertypeName>org.mipacq.annotation.type.BinaryRelation</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.BinaryRelation</supertypeName>
       <features>
         <featureDescription>
           <name>coref_prob</name>

@@ -195,7 +195,7 @@
 	<lookupBindings>
 		<lookupBinding>
 			<dictionaryRef idRef="DICT_UMLS_MS"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="text"/>
 					<property key="maxPermutationLevel" value="5"/>
@@ -203,7 +203,7 @@
 					<property key="exclusionTags" value="AUX,AUXD,AUXG,AUXN,AUXP,AUXZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.UmlsToSnomedDbConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.UmlsToSnomedDbConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="SNOMED"/>
 					<property key="cuiMetaField" value="cui"/>
@@ -222,7 +222,7 @@
 		</lookupBinding>
 		<lookupBinding>
 			<dictionaryRef idRef="DICT_RXNORM"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="preferred_designation|other_designation"/>
 					<property key="maxPermutationLevel" value="5"/>
@@ -230,7 +230,7 @@
 					<property key="exclusionTags" value="AUX,AUXD,AUXG,AUXN,AUXP,AUXZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.NamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="code"/>
@@ -245,14 +245,14 @@
 		<!-- Supplement Terms for the side effect project -->
 		<lookupBinding>
 			<dictionaryRef idRef="GAZ_CSV_SE"/>												
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="1"/>
 					<property key="maxPermutationLevel" value="5"/>
 					<property key="windowAnnotations" value="org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation"/>		
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.NamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="CT"/>
 					<property key="typeIdField" value="2"/>

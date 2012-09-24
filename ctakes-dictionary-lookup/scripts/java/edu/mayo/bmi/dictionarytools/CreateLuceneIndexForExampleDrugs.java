@@ -50,7 +50,7 @@ public class CreateLuceneIndexForExampleDrugs {
 	public static void main(String args[]) throws Exception {
 
 		// Name of the lucene index directory to be created 
-		File indexDir = new File("C:/general_workspace/dictionary lookup/resources/lookup/drug_index");//C:/temp/lucene/" + "drug-index";
+		File indexDir = new File("C:/general_workspace/ctakes-dictionary-lookup/resources/lookup/drug_index");//C:/temp/lucene/" + "drug-index";
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		boolean createFlag = true;
 

@@ -59,7 +59,7 @@ An example adding only some of the lookup hits to the CAS is if you have a dicti
 terms with their RxNorm codes, and a dictionary of terms from the OrangeBook, and want to create 
 annotations for those terms that are in the OrangeBook that also have an RxNorm code.
 
-This can be done using class edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl 
+This can be done using class org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl 
 as the lookupInitializer, and using class OrangeBookFilterConsumerImpl as the lookupConsumer,
 provided you have the RxNorm dictionary, and you configure the LookupDescriptorFile resource
 to use your RxNorm dictionary.
@@ -89,7 +89,7 @@ A LookupDescriptorFile such as lookup/LookupDesc.xml, found in resources/,
 defines the dictionary(s) used, and the classes that interact with the 
 dictionary(s). The implementation tag identifies the type of dictionary:
 lucene index (luceneImpl), database (jdbcImpl), or delimited flatfile (csvImpl).
-See class edu.mayo.bmi.uima.lookup.ae.LookupParseUtilities.java for implementation details.
+See class org.apache.ctakes.dictionary.lookup.ae.LookupParseUtilities.java for implementation details.
 
 
 To better understand the dictionary lookup annotator code you could start by reading the javadocs

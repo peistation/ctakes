@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.context.ContextAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.necontexts.ContextAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>NegationAnnotator</name>
 <configurationParameters>
@@ -104,7 +104,7 @@
 <nameValuePair>
 <name>ContextHitConsumerClass</name>
 <value>
-<string>edu.mayo.bmi.uima.context.negation.NegationContextHitConsumer</string>
+<string>org.apache.ctakes.necontexts.negation.NegationContextHitConsumer</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -128,7 +128,7 @@
 <nameValuePair>
 <name>ContextAnalyzerClass</name>
 <value>
-<string>edu.mayo.bmi.uima.context.negation.NegationContextAnalyzer</string>
+<string>org.apache.ctakes.necontexts.negation.NegationContextAnalyzer</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -145,7 +145,7 @@
 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.context.type.ContextAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.necontexts.type.ContextAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>

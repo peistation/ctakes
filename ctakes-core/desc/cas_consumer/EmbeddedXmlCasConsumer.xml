@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.mayo.bmi.uima.core.cc.EmbeddedXmlCasConsumer</implementationName>
+  <implementationName>org.apache.ctakes.core.cc.EmbeddedXmlCasConsumer</implementationName>
   <processingResourceMetaData>
     <name>EmbeddedXmlCasConsumer</name>
     <description>CasConsumer that dumps JCas Annotation objects as embedded XML markup.</description>

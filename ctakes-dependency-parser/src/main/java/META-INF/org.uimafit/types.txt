@@ -1,1 +1,1 @@
-classpath*:edu/mayo/bmi/uima/core/type/**/*.xml
+classpath*:edu/mayo/bmi/uima/ctakes-core/type/**/*.xml

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.pos_tagger.test;
+package org.apache.ctakes.postagger.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

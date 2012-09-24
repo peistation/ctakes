@@ -24,7 +24,7 @@
 <primitive>false</primitive>
 <delegateAnalysisEngineSpecifiers>
 <delegateAnalysisEngine key="TokensAndSentences">
-<import location="../../../core/desc/analysis_engine/TokensAndSentencesTAE.xml"/>
+<import location="../../../ctakes-core/desc/analysis_engine/TokensAndSentencesTAE.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="LvgAnnotator">
 <import location="LvgAnnotator.xml"/>

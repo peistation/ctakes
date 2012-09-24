@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.core.cc.jdbc.JdbcCasConsumer</implementationName>
+<implementationName>org.apache.ctakes.core.cc.jdbc.JdbcCasConsumer</implementationName>
 <processingResourceMetaData>
 <name>JdbcCasConsumer</name>
 <version>1.0</version>
@@ -64,13 +64,13 @@
 <externalResourceDependency>
 <key>DbConnection</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.JdbcConnectionResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.JdbcConnectionResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>BindDescriptor</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -143,7 +143,7 @@
 </configurationParameterSettings>
 </resourceMetaData>
 </configurableDataResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.JdbcConnectionResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.JdbcConnectionResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>BindDescriptorFile</name>
@@ -151,7 +151,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:cc/jdbc/TestBinding.xml</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

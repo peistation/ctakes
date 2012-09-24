@@ -23,7 +23,7 @@
 <collectionReader>
 <collectionIterator>
 <descriptor>
-<import location="../../core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+<import location="../../ctakes-core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
 </descriptor>
 <configurationParameterSettings>
 <nameValuePair>
@@ -51,14 +51,14 @@
 <nameValuePair>
 <name>ChunkCreatorClass</name>
 <value>
-<string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
+<string>org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
 </casProcessor>
 <casProcessor deployment="integrated" name="XCAS Writer CAS Consumer">
 <descriptor>
-<import location="../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+<import location="../../ctakes-core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
 </descriptor>
 <deploymentParameters/>
 <errorHandling>

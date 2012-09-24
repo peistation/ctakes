@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>DictionaryLookupAnnotator</name>
 <description>Dictionarylookup for PAD discovery in Radiology reports.</description>
@@ -59,19 +59,19 @@
 <externalResourceDependency>
 <key>LookupDescriptor</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>PAD_Location_File</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>PAD_Terms_File</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -83,7 +83,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:lookup/radiology/LookupDesc_PAD.xml</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>PAD_Location_FileResrc</name>
@@ -91,7 +91,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:lookup/radiology/pad_anatomical_sites.csv</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>PAD_Terms_FileResrc</name>
@@ -99,7 +99,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:lookup/radiology/pad_disorders.csv</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

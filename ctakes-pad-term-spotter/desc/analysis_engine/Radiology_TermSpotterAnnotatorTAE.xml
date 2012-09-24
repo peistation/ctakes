@@ -30,31 +30,31 @@
 <import location="DxStatusAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-<import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+<import location="../../../ctakes-core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SubSectionBoundaryAnnotator">
 <import location="SubSectionBoundaryAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="Chunker">
-<import location="../../../chunker/desc/Chunker.xml"/>
+<import location="../../../ctakes-chunker/desc/Chunker.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="ContextDependentTokenizerAnnotator">
-<import location="../../../context dependent tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
+<import location="../../../ctakes-context-tokenizer/desc/analysis_engine/ContextDependentTokenizerAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="NegationAnnotator">
-<import location="../../../NE contexts/desc/NegationAnnotator.xml"/>
+<import location="../../../ctakes-ne-contexts/desc/NegationAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="SentenceDetectorAnnotator">
-<import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+<import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
-<import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+<import location="../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="NegationDxAnnotator">
 <import location="NegationDxAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="POSTagger">
-<import location="../../../POS tagger/desc/POSTagger.xml"/>
+<import location="../../../ctakes-pos-tagger/desc/POSTagger.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="Radiology_DictionaryLookupCSVAnnotator">
 <import location="Radiology_DictionaryLookupCSVAnnotator.xml"/>

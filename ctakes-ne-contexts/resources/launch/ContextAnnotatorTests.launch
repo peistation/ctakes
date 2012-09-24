@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
-<stringAttribute key="bad_container_name" value="\NE contexts\resources\launc"/>
+<stringAttribute key="bad_container_name" value="\ctakes-ne-contexts\resources\launc"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/NE contexts/test/src/edu/mayo/bmi/uima/context/ContextAnnotatorTests.java"/>
+<listEntry value="/ctakes-ne-contexts/test/src/main/java/org/apache/ctakes/necontexts/ContextAnnotatorTests.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -12,6 +12,6 @@
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.mayo.bmi.uima.context.ContextAnnotatorTests"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.ctakes.necontexts.ContextAnnotatorTests"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="NE contexts"/>
 </launchConfiguration>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
-<stringAttribute key="bad_container_name" value="\POS tagger\resources\launc"/>
+<stringAttribute key="bad_container_name" value="\ctakes-pos-tagger\resources\launc"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/POS tagger/src/edu/mayo/bmi/uima/pos_tagger/TagDictionaryCreator.java"/>
+<listEntry value="/ctakes-pos-tagger/src/main/java/org/apache/ctakes/postagger/TagDictionaryCreator.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.mayo.bmi.uima.pos_tagger.TagDictionaryCreator"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.ctakes.postagger.TagDictionaryCreator"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="data\pos\training\ptb\ptb-pos-training.txt   &#13;&#10;data\pos\training\ptb\ptb-tagdict.txt &#13;&#10;true"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="POS tagger"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ctakes-pos-tagger"/>
 </launchConfiguration>

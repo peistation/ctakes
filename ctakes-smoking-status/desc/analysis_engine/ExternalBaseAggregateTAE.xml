@@ -24,16 +24,16 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentDetectAnnotator">
-      <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../LVG/desc/analysis_engine/LvgAnnotator.xml"/>
+      <import location="../../../ctakes-lvg/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

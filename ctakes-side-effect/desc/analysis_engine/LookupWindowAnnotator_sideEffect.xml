@@ -24,10 +24,10 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="NP2LookupWindow">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/NP2LookupWindow.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/NP2LookupWindow.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DrugCNP2LookupWindow">
-      <import location="../../../Drug NER/desc/analysis_engine/DrugCNP2LookupWindow.xml"/>
+      <import location="../../../ctakes-drug-ner/desc/analysis_engine/DrugCNP2LookupWindow.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="VG2LookupWindow">
       <import location="VG2LookupWindow.xml"/>
@@ -36,13 +36,13 @@
       <import location="AdjP2LookupWindow.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="AdjustNPToIncludePPNP">
-      <import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
+      <import location="../../../ctakes-chunker/desc/AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MaxLookupWindows">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/MaxLookupWindows.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/MaxLookupWindows.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="AdjustNPToIncludeNP">
-      <import location="../../../chunker/desc/AdjustNounPhraseToIncludeFollowingNP.xml"/>
+      <import location="../../../ctakes-chunker/desc/AdjustNounPhraseToIncludeFollowingNP.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

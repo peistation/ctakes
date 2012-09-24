@@ -54,7 +54,7 @@
 	
 		<lookupBinding>
 			<dictionaryRef idRef="DICT_UMLS_MS"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="text"/>
 					<property key="maxPermutationLevel" value="7"/>
@@ -63,7 +63,7 @@
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.UmlsToSnomedDbConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.UmlsToSnomedDbConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="SNOMED"/>
 					<property key="cuiMetaField" value="cui"/>
@@ -80,7 +80,7 @@
 	
 		<lookupBinding>
 			<dictionaryRef idRef="DICT_RXNORM"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="preferred_designation|other_designation"/>
 					<property key="maxPermutationLevel" value="7"/>
@@ -89,7 +89,7 @@
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.OrangeBookFilterConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.OrangeBookFilterConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="codeRxNorm"/> <!-- Use value="code" for UMLS CUIs -->

@@ -66,7 +66,7 @@ A tag dictionary is used when tagging text, not during the training of a POS mod
 Unfortunately, OpenNLP does not provide a mechanism for creating a tag 
 dictionary, so we have provided one.  It can be run with the following command:
 
-java edu.mayo.bmi.uima.pos_tagger.TagDictionaryCreator <training-data> 
+java org.apache.ctakes.postagger.TagDictionaryCreator <training-data> 
                                                         <tag-dictionary> 
                                                          <case-sensitive>
 														 
@@ -109,11 +109,11 @@ The file desc/POSTagger.xml provides a descriptor for the POSTagger analysis
 engine which is the UIMA component we have written that wraps the OpenNLP 
 part-of-speech tagger.  Open this file using the Component Descriptor Editor as
 described in the tutorial.  Click on the tab labeled "Overview" to observe that 
-the class called by this descriptor is "edu.mayo.bmi.uima.pos_tagger.POSTagger".
+the class called by this descriptor is "org.apache.ctakes.postagger.POSTagger".
 Click on the tab labeled "Parameter Settings" to view the parameters required 
 by the POSTagger component.  The descriptor file does not document the 
 parameters because they are documented in the api javadocs for the class 
-edu.mayo.bmi.uima.pos_tagger.POSTagger.  Please consult that documentation for 
+org.apache.ctakes.postagger.POSTagger.  Please consult that documentation for 
 additional details.  The parameters are:
  - PosModelFile - the file that contains the part-of-speech tagging model
  - TagDictionary - the file that contains the tag dictionary (if available)

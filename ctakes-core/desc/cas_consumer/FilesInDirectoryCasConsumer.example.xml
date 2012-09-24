@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.core.cc.FilesInDirectoryCasConsumer</implementationName>
+<implementationName>org.apache.ctakes.core.cc.FilesInDirectoryCasConsumer</implementationName>
 <processingResourceMetaData>
 <name>FilesInDirectoryCasConsumer</name>
 <description>For each CAS a local file with the document text is written to a directory specifed by a parameter.  This CAS consumer does not make use of any annotation information in the cas except for the document id specified the CommonTypeSystem.xml descriptor.  The document id will be the name of the file written for each CAS.  

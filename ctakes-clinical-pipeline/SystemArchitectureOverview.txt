@@ -52,7 +52,7 @@ Distribution: List of PEAR files
 This distribution includes 9 PEAR files.
 
 chunker.pear
-clinical documents pipeline.pear
+ctakes-clinical-pipeline.pear
 context dependent tokenizer.pear
 core.pear
 dictionary lookup.pear
@@ -62,7 +62,7 @@ NE contexts.pear
 POS tagger.pear
 
 
-The 'top-level' PEAR file is 'clinical documents pipeline.pear'.
+The 'top-level' PEAR file is 'ctakes-clinical-pipeline.pear'.
 
 
 ######################################
@@ -106,13 +106,13 @@ For example, if you choose to install the contents of the PEAR files on Windows 
 D:\InformationExtractionSystem\ then the directory structure you see after installing
 from the PEAR files should be 
 D:\InformationExtractionSystem\chunker
-D:\InformationExtractionSystem\clinical documents pipeline
+D:\InformationExtractionSystem\ctakes-clinical-pipeline
 D:\InformationExtractionSystem\core
 ... etc.
 
 And each of those directories would have a src subdirectory, such as
 D:\InformationExtractionSystem\chunker\src
-D:\InformationExtractionSystem\clinical documents pipeline\src
+D:\InformationExtractionSystem\ctakes-clinical-pipeline\src
 D:\InformationExtractionSystem\core\src
 ... etc.
 

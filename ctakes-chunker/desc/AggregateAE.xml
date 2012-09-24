@@ -33,7 +33,7 @@
 <import location="SentenceDetectorAnnotator.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="TokenizerAnnotator">
-<import location="../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>  
+<import location="../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>  
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="POSTagger">
 <import location="POSTagger.xml"/>
@@ -68,7 +68,7 @@
 <nameValuePair>
 <name>ChunkCreatorClass</name>
 <value>
-<string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
+<string>org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator</string>
 </value>
 </nameValuePair>
 <nameValuePair>

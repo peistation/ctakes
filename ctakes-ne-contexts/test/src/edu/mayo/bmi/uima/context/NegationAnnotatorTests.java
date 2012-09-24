@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.context;
+package org.apache.ctakes.necontexts;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,8 +49,8 @@ public class NegationAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_RIGHT_SCOPE_SIZE_PARAM, new Integer(10));
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.SCOPE_ORDER_PARAM, "LEFT", 0);
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.SCOPE_ORDER_PARAM, "RIGHT", 1);
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "edu.mayo.bmi.uima.context.negation.NegationContextAnalyzer");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "edu.mayo.bmi.uima.context.negation.NegationContextHitConsumer");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "org.apache.ctakes.necontexts.negation.NegationContextAnalyzer");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "org.apache.ctakes.necontexts.negation.NegationContextHitConsumer");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.WINDOW_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textspan.Sentence");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");

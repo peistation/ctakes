@@ -78,7 +78,7 @@ Prerequisite steps
 
 	- Install all the cTAKES components, dependencies (e.g. JVM, UIMA, and Eclipse(optional)).
     
-	- Make sure the clinical documents pipeline of cTAKES and the Apache UIMA are setup correctly by running the CAS Visual Debugger (CVD) as 
+	- Make sure the ctakes-clinical-pipeline of cTAKES and the Apache UIMA are setup correctly by running the CAS Visual Debugger (CVD) as 
 	described in the 'Clinical Text	Analysis and Knowledge Extraction System User Guide' 1.2. Install from PEAR packages.
   
 	- Install the 'smoking status.pear' after completing the installation of the core and related pears, as per above.
@@ -113,7 +113,7 @@ java -cp ^
 %UIMA_HOME%/lib/uima-examples.jar;^
 smoking status/bin;^
 chunker/bin;^
-clinical documents pipeline/bin;^
+ctakes-clinical-pipeline/bin;^
 context dependent tokenizer/bin;^
 core/bin;^
 dictionary lookup/bin;^
@@ -135,7 +135,7 @@ document preprocessor/lib/xercesImpl.jar;^
 document preprocessor/lib/xml-apis.jar;^
 document preprocessor/lib/xmlParserAPIs.jar;^
 chunker/resources;^
-clinical documents pipeline/resources;^
+ctakes-clinical-pipeline/resources;^
 context dependent tokenizer/resources;^
 core/resources;^
 dictionary lookup/resources;^
@@ -188,7 +188,7 @@ smoking\ status/resources:\
 POS\ tagger/resources \
 org.apache.uima.tools.cpm.CpmFrame	 
 
-Step 2: From the pull down menu open the “Sample_SmokingStatus_output_flatfile.xml” via 'File' => 'Open CPE Descriptor' => 'smoking status/desc/collection_processing _engine/Sample_SmokingStatus_output_flatfile.xml'.
+Step 2: From the pull down menu open the ï¿½Sample_SmokingStatus_output_flatfile.xmlï¿½ via 'File' => 'Open CPE Descriptor' => 'smoking status/desc/collection_processing _engine/Sample_SmokingStatus_output_flatfile.xml'.
 
 This will load the sample Collection Processing Engine (CPE) 'Sample_SmokingStatus_output_flatfile.xml'.  
 A sample CPE has been provided along with de-identified patient information to provide a means to test the pipeline after you have set up the environment. FYI.  '{inst-root-dir}/data/test' contains 5 sample notes representing one patients
@@ -268,13 +268,13 @@ Debugging issues
  #############
  
 One of the next releases will look into addressing the following:
-  - class 'edu.mayo.bmi.fsm.smoking.machine.NegationFSM.java' must inherit from 'core/edu.mayo.bmi.fsm.machine.NegationFSM.java'
-  - edu.mayo.bmi.smoking.context.negation.NegationContextAnalyzer - needs to use 'NE Contexts/edu.mayo.bmi.uima.context.negation.NegationContextAnalyzer'
+  - class 'edu.mayo.bmi.fsm.smoking.machine.NegationFSM.java' must inherit from 'core/org.apache.ctakes.core.fsm.machine.NegationFSM.java'
+  - org.apache.ctakes.smokingstatus.context.negation.NegationContextAnalyzer - needs to use 'NE Contexts/org.apache.ctakes.necontexts.negation.NegationContextAnalyzer'
   - ResolutionAnnotator.java references 'TypeSystemConst.NE_CERTAINTY_NEGATED' which has been commented out, uncomment in both places for next major release
   - FIXED -Parameters probably need to be changed? /smoking status/desc/analysis_engine/ClassifiableEntriesAnnotator.xml
   - FIXED - CdaCasInitializer.xml must be used from 'document preprocessor'
   - FIXED - SimulatedProdSmokingTAE.xml -> ExternalBaseAggregateTAE.xml -> ./SimpleSegmentAnnotator.xml -- need to reference the one in core 
-    edu.mayo.bmi.smoking.ae.SimpleSegmentAnnotator - must use core/edu.mayo.bmi.uima.core.ae.SimpleSegmentAnnotator.java
+    org.apache.ctakes.smokingstatus.ae.SimpleSegmentAnnotator - must use core/org.apache.ctakes.core.ae.SimpleSegmentAnnotator.java
     
    Version 1.2 Addendum
    - FIXED - The LibSVM features in the previous cTAKES version are not fed into the system in correct order and cause incorrect "past smoker", "current smoker", and "smoker" classification. The new version fixed this problem. 

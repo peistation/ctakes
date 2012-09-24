@@ -26,7 +26,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.chboston.cnlp.ctakes.common.type.BooleanLabeledFS</name>
+      <name>org.apache.ctakes.coreference.type.BooleanLabeledFS</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>

@@ -23,7 +23,7 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="../../../core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+                <import location="../../../ctakes-core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>

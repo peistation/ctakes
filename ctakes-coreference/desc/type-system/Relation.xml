@@ -30,7 +30,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.Relation</name>
+      <name>org.apache.ctakes.coreference.type.Relation</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
@@ -47,12 +47,12 @@
         <featureDescription>
           <name>discoveryTechnique</name>
           <description/>
-          <rangeTypeName>org.mipacq.annotation.type.DiscoveryTechnique</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.coreference.type.DiscoveryTechnique</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>properties</name>
           <description/>
-          <rangeTypeName>org.mipacq.annotation.type.Properties</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.coreference.type.Properties</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>

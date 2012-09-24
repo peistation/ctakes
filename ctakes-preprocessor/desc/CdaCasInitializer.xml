@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.ae.CdaCasInitializer</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.preprocessor.ae.CdaCasInitializer</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>CdaCasInitializer</name>
 <description>Creates a plaintext view from a CDA view.  
@@ -65,13 +65,13 @@ The CDA must conform to the DTD resource.</description>
 <externalResourceDependency>
 <key>HyphenDictionary</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>DTD</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -83,7 +83,7 @@ The CDA must conform to the DTD resource.</description>
 <fileResourceSpecifier>
 <fileUrl>file:cda/NotesIIST_RTF.DTD</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>HyphenFile</name>
@@ -91,7 +91,7 @@ The CDA must conform to the DTD resource.</description>
 <fileResourceSpecifier>
 <fileUrl>file:tokenizer/hyphenated.txt</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

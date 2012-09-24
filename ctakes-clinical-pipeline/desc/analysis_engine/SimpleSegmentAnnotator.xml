@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SimpleSegmentAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.SimpleSegmentAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>SimpleSegmentAnnotator</name>
 <description>Creates a single Segment annotation, encompassing the entire document.  For use prior to annotators that require a Segment annotation, when the input document is not in CDA/does not have another annotator that creates Segment annotations.</description>

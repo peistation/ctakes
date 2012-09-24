@@ -30,7 +30,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.Markable</name>
+      <name>org.apache.ctakes.coreference.type.Markable</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
@@ -52,34 +52,34 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.PronounMarkable</name>
+      <name>org.apache.ctakes.coreference.type.PronounMarkable</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.coref.type.Markable</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.Markable</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.NEMarkable</name>
+      <name>org.apache.ctakes.coreference.type.NEMarkable</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.coref.type.Markable</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.Markable</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.DemMarkable</name>
+      <name>org.apache.ctakes.coreference.type.DemMarkable</name>
       <description/>
-      <supertypeName>edu.mayo.bmi.uima.coref.type.Markable</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.Markable</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.MarkablePair</name>
+      <name>org.apache.ctakes.coreference.type.MarkablePair</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
           <name>antecedent</name>
           <description>Proposed antecedent</description>
-          <rangeTypeName>edu.mayo.bmi.uima.coref.type.Markable</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.coreference.type.Markable</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>anaphor</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.coref.type.Markable</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.coreference.type.Markable</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>label</name>
@@ -89,14 +89,14 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.MarkablePairSet</name>
+      <name>org.apache.ctakes.coreference.type.MarkablePairSet</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
           <name>anaphor</name>
           <description/>
-          <rangeTypeName>edu.mayo.bmi.uima.coref.type.Markable</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.coreference.type.Markable</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>antecedentList</name>

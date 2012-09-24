@@ -25,7 +25,7 @@
 <version>1.0</version>
 <types>
 <typeDescription>
-<name>edu.mayo.bmi.smoking.i2b2.type.RecordSentence</name>
+<name>org.apache.ctakes.smokingstatus.i2b2.type.RecordSentence</name>
 <description>Represents a single sentence from an I2B2 record.</description>
 <supertypeName>uima.tcas.Annotation</supertypeName>
 <features>

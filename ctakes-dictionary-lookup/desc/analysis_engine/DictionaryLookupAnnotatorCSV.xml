@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>DictionaryLookupAnnotatorCSV</name>
     <description>Dictionaries - some in lucene indexes and some in CSV files</description>
@@ -73,25 +73,25 @@
     <externalResourceDependency>
       <key>LookupDescriptor</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>DictionaryFile</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>RxnormIndexReader</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.LuceneIndexReaderResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>OrangeBookIndexReader</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.LuceneIndexReaderResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -103,7 +103,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:lookup/LookupDesc_csv_sample.xml</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>DictionaryFileResource</name>
@@ -111,7 +111,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:lookup/dictionary1.csv</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>RxnormIndex</name>
@@ -150,7 +150,7 @@
             </configurationParameterSettings>
           </resourceMetaData>
         </configurableDataResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>OrangeBookIndex</name>
@@ -189,7 +189,7 @@
             </configurationParameterSettings>
           </resourceMetaData>
         </configurableDataResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.LuceneIndexReaderResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

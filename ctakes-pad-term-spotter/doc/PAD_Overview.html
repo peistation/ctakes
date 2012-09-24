@@ -759,14 +759,14 @@ the full class name of an implementation of the interface edu.mayo.bmi.uima.chun
 <p>
 <strong>SubSectionBoundaryAnnotator.xml</strong>
 </p>
-<div class="paragraph"><p>The file <tt>desc/analysis_engine/SubSectionBoundaryAnnotator.xml</tt> drives the java class <em>edu.mayo.bmi.uima.termspotter.ae.SubSectionAnnotator</em> which the primary task is to identify sections within the text that indicate paragraphs, subsections, and groups of text that should be handled as one entity.  The file resource <a href="#examtitlewords">lookup/radiology/ExamTitleWords.txt</a> provides the site specific terms used to indicate the start of subsections.  The subsections will span until either another subsection beginning is discover or the end of the document.</p></div>
+<div class="paragraph"><p>The file <tt>desc/analysis_engine/SubSectionBoundaryAnnotator.xml</tt> drives the java class <em>org.apache.ctakes.padtermspotter.ae.SubSectionAnnotator</em> which the primary task is to identify sections within the text that indicate paragraphs, subsections, and groups of text that should be handled as one entity.  The file resource <a href="#examtitlewords">lookup/radiology/ExamTitleWords.txt</a> provides the site specific terms used to indicate the start of subsections.  The subsections will span until either another subsection beginning is discover or the end of the document.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Note</div>
 </td>
 <td class="content">
-<div class="paragraph"><p>The class <tt>core/src/edu/mayo/bmi/fsm/machine/SubSectionPadIdFSM</tt> will identified section headers and classify as CONFIRMED_STATUS, NEGATED_STATUS, or PROBABLE_STATUS.  However, only <em>NEGATED_STATUS</em> is being implemented within the logic (‘/PAD term spotter/src/edu/mayo/bmi/uima/pad/impl/PADConsumerImpl.java’ will not add <em>hits</em> in sections tagged with this status).</p></div>
+<div class="paragraph"><p>The class <tt>core/src/edu/mayo/bmi/fsm/machine/SubSectionPadIdFSM</tt> will identified section headers and classify as CONFIRMED_STATUS, NEGATED_STATUS, or PROBABLE_STATUS.  However, only <em>NEGATED_STATUS</em> is being implemented within the logic (‘/PAD term spotter/src/main/java/org/apache/ctakes/pad/impl/PADConsumerImpl.java’ will not add <em>hits</em> in sections tagged with this status).</p></div>
 </td>
 </tr></table>
 </div>
@@ -783,7 +783,7 @@ subsection handling:</p></div>
 <div class="paragraph"><p>1) ‘/PAD term spotter/src/edu/mayo/bmi/fsm/machine/SubSectionPadIdFSM.java’
 -Terms; "smh","rmh","gonda","romayo" are indicative of names of buildings on the Mayo campus which are used to mark subsection begin/end
 - terms; "indications","bleindications","exam","showing" are special terms which often contain the terms being screened for  relating to PAD, but since they are titles of examinations, revision sections, and generalized screenings they are to be ignored in the Mayo cohort.</p></div>
-<div class="paragraph"><p>2) ‘/PAD term spotter/src/edu/mayo/bmi/uima/pad/impl/PADConsumerImpl.java’
+<div class="paragraph"><p>2) ‘/PAD term spotter/src/main/java/org/apache/ctakes/pad/impl/PADConsumerImpl.java’
 - Terms; "indications:" and "showing" are special terms which often contain the terms being screened for relating to PAD, but since they are titles of examinations, revision sections, and generalized screenings they are to be ignored in the Mayo cohort. "maxSubsectionSize" is used to limit the overall scope of where the subsection tokens will be searched. It has been hardcoded to 300 in the shipped class.</p></div>
 <div class="paragraph"><p>3) <a href="#examtitlewords">‘/PAD term spotter/resources/lookup/radiology/ExamTitleWords.txt’</a>
 - Comma delimited terms which represent key values to distinguish the type of radiology examination being utilized:
@@ -799,14 +799,14 @@ US_EXAM (ultrasound), LOWER_EXT (lower extremity),  US_LOWER_EXT (ultrasound low
 <strong>Radiology_DictionaryLookupCSVAnnotator.xml</strong>
 </p>
 <div class="paragraph"><p>The file <tt>desc/analysis_engine/Radiology_DictionaryLookupCSVAnnotator.xml</tt>
-drives the java class  <tt>edu.mayo.bmi.uima.lookup.ae.DictionaryLookupAnnotator</tt> which resides in the <tt>dictionary lookup</tt> project.  It is setup to access the <tt>/resources/lookup/radiology/LookupDesc_PAD.xml</tt> file which specifies what resources will be accessed,
+drives the java class  <tt>org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator</tt> which resides in the <tt>dictionary lookup</tt> project.  It is setup to access the <tt>/resources/lookup/radiology/LookupDesc_PAD.xml</tt> file which specifies what resources will be accessed,
 which are the PAD Term dictionaries in this case.  Specifically, the files <tt>\PAD term spotter\resources\lookup\radiology\pad_anatomical_sites.csv\</tt> and <tt>\PAD term spotter\resources\lookup\radiology\pad_disorders.csv\</tt> are loaded into memory.</p></div>
 </li>
 <li>
 <p>
 <strong>PAD_Hit.xml</strong>
 </p>
-<div class="paragraph"><p>The file <tt>desc/analysis_engine/PAD_Hit.xml</tt> drives the java class <tt>edu.mayo.bmi.uima.termspotter.ae.PADHitAnnotator</tt> which operates on the terms discovered in the dictionary
+<div class="paragraph"><p>The file <tt>desc/analysis_engine/PAD_Hit.xml</tt> drives the java class <tt>org.apache.ctakes.padtermspotter.ae.PADHitAnnotator</tt> which operates on the terms discovered in the dictionary
 annotator.
 Params: WINDOW_SIZE, ANNOTATION_TYPE, ANNOTATION_PART_ONE_OF_PAIR, ANNOTATION_PART_TWO_OF_PAIR, may be others
 a) If the annotations of type part_one and part_two fall in the window_size of type annotation_type, it is considered a hit.

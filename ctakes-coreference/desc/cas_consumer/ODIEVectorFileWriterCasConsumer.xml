@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>org.chboston.cnlp.ctakes.coref.uima.cc.ODIEVectorFileWriter</implementationName>
+  <implementationName>org.apache.ctakes.coreference.cc.ODIEVectorFileWriter</implementationName>
   <processingResourceMetaData>
     <name>Create libsvm input</name>
     <description>Write the vector values in the CAS to a file plain text, one instance per line</description>
@@ -96,7 +96,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -123,13 +123,13 @@
     <externalResourceDependency>
       <key>stopWords</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>treeFrags</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -141,7 +141,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:stop.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>treeFragFile</name>
@@ -149,7 +149,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:frags.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

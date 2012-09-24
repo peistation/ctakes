@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/chunker/test/src/edu/mayo/bmi/uima/chunker/test/ChunkAdjusterTests.java"/>
+<listEntry value="/ctakes-chunker/test/src/main/java/org/apache/ctakes/ctakes-chunker/test/ChunkAdjusterTests.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -11,6 +11,6 @@
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.mayo.bmi.uima.chunker.test.ChunkAdjusterTests"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.ctakes.chunker.ae.test.ChunkAdjusterTests"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="chunker"/>
 </launchConfiguration>

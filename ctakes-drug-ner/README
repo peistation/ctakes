@@ -18,11 +18,11 @@ This project utilizes various cTAKES components and hence requires cTAKES to be 
 
 
 ############################################################################
-Running the clinical documents pipeline
+Running the ctakes-clinical-pipeline
 ############################################################################
 
 This project (or PEAR file), the "Drug NER", relies on other projects/PEAR files such as 
-'clinical documents pipeline', 'context dependent tokenizer', 'core', 'dictionary lookup',
+'ctakes-clinical-pipeline', 'context dependent tokenizer', 'core', 'dictionary lookup',
 'LVG' and 'NE contexts'.
 
 

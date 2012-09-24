@@ -23,13 +23,13 @@
 <collectionReader>
 <collectionIterator>
 <descriptor>
-<import location="../../../core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+<import location="../../../ctakes-core/desc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
 </descriptor>
 <configurationParameterSettings>
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>/path_to_your_workspace/Drug NER/data</string>
+<string>/path_to_your_workspace/ctakes-drug-ner/data</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -50,7 +50,7 @@
 </casProcessor>
 <casProcessor deployment="integrated" name="XCAS Writer CAS Consumer">
 <descriptor>
-<import location="../../../core/desc/cas_consumer/XCasWriterCasConsumer.xml"/>
+<import location="../../../ctakes-core/desc/cas_consumer/XCasWriterCasConsumer.xml"/>
 </descriptor>
 <deploymentParameters/>
 <errorHandling>

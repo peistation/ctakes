@@ -29,7 +29,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>org.chboston.cnlp.ctakes.parser.uima.type.BooleanLabeledTree</name>
+      <name>org.apache.ctakes.constituency.parser.uima.type.BooleanLabeledTree</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>

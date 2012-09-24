@@ -26,7 +26,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.VecInstance</name>
+      <name>org.apache.ctakes.coreference.type.VecInstance</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
@@ -63,7 +63,7 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.coref.type.AnaphoricityVecInstance</name>
+      <name>org.apache.ctakes.coreference.type.AnaphoricityVecInstance</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>

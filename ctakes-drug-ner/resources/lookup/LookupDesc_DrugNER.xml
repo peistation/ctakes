@@ -128,7 +128,7 @@
 	<lookupBindings>
 		<lookupBinding>
 			<dictionaryRef idRef="GAZ_RXNORM"/>
-			<lookupInitializer className="edu.mayo.bmi.uima.lookup.ae.FirstTokenPermLookupInitializerImpl">
+			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 				<properties>
 					<property key="textMetaFields" value="preferred_designation|other_designation"/>
 					<property key="maxPermutationLevel" value="3"/>
@@ -136,7 +136,7 @@
 					<property key="exclusionTags" value="CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"/> <!-- ohnlp ID# 3378705 -->
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="edu.mayo.bmi.uima.lookup.ae.NamedEntityLookupConsumerImpl">
+			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.NamedEntityLookupConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="codeRxNorm"/> <!--  change this to value="code" for UMLS CUIs -->

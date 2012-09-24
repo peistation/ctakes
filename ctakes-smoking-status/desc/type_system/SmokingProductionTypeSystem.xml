@@ -31,7 +31,7 @@
   </imports>
   <types>
     <typeDescription>
-      <name>edu.mayo.bmi.smoking.i2b2.type.RecordSentence</name>
+      <name>org.apache.ctakes.smokingstatus.i2b2.type.RecordSentence</name>
       <description>Represents a single sentence from an I2B2 record.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
@@ -58,17 +58,17 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.SmokingStatus.type.SmokerNamedEntityAnnotation</name>
+      <name>org.apache.ctakes.smokingstatus.type.SmokerNamedEntityAnnotation</name>
       <description/>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.SmokingStatus.type.NonSmokerNamedEntityAnnotation</name>
+      <name>org.apache.ctakes.smokingstatus.type.NonSmokerNamedEntityAnnotation</name>
       <description/>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.smoking.type.SmokingDocumentClassification</name>
+      <name>org.apache.ctakes.smokingstatus.type.SmokingDocumentClassification</name>
       <description>Represents classification related to the document</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
@@ -85,7 +85,7 @@
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.SmokingStatus.type.UnknownSmokerNamedEntityAnnotation</name>
+      <name>org.apache.ctakes.smokingstatus.type.UnknownSmokerNamedEntityAnnotation</name>
       <description/>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
     </typeDescription>

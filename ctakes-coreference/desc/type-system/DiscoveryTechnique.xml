@@ -26,7 +26,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.DiscoveryTechnique</name>
+      <name>org.apache.ctakes.coreference.type.DiscoveryTechnique</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>

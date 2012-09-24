@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.cni.ae.ExtractionPrepAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.clinicalpipeline.ae.ExtractionPrepAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>ExtractionPrepAnnotator</name>
 <description>UIMA annotator that preps the CAS for extraction into DB2.</description>

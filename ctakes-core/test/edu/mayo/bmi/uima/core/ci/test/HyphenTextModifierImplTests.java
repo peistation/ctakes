@@ -19,13 +19,13 @@
 /**
  * 
  */
-package edu.mayo.bmi.uima.core.ci.test;
+package org.apache.ctakes.core.ci.test;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 
-import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
+import org.apache.ctakes.core.ci.HyphenTextModifierImpl;
 
 /**
  * @author Mayo Clinic
@@ -34,7 +34,7 @@ import edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl;
 public class HyphenTextModifierImplTests {
 
 	/**
-	 * Test method for {@link edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl#HyphenTextModifierImpl(java.lang.String, int)}.
+	 * Test method for {@link org.apache.ctakes.core.ci.HyphenTextModifierImpl#HyphenTextModifierImpl(java.lang.String, int)}.
 	 */
 	//	@Test
 	//	public void testHyphenTextModifierImpl() {
@@ -42,7 +42,7 @@ public class HyphenTextModifierImplTests {
 	//	}
 
 	/**
-	 * Test method for {@link edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl#modify(java.lang.String)}.
+	 * Test method for {@link org.apache.ctakes.core.ci.HyphenTextModifierImpl#modify(java.lang.String)}.
 	 */
 	//	@Test
 	//	public void testModify() {
@@ -50,7 +50,7 @@ public class HyphenTextModifierImplTests {
 	//	}
 
 	/**
-	 * Test method for {@link edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl#test(edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl, java.lang.String)}.
+	 * Test method for {@link org.apache.ctakes.core.ci.HyphenTextModifierImpl#test(org.apache.ctakes.core.ci.HyphenTextModifierImpl, java.lang.String)}.
 	 * Performs two tests - one that has two blanks between some words that could be hyphenated. Since there are two blanks,
 	 * the text is not modified (the blanks are not replaced by hyphens).
 	 * For the second test, the appropriate blanks are replaced by hyphens. 
@@ -103,7 +103,7 @@ public class HyphenTextModifierImplTests {
 	}
 
 	/**
-	 * Test method for {@link edu.mayo.bmi.uima.core.ci.HyphenTextModifierImpl#main(java.lang.String[])}.
+	 * Test method for {@link org.apache.ctakes.core.ci.HyphenTextModifierImpl#main(java.lang.String[])}.
 	 */
 	//	@Test
 	//	public void testMain() {

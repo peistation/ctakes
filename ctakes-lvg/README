@@ -15,10 +15,10 @@ Introduction
 This annotator wraps the National Library of Medicine (NLM) SPECIALIST lexical tools.
 
 See the documentation for the SPECIALIST lexical tools at
-http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/lvg/current/index.html
+http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/ctakes-lvg/current/index.html
   
 And also see the documentation for Lvg and Norm at 
-http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/lvg/current/docs/userDoc/index.html
+http://lexsrv2.nlm.nih.gov/LexSysGroup/Projects/ctakes-lvg/current/docs/userDoc/index.html
   
 This annotator generates a canonical form for each word and also generates a list of lemma 
 entries with Penn Treebank tags.  These tags could be useful for a part of speech (POS) tagger.
@@ -34,7 +34,7 @@ Description of resources
 %%%%%%%%%%%%%%%%
 lvg.properties
 %%%%%%%%%%%%%%%%
-The LVG config file  resources/lvg/data/config/lvg.properties  defines the location
+The LVG config file  resources/ctakes-lvg/data/config/lvg.properties  defines the location
 and attributes of the LVG database and the jdbc driver used.
 
 %%%%%%%%%%%%%%%%
@@ -48,9 +48,9 @@ project relatively small, the database tables included with this project have a
 relatively small number of rows.
  
 To use the full lvg2008 database, download either lvg2008lite.tgz or lvg2008.tgz from 
-http://lexsrv3.nlm.nih.gov/SPECIALIST/Projects/lvg/2008/index.html
+http://lexsrv3.nlm.nih.gov/SPECIALIST/Projects/ctakes-lvg/2008/index.html
 and extract  data/HSqlDb  from that download to a temporary location.
-Then replace the  resources/lvg/data/HSqlDb  directory in this project with 
+Then replace the  resources/ctakes-lvg/data/HSqlDb  directory in this project with 
 the  data/HSqlDb  directory from that download.
 
 #########################

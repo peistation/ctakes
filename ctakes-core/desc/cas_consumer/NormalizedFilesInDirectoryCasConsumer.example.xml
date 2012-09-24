@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.core.cc.NormalizedFilesInDirectoryCasConsumer</implementationName>
+<implementationName>org.apache.ctakes.core.cc.NormalizedFilesInDirectoryCasConsumer</implementationName>
 <processingResourceMetaData>
 <name>NormalizedFilesInDirectoryCasConsumer</name>
 <description>This is very similar to the FilesInDirectoryCasConsumer except that what is written to the files are space delimited word token annotations.  The text used from the word token annotations is the "CanonicalForm" attribute - so the lvg annotator should be run first.  See FilesInDirectoryCasConsumer.example.xml for a description of that cas consumer.</description>

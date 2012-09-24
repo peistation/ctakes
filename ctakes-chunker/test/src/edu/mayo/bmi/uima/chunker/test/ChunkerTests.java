@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.chunker.test;
+package org.apache.ctakes.chunker.ae.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
-import edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator;
+import org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator;
 import org.apache.ctakes.typesystem.type.syntax.ADJP;
 import org.apache.ctakes.typesystem.type.syntax.ADVP;
 import org.apache.ctakes.typesystem.type.syntax.CONJP;

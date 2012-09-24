@@ -46,7 +46,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
         <import name="org.apache.uima.examples.SourceDocumentInformation"/>
       </imports>
     </typeSystemDescription>

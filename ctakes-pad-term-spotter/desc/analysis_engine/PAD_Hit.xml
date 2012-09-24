@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.termspotter.ae.PADHitAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.padtermspotter.ae.PADHitAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>PAD_Hit</name>
 <description>Uses PADTerm and PADLocation annotation to create a PADHit.</description>
@@ -104,13 +104,13 @@
 <nameValuePair>
 <name>ANNOTATION_PART_ONE_OF_PAIR</name>
 <value>
-<string>edu.mayo.bmi.uima.pad.type.PADTerm</string>
+<string>org.apache.ctakes.padtermspotter.type.PADTerm</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>ANNOTATION_PART_TWO_OF_PAIR</name>
 <value>
-<string>edu.mayo.bmi.uima.pad.type.PADLocation</string>
+<string>org.apache.ctakes.padtermspotter.type.PADLocation</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -128,7 +128,7 @@
 <nameValuePair>
 <name>BOUNDARY_ANN_TYPE</name>
 <value>
-<string>edu.mayo.bmi.uima.pad.type.SubSection</string>
+<string>org.apache.ctakes.padtermspotter.type.SubSection</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -180,7 +180,7 @@
 <externalResourceDependency>
 <key>StopWordsFile</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -192,7 +192,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:lookup/radiology/StopWords.txt</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

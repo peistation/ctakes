@@ -29,9 +29,9 @@
   </imports>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.PredicateArgRelation</name>
+      <name>org.apache.ctakes.coreference.type.PredicateArgRelation</name>
       <description/>
-      <supertypeName>org.mipacq.annotation.type.BinaryRelation</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.BinaryRelation</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

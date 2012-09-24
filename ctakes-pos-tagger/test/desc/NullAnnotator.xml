@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.NullAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.core.ae.NullAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>null annotator</name>
     <description>This annotator does nothing.  The process method is overridden but is empty.  None of the other methods are overriden.  This annotator may be useful if you are using the CPE GUI and you are required to specify an analysis engine but you don't actually want to specify one.</description>

@@ -22,7 +22,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>org.chboston.cnlp.ctakes.coref.uima.ae.MipacqSvmChainCreator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.coreference.ae.MipacqSvmChainCreator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>SvmChainCreator</name>
     <description/>
@@ -54,37 +54,37 @@
     <externalResourceDependency>
       <key>svmPronModel</key>
       <description>pronoun model file</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>svmDemModel</key>
       <description>demonstrative and relative pronoun model file</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>svmAnaphoricityModel</key>
       <description>anaphoricity classifier model file</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>svmCorefModel</key>
       <description>coreference classifier model file</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>stopWords</key>
       <description>snowball English stop words list</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>true</optional>
     </externalResourceDependency>
     <externalResourceDependency>
       <key>frags</key>
       <description>File of tree kernel fragment features</description>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>true</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -96,7 +96,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:pronoun.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>svmDemModelFile</name>
@@ -104,7 +104,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:dem.model</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>svmAnaphoricityModelFile</name>
@@ -112,7 +112,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:anaphoricity.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>svmCorefModelFile</name>
@@ -120,7 +120,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:ne.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>StopWordsFile</name>
@@ -128,7 +128,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:stop.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
       <externalResource>
         <name>fragsFile</name>
@@ -136,7 +136,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:frags.txt</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.ner.ae.DrugMentionAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.drugner.ae.DrugMentionAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>DrugMentionAnnotator</name>
     <description>Generates DrugMentions and related attributes such as strength, dosage, frequency, etc.</description>
@@ -127,10 +127,10 @@
           <type allAnnotatorFeatures="true">uima.tcas.Annotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.drugner.type.RangeAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.drugner.type.MeasurementAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.drugner.type.FractionAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.drugner.type.DrugMentionAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.drugner.type.RangeAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.drugner.type.MeasurementAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.drugner.type.FractionAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.drugner.type.DrugMentionAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>

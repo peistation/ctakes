@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.CopyAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.CopyAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>NP to LookupWindow</name>
 <description>Copies Chunk NP annotations to be used as lookup windows for dictionary lookup.</description>

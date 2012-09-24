@@ -96,7 +96,7 @@
         </casProcessor>
         <casProcessor deployment="integrated" name="Write CAS to XML file">
             <descriptor>
-                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../../../ctakes-core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>

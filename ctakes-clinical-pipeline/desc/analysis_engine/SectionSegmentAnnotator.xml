@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SectionSegmentAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.core.ae.SectionSegmentAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>SimpleSegmentAnnotator</name>
     <description>Creates a single Segment annotation, encompassing the entire document.  For use prior to annotators that require a Segment annotation, when the input document is not in CDA/does not have another annotator that creates Segment annotations.</description>
@@ -53,7 +53,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -77,7 +77,7 @@
     <externalResourceDependency>
       <key>template</key>
       <description/>
-      <interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+      <interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
       <optional>false</optional>
     </externalResourceDependency>
   </externalResourceDependencies>
@@ -89,7 +89,7 @@
         <fileResourceSpecifier>
           <fileUrl>file:template.xml</fileUrl>
         </fileResourceSpecifier>
-        <implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+        <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
     </externalResources>
     <externalResourceBindings>

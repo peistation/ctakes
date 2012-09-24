@@ -104,13 +104,13 @@
 <nameValuePair>
 <name>ContextInitializerClass</name>
 <value>
-<string>edu.mayo.bmi.uima.ner.ae.impl.NegContextInitializerImpl</string>
+<string>org.apache.ctakes.drugner.ae.impl.NegContextInitializerImpl</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>ContextConsumerClass</name>
 <value>
-<string>edu.mayo.bmi.uima.ner.ae.impl.NegContextConsumerImpl</string>
+<string>org.apache.ctakes.drugner.ae.impl.NegContextConsumerImpl</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

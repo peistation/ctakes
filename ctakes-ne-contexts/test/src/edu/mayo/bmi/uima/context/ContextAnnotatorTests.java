@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.context;
+package org.apache.ctakes.necontexts;
 
 import static org.junit.Assert.assertEquals;
 

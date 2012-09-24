@@ -22,7 +22,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.nlp.parser.LemAssigner</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.dependency.parser.LemAssigner</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>LemAssigner</name>
     <description/>

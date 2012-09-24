@@ -45,6 +45,7 @@
 		<module>ctakes-relation-extractor</module>
 		<module>ctakes-clinical-pipeline</module>
 		<module>ctakes-pad-term-spotter</module>
+		<module>ctakes-assertion</module>		
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -103,6 +104,13 @@
 				</artifactId>
 				<version>${ctakes.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.ctakes</groupId>
+				<artifactId>
+					ctakes-assertion
+				</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>			
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
@@ -396,7 +404,7 @@
 					</configuration>
 				</plugin>
 
-				<!-- All plugins below should really only be in common-type-system. However, 
+				<!-- All plugins below should really only be in ctakes-type-system. However, 
 					some cTAKES modules still declare their own type systems internally. So until 
 					those are fixed, this needs to stay in the parent pom. -->
 

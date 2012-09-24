@@ -24,13 +24,13 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="NP2LookupWindow">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/NP2LookupWindow.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/NP2LookupWindow.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DrugCNP2LookupWindow">
       <import location="DrugCNP2LookupWindow.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="MaxLookupWindows">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/MaxLookupWindows.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/MaxLookupWindows.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

@@ -27,13 +27,13 @@
       <import location="../ConstituencyParserAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
-      <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+      <import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../clinical documents pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

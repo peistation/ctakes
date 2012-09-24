@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.core.cc.TokenFreqCasConsumer</implementationName>
+<implementationName>org.apache.ctakes.core.cc.TokenFreqCasConsumer</implementationName>
 <processingResourceMetaData>
 <name>TokenFreqCasConsumer</name>
 <description> </description>

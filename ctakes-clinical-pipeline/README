@@ -1,6 +1,6 @@
 Contents
 - Introduction
-- Running the clinical documents pipeline 
+- Running the ctakes-clinical-pipeline 
 	- AggregateCdaProcessor.xml  for CDA documents conforming to the provided DTD.
 	- AggregatePlaintextProcessor.xml  for plaintext documents.
 
@@ -16,7 +16,7 @@ chunking, named entity recognition, context detection, and negation detection.
 
 
 ############################################################################
-Running the clinical documents pipeline
+Running the ctakes-clinical-pipeline
 ############################################################################
 
 The pipeline can process two types of documents
@@ -39,13 +39,13 @@ defined by this descriptor includes CdaCasInitialzer as the first component.
 Observe that part of speech tagging (POSTagger) comes before chunking (Chunker), etc.
  
 Click on the tab labeled "Parameter Settings" to view the parameters set in this
-descriptor.  The ChunkCreatorClass is set to edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator
+descriptor.  The ChunkCreatorClass is set to org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator
 so that each phrase type gets its own type of annotation, rather than having all
 chunks be of type Chunk.  
 
 The parameters are:
 - ChunkerCreatorClass - the full class name of an implementation of the 
-                        interface edu.mayo.bmi.uima.chunker.ChunkerCreator
+                        interface org.apache.ctakes.chunker.ae.ChunkerCreator
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 AggregatePlaintextProcessor.xml  for plaintext documents.
@@ -57,11 +57,11 @@ wraps the entire plaintext document.  Other annotators in the pipeline require
 at least 1 Segment annotation.
 
 Click on the tab labeled "Parameter Settings" to view the parameters set in this
-descriptor.  The ChunkCreatorClass is set to edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator
+descriptor.  The ChunkCreatorClass is set to org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator
 so that each phrase type gets its own type of annotation, rather than having all
 chunks be of type Chunk.  
 
 The parameters are:
 - SegmentID - the identifier or name to assign to the Segment annotation 
 - ChunkerCreatorClass - the full class name of an implementation of the 
-                        interface edu.mayo.bmi.uima.chunker.ChunkerCreator
+                        interface org.apache.ctakes.chunker.ae.ChunkerCreator

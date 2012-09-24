@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>DictionaryLookupAnnotator</name>
 <description>Performs dictionary lookup and stores the hits as NamedEntityAnnotation objects. </description>
@@ -57,19 +57,19 @@
 <externalResourceDependency>
 <key>LookupDescriptor</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>SmokerDictionary</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 <externalResourceDependency>
 <key>NonSmokerDictionary</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -81,7 +81,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:ss/data/SmokingStatusLookupConfig.xml</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>DictionaryFileSmoker</name>
@@ -89,7 +89,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:ss/data/smoker.dictionary</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 <externalResource>
 <name>DictionaryFileNonSmoker</name>
@@ -97,7 +97,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:ss/data/nonsmoker.dictionary</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

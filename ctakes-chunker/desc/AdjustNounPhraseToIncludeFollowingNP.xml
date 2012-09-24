@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.adjuster.ChunkAdjuster</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.chunker.ae.adjuster.ChunkAdjuster</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>Adjust NP in NP NP to span both</name>
 <description></description>

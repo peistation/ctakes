@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.uima.context;
+package org.apache.ctakes.necontexts;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,8 +47,8 @@ public class StatusAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_RIGHT_SCOPE_SIZE_PARAM, new Integer(7));
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.SCOPE_ORDER_PARAM, "LEFT", 0);
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.SCOPE_ORDER_PARAM, "RIGHT", 1);
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "edu.mayo.bmi.uima.context.status.StatusContextAnalyzer");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "edu.mayo.bmi.uima.context.status.StatusContextHitConsumer");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "org.apache.ctakes.necontexts.status.StatusContextAnalyzer");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "org.apache.ctakes.necontexts.status.StatusContextHitConsumer");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.WINDOW_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textspan.Sentence");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.IdentifiedAnnotation");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");

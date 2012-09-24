@@ -40,9 +40,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import edu.mayo.bmi.nlp.tokenizer.OffsetComparator;
-import edu.mayo.bmi.nlp.tokenizer.Token;
-import edu.mayo.bmi.nlp.tokenizer.TokenizerPTB;
+import org.apache.ctakes.core.nlp.tokenizer.OffsetComparator;
+import org.apache.ctakes.core.nlp.tokenizer.Token;
+import org.apache.ctakes.core.nlp.tokenizer.TokenizerPTB;
 
 /**
  * Driver for populating a Lucene Index with RxNorm data, using the Tokenizer to

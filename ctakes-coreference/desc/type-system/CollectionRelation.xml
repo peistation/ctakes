@@ -30,9 +30,9 @@
   </imports>
   <types>
     <typeDescription>
-      <name>org.mipacq.annotation.type.CollectionRelation</name>
+      <name>org.apache.ctakes.coreference.type.CollectionRelation</name>
       <description/>
-      <supertypeName>org.mipacq.annotation.type.Relation</supertypeName>
+      <supertypeName>org.apache.ctakes.coreference.type.Relation</supertypeName>
       <features>
         <featureDescription>
           <name>members</name>

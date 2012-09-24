@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/KnowtatorUtils/src/edu/mayo/bmi/uima/knowtatorutils/apache/app/cTakesNeToKnowtatorSHARPAnnotation.java"/>
+<listEntry value="/KnowtatorUtils/src/main/java/org/apache/ctakes/knowtatorutils/apache/app/cTakesNeToKnowtatorSHARPAnnotation.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>

@@ -21,7 +21,7 @@
 -->
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.termspotter.cr.RadiologyRecordsCollectionReader</implementationName>
+<implementationName>org.apache.ctakes.padtermspotter.cr.RadiologyRecordsCollectionReader</implementationName>
 <processingResourceMetaData>
 <name>lines from file collection reader</name>
 <description>This collection reader facilitates reading "documents" from a single file.  Each line in the document will be considered an entity to be analyzed by the CPE.  That is each line will be treated as a "document" and will have its own CAS.</description>

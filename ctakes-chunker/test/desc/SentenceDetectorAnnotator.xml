@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.core.ae.SentenceDetector</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.SentenceDetector</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>Sentence Detector annotator</name>
 <description>Discovers sentence boundaries.</description>
@@ -55,7 +55,7 @@
 <externalResourceDependency>
 <key>MaxentModel</key>
 <description></description>
-<interfaceName>edu.mayo.bmi.uima.core.resource.MaxentModelResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.MaxentModelResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -67,7 +67,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:sentdetect/sample_sd_included.mod</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.core.resource.SuffixMaxentModelResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

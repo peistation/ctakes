@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.mayo.bmi.uima.sideeffect.ae.SESentenceClassifierAnnotator</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.sideeffect.ae.SESentenceClassifierAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>SESentenceClassifierAnnotator</name>
     <description>identify sentences containing side effect and causative drugs using both rules and libSVM</description>

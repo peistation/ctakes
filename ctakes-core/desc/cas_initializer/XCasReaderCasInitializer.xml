@@ -21,7 +21,7 @@
 -->
 <casInitializerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.uima.core.ci.XCasReaderCasInitializer</implementationName>
+<implementationName>org.apache.ctakes.core.ci.XCasReaderCasInitializer</implementationName>
 <processingResourceMetaData>
 <name>XCas Reader CAS Initializer</name>
 <description>Loads an XCAS into a CAS object.</description>

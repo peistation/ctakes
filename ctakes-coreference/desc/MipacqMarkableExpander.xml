@@ -22,7 +22,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>org.chboston.cnlp.ctakes.coref.uima.ae.MipacqMarkableExpander</annotatorImplementationName>
+  <annotatorImplementationName>org.apache.ctakes.coreference.ae.MipacqMarkableExpander</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>MarkableExpander</name>
     <description>Expands the char offsets of an NE markable to its closest LookupWindowAnnotation.</description>
@@ -32,7 +32,7 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="../../common-type-system/desc/common_type_system.xml"/>
+        <import location="../../ctakes-type-system/desc/common_type_system.xml"/>
         <import location="type-system/CorefTypes.xml"/>
       </imports>
     </typeSystemDescription>

@@ -21,7 +21,7 @@
 -->
 <casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>edu.mayo.bmi.smoking.cc.RecordResolutionCasConsumer</implementationName>
+<implementationName>org.apache.ctakes.smokingstatus.cc.RecordResolutionCasConsumer</implementationName>
 <processingResourceMetaData>
 <name>RecordResolutionCasConsumer</name>
 <description>Iterates over all sentences (each CAS equals one sentence) for a record and
