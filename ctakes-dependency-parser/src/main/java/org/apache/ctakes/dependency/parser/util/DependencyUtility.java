@@ -38,7 +38,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
  */
 public abstract class DependencyUtility {
 
-	public static Logger logger = Logger.getLogger("edu.mayo.bmi.nlp.parser.util.DependencyUtility");
+	public static Logger logger = Logger.getLogger("org.apache.ctakes.dependency.parser.util.DependencyUtility");
 
 	public static void addToIndexes( JCas jcas, ArrayList<ConllDependencyNode> nodes ) {
 		for (int i=0; i<nodes.size(); i++) {

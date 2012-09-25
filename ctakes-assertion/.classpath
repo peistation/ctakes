@@ -1,30 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="conf"/>
-	<classpathentry kind="src" path="resources"/>
-	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jcarafe-core_2.9.1-0.9.8.3.RC4.jar"/>
-	<classpathentry kind="lib" path="lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar"/>
-	<classpathentry kind="lib" path="lib/med-facts-i2b2-1.2-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/med-facts-zoner-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/sbinary_2.9.0-0.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/scala-library-2.9.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dependency parser"/>
-	<classpathentry kind="lib" path="/core/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="/core/lib/uimafit-1.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-eval-0.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-examples-0.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-ml-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-ml-opennlp-maxent-1.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-test-util-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-type-system-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/cleartk-util-0.8.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

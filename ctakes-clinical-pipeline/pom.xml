@@ -60,6 +60,14 @@
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-pos-tagger</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-assertion</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dependency-parser</artifactId>
+		</dependency>			
 	</dependencies>
 	
 </project>
