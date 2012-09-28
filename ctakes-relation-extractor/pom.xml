@@ -27,7 +27,7 @@
 		</dependency>
 			<dependency>
 				<groupId>org.cleartk</groupId>
-				<artifactId>cleartk-chunker</artifactId>
+				<artifactId>cleartk-eval</artifactId>
 			</dependency>
 			<dependency>
 				<groupId>org.cleartk</groupId>

@@ -69,7 +69,7 @@ public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
       List<String> outcomes;
       if (this.isTraining()) {
         List<Modifier> modifiers = JCasUtil.selectCovered(jCas, Modifier.class, sentence);
-        outcomes = this.chunking.toOutcomes(jCas, tokens, modifiers);
+        outcomes = this.chunking.createOutcomes(jCas, tokens, modifiers);
       }
 
       // during prediction, the list of outcomes predicted so far
@@ -115,7 +115,7 @@ public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
 
       // convert classifications to Modifiers
       if (!this.isTraining()) {
-        this.chunking.toChunks(jCas, tokens, outcomes);
+        this.chunking.createChunks(jCas, tokens, outcomes);
       }
     }
 

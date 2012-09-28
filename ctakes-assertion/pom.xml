@@ -34,10 +34,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.cleartk</groupId>
-			<artifactId>cleartk-chunker</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.cleartk</groupId>
 			<artifactId>cleartk-ml</artifactId>
 		</dependency>
 		<dependency>

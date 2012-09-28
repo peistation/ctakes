@@ -47,7 +47,7 @@ import org.uimafit.util.JCasUtil;
 import org.apache.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 
-public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
+public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics<String>> {
 
   public static class Options extends Options_ImplBase {
     @Option(
@@ -70,8 +70,8 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         "-c",
         "1000");
 
-    List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
-    AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
+    AnnotationStatistics<String> overallStats = AnnotationStatistics.addAll(foldStats);
     System.err.println("Overall:");
     System.err.println(overallStats);
   }
@@ -111,13 +111,13 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   @Override
-  protected AnnotationStatistics test(CollectionReader collectionReader, File directory)
+  protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
     AnalysisEngine classifierAnnotator = AnalysisEngineFactory.createPrimitive(ModifierExtractorAnnotator.getDescription(
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(directory, "model.jar").getPath()));
 
-    AnnotationStatistics stats = new AnnotationStatistics();
+    AnnotationStatistics<String> stats = new AnnotationStatistics<String>();
     for (JCas jCas : new JCasIterable(collectionReader, classifierAnnotator)) {
       JCas goldView;
       try {

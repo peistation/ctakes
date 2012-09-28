@@ -73,7 +73,7 @@ import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 
-public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics> {
+public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics<String>> {
 
   public static class Options extends Options_ImplBase {
 
@@ -159,7 +159,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       
       if(options.testDirectory == null) {
       	// run n-fold cross-validation
-      	List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
+      	List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
       	params.stats = AnnotationStatistics.addAll(foldStats);
         
       	System.err.println("overall:");
@@ -177,7 +177,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       	evaluation.train(trainCollectionReader, modelsDir);
       	
       	CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
-      	AnnotationStatistics stats = evaluation.test(testCollectionReader, modelsDir);
+      	AnnotationStatistics<String> stats = evaluation.test(testCollectionReader, modelsDir);
+        System.err.print(stats);
       	return;
       }
     }
@@ -291,7 +292,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   @Override
-  protected AnnotationStatistics test(CollectionReader collectionReader, File directory)
+  protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
@@ -307,7 +308,14 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     builder.add(classifierAnnotator);
 
     // statistics will be based on the "category" feature of the BinaryTextRelations
-    AnnotationStatistics stats = new AnnotationStatistics("category");
+    AnnotationStatistics<String> stats = new AnnotationStatistics<String>();
+    Function<BinaryTextRelation, HashableArguments> getSpan = new Function<BinaryTextRelation, HashableArguments>() {
+      @Override
+      public HashableArguments apply(BinaryTextRelation relation) {
+        return new HashableArguments(relation);
+      }
+    };
+    Function<BinaryTextRelation, String> getOutcome = AnnotationStatistics.annotationToFeatureValue("category");
 
     // calculate statistics, iterating over the results of the classifier
     AnalysisEngine engine = builder.createAggregate();
@@ -333,12 +341,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       stats.add(
           goldBinaryTextRelations,
           systemBinaryTextRelations,
-          new Function<BinaryTextRelation, HashableArguments>() {
-            @Override
-            public HashableArguments apply(BinaryTextRelation relation) {
-              return new HashableArguments(relation);
-            }
-          });
+          getSpan,
+          getOutcome);
     }
 
     System.err.println(directory.getName() + ":");
@@ -426,7 +430,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
 
     public double svmGamma;
 
-    public AnnotationStatistics stats;
+    public AnnotationStatistics<String> stats;
 
     private static List<String> SVM_KERNELS = Arrays.asList(
         "linear",
