@@ -25,6 +25,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.dependency.parser.util.ClearDependencyUtility;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -39,11 +43,6 @@ import clear.dep.DepNode;
 import clear.dep.DepTree;
 import clear.morph.MorphEnAnalyzer;
 import clear.parse.AbstractDepParser;
-
-import org.apache.ctakes.dependency.parser.util.ClearDependencyUtility;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * <br>
@@ -90,6 +89,14 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 					      "analysis engine will use a default model from the resources directory")
 	protected String parserModelFileName;
 
+  public static final String PARAM_LEMMATIZER_DATA_FILE = "LemmatizerDataFile";
+
+  @ConfigurationParameter(
+      name = PARAM_LEMMATIZER_DATA_FILE,
+      description = "This parameter provides the data file required for the MorphEnAnalyzer. If not "
+          + "specified, this analysis engine will use a default model from the resources directory")
+  protected File lemmatizerDataFile;
+
 	public static final String PARAM_PARSER_ALGORITHM_NAME = "ParserAlgorithmName";
 	@ConfigurationParameter(
 			name = PARAM_PARSER_ALGORITHM_NAME,
@@ -122,7 +129,9 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 			if (useLemmatizer) {
 				// Note: If lemmatizer data file is not specified, then use lemmas from the BaseToken normalizedToken field.
 				// Initialize lemmatizer
-				URL lemmatizerDataFileURL = this.getClass().getResource(ENG_LEMMATIZER_DATA_FILE);
+        URL lemmatizerDataFileURL = this.lemmatizerDataFile != null
+            ? this.lemmatizerDataFile.toURI().toURL()
+            : this.getClass().getResource(ENG_LEMMATIZER_DATA_FILE);
 				lemmatizer = new MorphEnAnalyzer(lemmatizerDataFileURL);
 			}
 
