@@ -27,6 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ctakes.core.util.ListFactory;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textsem.Predicate;
+import org.apache.ctakes.typesystem.type.textsem.SemanticArgument;
+import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -46,14 +53,6 @@ import clear.dep.srl.SRLHead;
 import clear.morph.MorphEnAnalyzer;
 import clear.parse.AbstractSRLParser;
 import clear.reader.AbstractReader;
-
-import org.apache.ctakes.core.util.ListFactory;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
-import org.apache.ctakes.typesystem.type.textsem.Predicate;
-import org.apache.ctakes.typesystem.type.textsem.SemanticArgument;
-import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  *This class provides a UIMA wrapper for the ClearParser Semantic Role Labeler, which is
@@ -95,6 +94,13 @@ public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
 		  description = "This parameter provides the file name of the semantic role labeler model required by the factory method provided by ClearParserUtil.")
   private String parserModelFileName;
 
+  public static final String PARAM_LEMMATIZER_DATA_FILE = "LemmatizerDataFile";
+
+  @ConfigurationParameter(
+      name = PARAM_LEMMATIZER_DATA_FILE,
+      description = "This parameter provides the data file required for the MorphEnAnalyzer. If not "
+          + "specified, this analysis engine will use a default model from the resources directory")
+  protected File lemmatizerDataFile;
 
   public static final String PARAM_USE_LEMMATIZER = "UseLemmatizer";
   @ConfigurationParameter(
@@ -116,7 +122,9 @@ public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
     	if (useLemmatizer) {
     		// Note: If lemmatizer data file is not specified, then use lemmas from the BaseToken normalizedToken field.
     		// Initialize lemmatizer
-    		URL lemmatizerDataFileURL = this.getClass().getResource(ENG_LEMMATIZER_DATA_FILE);
+        URL lemmatizerDataFileURL = this.lemmatizerDataFile != null
+            ? this.lemmatizerDataFile.toURI().toURL()
+            : this.getClass().getResource(ENG_LEMMATIZER_DATA_FILE);
     		lemmatizer = new MorphEnAnalyzer(new URL(lemmatizerDataFileURL.toString()));
     	}
 
