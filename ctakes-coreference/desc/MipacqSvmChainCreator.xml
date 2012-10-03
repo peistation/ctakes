@@ -94,7 +94,7 @@
         <name>svmPronModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:pronoun.mayo.rbf.model</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/pronoun.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -102,7 +102,7 @@
         <name>svmDemModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:dem.model</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/dem.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -110,7 +110,7 @@
         <name>svmAnaphoricityModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:anaphoricity.mayo.rbf.model</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/anaphoricity.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -118,7 +118,7 @@
         <name>svmCorefModelFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:ne.mayo.rbf.model</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/ne.mayo.rbf.model</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -126,7 +126,7 @@
         <name>StopWordsFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:stop.txt</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/stop.txt</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -134,7 +134,7 @@
         <name>fragsFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:frags.txt</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/frags.txt</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

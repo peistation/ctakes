@@ -40,7 +40,7 @@
       <nameValuePair>
         <name>anaphoricityModelFilename</name>
         <value>
-          <string>anaphoricity.model</string>
+          <string>org/apache/ctakes/coreference/models/anaphoricity.model</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -80,7 +80,7 @@
         <name>stopWordsFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:stop.txt</fileUrl>
+          <fileUrl>file:org/apache/ctakes/coreference/models/stop.txt</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

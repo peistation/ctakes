@@ -130,7 +130,7 @@
 <nameValuePair>
 <name>CmdCacheFileLocation</name>
 <value>
-<string>/ctakes-lvg/2005_norm.voc</string>
+<string>org/apache/ctakes/lvg/2005_norm.voc</string>
 </value>
 </nameValuePair>
 <nameValuePair>

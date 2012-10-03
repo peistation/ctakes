@@ -40,7 +40,7 @@
       <nameValuePair>
         <name>modelFilename</name>
         <value>
-          <string>fastModel</string>
+          <string>org/apache/ctakes/constituency/paraser/models/fastModel</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

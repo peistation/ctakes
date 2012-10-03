@@ -82,9 +82,9 @@ public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
 
   public Logger logger = Logger.getLogger(getClass().getName());
   
-  public static final String DEFAULT_MODEL_FILE_NAME = "/srl/en_srl_ontonotes.jar";
+  public static final String DEFAULT_MODEL_FILE_NAME = "org/apache/ctakes/dependency/parser/models/srl/en_srl_ontonotes.jar";
   
-  public static final String ENG_LEMMATIZER_DATA_FILE = "/lemmatizer/wordnet-3.0-lemma-data.jar";
+  public static final String ENG_LEMMATIZER_DATA_FILE = "org/apache/ctakes/dependency/parser/models/lemmatizer/wordnet-3.0-lemma-data.jar";
   
 
   public static final String PARAM_PARSER_MODEL_FILE_NAME = "ParserModelFileName";

@@ -72,9 +72,9 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 	public Logger logger = Logger.getLogger(getClass().getName());
 	
 	// Default model values
-	public static final String DEFAULT_MODEL_FILE_NAME = "/dependency/conll-2009-dev-shift-pop.jar";
+	public static final String DEFAULT_MODEL_FILE_NAME = "org/apache/ctakes/dependency/parser/models/dependency/conll-2009-dev-shift-pop.jar";
 
-	public static final String ENG_LEMMATIZER_DATA_FILE = "/lemmatizer/wordnet-3.0-lemma-data.jar";
+	public static final String ENG_LEMMATIZER_DATA_FILE = "org/apache/ctakes/dependency/parser/models/lemmatizer/wordnet-3.0-lemma-data.jar";
 
 	public static final String DEFAULT_PARSER_ALGORITHM_NAME = AbstractDepParser.ALG_SHIFT_POP;
 

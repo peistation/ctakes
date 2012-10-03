@@ -209,7 +209,7 @@
                         <nameValuePair>
                             <name>CmdCacheFileLocation</name>
                             <value>
-                                <string>/ctakes-lvg/2005_norm.voc</string>
+                                <string>org/apache/ctakes/lvg/2005_norm.voc</string>
                             </value>
                         </nameValuePair>
                         <nameValuePair>
@@ -264,7 +264,7 @@
                         <nameValuePair>
                             <name>LemmaCacheFileLocation</name>
                             <value>
-                                <string>/ctakes-lvg/2005_lemma.voc</string>
+                                <string>org/apache/ctakes/lvg/2005_lemma.voc</string>
                             </value>
                         </nameValuePair>
                         <nameValuePair>
@@ -320,7 +320,7 @@
                             <name>LvgCmdApi</name>
                             <description/>
                             <fileResourceSpecifier>
-                                <fileUrl>file:lvg/data/config/lvg.properties</fileUrl>
+                                <fileUrl>file:org/apache/ctakes/lvg/data/config/lvg.properties</fileUrl>
                             </fileResourceSpecifier>
                             <implementationName>org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl</implementationName>
                         </externalResource>
@@ -509,7 +509,7 @@
                             <name>MaxentModelFile</name>
                             <description/>
                             <fileResourceSpecifier>
-                                <fileUrl>file:sentdetect/sdmed.mod</fileUrl>
+                                <fileUrl>file:org/apache/ctakes/core/sentdetect/sdmed.mod</fileUrl>
                             </fileResourceSpecifier>
                             <implementationName>org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl</implementationName>
                         </externalResource>
@@ -600,7 +600,7 @@
                         <nameValuePair>
                             <name>PosModelFile</name>
                             <value>
-                                <string>models/mayo-pos.zip</string>
+                                <string>org/apache/ctakes/postagger/models/mayo-pos.zip</string>
                             </value>
                         </nameValuePair>
                         <nameValuePair>
@@ -612,7 +612,7 @@
                         <nameValuePair>
                             <name>TagDictionary</name>
                             <value>
-                                <string>models/tag.dictionary.txt</string>
+                                <string>org/apache/ctakes/postagger/models/tag.dictionary.txt</string>
                             </value>
                         </nameValuePair>
                     </configurationParameterSettings>
