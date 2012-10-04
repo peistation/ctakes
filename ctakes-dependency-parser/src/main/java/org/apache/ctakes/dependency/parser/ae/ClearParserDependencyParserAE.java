@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -129,15 +130,15 @@ public class ClearParserDependencyParserAE extends JCasAnnotator_ImplBase {
 			if (useLemmatizer) {
 				// Note: If lemmatizer data file is not specified, then use lemmas from the BaseToken normalizedToken field.
 				// Initialize lemmatizer
-        URL lemmatizerDataFileURL = this.lemmatizerDataFile != null
-            ? this.lemmatizerDataFile.toURI().toURL()
-            : this.getClass().getResource(ENG_LEMMATIZER_DATA_FILE);
+        URL lemmatizerDataFileURL = this.lemmatizerDataFile == null
+            ? this.getClass().getClassLoader().getResource(ENG_LEMMATIZER_DATA_FILE)
+            : this.lemmatizerDataFile.toURI().toURL();
 				lemmatizer = new MorphEnAnalyzer(lemmatizerDataFileURL);
 			}
 
 			// Initialize parser
 			URL parserModelURL = this.parserModelFileName == null
-					? ClearParserDependencyParserAE.class.getResource(DEFAULT_MODEL_FILE_NAME)
+					? this.getClass().getClassLoader().getResource(DEFAULT_MODEL_FILE_NAME)
 					: new File(this.parserModelFileName).toURI().toURL();
 			parser = ClearParserUtil.createParser(parserModelURL.openStream(), parserAlgorithmName);
 		} catch (MalformedURLException e) {
