@@ -25,10 +25,10 @@ import org.apache.ctakes.core.fsm.output.NegationIndicator;
 import org.apache.ctakes.core.fsm.token.TextToken;
 import org.apache.ctakes.necontexts.ContextHit;
 import org.apache.ctakes.smokingstatus.context.NamedEntityContextAnalyzer;
+import org.apache.ctakes.smokingstatus.machine.NegationFSM;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import edu.mayo.bmi.fsm.smoking.machine.NegationFSM;
 
 public class NegationContextAnalyzer extends NamedEntityContextAnalyzer {
 	private NegationFSM _negIndicatorFSM = new NegationFSM();

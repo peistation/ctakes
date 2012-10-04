@@ -65,7 +65,7 @@
 <name>ExamTitleWordsFileResource</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lookup/radiology/ExamTitleWords.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/lookup/radiology/ExamTitleWords.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

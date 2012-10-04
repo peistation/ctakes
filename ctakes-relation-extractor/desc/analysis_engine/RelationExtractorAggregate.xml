@@ -119,7 +119,7 @@
                         <nameValuePair>
                             <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                             <value>
-                                <string>resources/models/em_pair/model.jar</string>
+                                <string>org/apache/ctakes/relationextractor/models/em_pair/model.jar</string>
                             </value>
                         </nameValuePair>
                         <nameValuePair>
@@ -189,7 +189,7 @@
                         <nameValuePair>
                             <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                             <value>
-                                <string>resources/models/modifier_extractor/model.jar</string>
+                                <string>org/apache/ctakes/relationextractor/models/modifier_extractor/model.jar</string>
                             </value>
                         </nameValuePair>
                     </configurationParameterSettings>
@@ -475,7 +475,7 @@
                         <nameValuePair>
                             <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                             <value>
-                                <string>resources/models/degree_of/model.jar</string>
+                                <string>org/apache/ctakes/relationextractor/models/degree_of/model.jar</string>
                             </value>
                         </nameValuePair>
                     </configurationParameterSettings>

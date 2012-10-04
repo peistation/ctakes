@@ -67,7 +67,7 @@
             <nameValuePair>
                 <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                 <value>
-                    <string>resources/models/modifier_extractor/model.jar</string>
+                    <string>org/apache/ctakes/relationextractor/models/modifier_extractor/model.jar</string>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>

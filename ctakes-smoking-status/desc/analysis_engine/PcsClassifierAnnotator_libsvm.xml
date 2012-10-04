@@ -97,7 +97,7 @@
 <name>PathOfModelResc</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/PCS/pcs_libsvm-2.91.model</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/PCS/pcs_libsvm-2.91.model</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -105,7 +105,7 @@
 <name>PCSKeyWordFileResc</name>
 <description/>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/PCS/keywords_PCS.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/PCS/keywords_PCS.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -113,7 +113,7 @@
 <name>StopWordsFileResc</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/PCS/stopwords_PCS.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/PCS/stopwords_PCS.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

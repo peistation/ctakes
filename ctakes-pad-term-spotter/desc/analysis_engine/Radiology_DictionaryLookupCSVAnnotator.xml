@@ -81,7 +81,7 @@
 <name>LookupDescriptorFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lookup/radiology/LookupDesc_PAD.xml</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/lookup/radiology/LookupDesc_PAD.xml</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -89,7 +89,7 @@
 <name>PAD_Location_FileResrc</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lookup/radiology/pad_anatomical_sites.csv</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/lookup/radiology/pad_anatomical_sites.csv</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -97,7 +97,7 @@
 <name>PAD_Terms_FileResrc</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lookup/radiology/pad_disorders.csv</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/lookup/radiology/pad_disorders.csv</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

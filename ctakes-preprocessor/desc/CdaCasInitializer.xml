@@ -81,7 +81,7 @@ The CDA must conform to the DTD resource.</description>
 <name>DtdFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:cda/NotesIIST_RTF.DTD</fileUrl>
+<fileUrl>file:org/apache/ctakes/preprocessor/cda/NotesIIST_RTF.DTD</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -89,7 +89,7 @@ The CDA must conform to the DTD resource.</description>
 <name>HyphenFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:tokenizer/hyphenated.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/preprocessor/tokenizer/hyphenated.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

@@ -97,7 +97,7 @@
         <name>LookupDescriptorFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:sideeffect/lookup/LookupDesc_sideEffect.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/sideeffect/lookup/LookupDesc_sideEffect.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -230,7 +230,7 @@
         <name>CsvSEFile</name>
         <description>supplemental NEs</description>
         <fileResourceSpecifier>
-          <fileUrl>file:sideeffect/lookup/additionalNE_dictionary.csv</fileUrl>
+          <fileUrl>file:org/apache/ctakes/sideeffect/lookup/additionalNE_dictionary.csv</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

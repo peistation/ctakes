@@ -79,7 +79,7 @@
 <name>LookupDescriptorFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/SmokingStatusLookupConfig.xml</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/SmokingStatusLookupConfig.xml</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -87,7 +87,7 @@
 <name>DictionaryFileSmoker</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/smoker.dictionary</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/smoker.dictionary</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>
@@ -95,7 +95,7 @@
 <name>DictionaryFileNonSmoker</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:ss/data/nonsmoker.dictionary</fileUrl>
+<fileUrl>file:org/apache/ctakes/smokingstatus/data/nonsmoker.dictionary</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

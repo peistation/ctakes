@@ -144,7 +144,7 @@ This param is optional.  If not specified, then the classification feature of th
         <name>negationContradictionWords</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:ss/data/context/negationContradictionWords.txt</fileUrl>
+          <fileUrl>file:org/apache/ctakes/smokingstatus/data/context/negationContradictionWords.txt</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

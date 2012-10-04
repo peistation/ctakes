@@ -241,7 +241,7 @@
         <name>sideEffectDic</name>
         <description>dictionary of drug side effect</description>
         <fileResourceSpecifier>
-          <fileUrl>file:sideeffect/lookup/sideEffect_dictionary.txt</fileUrl>
+          <fileUrl>file:org/apache/ctakes/sideeffect/lookup/sideEffect_dictionary.txt</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

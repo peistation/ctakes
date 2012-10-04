@@ -107,7 +107,7 @@
             <nameValuePair>
                 <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                 <value>
-                    <string>resources/models/degree_of/model.jar</string>
+                    <string>org/apache/ctakes/relationextractor/models/degree_of/model.jar</string>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>

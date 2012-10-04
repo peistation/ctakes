@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package edu.mayo.bmi.fsm.smoking.machine;
+package org.apache.ctakes.smokingstatus.machine;
 
 import java.util.HashMap;
 import java.util.HashSet;

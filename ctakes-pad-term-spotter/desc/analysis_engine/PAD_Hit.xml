@@ -190,7 +190,7 @@
 <name>StopWordsFileResource</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lookup/radiology/StopWords.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/lookup/radiology/StopWords.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

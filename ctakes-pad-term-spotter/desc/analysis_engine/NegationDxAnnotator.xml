@@ -185,7 +185,7 @@
 <name>BoundaryDataFile</name>
 <description>Represents tokens that signifies negation boundary</description>
 <fileResourceSpecifier>
-<fileUrl>file:negation/boundaryData.txt</fileUrl>
+<fileUrl>file:org/apache/ctakes/padtermspotter/negation/boundaryData.txt</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
 </externalResource>

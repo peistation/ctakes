@@ -143,7 +143,7 @@
         <name>LookupDescriptorFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:lookup/LookupDesc_DrugNER.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/drugner/lookup/LookupDesc_DrugNER.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -178,7 +178,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/rxnorm_index</string>
+                  <string>org/apache/ctakes/drugner/lookup/rxnorm_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
