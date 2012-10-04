@@ -244,7 +244,7 @@
 <name>LvgCmdApi</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:lvg/data/config/lvg.properties</fileUrl>
+<fileUrl>file:org/apache/ctakes/lvg/data/config/lvg.properties</fileUrl>
 </fileResourceSpecifier>
 <implementationName>org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl</implementationName>
 </externalResource>
