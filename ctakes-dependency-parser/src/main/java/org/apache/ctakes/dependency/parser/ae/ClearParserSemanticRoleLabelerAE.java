@@ -122,7 +122,7 @@ public class ClearParserSemanticRoleLabelerAE extends JCasAnnotator_ImplBase {
     	if (useLemmatizer) {
     		// Note: If lemmatizer data file is not specified, then use lemmas from the BaseToken normalizedToken field.
     		// Initialize lemmatizer
-        URL lemmatizerDataFileURL = this.lemmatizerDataFile != null
+        URL lemmatizerDataFileURL = this.lemmatizerDataFile == null
             ? this.getClass().getClassLoader().getResource(ENG_LEMMATIZER_DATA_FILE)
             : this.lemmatizerDataFile.toURI().toURL();
     		lemmatizer = new MorphEnAnalyzer(new URL(lemmatizerDataFileURL.toString()));
