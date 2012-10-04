@@ -175,4 +175,17 @@
 			<systemPath>${project.basedir}/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<!-- Invoke JCasGen on the type system (see properties above) -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>
