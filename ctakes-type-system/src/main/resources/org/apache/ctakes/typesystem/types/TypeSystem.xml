@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>ApachecTAKESCommonTypeSystem</name>
+  <name>org.apache.ctakes.typesystem.types.TypeSystem</name>
   <description>This is a Apache cTAKES Common Type System for clinical NLP. It includes general types necessary to store annotations and interface with clinical element models</description>
   <version>1.0</version>
   <vendor>Apache cTAKES</vendor>

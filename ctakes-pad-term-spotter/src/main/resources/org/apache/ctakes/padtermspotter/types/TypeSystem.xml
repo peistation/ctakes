@@ -20,13 +20,13 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>PADSiteAndTerm</name>
+  <name>org.apache.ctakes.padtermspotter.types.TypeSystem</name>
   <description>Represents Term and Location entities required for PAD project.</description>
   <version>1.0</version>
   <vendor>Mayo</vendor>
   <imports>
-    <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
-    <import location="SubSection.xml"/>
+    <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
+    <import name="org.apache.ctakes.padtermspotter.types.SubSection"/>
   </imports>
   <types>
     <typeDescription>

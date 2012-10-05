@@ -48,7 +48,7 @@ However, the section ids are specific to Mayo data. This is provided just as an 
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
+<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

@@ -10,7 +10,7 @@
 	</parent>
 	
 	<properties>
-	<jcasgen.typesystem>desc/type_system/SideEffectTypeSystem.xml</jcasgen.typesystem>
+	<jcasgen.typesystem>org/apache/ctakes/sideeffect/types/TypeSystem.xml</jcasgen.typesystem>
 	</properties>
 
 	<dependencies>

@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-<name>I2B2TypeSystem</name>
+<name>org.apache.ctakes.smokingstatus.types.I2B2TypeSystem</name>
 <description></description>
 <version>1.0</version>
 <types>

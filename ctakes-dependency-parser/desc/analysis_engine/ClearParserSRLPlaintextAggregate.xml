@@ -72,7 +72,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
+                    <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
                         </imports>
                     </typeSystemDescription>
                     <fsIndexCollection/>
@@ -363,7 +363,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
+                    <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
                         </imports>
                     </typeSystemDescription>
                     <typePriorities/>
@@ -424,7 +424,7 @@
                     </configurationParameterSettings>
                     <typeSystemDescription>
                         <imports>
-                            <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
+                    <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
                         </imports>
                     </typeSystemDescription>
                     <fsIndexCollection/>

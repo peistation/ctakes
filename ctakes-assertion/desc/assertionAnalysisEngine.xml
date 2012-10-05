@@ -32,8 +32,8 @@
     <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>
-        <import location="medfactsTypeSystem.xml"/>
-        <import location="../../ctakes-type-system/desc/common_type_system.xml"/>
+        <import name="org.apache.ctakes.assertion.types.TypeSystem"/>
+        <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

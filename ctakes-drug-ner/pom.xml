@@ -11,7 +11,7 @@
 	
 	
 	<properties>
-		<jcasgen.typesystem>desc/type_system/NERTypeSystem.xml</jcasgen.typesystem>
+		<jcasgen.typesystem>org/apache/ctakes/drugner/types/TypeSystem.xml</jcasgen.typesystem>
 	</properties>
 	
 	<dependencies>

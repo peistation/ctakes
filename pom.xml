@@ -409,7 +409,7 @@
 					<configuration>
 						<mainClass>org.uimafit.util.JCasGenPomFriendly</mainClass>
 						<arguments>
-							<argument>file:${project.basedir}/${jcasgen.typesystem}
+							<argument>${jcasgen.typesystem}
 							</argument>
 							<argument>${project.build.directory}/generated-sources/jcasgen</argument>
 						</arguments>

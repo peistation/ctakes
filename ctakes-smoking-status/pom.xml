@@ -10,7 +10,7 @@
 	</parent>
 	
 	<properties>
-	<jcasgen.typesystem>desc/type_system/SmokingProductionTypeSystem.xml</jcasgen.typesystem>
+	<jcasgen.typesystem>org/apache/ctakes/smokingstatus/types/TypeSystem.xml</jcasgen.typesystem>
 	</properties>
 
 	<dependencies>

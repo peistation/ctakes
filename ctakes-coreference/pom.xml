@@ -10,7 +10,7 @@
 	</parent>
 	
 	<properties>
-	<jcasgen.typesystem>desc/type-system/CorefTypes.xml</jcasgen.typesystem>
+	<jcasgen.typesystem>org/apache/ctakes/coreference/types/TypeSystem.xml</jcasgen.typesystem>
 	</properties>
 		
 	<dependencies>

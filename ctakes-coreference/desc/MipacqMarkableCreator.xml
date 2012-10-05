@@ -102,7 +102,7 @@
     <typeSystemDescription>
       <imports>
         <import location="type-system/CorefTypes.xml"/>
-        <import location="../../ctakes-type-system/desc/common_type_system.xml"/>
+        <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

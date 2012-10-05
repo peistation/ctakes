@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-<name>LibSVM Type System</name>
+<name>org.apache.ctakes.smokingstatus.types.LibSVMTypeSystem</name>
 <description></description>
 <version>1.0</version>
 <vendor></vendor>

@@ -25,9 +25,9 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import location="../../../ctakes-type-system/desc/common_type_system.xml"/>
-    <import location="LibSVMTypeSystem.xml"/>
-    <import location="I2b2TypeSystem.xml"/>
+    <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
+    <import name="org.apache.ctakes.smokingstatus.types.LibSVMTypeSystem"/>
+    <import name="org.apache.ctakes.smokingstatus.types.I2B2TypeSystem"/>
   </imports>
   <types>
     <typeDescription>

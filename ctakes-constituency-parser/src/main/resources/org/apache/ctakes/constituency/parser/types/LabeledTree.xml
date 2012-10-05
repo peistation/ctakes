@@ -20,13 +20,10 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>LabeledTree</name>
+  <name>org.apache.ctakes.constituency.parser.types.LabeledTree</name>
   <description/>
   <version>1.0</version>
   <vendor/>
-  <imports>
-    <import location="../TypeSystem.xml"/>
-  </imports>
   <types>
     <typeDescription>
       <name>org.apache.ctakes.constituency.parser.uima.type.BooleanLabeledTree</name>

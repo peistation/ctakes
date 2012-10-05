@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-<name>SubSection</name>
+<name>org.apache.ctakes.padtermspotter.types.SubSection</name>
 <description></description>
 <version>1.0</version>
 <vendor></vendor>
