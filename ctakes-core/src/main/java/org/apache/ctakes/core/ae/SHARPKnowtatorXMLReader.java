@@ -1,8 +1,8 @@
 package org.apache.ctakes.core.ae;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
@@ -23,8 +24,10 @@ import org.apache.ctakes.typesystem.type.refsem.Severity;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
@@ -33,24 +36,30 @@ import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.util.JCasUtil;
 
-public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
-
-  public static final String PARAM_KNOWTATOR_XML_DIRECTORY = "knowtatorXMLDirectory";
-
-  @ConfigurationParameter(name = PARAM_KNOWTATOR_XML_DIRECTORY, mandatory = true)
-  protected File knowtatorXMLDirectory;
-
+public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
+  
   /**
    * Given the URI of the plain text file, determines the URI of the Knowtator XML file
    */
-  protected abstract URI getKnowtatorXML(JCas jCas) throws AnalysisEngineProcessException;
+  protected URI getKnowtatorXML(JCas jCas) throws AnalysisEngineProcessException {
+    String textURI = JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID();
+    String xmlURI = textURI.replaceAll("Knowtator/text", "Knowtator_XML") + ".knowtator.xml";
+    System.err.println(xmlURI);
+    try {
+      return new URI(xmlURI);
+    } catch (URISyntaxException e) {
+      throw new AnalysisEngineProcessException(e);
+    }
+  }
 
   /**
    * Returns the names of the annotators in the Knowtator files that represent the gold standard
    */
-  protected abstract String[] getAnnotatorNames();
+  protected String[] getAnnotatorNames() {
+    return new String[] { "consensus set annotator team" };
+  }
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
@@ -72,6 +81,8 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     Set<String> entityRelationTypes = new HashSet<String>();
     entityRelationTypes.add("location_of");
     entityRelationTypes.add("degree_of");
+    entityRelationTypes.add("causes/brings_about");
+    entityRelationTypes.add("indicates");
     Set<String> eventRelationTypes = new HashSet<String>();
     eventRelationTypes.add("TLINK");
     eventRelationTypes.add("ALINK");
@@ -165,6 +176,19 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
 
+      } else if ("Phenomena".equals(annotation.type)) {
+        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addEntityMentionFeatures(
+            annotation,
+            entityMention,
+            jCas,
+            CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
+            stringSlots,
+            booleanSlots,
+            annotationSlots,
+            idAnnotationMap,
+            delayedFeatures);
+
       } else if ("Procedure".equals(annotation.type)) {
         EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
         addEntityMentionFeatures(
@@ -177,6 +201,24 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             annotationSlots,
             idAnnotationMap,
             delayedFeatures);
+        KnowtatorAnnotation bodyLocation = annotationSlots.remove("body_location");
+        if (bodyLocation != null) {
+          delayedFeatures.add(new DelayedFeature<EntityMention>(entityMention, bodyLocation) {
+            @Override
+            protected void setValue(TOP valueAnnotation) {
+              // TODO: this.annotation.setBodyLocation(...)
+            }
+          });
+        }
+        KnowtatorAnnotation historyOf = annotationSlots.remove("historyOf_CU");
+        if (historyOf != null) {
+          delayedFeatures.add(new DelayedFeature<EntityMention>(entityMention, historyOf) {
+            @Override
+            protected void setValue(TOP valueAnnotation) {
+              // TODO: this.annotation.setHistoryOf(...)
+            }
+          });
+        }
 
       } else if ("Sign_symptom".equals(annotation.type)) {
         EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
@@ -196,6 +238,15 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             @Override
             protected void setValue(TOP valueAnnotation) {
               // TODO: this.annotation.setBodyLocation(...)
+            }
+          });
+        }
+        KnowtatorAnnotation severity = annotationSlots.remove("severity");
+        if (severity != null) {
+          delayedFeatures.add(new DelayedFeature<EntityMention>(entityMention, severity) {
+            @Override
+            protected void setValue(TOP valueAnnotation) {
+              // TODO: this.annotation.setSeverity(...)
             }
           });
         }
@@ -278,51 +329,109 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("generic_class".equals(annotation.type)) {
         // TODO: there's currently no Generic in the type system
         boolean value = booleanSlots.remove("generic_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("severity_class".equals(annotation.type)) {
-        // TODO: severity has a span, but it extends TOP
         Severity severity = new Severity(jCas);
         severity.setValue(stringSlots.remove("severity_normalization"));
         severity.addToIndexes();
-        idTopMap.put(annotation.id, severity);
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(severity);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("conditional_class".equals(annotation.type)) {
-        // TODO: there's currently no Generic in the type system
+        // TODO: there's currently no Conditional in the type system
         boolean value = booleanSlots.remove("conditional_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("course_class".equals(annotation.type)) {
-        // TODO: course has a span, but it extends TOP
         Course course = new Course(jCas);
         course.setValue(stringSlots.remove("course_normalization"));
         course.addToIndexes();
-        idTopMap.put(annotation.id, course);
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(course);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("uncertainty_indicator_class".equals(annotation.type)) {
         // TODO: there's currently no Uncertainty in the type system
         String value = stringSlots.remove("uncertainty_indicator_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("distal_or_proximal".equals(annotation.type)) {
         // TODO: there's currently no Distal or Proximal in the type system
         String value = stringSlots.remove("distal_or_proximal_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Person".equals(annotation.type)) {
         // TODO: there's currently no Subject in the type system
         String value = stringSlots.remove("subject_normalization_CU");
+        // TODO: what does a code mean on a Person?
+        String code = stringSlots.remove("associatedCode");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("body_side_class".equals(annotation.type)) {
-        // TODO: BodySide has a span, but it extends TOP
         BodySide bodySide = new BodySide(jCas);
         bodySide.setValue(stringSlots.remove("body_side_normalization"));
         bodySide.addToIndexes();
-        idTopMap.put(annotation.id, bodySide);
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(bodySide);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("negation_indicator_class".equals(annotation.type)) {
         // TODO: there's currently no Negation in the type system
         String value = stringSlots.remove("negation_indicator_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("historyOf_indicator_class".equals(annotation.type)) {
+        // TODO: there's currently no HistoryOf in the type system
+        String value = stringSlots.remove("historyOf_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("superior_or_inferior".equals(annotation.type)) {
+        // TODO: there's currently no Superior or Inferior in the type system
+        String value = stringSlots.remove("superior_or_inferior_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("medial_or_lateral".equals(annotation.type)) {
+        // TODO: there's currently no Medial or Lateral in the type system
+        String value = stringSlots.remove("medial_or_lateral_normalization");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("Route".equals(annotation.type)) {
+        // TODO: there's currently no Route in the type system
+        String value = stringSlots.remove("route_values");
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("Clinical_attribute".equals(annotation.type)) {
+        // TODO: what does this even mean?
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // modifier.setNormalizedForm(...);
+        idAnnotationMap.put(annotation.id, modifier);
 
       } else if (eventRelationTypes.contains(annotation.type)) {
         // store the ALINK information for later, once all annotations are in the CAS
         DelayedRelation relation = new DelayedRelation();
+        relation.sourceFile = knowtatorXML;
         relation.annotation = annotation;
         relation.source = annotationSlots.remove("Event");
         relation.target = annotationSlots.remove("related_to");
@@ -332,6 +441,7 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if (entityRelationTypes.contains(annotation.type)) {
         // store the relation information for later, once all annotations are in the CAS
         DelayedRelation relation = new DelayedRelation();
+        relation.sourceFile = knowtatorXML;
         relation.annotation = annotation;
         relation.source = annotationSlots.remove("Argument_CU");
         relation.target = annotationSlots.remove("Related_to_CU");
@@ -339,7 +449,10 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         delayedRelations.add(relation);
 
       } else {
-        throw new IllegalArgumentException("Unrecognized type: " + annotation.type);
+        throw new UnsupportedOperationException(String.format(
+            "unrecognized type '%s' in %s",
+            annotation.type,
+            knowtatorXML));
       }
 
       // make sure all slots have been consumed
@@ -350,9 +463,12 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       for (Map.Entry<String, Set<String>> entry : slotGroups.entrySet()) {
         Set<String> remainingSlots = entry.getValue();
         if (!remainingSlots.isEmpty()) {
-          String format = "%s has unprocessed %s: %s";
-          String message = String.format(format, annotation.type, entry.getKey(), remainingSlots);
-          throw new UnsupportedOperationException(message);
+          throw new UnsupportedOperationException(String.format(
+              "%s has unprocessed %s %s in %s",
+              annotation.type,
+              entry.getKey(),
+              remainingSlots,
+              knowtatorXML));
         }
       }
     }
@@ -413,6 +529,17 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       });
     }
 
+    // uncertainty must be delayed until the Uncertainty annotations are present
+    KnowtatorAnnotation uncertainty = annotationSlots.remove("uncertainty_indicator_CU");
+    if (uncertainty != null) {
+      delayedFeatures.add(new DelayedFeature<EntityMention>(entityMention, uncertainty) {
+        @Override
+        protected void setValue(TOP valueAnnotation) {
+          // TODO: this.annotation.setUncertainty(...)
+        }
+      });
+    }
+
     // subject must be delayed until the Subject annotations are present
     KnowtatorAnnotation subject = annotationSlots.remove("subject_CU");
     if (subject != null) {
@@ -462,6 +589,10 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   }
 
   private static class DelayedRelation {
+    private static Logger LOGGER = Logger.getLogger(DelayedRelation.class.getName());
+
+    public URI sourceFile;
+
     public KnowtatorAnnotation annotation;
 
     public KnowtatorAnnotation source;
@@ -473,6 +604,25 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     public KnowtatorAnnotation uncertainty;
 
     public void addToIndexes(JCas jCas, Map<String, Annotation> idAnnotationMap) {
+      if (this.source == null) {
+        // throw new UnsupportedOperationException(String.format(
+        LOGGER.warning(String.format(
+            "no source for '%s' with annotationSlots %s in %s",
+            this.annotation.id,
+            this.annotation.annotationSlots.keySet(),
+            this.sourceFile));
+        return;
+      }
+      if (this.target == null) {
+        // throw new UnsupportedOperationException(String.format(
+        LOGGER.warning(String.format(
+            "no target for '%s' with annotationSlots %s in %s",
+            this.annotation.id,
+            this.annotation.annotationSlots.keySet(),
+            this.sourceFile));
+        return;
+      }
+      
       // look up the relations in the map and issue an error if they're missing
       Annotation sourceMention = idAnnotationMap.get(this.source.id);
       Annotation targetMention = idAnnotationMap.get(this.target.id);
@@ -483,14 +633,21 @@ public abstract class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         badId = this.target.id;
       }
       if (badId != null) {
-        String message = String.format("no annotation with id '%s'", badId);
-        throw new UnsupportedOperationException(message);
+        throw new UnsupportedOperationException(String.format(
+            "no annotation with id '%s' in %s",
+            badId,
+            this.sourceFile));
       }
 
       // get the uncertainty
       if (this.uncertainty != null) {
-        Annotation uncertainty = idAnnotationMap.get(this.uncertainty);
-        System.err.println(uncertainty.getCoveredText());
+        Annotation uncertainty = idAnnotationMap.get(this.uncertainty.id);
+        if (uncertainty == null) {
+          throw new UnsupportedOperationException(String.format(
+              "no annotation with id '%s' in %s",
+              this.uncertainty.id,
+              this.sourceFile));
+        }
       }
 
       // add the relation to the CAS
