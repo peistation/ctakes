@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>Drug mentions to NERtype system</name>
+  <name>org.apache.ctakes.drugner.types.TypeSystem</name>
   <description/>
   <version>1.0</version>
   <vendor>Mayo Clinic</vendor>

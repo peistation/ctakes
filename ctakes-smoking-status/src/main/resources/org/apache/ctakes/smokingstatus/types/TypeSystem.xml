@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>SmokingProductionTypeSystem</name>
+  <name>org.apache.ctakes.smokingstatus.types.TypeSystem</name>
   <description/>
   <version>1.0</version>
   <vendor/>

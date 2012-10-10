@@ -10,6 +10,8 @@
 	</parent>
 	
 	<properties>
+	<jcasgen.typesystem>org/apache/ctakes/smokingstatus/types/LibSVMTypeSystem.xml</jcasgen.typesystem>
+	<jcasgen.typesystem>org/apache/ctakes/smokingstatus/types/I2b2TypeSystem.xml</jcasgen.typesystem>		
 	<jcasgen.typesystem>org/apache/ctakes/smokingstatus/types/TypeSystem.xml</jcasgen.typesystem>
 	</properties>
 

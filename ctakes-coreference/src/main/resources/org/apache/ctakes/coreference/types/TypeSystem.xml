@@ -20,7 +20,7 @@
 
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>CorefTypes2</name>
+  <name>org.apache.ctakes.coreference.types.TypeSystem</name>
   <description/>
   <version>1.0</version>
   <vendor/>
