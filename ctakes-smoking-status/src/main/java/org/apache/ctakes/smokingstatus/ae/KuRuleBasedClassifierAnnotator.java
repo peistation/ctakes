@@ -36,7 +36,7 @@ import org.apache.ctakes.smokingstatus.type.UnknownSmokerNamedEntityAnnotation;
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.smokingstatus.Const;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
-import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
+import org.apache.ctakes.smokingstatus.type.libsvm.NominalAttributeValue;
 
 public class KuRuleBasedClassifierAnnotator extends JCasAnnotator_ImplBase {
 	Set<String> smokingWords; // smoking related words

@@ -64,7 +64,7 @@ import org.apache.ctakes.smokingstatus.util.TruthValue;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
-import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
+import org.apache.ctakes.smokingstatus.type.libsvm.NominalAttributeValue;
 
 /**
  * @author Mayo Clinic Intended as an annotator to generate ClassifiableEntries

@@ -57,10 +57,10 @@
 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.types.StringAttributeValue</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.types.NumericAttributeValue</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.types.DateAttributeValue</type>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.libsvm.types.AttributeValue</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.smokingstatus.type.libsvms.StringAttributeValue</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.smokingstatus.type.libsvms.NumericAttributeValue</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.smokingstatus.type.libsvms.DateAttributeValue</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.smokingstatus.type.libsvms.AttributeValue</type>
 </outputs>
 <languagesSupported/>
 </capability>

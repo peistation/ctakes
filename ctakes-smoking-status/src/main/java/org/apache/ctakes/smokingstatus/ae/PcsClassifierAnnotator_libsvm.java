@@ -43,7 +43,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.ctakes.core.resource.FileResource;
 import org.apache.ctakes.smokingstatus.Const;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
-import edu.mayo.bmi.uima.libsvm.type.NominalAttributeValue;
+import org.apache.ctakes.smokingstatus.type.libsvm.NominalAttributeValue;
 
 public class PcsClassifierAnnotator_libsvm extends JCasAnnotator_ImplBase {
 	Set<String> stopWords;
