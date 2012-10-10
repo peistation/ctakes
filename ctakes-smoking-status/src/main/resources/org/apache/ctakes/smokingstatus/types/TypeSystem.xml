@@ -26,8 +26,8 @@
   <vendor/>
   <imports>
     <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
-    <import name="org.apache.ctakes.smokingstatus.types.LibSVMTypeSystem"/>
-    <import name="org.apache.ctakes.smokingstatus.types.I2B2TypeSystem"/>
+    <import location="LibSVMTypeSystem.xml"/>
+    <import location="I2B2TypeSystem.xml"/>
   </imports>
   <types>
     <typeDescription>
