@@ -19,46 +19,70 @@
     under the License.
 
 -->
-<collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>org.apache.ctakes.postagger.OpenNLPPOSCollectionReader</implementationName>
-  <processingResourceMetaData>
-    <name>OpenNLPPOSCollectionReader</name>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="TokenizerAnnotator">
+      <import location="TokenizerAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SentenceDetectorAnnotator">
+      <import location="SentenceDetectorAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="SimpleSegmentAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="POSTagger">
+      <import location="POSTagger.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>Tokens and sentences TAE</name>
     <description/>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters>
+    <configurationParameters searchStrategy="language_fallback">
       <configurationParameter>
-        <name>PosDataFile</name>
+        <name>TagDictionary</name>
         <type>String</type>
         <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>POSTagger/TagDictionary</parameter>
+        </overrides>
       </configurationParameter>
       <configurationParameter>
-        <name>LoadWordsOnly</name>
+        <name>CaseSensitive</name>
         <type>Boolean</type>
         <multiValued>false</multiValued>
-        <mandatory>false</mandatory>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>POSTagger/CaseSensitive</parameter>
+        </overrides>
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>PosDataFile</name>
+        <name>TagDictionary</name>
         <value>
-          <string>test/data/unit-test-tags.opennlp.format</string>
+          <string>target/test-classes/data/unit-test-tag-dictionary.txt</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>LoadWordsOnly</name>
+        <name>CaseSensitive</name>
         <value>
-          <boolean>true</boolean>
+          <boolean>false</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
-    <typeSystemDescription>
-      <imports>
-      </imports>
-    </typeSystemDescription>
+    <flowConstraints>
+      <fixedFlow>
+        <node>SimpleSegmentAnnotator</node>
+        <node>TokenizerAnnotator</node>
+        <node>SentenceDetectorAnnotator</node>
+        <node>POSTagger</node>
+      </fixedFlow>
+    </flowConstraints>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
@@ -70,9 +94,9 @@
     </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
-      <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
-      <outputsNewCASes>true</outputsNewCASes>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
-  </processingResourceMetaData>
+  </analysisEngineMetaData>
   <resourceManagerConfiguration/>
-</collectionReaderDescription>
+</analysisEngineDescription>

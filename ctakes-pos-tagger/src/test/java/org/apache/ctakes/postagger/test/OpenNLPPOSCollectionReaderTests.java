@@ -39,8 +39,8 @@ public class OpenNLPPOSCollectionReaderTests {
 
 	@Test
 	public void testReader() throws ResourceInitializationException, IOException, CollectionException {
-		CollectionReader collectionReader = TestUtil.getCR(new File("test/desc/OpenNLPPOSCollectionReader.xml"));
-		AnalysisEngine analysisEngine = TestUtil.getAE(new File("test/desc/NullAnnotator.xml"));
+		CollectionReader collectionReader = TestUtil.getCR(new File("desc/test/OpenNLPPOSCollectionReader.xml"));
+		AnalysisEngine analysisEngine = TestUtil.getAE(new File("desc/test/NullAnnotator.xml"));
 		JCas jCas = analysisEngine.newJCas();
 		collectionReader.getNext(jCas.getCas());
 		
@@ -109,8 +109,8 @@ public class OpenNLPPOSCollectionReaderTests {
 	
 	@Test
 	public void testLoadWordsOnly() throws ResourceInitializationException, IOException, CollectionException {
-		CollectionReader collectionReader = TestUtil.getCR(new File("test/desc/OpenNLPPOSCollectionReader2.xml"));
-		AnalysisEngine analysisEngine = TestUtil.getAE(new File("test/desc/NullAnnotator.xml"));
+		CollectionReader collectionReader = TestUtil.getCR(new File("desc/test/OpenNLPPOSCollectionReader2.xml"));
+		AnalysisEngine analysisEngine = TestUtil.getAE(new File("desc/test/NullAnnotator.xml"));
 		JCas jCas = analysisEngine.newJCas();
 		collectionReader.getNext(jCas.getCas());
 		

@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -36,8 +37,8 @@ public class TagDictionaryCreatorTests {
 
 	@Test
 	public void testCreateTagDictionary() throws FileNotFoundException, IOException {
-		BufferedReader input = new BufferedReader(new FileReader("test/data/unit-test-2lines-training-data.txt"));
-		HashMap<String, Set<String>> tagDictionaryData = TagDictionaryCreator.createTagDictionary(input, true);
+		InputStreamReader input = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("data/unit-test-2lines-training-data.txt"));
+		HashMap<String, Set<String>> tagDictionaryData = TagDictionaryCreator.createTagDictionary(new BufferedReader(input), true);
 		
 		Set<String> tags = tagDictionaryData.get("IL-2");
 		assertEquals(3, tags.size());
@@ -56,8 +57,8 @@ public class TagDictionaryCreatorTests {
 		assertTrue(cc);
 		assertTrue(in);
 
-		input = new BufferedReader(new FileReader("test/data/unit-test-2lines-training-data.txt"));
-		tagDictionaryData = TagDictionaryCreator.createTagDictionary(input, false);
+		input = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("data/unit-test-2lines-training-data.txt"));
+		tagDictionaryData = TagDictionaryCreator.createTagDictionary(new BufferedReader(input), false);
 		
 		tags = tagDictionaryData.get("il-2");
 		assertEquals(3, tags.size());
@@ -84,9 +85,10 @@ public class TagDictionaryCreatorTests {
 	
 	@Test
 	public void testMain() throws FileNotFoundException, IOException{
-		String[] args = new String[] { "test/data/unit-test-2lines-training-data.txt", "test/data/output/unit-test-2lines-tag-dictionary.txt", "true"};
+		String[] args = new String[] { "target/test-classes/data/unit-test-2lines-training-data.txt", "target/test-classes/data/output/unit-test-2lines-tag-dictionary.txt", "true"};
 		TagDictionaryCreator.main(args);
-		BufferedReader input = new BufferedReader(new FileReader("test/data/output/unit-test-2lines-tag-dictionary.txt"));
+		InputStreamReader reader = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("data/output/unit-test-2lines-tag-dictionary.txt"));
+		BufferedReader input = new BufferedReader(reader);
 		String line;
 		int lines = 0;
 		while((line = input.readLine())!= null) {
