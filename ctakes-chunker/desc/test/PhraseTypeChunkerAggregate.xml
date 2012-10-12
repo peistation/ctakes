@@ -21,63 +21,103 @@
 -->
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <primitive>true</primitive>
-  <annotatorImplementationName>org.apache.ctakes.postagger.POSTagger</annotatorImplementationName>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="Chunker">
+      <import location="Chunker.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="TokenizerAnnotator">
+      <import location="TokenizerAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SentenceDetectorAnnotator">
+      <import location="SentenceDetectorAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="SimpleSegmentAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="POSTagger">
+      <import location="POSTagger.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
-    <name>POSTagger</name>
+    <name>Chunker Aggregate</name>
     <description/>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters>
+    <configurationParameters searchStrategy="language_fallback">
       <configurationParameter>
         <name>PosModelFile</name>
         <description>the file that contains the part-of-speech tagging model</description>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
+        <overrides>
+          <parameter>POSTagger/PosModelFile</parameter>
+        </overrides>
       </configurationParameter>
       <configurationParameter>
-        <name>TagDictionary</name>
+        <name>ChunkerModelFile</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>Chunker/ChunkerModelFile</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>PosTagDictionary</name>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>false</mandatory>
+        <overrides>
+          <parameter>POSTagger/TagDictionary</parameter>
+        </overrides>
       </configurationParameter>
       <configurationParameter>
-        <name>CaseSensitive</name>
-        <type>Boolean</type>
+        <name>ChunkCreatorClass</name>
+        <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
+        <overrides>
+          <parameter>Chunker/ChunkCreatorClass</parameter>
+        </overrides>
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>PosModelFile</name>
+        <name>ChunkerModelFile</name>
         <value>
-          <string>data/test/unit-test-model.bin.gz</string>
+          <string>target/test-classes/data/unit-test.chunker.model.bin.gz</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>CaseSensitive</name>
+        <name>PosModelFile</name>
         <value>
-          <boolean>true</boolean>
+          <string>target/test-classes/data/unit-test.mayo-pos.zip</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>ChunkCreatorClass</name>
+        <value>
+          <string>org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
-    <typeSystemDescription>
-      <imports>
-      </imports>
-    </typeSystemDescription>
+    <flowConstraints>
+      <fixedFlow>
+        <node>SimpleSegmentAnnotator</node>
+        <node>TokenizerAnnotator</node>
+        <node>SentenceDetectorAnnotator</node>
+        <node>POSTagger</node>
+        <node>Chunker</node>
+      </fixedFlow>
+    </flowConstraints>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
-        <inputs>
-          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
-          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
-        </inputs>
-        <outputs>
-          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
-        </outputs>
+        <inputs/>
+        <outputs/>
         <languagesSupported/>
       </capability>
     </capabilities>

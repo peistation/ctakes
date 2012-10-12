@@ -29,7 +29,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>test/data/text-files</string>
+<string>target/test-classes/data/text-files</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -49,9 +49,9 @@
 <checkpoint batch="10000" time="1000ms"/>
 <configurationParameterSettings>
 <nameValuePair>
-<name>PosModelFile</name>
+<name>PosTagDictionary</name>
 <value>
-<string>test\data\unit-test.mayo-pos.zip</string>
+<string>test\data\unit-test-tag-dictionary.txt</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

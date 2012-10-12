@@ -29,7 +29,7 @@
 <nameValuePair>
 <name>InputDirectory</name>
 <value>
-<string>test/data/text-files</string>
+<string>target/test-classes/data/text-files</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -71,7 +71,7 @@
 <nameValuePair>
 <name>OutputDirectory</name>
 <value>
-<string>test/data/output</string>
+<string>target/test-classes/data/output</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

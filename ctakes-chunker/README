@@ -20,7 +20,7 @@ Listing of README's in this project
  - data/treebank/genia/README - how to prepare Genia Treebank data for ChunkLink
  - resources/models/README - how to build a chunker model
  - scripts/perl/README - information on obtaining the chunklink script
- - test/data/README - a description of the files used to unit test the Chunker annotator
+ - target/test-classes/data/README - a description of the files used to unit test the Chunker annotator
  
 ############
 Introduction

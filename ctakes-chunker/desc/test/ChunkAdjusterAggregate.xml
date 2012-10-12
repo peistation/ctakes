@@ -26,6 +26,9 @@
 <delegateAnalysisEngine key="SimpleSegmentAnnotator">
 <import location="SimpleSegmentAnnotator.xml"/>
 </delegateAnalysisEngine>
+<delegateAnalysisEngine key="ChunkAdjuster">
+<import location="AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
+</delegateAnalysisEngine>
 <delegateAnalysisEngine key="Chunker">
 <import location="Chunker.xml"/>
 </delegateAnalysisEngine>
@@ -96,13 +99,13 @@
 <nameValuePair>
 <name>ChunkerModelFile</name>
 <value>
-<string>test/data/unit-test.chunker.model.bin.gz</string>
+<string>target/test-classes/data/unit-test.chunker.model.bin.gz</string>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>PosModelFile</name>
 <value>
-<string>test/data/unit-test-model.bin.gz</string>
+<string>target/test-classes/data/unit-test-model.bin.gz</string>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -125,6 +128,7 @@
 <node>SentenceDetectorAnnotator</node>
 <node>POSTagger</node>
 <node>Chunker</node>
+<node>ChunkAdjuster</node>
 </fixedFlow>
 </flowConstraints>
 <typePriorities/>

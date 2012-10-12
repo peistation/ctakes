@@ -10,4 +10,4 @@ text-files - directory containing sample input files for testing the chunker
 
 The chunker model was generated with the following command:
 
-java opennlp.tools.chunker.ChunkerME data/test/unit-test.opennlp.chunks data/test/unit-test.chunker.model.bin.gz
+java opennlp.tools.chunker.ChunkerME target/test-classes/data/unit-test.opennlp.chunks target/test-classes/data/unit-test.chunker.model.bin.gz
