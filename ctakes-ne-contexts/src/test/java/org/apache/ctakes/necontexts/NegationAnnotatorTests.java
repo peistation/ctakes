@@ -34,12 +34,14 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class NegationAnnotatorTests {
 
-	static String unexpectedParamValueMsg = "unexpected parameter value for descriptor file test/desc/NegationAnnotator.xml for param: ";
+	static String unexpectedParamValueMsg = "unexpected parameter value for descriptor file desc/test/NegationAnnotator.xml for param: ";
 
 	@Test
 	public void testNegationExamples() throws ResourceInitializationException, AnalysisEngineProcessException {
+		//TODO: Pei- For unit tests, we should wire up the pipeline programmatically.
+		//We can use uimafit instead of xml descriptor files.
 
-		String descriptor = "test/desc/NegationAnnotator.xml";
+		String descriptor = "desc/test/NegationAnnotator.xml";
 		AnalysisEngine contextAE = TestUtil.getAE(new File(descriptor));
 		UimaContext uimaContext = contextAE.getUimaContext();
 		ContextAnnotator negationAnnotator = new ContextAnnotator();
@@ -55,7 +57,7 @@ public class NegationAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
-		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
+		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("desc/test/SegmentTokenSentenceAggregate.xml"));
 
 		String text;
 		JCas jCas;

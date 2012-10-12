@@ -19,6 +19,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-core</artifactId>
+			<version>${ctakes.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
 		<dependency>

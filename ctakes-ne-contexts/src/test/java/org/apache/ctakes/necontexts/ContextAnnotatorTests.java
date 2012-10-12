@@ -40,7 +40,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 public class ContextAnnotatorTests {
 
-	static String unexpectedParamValueMsg = "unexpected parameter value for descriptor file test/desc/ContextTestAnnotator.xml for param: ";
+	static String unexpectedParamValueMsg = "unexpected parameter value for descriptor file desc/test/ContextTestAnnotator.xml for param: ";
 
 	/**
 	 * This test tests ContextAnnotator.getLeftScopeTokens(JCas, Annotation,
@@ -56,7 +56,7 @@ public class ContextAnnotatorTests {
 	@Test
 	public void testLeftScopeTokens() throws ResourceInitializationException, AnalysisEngineProcessException {
 
-		String descriptor = "test/desc/TestContextAnnotator.xml";
+		String descriptor = "desc/test/TestContextAnnotator.xml";
 		AnalysisEngine contextAE = TestUtil.getAE(new File(descriptor));
 		UimaContext uimaContext = contextAE.getUimaContext();
 		ContextAnnotator contextAnnotator = new ContextAnnotator();
@@ -65,7 +65,7 @@ public class ContextAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_LEFT_SCOPE_SIZE_PARAM, new Integer(8));
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
-		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
+		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("desc/test/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
 		JCas jCas = TestUtil
 				.processAE(
@@ -244,7 +244,7 @@ public class ContextAnnotatorTests {
 	@Test
 	public void testRightScopeTokens() throws ResourceInitializationException, AnalysisEngineProcessException {
 
-		String descriptor = "test/desc/TestContextAnnotator.xml";
+		String descriptor = "desc/test/TestContextAnnotator.xml";
 		AnalysisEngine contextAE = TestUtil.getAE(new File(descriptor));
 		UimaContext uimaContext = contextAE.getUimaContext();
 		ContextAnnotator contextAnnotator = new ContextAnnotator();
@@ -253,7 +253,7 @@ public class ContextAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.MAX_RIGHT_SCOPE_SIZE_PARAM, new Integer(4));
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
-		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
+		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("desc/test/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
 		JCas jCas = TestUtil
 				.processAE(
@@ -409,8 +409,10 @@ public class ContextAnnotatorTests {
 	 */
 	@Test
 	public void testMiddleScopeTokens() throws ResourceInitializationException, AnalysisEngineProcessException {
-
-		String descriptor = "test/desc/TestContextAnnotator.xml";
+		//TODO: Pei- For unit tests, we should wire up the pipeline programmatically.
+		//We can use uimafit instead of xml descriptor files.
+		
+		String descriptor = "desc/test/TestContextAnnotator.xml";
 		AnalysisEngine contextAE = TestUtil.getAE(new File(descriptor));
 		UimaContext uimaContext = contextAE.getUimaContext();
 		ContextAnnotator contextAnnotator = new ContextAnnotator();
@@ -419,7 +421,7 @@ public class ContextAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
 
-		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
+		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("desc/test/SegmentTokenSentenceAggregate.xml"));
 		// this gives us a JCas that has segments, tokens, and sentences
 		JCas jCas = TestUtil
 				.processAE(

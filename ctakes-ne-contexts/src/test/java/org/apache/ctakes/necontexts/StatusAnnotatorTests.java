@@ -36,8 +36,9 @@ public class StatusAnnotatorTests {
 
 	@Test
 	public void testNegationExamples() throws ResourceInitializationException, AnalysisEngineProcessException {
-
-		String descriptor = "test/desc/StatusAnnotator.xml";
+		//TODO: Pei- For unit tests, we should wire up the pipeline programmatically.
+		//We can use uimafit instead of xml descriptor files.
+		String descriptor = "desc/test/StatusAnnotator.xml";
 		AnalysisEngine contextAE = TestUtil.getAE(new File(descriptor));
 		UimaContext uimaContext = contextAE.getUimaContext();
 		ContextAnnotator statusAnnotator = new ContextAnnotator();
@@ -50,10 +51,10 @@ public class StatusAnnotatorTests {
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANALYZER_CLASS_PARAM, "org.apache.ctakes.necontexts.status.StatusContextAnalyzer");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_HIT_CONSUMER_CLASS_PARAM, "org.apache.ctakes.necontexts.status.StatusContextHitConsumer");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.WINDOW_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textspan.Sentence");
-		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.IdentifiedAnnotation");
+		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.FOCUS_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation");
 		TestUtil.testConfigParam(uimaContext, descriptor, ContextAnnotator.CONTEXT_ANNOTATION_CLASS_PARAM, "org.apache.ctakes.typesystem.type.syntax.BaseToken");
 
-		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("test/desc/SegmentTokenSentenceAggregate.xml"));
+		AnalysisEngine segmentTokenSentenceAE = TestUtil.getAE(new File("desc/test/SegmentTokenSentenceAggregate.xml"));
 
 		String text;
 		JCas jCas;
