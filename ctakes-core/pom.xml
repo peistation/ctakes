@@ -18,7 +18,7 @@
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -76,4 +76,23 @@
 			<systemPath>${project.basedir}/lib/SQLWrapper.jar</systemPath>
 		</dependency>
 	</dependencies>
+	<build>
+		<!-- This is used to jar the test-jars. This is because other modules depend 
+			on the TestUtil class -->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

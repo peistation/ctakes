@@ -21,6 +21,9 @@
  */
 package org.apache.ctakes.core.ci;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -82,24 +85,28 @@ public class HyphenTextModifierImplTests {
 				"UNSUPPORTED: TextModification with offset changes.",
 				"New:  (new text not generated, see previous messages)",
 		};
-		String [] receivedMessages = new String[expectedMessages.length];
 
 		int errCount = expectedStderr.length;
 		System.out.println("OK to see the following " + errCount + " had been written to stderr:");
-		for (String s: expectedStderr) {
+		for (String s: expectedMessages) {
 			System.out.println(s);
 		}
 		
-		String filename = "resources/tokenizer/hyphenated.txt";
+		String filename = null;
+		try {
+			filename = this.getClass().getClassLoader().getResource("org/apache/ctakes/core/tokenizer/hyphenated.txt").toURI().getRawPath();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 		HyphenTextModifierImpl tm = new HyphenTextModifierImpl(filename, 7);
 		ArrayList<String> messages;
 		String t = "Non  Hodgkin's the x  ray without any non small  cell complications.";
 		messages = HyphenTextModifierImpl.test(tm, t); // extra blanks
-		assert(messages.toArray(receivedMessages).equals(expectedMessages));
-		t = t.replace("  ", " "); // change text to only have single blanks between words
+		t = t.replace("  ", " "); 
+		// change text to only have single blanks between words
 		// t = "Non Hodgkin's the x ray without any non small cell complications.";
-		messages = HyphenTextModifierImpl.test(tm, t); // single blanks
-
+		messages.addAll( HyphenTextModifierImpl.test(tm, t)); // single blanks
+		assertArrayEquals(messages.toArray(), expectedMessages);
 	}
 
 	/**
