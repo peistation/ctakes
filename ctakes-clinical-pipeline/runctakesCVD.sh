@@ -16,6 +16,6 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-java  -Xms1024M -Xmx2048M  -cp resources:cTAKESdesc:cTAKES.jar org.apache.ctakes.clinicalpipeline.main.cTAKESCVDGUI
-
+#
+# Requires JAVA JDK 1.6+, Maven 2 installed
+mvn exec:exec -PrunCVD

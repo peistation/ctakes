@@ -17,5 +17,5 @@
 @REM under the License.
 @REM
 
-java  -Xms1024M -Xmx2048M -cp resources;cTAKESdesc;cTAKES.jar org.apache.ctakes.clinicalpipeline.main.cTAKESCPEGUI
-
+@REM Requires JAVA JDK 1.6+, Maven 2 installed
+mvn exec:exec -PrunCPE
