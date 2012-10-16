@@ -8,14 +8,6 @@
 		<artifactId>ctakes</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
-	<build>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>resources</directory>
-			</resource>
-		</resources>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
