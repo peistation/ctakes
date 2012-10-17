@@ -68,5 +68,74 @@
 			<artifactId>ctakes-dependency-parser</artifactId>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>runCPE</id>
+			<activation>
+				<property>
+					<name>runCPE</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<!-- depends on other modules being on classpath -->
+								<phase>compile</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<mainClass>org.apache.uima.tools.cpm.CpmFrame</mainClass>
+							<arguments>
+								<argument></argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
+		<profile>
+			<id>runCVD</id>
+			<activation>
+				<property>
+					<name>runCVD</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<!-- depends on other modules being on classpath -->
+								<phase>compile</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<mainClass>org.apache.uima.tools.cvd.CVD</mainClass>
+							<!-- Have to specify at least one parameter otherwise, CVD thinks 
+								it's an invalid param because MVN passes null when joining to the mvn thread -->
+							<arguments>
+								<argument>-lookandfeel</argument>
+								<argument>javax.swing.plaf.metal.MetalLookAndFeel</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
