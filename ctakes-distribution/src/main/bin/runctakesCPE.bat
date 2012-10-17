@@ -18,4 +18,23 @@
 @REM
 
 @REM Requires JAVA JDK 1.6+
-java -cp lib/;desc/ -Djava.util.logging.config.file=${UIMA_HOME}/Logger.properties -Xms512M -Xmx1024M org.apache.uima.tools.cpm.CpmFrame
+
+@REM Guess CTAKES_HOME if not defined
+set CURRENT_DIR=%cd%
+if not "%CTAKES_HOME%" == "" goto gotHome
+set CTAKES_HOME=%CURRENT_DIR%
+if exist "%CTAKES_HOME%\bin\runctakesCPE.bat" goto okHome
+cd ..
+set CTAKES_HOME=%cd%
+
+:gotHome
+if exist "%CTAKES_HOME%\bin\runctakesCPE.bat" goto okHome
+echo The CTAKES_HOME environment variable is not defined correctly
+echo This environment variable is needed to run this program
+goto end
+
+:okHome
+cd %CTAKES_HOME%
+java -cp "%CTAKES_HOME%/lib/*;%CTAKES_HOME%/desc" -Djava.util.logging.config.file=%UIMA_HOME%/Logger.properties -Xms512M -Xmx1024M org.apache.uima.tools.cpm.CpmFrame
+
+:end

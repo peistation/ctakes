@@ -15,6 +15,7 @@
 				<include>org.apache.ctakes:ctakes-chunker</include>
 				<include>org.apache.ctakes:ctakes-clinical-pipeline</include>
 				<include>org.apache.ctakes:ctakes-constituency-parser</include>
+				<include>org.apache.ctakes:ctakes-context-tokenizer</include>				
 				<include>org.apache.ctakes:ctakes-core</include>
 				<include>org.apache.ctakes:ctakes-coreference</include>
 				<include>org.apache.ctakes:ctakes-dependency-parser</include>
@@ -42,6 +43,48 @@
 	</dependencySets>
 
 	<fileSets>
+		<fileSet>
+			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
+				these once they are in Maven Central -->
+			<directory>../ctakes-core/lib</directory>
+			<outputDirectory>lib</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<includes>
+				<include>OpenAI_FSM.jar</include>
+				<include>FindStructAPI.jar</include>
+				<include>SQLWrapper.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
+				these once they are in Maven Central -->
+			<directory>../ctakes-assertion/lib</directory>
+			<outputDirectory>lib</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<includes>
+				<include>med-facts-i2b2-1.2-SNAPSHOT.jar</include>
+				<include>med-facts-zoner-1.1.jar</include>
+				<include>jcarafe-core_2.9.1-0.9.8.3.RC4.jar</include>
+				<include>jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</include>				
+			</includes>
+		</fileSet>
+		<fileSet>
+			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
+				these once they are in Maven Central -->
+			<directory>../ctakes-lvg/lib</directory>
+			<outputDirectory>lib</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<includes>
+				<include>lvg2010dist.jar</include>				
+			</includes>
+		</fileSet>		
+
 
 		<fileSet>
 			<directory>../</directory>
@@ -97,7 +140,7 @@
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-chunker/desc</outputDirectory>
-		</fileSet>				
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-clinical-pipeline/desc</directory>
 			<filtered>true</filtered>
@@ -110,50 +153,51 @@
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-constituency-paraser/desc</outputDirectory>
-		</fileSet>	
+			<outputDirectory>desc/ctakes-constituency-paraser/desc
+			</outputDirectory>
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-context-tokenizer/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-context-tokenizer/desc</outputDirectory>
-		</fileSet>	
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-core/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-core/desc</outputDirectory>
-		</fileSet>							
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-coreference/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-coreference/desc</outputDirectory>
-		</fileSet>						
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-dependency-parser/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-dependency-parser/desc</outputDirectory>
-		</fileSet>	
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-dictionary-lookup/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-dictionary-lookup/desc</outputDirectory>
-		</fileSet>	
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-drug-ner/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-drug-ner/desc</outputDirectory>
-		</fileSet>		
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-lvg/desc</directory>
 			<filtered>true</filtered>
@@ -167,42 +211,43 @@
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-ne-contexts/desc</outputDirectory>
-		</fileSet>			
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-pad-term-spotter/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-pad-term-spotter/desc</outputDirectory>
-		</fileSet>			
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-pos-tagger/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-pos-tagger/desc</outputDirectory>
-		</fileSet>	
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-preprocessor/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-preprocessor/desc</outputDirectory>
-		</fileSet>			
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-relation-extractor/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-relation-extractor/desc</outputDirectory>
-		</fileSet>		
+			<outputDirectory>desc/ctakes-relation-extractor/desc
+			</outputDirectory>
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-side-effect/desc</directory>
 			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-side-effect/desc</outputDirectory>
-		</fileSet>					
+		</fileSet>
 		<fileSet>
 			<directory>../ctakes-smoking-status/desc</directory>
 			<filtered>true</filtered>
@@ -216,6 +261,6 @@
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-type-system/desc</outputDirectory>
-		</fileSet>													
+		</fileSet>
 	</fileSets>
 </assembly>

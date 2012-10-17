@@ -18,4 +18,21 @@
 #
 #
 # Requires JAVA JDK 1.6+
-java -cp lib/:desc/ -Djava.util.logging.config.file=${UIMA_HOME}/Logger.properties -Xms512M -Xmx1024M org.apache.uima.tools.cvd.CVD
+
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+PRGDIR=`dirname "$PRG"`
+
+# Only set CTAKES_HOME if not already set
+[ -z "$CTAKES_HOME" ] && CTAKES_HOME=`cd "$PRGDIR/.." >/dev/null; pwd`
+
+cd $CTAKES_HOME
+java -cp $CTAKES_HOME/lib/*:$CTAKES_HOME/desc/ -Djava.util.logging.config.file=${UIMA_HOME}/Logger.properties -Xms512M -Xmx1024M org.apache.uima.tools.cvd.CVD
