@@ -1,0 +1,22 @@
+<assembly>
+  <id>src</id>
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  
+  <baseDirectory>/apache-ctakes-${project.version}-incubating-src</baseDirectory>
+  
+  <fileSets>
+    <fileSet>
+      <directory>../</directory>
+      <outputDirectory></outputDirectory>
+      <excludes>
+        <exclude>**/target/**</exclude>
+        <exclude>**/.*/**</exclude>
+        <exclude>**/pom.xml.releaseBackup</exclude>
+        <exclude>**/release.properties</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>
