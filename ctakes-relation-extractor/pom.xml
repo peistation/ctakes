@@ -139,5 +139,9 @@
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes-dictionary-lookup</artifactId>
 	</dependency>
+	<dependency>
+		<groupId>org.apache.ctakes</groupId>
+		<artifactId>ctakes-clinical-pipeline</artifactId>
+	</dependency>
 	</dependencies>
 </project>
