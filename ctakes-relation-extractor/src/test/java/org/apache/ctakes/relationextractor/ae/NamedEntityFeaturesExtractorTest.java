@@ -35,7 +35,7 @@ public class NamedEntityFeaturesExtractorTest {
   @Test
   public void test() throws Exception {
     // create and populate a JCas with some EntityMention objects
-    JCas jCas = JCasFactory.createJCas("org.apache.ctakes.typesystem.types.TypeSystem");
+    JCas jCas = JCasFactory.createJCas();
     jCas.setDocumentText("aaa bbb ccc ddd");
     EntityMention e1 = new EntityMention(jCas, 0, 3);
     e1.setTypeID(42);
