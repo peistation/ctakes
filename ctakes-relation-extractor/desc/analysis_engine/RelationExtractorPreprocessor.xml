@@ -69,7 +69,7 @@
       <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ConstituencyParser">
-      <import location="../../../Constituency Parser/desc/ConstituencyParserAnnotator.xml"/>
+      <import location="../../../ctakes-constituency-parser/desc/ConstituencyParserAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
