@@ -117,6 +117,7 @@
 			<directoryMode>755</directoryMode>
 			<includes>
 				<include>RELEASE_NOTES.html</include>
+				<include>DISCLAIMER</include>				
 			</includes>
 		</fileSet>
 		<fileSet>
