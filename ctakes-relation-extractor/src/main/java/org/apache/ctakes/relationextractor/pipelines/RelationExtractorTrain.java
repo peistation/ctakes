@@ -152,7 +152,7 @@ public class RelationExtractorTrain {
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     
     // Initialize model directories
-    File modelsDirBase = new File("org/apache/ctakes/relationextractor/models");
+    File modelsDirBase = new File("resources/models");
     File modelsDirModExtractor = new File(modelsDirBase, "modifier_extractor");
     File modelsDirDegreeOf = new File(modelsDirBase, "degree_of");
     File modelsDirEMPair = new File(modelsDirBase, "em_pair");
