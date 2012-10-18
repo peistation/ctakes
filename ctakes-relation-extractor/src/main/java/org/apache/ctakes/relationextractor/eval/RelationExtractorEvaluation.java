@@ -255,10 +255,11 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     for (int i = 0; i < paths.length; ++i) {
       paths[i] = items.get(i).getPath();
     }
+
     // return a reader that will load each of the XMI files
     return CollectionReaderFactory.createCollectionReader(
         XMIReader.class,
-        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../ctakes-type-system/desc/common_type_system.xml"),
+        TypeSystemDescriptionFactory.createTypeSystemDescription(),
         XMIReader.PARAM_FILES,
         paths);
   }
