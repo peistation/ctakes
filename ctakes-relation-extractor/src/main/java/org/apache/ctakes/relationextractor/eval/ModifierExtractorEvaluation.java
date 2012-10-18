@@ -92,7 +92,7 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     }
     return CollectionReaderFactory.createCollectionReader(
         XMIReader.class,
-        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../ctakes-type-system/desc/common_type_system.xml"),
+        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(),
         XMIReader.PARAM_FILES,
         paths);
   }
