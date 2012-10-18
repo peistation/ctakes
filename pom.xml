@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.ctakes</groupId>
 	<artifactId>ctakes</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>cTAKES</name>
 	<scm>
@@ -14,7 +14,7 @@
 		<url>https://svn.apache.org/repos/asf/incubator/ctakes/trunk</url>
 	</scm>
 	<properties>
-		<ctakes.version>3.0.0-SNAPSHOT</ctakes.version>
+		<ctakes.version>3.0.0-incubating-SNAPSHOT</ctakes.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -310,12 +310,11 @@
 					<artifactId>maven-license-plugin</artifactId>
 					<version>1.9.0</version>
 					<configuration>
-						<header>license_header.txt</header>
+						<header>ctakes-distribution/src/main/config/license_header.txt</header>
 						<excludes>
 							<!-- We're disabling .txt files for now because some Annotators may 
 								not be able to handle standard comments in text files. This may break name 
 								values pairs such as stopWords.txt -->
-							<exclude>to-be-deleted-icTAKES/**</exclude>
 							<exclude>**.txt</exclude>
 						</excludes>
 						<useDefaultMapping>false</useDefaultMapping>
