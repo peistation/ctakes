@@ -2,6 +2,3 @@ Manifest-Version: 1.0
 classifierBuilderClass: org.cleartk.classifier.libsvm.MultiClassLIBSVM
  ClassifierBuilder
 
-Name: LIBSVM
-scaleFeatures: normalizeL2
-
