@@ -143,6 +143,15 @@
 			<directoryMode>755</directoryMode>
 			<outputDirectory>config</outputDirectory>
 		</fileSet>		
+		
+		<!-- Copy a default log4j config that could be overrided during runtime -->
+		<fileSet>
+			<directory>../ctakes-clinical-pipeline/src/main/resources</directory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+				<include>log4j.xml</include>			
+			<outputDirectory>config</outputDirectory>
+		</fileSet>				
 
 		<!-- Copy all of the XML Descriptors. Temp Preserving this structure so 
 			that the relative paths still work. -->

@@ -35,6 +35,6 @@ goto end
 
 :okHome
 cd %CTAKES_HOME%
-java -cp "%CTAKES_HOME%/lib/*;%CTAKES_HOME%/desc/*" -Djava.util.logging.config.file=%CTAKES_HOME%/config/Logger.properties -Xms512M -Xmx1024M org.apache.uima.tools.cpm.CpmFrame
+java -cp "%CTAKES_HOME%/lib/*;%CTAKES_HOME%/desc/*" -Dlog4j.configuration=file:/%CTAKES_HOME%/config/log4j.xml -Xms512M -Xmx1024M org.apache.uima.tools.cpm.CpmFrame
 
 :end
