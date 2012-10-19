@@ -101,7 +101,7 @@
         <name>LookupDescriptorFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:lookup/LookupDesc_Db.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/dictionary/lookup/LookupDesc_Db.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -199,7 +199,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/drug_index</string>
+                  <string>org/apache/ctakes/dictionary/lookup/drug_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
