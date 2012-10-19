@@ -1,23 +1,13 @@
-<!--
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-
--->
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
 <assembly>
 	<id>bin</id>
 	<formats>
@@ -35,7 +25,7 @@
 				<include>org.apache.ctakes:ctakes-chunker</include>
 				<include>org.apache.ctakes:ctakes-clinical-pipeline</include>
 				<include>org.apache.ctakes:ctakes-constituency-parser</include>
-				<include>org.apache.ctakes:ctakes-context-tokenizer</include>				
+				<include>org.apache.ctakes:ctakes-context-tokenizer</include>
 				<include>org.apache.ctakes:ctakes-core</include>
 				<include>org.apache.ctakes:ctakes-coreference</include>
 				<include>org.apache.ctakes:ctakes-dependency-parser</include>
@@ -83,7 +73,7 @@
 				<include>med-facts-i2b2-1.2-SNAPSHOT.jar</include>
 				<include>med-facts-zoner-1.1.jar</include>
 				<include>jcarafe-core_2.9.1-0.9.8.3.RC4.jar</include>
-				<include>jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</include>				
+				<include>jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -92,15 +82,15 @@
 			<directory>../ctakes-lvg/lib</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>lvg2010dist.jar</include>				
+				<include>lvg2010dist.jar</include>
 			</includes>
-		</fileSet>		
+		</fileSet>
 
 
 		<fileSet>
 			<directory>../</directory>
 			<outputDirectory></outputDirectory>
-			<filtered>true</filtered>
+
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<includes>
@@ -112,12 +102,12 @@
 		<fileSet>
 			<directory>.</directory>
 			<outputDirectory></outputDirectory>
-			<filtered>true</filtered>
+
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<includes>
 				<include>RELEASE_NOTES.html</include>
-				<include>DISCLAIMER</include>				
+				<include>DISCLAIMER</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -136,49 +126,45 @@
 			<directoryMode>755</directoryMode>
 			<outputDirectory>bin</outputDirectory>
 		</fileSet>
-		
+
 		<fileSet>
 			<directory>src/main/config</directory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>config</outputDirectory>
-		</fileSet>		
-		
+		</fileSet>
+
 		<!-- Copy a default log4j config that could be overrided during runtime -->
 		<fileSet>
 			<directory>../ctakes-clinical-pipeline/src/main/resources</directory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-				<include>log4j.xml</include>			
+			<include>log4j.xml</include>
 			<outputDirectory>config</outputDirectory>
-		</fileSet>				
+		</fileSet>
 
 		<!-- Copy all of the XML Descriptors. Temp Preserving this structure so 
 			that the relative paths still work. -->
 		<fileSet>
 			<directory>../ctakes-assertion/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-assertion/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-chunker/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-chunker/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-clinical-pipeline/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-clinical-pipeline/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-constituency-paraser/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-constituency-paraser/desc
@@ -186,84 +172,72 @@
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-context-tokenizer/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-context-tokenizer/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-core/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-core/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-coreference/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-coreference/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-dependency-parser/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-dependency-parser/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-dictionary-lookup/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-dictionary-lookup/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-drug-ner/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-drug-ner/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-lvg/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-lvg/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-ne-contexts/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-ne-contexts/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-pad-term-spotter/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-pad-term-spotter/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-pos-tagger/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-pos-tagger/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-preprocessor/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-preprocessor/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-relation-extractor/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-relation-extractor/desc
@@ -271,21 +245,18 @@
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-side-effect/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-side-effect/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-smoking-status/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-smoking-status/desc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../ctakes-type-system/desc</directory>
-			<filtered>true</filtered>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<outputDirectory>desc/ctakes-type-system/desc</outputDirectory>
