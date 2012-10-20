@@ -136,10 +136,12 @@
 
 		<!-- Copy a default log4j config that could be overrided during runtime -->
 		<fileSet>
-			<directory>../ctakes-clinical-pipeline/src/main/resources</directory>
+			<directory>../ctakes-core/src/main/resources</directory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<include>log4j.xml</include>
+			<includes>
+				<include>log4j.xml</include>
+			</includes>
 			<outputDirectory>config</outputDirectory>
 		</fileSet>
 
