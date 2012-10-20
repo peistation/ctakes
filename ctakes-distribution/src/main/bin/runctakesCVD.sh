@@ -33,4 +33,4 @@ PRGDIR=`dirname "$PRG"`
 [ -z "$CTAKES_HOME" ] && CTAKES_HOME=`cd "$PRGDIR/.." >/dev/null; pwd`
 
 cd $CTAKES_HOME
-java -cp $CTAKES_HOME/lib/*:$CTAKES_HOME/desc/ -Dlog4j.configuration=file:/%CTAKES_HOME%/config/log4j.xml -Xms512M -Xmx1024M org.apache.uima.tools.cvd.CVD
+java -cp $CTAKES_HOME/lib/*:$CTAKES_HOME/desc/ -Dlog4j.configuration=file:$CTAKES_HOME/config/log4j.xml -Xms512M -Xmx1024M org.apache.uima.tools.cvd.CVD
