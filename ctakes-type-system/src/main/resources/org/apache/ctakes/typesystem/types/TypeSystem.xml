@@ -28,7 +28,7 @@
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.WordToken</name>
       <description>Differentiates a token as being a word rather than a punctuation, symbol, newline, contraction, or number.
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.WordToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.WordToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
       <features>
         <featureDescription>
@@ -56,7 +56,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.WordToken</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.BaseToken</name>
       <description>A supertype for tokens subsuming word, punctuation, symbol, newline, contraction, or number.  Includes parts of speech, which are grammatical categories, e.g., noun (NN) or preposition (IN) that use Penn Treebank tags with a few additions.
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.BaseToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.BaseToken</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -85,7 +85,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.BaseToken</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.ContractionToken</name>
       <description>Differentiates a token as being a contraction rather than a punctuation, symbol, newline, word, or number. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.ContractionToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.ContractionToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
@@ -103,7 +103,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.ContractionToken</descri
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.Lemma</name>
       <description>Stores a lemma (canonical form of a token).  Inherits from uima.cas.TOP, allowing for reuse of standardized forms across the CAS. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Lemma</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Lemma</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -121,13 +121,13 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Lemma</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.NewlineToken</name>
       <description>Differentiates a token as being a newline rather than a punctuation, symbol, contraction, word, or number. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.NewlineToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NewlineToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.NumToken</name>
       <description>Differentiates a token as being a number rather than a punctuation, symbol, newline, word, or contraction. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.NumToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.NumToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
       <features>
         <featureDescription>
@@ -141,7 +141,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.NumToken</description>
       <name>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</name>
       <description>Ontologies (e.g., SNOMED-CT) provide an expert semantic representation for concepts. They typically assign a code to a concept and normalize across various textual representations of that concept.  
 IdentifiedAnnotation and Elements may point to these normalized concept representations to indicate clinical concepts.
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.OntologyConcept</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -171,13 +171,13 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.OntologyConcept</descrip
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.PunctuationToken</name>
       <description>Differentiates a token as being punctuation rather than a contraction, symbol, newline, word, or number. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.PunctuationToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.PunctuationToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textspan.Segment</name>
       <description>A section of a clinical text, e.g., Diagnosis, Current Medications, Problem List.  Different segments often have differing sublanguages and clinical relevance.     
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Segment</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Segment</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -190,7 +190,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Segment</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textspan.Sentence</name>
       <description>Sentences may or may not be fully-formed and grammatical.  They form the unit of analysis for some downstream components (e.g., constituency parsers).
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Sentence</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Sentence</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -208,13 +208,13 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Sentence</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.syntax.SymbolToken</name>
       <description>Differentiates a token as being a symbol rather than a punctuation, contraction, newline, word, or number. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.SymbolToken</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.SymbolToken</description>
       <supertypeName>org.apache.ctakes.typesystem.type.syntax.BaseToken</supertypeName>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.refsem.UmlsConcept</name>
       <description>Concepts in the Unified Medical Language System (UMLS) Metathesaurus have a concept unique identifier (CUI) and a type unique identifier (TUI, i.e., semantic type) which are curated, normalized codes. For example, "pain" would have a cui=C0030193 and tui=T184.
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.UmlsConcept</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.UmlsConcept</description>
       <supertypeName>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</supertypeName>
       <features>
         <featureDescription>
@@ -1132,11 +1132,35 @@ More qualifying information on how the procedure was done.</description>
       <name>org.apache.ctakes.typesystem.type.relation.ElementRelation</name>
       <description>A super-type referring to real-world semantic relationships, e.g., TemporalRelations between two Events.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.relation.Relation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>arg1</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>arg2</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.relation.AttributeRelation</name>
       <description>A real-world relationship between an Element and an Attribute.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.relation.Relation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>arg1</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>arg2</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.relation.TemporalRelation</name>
@@ -1598,6 +1622,11 @@ More qualifying information on how the procedure was done.</description>
           <description/>
           <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>timeClass</name>
+          <description>DATE, DURATION, QUANTIFIER, PREPOSTEXP, etc.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -1609,6 +1638,11 @@ More qualifying information on how the procedure was done.</description>
           <name>normalizedForm</name>
           <description/>
           <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>category</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -1690,7 +1724,7 @@ More qualifying information on how the procedure was done.</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.util.Pair</name>
       <description>An Attribute-Value tuple.
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Property</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Property</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
@@ -1708,7 +1742,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Property</description>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.util.Pairs</name>
       <description>A brute force "hash" that stores multiple Pairs in a list. 
-Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Properties</description>
+Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Properties</description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
