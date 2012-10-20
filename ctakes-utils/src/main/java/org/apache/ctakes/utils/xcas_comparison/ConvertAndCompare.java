@@ -104,7 +104,7 @@ public class ConvertAndCompare {
 		File f1 = new File(args[0]);
 		if (!f1.exists()) { System.err.println(args[0]+" not exist!"); System.exit(1); }
 		File f2 = new File(args[1]);
-		if (!f2.exists()) { System.err.println(args[2]+" not exist!"); System.exit(1); }
+		if (!f2.exists()) { System.err.println(args[1]+" not exist!"); System.exit(1); }
 		XcasFile xf1 = p.process(f1);
 		XcasFile xf2 = p.process(f2);
 //		Change xf1 to xf2 if the second command line argument is the open source output
