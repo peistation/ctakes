@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -61,14 +62,12 @@ public class ClinicalNotePreProcessorTest extends TestCase
     {
         super.setUp();
 
-        String dtdLocation = "resources/cda/NotesIIST_RTF.DTD";
+        String dtdLocation = "src/test/resources/NotesIIST_RTF.DTD";
         File dtd = new File(dtdLocation);
         iv_cnotePreProcessor = new ClinicalNotePreProcessor(dtd, false);
 
-		//String cnoteLocationOnCp = "/test/data/testpatient_cn_1.xml";
-		String cnoteLocationOnCp = "../../../../../data/testpatient_cn_1.xml";
-        String cnoteLocation =
-            URLDecoder.decode(getClass().getResource(cnoteLocationOnCp).getPath());
+        String cnoteLocationOnCp = "src/test/resources/testpatient_cn_1.xml";
+        String cnoteLocation = new File(cnoteLocationOnCp).getPath();
         
         if (cnoteLocation == null) {
         	throw new FileNotFoundException("Unable to find: " + cnoteLocationOnCp);
