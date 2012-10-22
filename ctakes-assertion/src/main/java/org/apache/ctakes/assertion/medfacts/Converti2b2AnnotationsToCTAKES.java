@@ -75,6 +75,7 @@ import org.apache.uima.util.XMLSerializer;
  */
 
 public class Converti2b2AnnotationsToCTAKES {
+	private static Logger logger = Logger.getLogger(Converti2b2AnnotationsToCTAKES.class);
 	
 	private static CAS getTypeSystemFromDescriptor(String descriptor) throws InvalidXMLException, IOException, ResourceInitializationException, CASException {
 		XMLParser xmlParser = UIMAFramework.getXMLParser();
@@ -110,7 +111,7 @@ public class Converti2b2AnnotationsToCTAKES {
 	    }
 	  }
 	
-	public static void main(String [] args) throws IOException, InvalidXMLException, CASException, SAXException {
+	public static void main(String [] args) throws IOException, InvalidXMLException, CASException, SAXException, AnalysisEngineProcessException {
 		//File currentTextFile = new File(args[0]);
 		File assertionDir = new File(args[1]);
 		File dir = new File(args[0]);
@@ -183,20 +184,58 @@ public class Converti2b2AnnotationsToCTAKES {
 					tok.addToIndexes();
 				}
 			}
+			logger.info("before assertions");
 			for (Annotation a : assertions) {
-				Concept assertion = new Concept(jcas);
+				logger.info("  begin assertion");
+				logger.info("  assertion: " + a.toString());
+				//Concept assertion = new Concept(jcas);
+
+				org.mitre.medfacts.i2b2.annotation.AssertionAnnotation i2b2Assertion = (org.mitre.medfacts.i2b2.annotation.AssertionAnnotation)a;
+				ConceptType conceptType = i2b2Assertion.getConceptType();
+
+				IdentifiedAnnotation entityOrEventMention = null;
+				if (conceptType.equals(ConceptType.TREATMENT))
+				{
+				  entityOrEventMention = new EventMention(jcas);
+				} else
+				{
+				  entityOrEventMention = new EntityMention(jcas);
+				}
+				
 				LineAndTokenPosition assertionStart = new LineAndTokenPosition();
 				LineAndTokenPosition assertionEnd = new LineAndTokenPosition();
 				assertionStart.setLine(a.getBegin().getLine());
 				assertionStart.setTokenOffset(a.getBegin().getTokenOffset());
 				assertionEnd.setLine(a.getEnd().getLine());
 				assertionEnd.setTokenOffset(a.getEnd().getTokenOffset());
-				assertion.setBegin(converter.convert(assertionStart).getBegin());
-				assertion.setEnd(converter.convert(assertionEnd).getEnd() + 1);
-				assertion.setConceptType("PROBLEM");
-				assertion.addToIndexes();
+				
+//				assertion.setBegin(converter.convert(assertionStart).getBegin());
+//				assertion.setEnd(converter.convert(assertionEnd).getEnd() + 1);
+//				assertion.setConceptType("PROBLEM");
+//				assertion.addToIndexes();
+				
+				entityOrEventMention.setBegin(converter.convert(assertionStart).getBegin());
+				entityOrEventMention.setEnd(converter.convert(assertionEnd).getEnd());
+				entityOrEventMention.setConfidence(1.0f);
+				
+				FSArray ontologyConceptArray = ConceptLookup.reverseLookup(conceptType, jcas);
+				entityOrEventMention.setOntologyConceptArr(ontologyConceptArray);
+				
+				//adjustAssertionAttributesByI2B2Convertion(entityOrEventMention, i2b2Assertion);
+				AssertionAnalysisEngine.mapI2B2AssertionValueToCtakes(i2b2Assertion.getAssertionValue().toString().toLowerCase(), entityOrEventMention);
+				
+				entityOrEventMention.addToIndexes();
+				logger.info("  end assertion");
 			}
+			logger.info("after assertions");
 			writeXmi(cas,outFile);
 		}
 	}
+
+  private static void adjustAssertionAttributesByI2B2Convertion(
+      IdentifiedAnnotation entityOrEventMention,
+      org.mitre.medfacts.i2b2.annotation.AssertionAnnotation i2b2Assertion)
+  {
+    
+  }
 }

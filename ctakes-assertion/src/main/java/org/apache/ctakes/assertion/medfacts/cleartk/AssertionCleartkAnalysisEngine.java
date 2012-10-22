@@ -26,15 +26,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.CleartkAnnotatorDescriptionFactory;
 import org.cleartk.classifier.CleartkSequenceAnnotator;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.extractor.ContextExtractor;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
+import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
@@ -43,7 +47,10 @@ import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
 import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
 import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
 import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
+import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
+import org.cleartk.classifier.opennlp.MaxentDataWriterFactory_ImplBase;
 import org.cleartk.type.test.Token;
+import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
@@ -55,8 +62,10 @@ public class AssertionCleartkAnalysisEngine extends
     CleartkSequenceAnnotator<String>
 {
 
-  private SimpleFeatureExtractor tokenFeatureExtractor;
+	public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
+//private SimpleFeatureExtractor tokenFeatureExtractor;
   private List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
+  private List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
   private List<SimpleFeatureExtractor> entityFeatureExtractors;
   
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -68,7 +77,8 @@ public class AssertionCleartkAnalysisEngine extends
     // the stem of the word, the text of the word itself, plus
     // features created from the word text like character ngrams
     this.entityFeatureExtractors = Arrays.asList(
-        new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
+        new CoveredTextExtractor(),
+        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
         new ProliferatingExtractor(
             new SpannedTextExtractor(),
             new LowerCaseProliferator(),    
@@ -81,9 +91,47 @@ public class AssertionCleartkAnalysisEngine extends
     this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
     this.contextFeatureExtractors.add(new ContextExtractor<IdentifiedAnnotation>(
         IdentifiedAnnotation.class,
-        new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
+        new CoveredTextExtractor(),
+        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
         new Preceding(2),
         new Following(2)));
+    ContextExtractor<BaseToken> tokenContextExtractor1 = new ContextExtractor<BaseToken>( 
+        BaseToken.class, 
+        new SpannedTextExtractor(), 
+        new ContextExtractor.Ngram(new Covered()),
+        
+        new ContextExtractor.Ngram(new Preceding(1)), 
+        new ContextExtractor.Ngram(new Preceding(2)), 
+        //new ContextExtractor.Ngram(new Preceding(1, 2)), 
+        new ContextExtractor.Ngram(new Preceding(3)), 
+        //new ContextExtractor.Ngram(new Preceding(2, 3)), 
+        new ContextExtractor.Ngram(new Following(1)), 
+        new ContextExtractor.Ngram(new Following(2)),
+        //new ContextExtractor.Ngram(new Following(1, 2)),
+        new ContextExtractor.Ngram(new Following(3))
+        //new ContextExtractor.Ngram(new Following(2,3))
+        ); 
+    tokenContextFeatureExtractors = new ArrayList<ContextExtractor<BaseToken>>();
+    tokenContextFeatureExtractors.add(tokenContextExtractor1);
+    
+    TypePathExtractor posExtractor = new TypePathExtractor(BaseToken.class, "partOfSpeech");
+    ContextExtractor<BaseToken> extractor2 = new ContextExtractor<BaseToken>( 
+        BaseToken.class, 
+        posExtractor, 
+        new ContextExtractor.Ngram(new Covered()), 
+        new ContextExtractor.Ngram(new Preceding(1)), 
+        new ContextExtractor.Ngram(new Preceding(2)), 
+        new ContextExtractor.Ngram(new Following(1)), 
+        new ContextExtractor.Ngram(new Following(2)) 
+        /*
+        new ContextExtractor.Covered(), 
+        new ContextExtractor.Ngram(new Covered()) 
+        
+        new ContextExtractor.Ngram(new Preceding(1)), 
+        new ContextExtractor.Ngram(new Preceding(2)), 
+        */
+        );
+    tokenContextFeatureExtractors.add(extractor2);
 
   }
 
@@ -102,8 +150,8 @@ public class AssertionCleartkAnalysisEngine extends
     {
       Instance<String> instance = new Instance<String>();
       
-      // extract all features that require only the entity mention annotation
-      instance.addAll(tokenFeatureExtractor.extract(jCas, entityMention));
+//      // extract all features that require only the entity mention annotation
+//      instance.addAll(tokenFeatureExtractor.extract(jCas, entityMention));
 
       // extract all features that require the token and sentence annotations
       Collection<Sentence> sentenceList = coveringSentenceMap.get(entityMention);
@@ -121,6 +169,12 @@ public class AssertionCleartkAnalysisEngine extends
       Sentence sentence = sentenceList.iterator().next();
       for (ContextExtractor<IdentifiedAnnotation> extractor : this.contextFeatureExtractors) {
         instance.addAll(extractor.extractWithin(jCas, entityMention, sentence));
+      }
+      for (ContextExtractor<BaseToken> extractor : this.tokenContextFeatureExtractors) {
+        instance.addAll(extractor.extract(jCas, entityMention));
+      }
+      for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
+        instance.addAll(extractor.extract(jCas, entityMention));
       }
       
       if (this.isTraining())
@@ -146,7 +200,10 @@ public class AssertionCleartkAnalysisEngine extends
       for (String label : this.classify(instances))
       {
         int polarity = 1;
-        if (label != null && label.equals("negated"))
+        if (label!= null && label.equals("present"))
+        {
+          polarity = 1;
+        } else if (label != null && label.equals("negated"))
         {
           polarity = -1;
         }
@@ -156,4 +213,27 @@ public class AssertionCleartkAnalysisEngine extends
 
   }
 
+  /*
+  public static AnalysisEngineDescription getClassifierDescription(String modelFileName)
+      throws ResourceInitializationException {
+    return CleartkAnnotatorDescriptionFactory.createCleartkAnnotator(
+        AssertionCleartkAnalysisEngine.class,
+        AssertionComponents.TYPE_SYSTEM_DESCRIPTION,
+        modelFileName);
+  }
+
+  public static AnalysisEngineDescription getWriterDescription(String outputDirectory)
+      throws ResourceInitializationException {
+    AnalysisEngineDescription aed = CleartkAnnotatorDescriptionFactory.createViterbiAnnotator(
+        AssertionCleartkAnalysisEngine.class,
+        AssertionComponents.TYPE_SYSTEM_DESCRIPTION,
+        DefaultMaxentDataWriterFactory.class,
+        outputDirectory);
+    ConfigurationParameterFactory.addConfigurationParameter(
+        aed,
+        MaxentDataWriterFactory_ImplBase.PARAM_COMPRESS,
+        true);
+    return aed;
+  }
+  */
 }

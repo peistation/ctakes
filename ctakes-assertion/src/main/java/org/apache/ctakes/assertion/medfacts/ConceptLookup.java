@@ -38,6 +38,10 @@ public class ConceptLookup
   protected static HashSet<String> treatmentSet = new HashSet<String>();
   protected static HashSet<String> ignoredSet = new HashSet<String>();
 
+  public static final String REVERSE_LOOKUP_PROBLEM_TUI = "T019";
+  public static final String REVERSE_LOOKUP_TEST_TUI = "T059";
+  public static final String REVERSE_LOOKUP_TREATMENT_TUI = "T116";
+
   static
   {
     String diseasesAndDisordersTuis[] =
@@ -155,6 +159,44 @@ public class ConceptLookup
     //logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", (conceptType == null ? null : conceptType.toString())));
     
     return conceptType;
+  }
+  
+  public static FSArray reverseLookup(ConceptType conceptType, JCas jcas)
+  {
+	  if (conceptType == null) return null;
+	  
+//	  FSIndexRepository fsIndexRepository = jcas.getFSIndexRepository();
+//	  fsIndexRepository.addFS();
+//	  fsIndexRepository.
+
+	  FSArray ontologyConceptArray = new FSArray(jcas, 1);
+	  OntologyConcept ontologyConcept = new OntologyConcept(jcas);
+	  String codingScheme = null;
+	  String code = null;
+	  if (conceptType.equals(ConceptType.TREATMENT))
+	  {
+		codingScheme = "RXNORM";
+		code = ConceptLookup.REVERSE_LOOKUP_TREATMENT_TUI;
+	  } else if (conceptType.equals(ConceptType.PROBLEM))
+	  {
+		codingScheme = "SNOMEDCT";
+		code = ConceptLookup.REVERSE_LOOKUP_PROBLEM_TUI;
+	  } else if (conceptType.equals(ConceptType.TEST))
+	  {
+		codingScheme = "SNOMEDCT";
+		code = ConceptLookup.REVERSE_LOOKUP_TEST_TUI;
+	  } else
+	  {
+		codingScheme = null;
+		code = null;
+	  }
+	  ontologyConcept.setCode(code);
+	  ontologyConcept.setCodingScheme(codingScheme);
+	  
+	  ontologyConceptArray.set(0,  ontologyConcept);
+	  
+	  return ontologyConceptArray;
+	  
   }
 
 }

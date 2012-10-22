@@ -65,7 +65,7 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 {
-  Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
+  private static Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
   
   AssertionDecoderConfiguration assertionDecoderConfiguration;
 
@@ -246,95 +246,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 //      logger.info(String.format("removed entityMention (%s) from indexes",
 //          entityMention.toString()));
 //      entityMention.removeFromIndexes();
-      if (currentAssertionType == null)
-      {
-        String message = "current assertion type is null; this is a problem!!";
-        System.err.println(message);
-        logger.severe(message);
-        // Exception runtimeException = new RuntimeException(message);
-        // throw new AnalysisEngineProcessException(runtimeException);
-      
-        // ALL OBVIOUS ERROR VALUES!!
-        annotation.setSubject("skipped");
-        annotation.setPolarity(-2);
-        annotation.setConfidence(-2.0f);
-        annotation.setUncertainty(-2);
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-
-      } else if (currentAssertionType.equals("present"))
-      // PRESENT (mastif value)
-      {
-        //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
-        // ALL DEFAULT VALUES!! (since this is present)
-        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
-        annotation.setPolarity(1);
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(0);
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-
-        //debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
-      } else if (currentAssertionType.equals("absent"))
-      // ABSENT (mastif value)
-      {
-        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
-        annotation.setPolarity(-1); // NOT DEFAULT VALUE
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(0);
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-
-      } else if (currentAssertionType.equals("associated_with_someone_else"))
-      // ASSOCIATED WITH SOMEONE ELSE (mastif value)
-      {
-        annotation.setSubject("CONST.ATTR_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
-        annotation.setPolarity(1);
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(0);
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-
-      } else if (currentAssertionType.equals("conditional"))
-      // CONDITIONAL (mastif value)
-      {
-        // currently no mapping to sharp type...all sharp properties are defaults!
-        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
-        annotation.setPolarity(1);
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(0);
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-
-      } else if (currentAssertionType.equals("hypothetical"))
-      // HYPOTHETICAL (mastif value)
-      {
-        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
-        annotation.setPolarity(1);
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(0);
-        annotation.setConditional(true); // NOT DEFAULT VALUE
-        annotation.setGeneric(false);
-
-      } else if (currentAssertionType.equals("possible"))
-      // POSSIBLE (mastif value)
-      {
-        annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
-        annotation.setPolarity(1);
-        annotation.setConfidence(1.0f);
-        annotation.setUncertainty(1); // NOT DEFAULT VALUE
-        annotation.setConditional(false);
-        annotation.setGeneric(false);
-      } else
-      {
-        String message = String.format(
-            "unexpected assertion value returned!! \"%s\"",
-            currentAssertionType);
-        logger.severe(message);
-        System.err.println(message);
-        Exception runtimeException = new RuntimeException(message);
-        throw new AnalysisEngineProcessException(runtimeException);
-      }
+      mapI2B2AssertionValueToCtakes(currentAssertionType, annotation);
       
 //      // Overwrite mastif's generic attribute with Mayo's generic attribute
 //      Boolean generic = GenericAttributeClassifier.getGeneric(jcas,entityMention);
@@ -369,6 +281,100 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     //logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
     System.out.println("(stdout) AssertionAnalysisEngine.process() END");
     logger.info("(logging statement) AssertionAnalysisEngine.process() END");
+  }
+
+  public static void mapI2B2AssertionValueToCtakes(String assertionType,
+      IdentifiedAnnotation annotation) throws AnalysisEngineProcessException
+  {
+    if (assertionType == null)
+    {
+      String message = "current assertion type is null; this is a problem!!";
+      System.err.println(message);
+      logger.severe(message);
+      // Exception runtimeException = new RuntimeException(message);
+      // throw new AnalysisEngineProcessException(runtimeException);
+    
+      // ALL OBVIOUS ERROR VALUES!!
+      annotation.setSubject("skipped");
+      annotation.setPolarity(-2);
+      annotation.setConfidence(-2.0f);
+      annotation.setUncertainty(-2);
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+
+    } else if (assertionType.equals("present"))
+    // PRESENT (mastif value)
+    {
+      //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
+      // ALL DEFAULT VALUES!! (since this is present)
+      annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+      annotation.setPolarity(1);
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(0);
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+
+      //debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
+    } else if (assertionType.equals("absent"))
+    // ABSENT (mastif value)
+    {
+      annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+      annotation.setPolarity(-1); // NOT DEFAULT VALUE
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(0);
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+
+    } else if (assertionType.equals("associated_with_someone_else"))
+    // ASSOCIATED WITH SOMEONE ELSE (mastif value)
+    {
+      annotation.setSubject("CONST.ATTR_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
+      annotation.setPolarity(1);
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(0);
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+
+    } else if (assertionType.equals("conditional"))
+    // CONDITIONAL (mastif value)
+    {
+      // currently no mapping to sharp type...all sharp properties are defaults!
+      annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+      annotation.setPolarity(1);
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(0);
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+
+    } else if (assertionType.equals("hypothetical"))
+    // HYPOTHETICAL (mastif value)
+    {
+      annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+      annotation.setPolarity(1);
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(0);
+      annotation.setConditional(true); // NOT DEFAULT VALUE
+      annotation.setGeneric(false);
+
+    } else if (assertionType.equals("possible"))
+    // POSSIBLE (mastif value)
+    {
+      annotation.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+      annotation.setPolarity(1);
+      annotation.setConfidence(1.0f);
+      annotation.setUncertainty(1); // NOT DEFAULT VALUE
+      annotation.setConditional(false);
+      annotation.setGeneric(false);
+    } else
+    {
+      String message = String.format(
+          "unexpected assertion value returned!! \"%s\"",
+          assertionType);
+      logger.severe(message);
+      System.err.println(message);
+      Exception runtimeException = new RuntimeException(message);
+      throw new AnalysisEngineProcessException(runtimeException);
+    }
   }
 
   public void debugAnnotationsInCas(JCas jcas, IdentifiedAnnotation annotation,
