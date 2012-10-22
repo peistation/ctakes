@@ -22,11 +22,14 @@ import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverterDefaultImpl;
 import java.io.File;
 import java.io.FileInputStream;
+
+import org.apache.log4j.Logger;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.xml.sax.SAXException;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.util.CasCreationUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription; 
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS; 
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -35,11 +38,13 @@ import java.util.Collections;
 import org.apache.uima.util.XMLParser;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.util.XMLInputSource;
+import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.Sofa; 
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.InvalidXMLException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import org.apache.uima.cas.text.AnnotationIndex;
 //import org.apache.uima.jcas.tcas.Annotation;
 
@@ -54,6 +59,9 @@ import java.util.List;
 
 import org.apache.ctakes.assertion.medfacts.types.Assertion;
 import org.apache.ctakes.assertion.medfacts.types.Concept;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.uima.jcas.JCas;

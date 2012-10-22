@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 
