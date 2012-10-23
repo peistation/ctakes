@@ -135,10 +135,6 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
  
   /**
    * Selects the relevant mentions/annotations within a sentence for relation identification/extraction
-   * 
-   * @param identifiedAnnotationView
-   * @param sentence
-   * @return
    */
   public abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Sentence sentence);
 
@@ -267,9 +263,6 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    * Looks up the arguments in the specified lookup table and converts the relation
    * into a label for classification
    * 
-   * @param relationLookup
-   * @param arg1
-   * @param arg2
    * @return If this category should not be processed for training return <i>null</i>
    *         otherwise it returns the label sent to the datawriter
    */

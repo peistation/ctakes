@@ -24,30 +24,30 @@ import java.util.List;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Bag;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.FirstCovered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.LastCovered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Bag;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Covered;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.FirstCovered;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Following;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.LastCovered;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.annotationpair.DistanceExtractor;
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
+import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
 
-  private SimpleFeatureExtractor coveredText = new SpannedTextExtractor();
+  private SimpleFeatureExtractor coveredText = new CoveredTextExtractor();
 
   /**
    * First word of the mention, last word of the mention, all words of the mention as a bag, the
    * preceding 3 words, the following 3 words
    */
-  private SimpleFeatureExtractor tokenContext = new ContextExtractor<BaseToken>(
+  private SimpleFeatureExtractor tokenContext = new CleartkExtractor(
       BaseToken.class,
       coveredText,
       new FirstCovered(1),
@@ -75,7 +75,7 @@ public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
   /**
    * First word, last word, and all words between the mentions
    */
-  private ContextExtractor<?> tokensBetween = new ContextExtractor<BaseToken>(
+  private CleartkExtractor tokensBetween = new CleartkExtractor(
       BaseToken.class,
       new NamingExtractor("BetweenMentions", coveredText),
       new FirstCovered(1),

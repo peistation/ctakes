@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Bag;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Bag;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Covered;
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
@@ -41,7 +41,7 @@ public class PartOfSpeechFeaturesExtractor implements RelationFeaturesExtractor 
   /**
    * All part-of-speech tags of the mention as a bag
    */
-  private SimpleFeatureExtractor tokenPOS = new ContextExtractor<BaseToken>(
+  private SimpleFeatureExtractor tokenPOS = new CleartkExtractor(
       BaseToken.class,
       pos,
       new Bag(new Covered()));

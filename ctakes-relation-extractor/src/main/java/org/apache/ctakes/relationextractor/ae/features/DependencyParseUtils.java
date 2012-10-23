@@ -32,9 +32,6 @@ public class DependencyParseUtils {
 
 	/**
 	 * Returns the paths from each node to the common ancestor between them
-	 * @param node1
-	 * @param node2
-	 * @return
 	 */
 	public static List<LinkedList<ConllDependencyNode>> getPathsToCommonAncestor(ConllDependencyNode node1, ConllDependencyNode node2) {
 		List<LinkedList<ConllDependencyNode>> paths = new ArrayList<LinkedList<ConllDependencyNode>>(2);
@@ -65,9 +62,6 @@ public class DependencyParseUtils {
 
 	/**
 	 * Finds the head word within a given annotation span
-	 * @param jcas
-	 * @param annotation
-	 * @return
 	 */
 	public static ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
 	
@@ -95,9 +89,6 @@ public class DependencyParseUtils {
 
 	/**
 	 * Finds the path between two dependency nodes
-	 * @param srcNode
-	 * @param tgtNode
-	 * @return
 	 */
 	public static LinkedList<ConllDependencyNode> getPathBetweenNodes(ConllDependencyNode srcNode, ConllDependencyNode tgtNode) {
 		LinkedList<ConllDependencyNode> path = new LinkedList<ConllDependencyNode>();
@@ -124,8 +115,6 @@ public class DependencyParseUtils {
 
 	/**
 	 * This will convert a path into a string lexicalized at the end points with arc labels and POS tags in between
-	 * @param path
-	 * @return
 	 */
 	
 	public static String pathToString(LinkedList<ConllDependencyNode> path) {

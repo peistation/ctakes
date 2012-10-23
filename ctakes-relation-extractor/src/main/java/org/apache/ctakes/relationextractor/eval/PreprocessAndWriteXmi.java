@@ -92,11 +92,6 @@ public class PreprocessAndWriteXmi {
 	}
 	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 * @throws UIMAException 
-	 */
 	public static void main(String[] args) throws IOException, UIMAException {
 	    Options options = new Options();
 	    options.parseOptions(args);
