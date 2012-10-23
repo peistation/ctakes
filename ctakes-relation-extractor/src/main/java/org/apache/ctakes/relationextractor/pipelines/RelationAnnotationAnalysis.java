@@ -25,12 +25,10 @@ import java.util.List;
 import org.apache.ctakes.relationextractor.eval.XMIReader;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 /**
@@ -57,11 +55,8 @@ public class RelationAnnotationAnalysis {
 		Options options = new Options();
 		options.parseOptions(args);
 
-		TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-				"../ctakes-type-system/desc/common_type_system.xml");
-		
 		List<File> trainFiles = Arrays.asList(options.inputDirectory.listFiles());
-    CollectionReader collectionReader = getCollectionReader(trainFiles, typeSystemDescription);
+    CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
     AnalysisEngine relationExtractorConsumer = AnalysisEngineFactory.createPrimitive(
     		RelationExtractorConsumer.class);
@@ -69,8 +64,7 @@ public class RelationAnnotationAnalysis {
 		SimplePipeline.runPipeline(collectionReader, relationExtractorConsumer);
 	}
 	
-  private static CollectionReader getCollectionReader(List<File> items, 
-  		TypeSystemDescription typeSystemDescription) throws Exception {
+  private static CollectionReader getCollectionReader(List<File> items) throws Exception {
 
   	// convert the List<File> to a String[]
     String[] paths = new String[items.size()];
@@ -81,7 +75,6 @@ public class RelationAnnotationAnalysis {
     // return a reader that will load each of the XMI files
     return CollectionReaderFactory.createCollectionReader(
         XMIReader.class,
-        typeSystemDescription,
         XMIReader.PARAM_FILES,
         paths);
   }

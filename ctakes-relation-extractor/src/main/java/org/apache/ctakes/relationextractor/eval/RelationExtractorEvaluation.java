@@ -110,8 +110,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     
     // define the output directory for models
     File modelsDir = options.runDegreeOf
-        ? new File("models/degree_of")
-        : new File("models/em_pair");
+        ? new File("target/models/degree_of")
+        : new File("target/models/em_pair");
 
     // determine class for the classifier annotator
     Class<? extends RelationExtractorAnnotator> annotatorClass = options.runDegreeOf

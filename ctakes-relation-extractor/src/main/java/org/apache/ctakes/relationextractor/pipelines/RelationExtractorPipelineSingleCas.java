@@ -47,11 +47,8 @@ import java.io.IOException;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
-import org.cleartk.util.Options_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.JCasFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 /**
@@ -62,16 +59,11 @@ import org.uimafit.pipeline.SimplePipeline;
  */
 public class RelationExtractorPipelineSingleCas {
 
-	public static class Options extends Options_ImplBase {
-
 		public static void main(String[] args) throws UIMAException, IOException {
 
 			String sampleSentence = "Abdomen: Soft, nontender without hepatosplenomegaly or masses";
 			
-			TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-					"../ctakes-type-system/desc/common_type_system.xml");
-
-			JCas jCas = JCasFactory.createJCas(typeSystemDescription);
+			JCas jCas = JCasFactory.createJCas();
 			jCas.setDocumentText(sampleSentence);
 
 			AnalysisEngine relationExtractor = AnalysisEngineFactory.createAnalysisEngineFromPath(
@@ -82,5 +74,4 @@ public class RelationExtractorPipelineSingleCas {
 
 			SimplePipeline.runPipeline(jCas, relationExtractor, relationConsumer);
 		}
-	}
 }

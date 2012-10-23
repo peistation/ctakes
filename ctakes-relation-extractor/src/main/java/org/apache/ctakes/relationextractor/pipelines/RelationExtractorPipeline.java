@@ -24,13 +24,11 @@ import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 /**
@@ -64,9 +62,6 @@ public class RelationExtractorPipeline {
 		Options options = new Options();
 		options.parseOptions(args);
 
-		TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-				"../ctakes-type-system/desc/common_type_system.xml");
-    
 		CollectionReader collectionReader = CollectionReaderFactory.createCollectionReaderFromPath(
 				"../ctakes-core/desc/collection_reader/FilesInDirectoryCollectionReader.xml",
 				FilesInDirectoryCollectionReader.PARAM_INPUTDIR,
@@ -78,7 +73,6 @@ public class RelationExtractorPipeline {
     
     AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
     		XWriter.class,
-    		typeSystemDescription,
     		XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
     		options.outputDirectory);
 		

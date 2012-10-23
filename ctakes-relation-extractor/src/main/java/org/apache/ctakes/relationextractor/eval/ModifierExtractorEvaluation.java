@@ -62,7 +62,7 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     Options options = new Options();
     options.parseOptions(args);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-    File modelsDir = new File("models/modifier");
+    File modelsDir = new File("target/models/modifier");
 
     ModifierExtractorEvaluation evaluation = new ModifierExtractorEvaluation(
         modelsDir,
