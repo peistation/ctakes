@@ -172,12 +172,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       } else {
       	// train on the entire training set and evaluate on the test set
       	List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
-      	
-      	CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
-      	evaluation.train(trainCollectionReader, modelsDir);
-      	
-      	CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
-      	AnnotationStatistics<String> stats = evaluation.test(testCollectionReader, modelsDir);
+      	AnnotationStatistics<String> stats = evaluation.trainAndTest(trainFiles, testFiles);
         System.err.print(stats);
       	return;
       }
