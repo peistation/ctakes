@@ -30,11 +30,6 @@
 		<version>3.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	
-	
-	<properties>
-		<jcasgen.typesystem>org/apache/ctakes/drugner/types/TypeSystem.xml</jcasgen.typesystem>
-	</properties>
-	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -95,14 +90,12 @@
 	
 	<build>
 		<plugins>
-			<!-- Invoke JCasGen on the type system (see properties above) -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
+				<groupId>org.cleartk</groupId>
+				<artifactId>jcasgen-maven-plugin</artifactId>
+				<configuration>
+					<typeSystem>src/main/resources/org/apache/ctakes/drugner/types/TypeSystem.xml</typeSystem>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
