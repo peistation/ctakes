@@ -29,7 +29,6 @@ import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractor
 import org.apache.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.eval.ModifierExtractorEvaluation;
-import org.apache.ctakes.relationextractor.eval.MultiClassLIBSVMDataWriterFactory;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
 import org.apache.uima.UIMAFramework;
@@ -37,8 +36,9 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.util.XMLInputSource;
 import org.apache.uima.util.XMLParser;
-import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
+import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AggregateBuilder;
@@ -73,8 +73,7 @@ public class RelationExtractorTrain {
   
   public static AnalysisEngineDescription trainModifierExtractor(
 		  File modelsDir,
-		  List<File> trainFiles,
-		  Class<? extends DataWriterFactory<String>> dataWriterFactoryClass) throws Exception {
+		  List<File> trainFiles) throws Exception {
 				  
 	  ModifierExtractorEvaluation evaluation = new ModifierExtractorEvaluation(
 			  modelsDir,
@@ -97,7 +96,7 @@ public class RelationExtractorTrain {
 		  File modelsDir, 
 		  List<File> trainFiles,
 		  Class<? extends RelationExtractorAnnotator> annotatorClass, 
-		  Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
+		  Class<? extends DataWriter<String>> dataWriterClass,
 		  ParameterSettings params) throws Exception {
 
 	  // define additional configuration parameters for the annotator
@@ -121,7 +120,7 @@ public class RelationExtractorTrain {
 	    RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
 	    		modelsDir,
 	    		annotatorClass,
-	    		dataWriterFactoryClass,
+	    		dataWriterClass,
 	    		additionalParameters,
 	    		trainingArguments);
 	    
@@ -162,14 +161,14 @@ public class RelationExtractorTrain {
     ParameterSettings emPairParams = new ParameterSettings(false, 0.5f, "linear", 0.05, 1.0);
 
     // For now all three components use MultiClass SVMs for classification
-    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = MultiClassLIBSVMDataWriterFactory.class;
+    Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
         
     // Train and write models
-    AnalysisEngineDescription modifierExtractorDesc = trainModifierExtractor(modelsDirModExtractor, trainFiles, dataWriterFactoryClass);
+    AnalysisEngineDescription modifierExtractorDesc = trainModifierExtractor(modelsDirModExtractor, trainFiles);
     writeDesc(options.descDir, "ModifierExtractorAnnotator", modifierExtractorDesc);
-    AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterFactoryClass, degreeOfParams);
+    AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterClass, degreeOfParams);
     writeDesc(options.descDir, "DegreeOfRelationExtractorAnnotator", degreeOfRelationExtractorDesc);
-    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterFactoryClass, emPairParams);
+    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterClass, emPairParams);
     writeDesc(options.descDir, "EntityMentionPairRelationExtractorAnnotator", emPairRelationExtractorDesc);
 
     // create the aggregate description

@@ -37,11 +37,12 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.util.CasCopier;
 import org.apache.uima.util.Level;
-import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.DataWriter;
+import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
+import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
@@ -118,7 +119,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         : EntityMentionPairRelationExtractorAnnotator.class;
 
     // determine the type of classifier to be trained
-    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = MultiClassLIBSVMDataWriterFactory.class;
+    Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
 
     // define the set of possible training parameters
     List<ParameterSettings> possibleParams = options.runDegreeOf
@@ -153,7 +154,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
           modelsDir,
           annotatorClass,
-          dataWriterFactoryClass,
+          dataWriterClass,
           additionalParameters,
           trainingArguments);
       
@@ -215,8 +216,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
    *          The directory where models, etc. should be written
    * @param classifierAnnotatorClass
    *          The CleartkAnnotator class that learns a relation extractor model
-   * @param dataWriterFactoryClass
-   *          The DataWriterFactory defining what type of classifier to train
+   * @param dataWriterClass
+   *          The DataWriter defining what type of classifier to train
    * @param additionalParameters
    *          Additional parameters that should be supplied when creating the CleartkAnnotator
    * @param trainingArguments
@@ -225,19 +226,19 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   public RelationExtractorEvaluation(
       File baseDirectory,
       Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass,
-      Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
+      Class<? extends DataWriter<String>> dataWriterClass,
       Object[] additionalParameters,
       String[] trainingArguments) {
     super(baseDirectory);
     this.classifierAnnotatorClass = classifierAnnotatorClass;
-    this.dataWriterFactoryClass = dataWriterFactoryClass;
+    this.dataWriterClass = dataWriterClass;
     this.additionalParameters = additionalParameters;
     this.trainingArguments = trainingArguments;
   }
 
   private Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass;
 
-  private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
+  private Class<? extends DataWriter<String>> dataWriterClass;
 
   private Object[] additionalParameters;
 
@@ -272,8 +273,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         classifierAnnotator,
         RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
         RelationExtractorEvaluation.GOLD_VIEW_NAME,
-        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-        this.dataWriterFactoryClass.getName(),
+        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+        this.dataWriterClass,
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
         directory.getPath());
     builder.add(classifierAnnotator);

@@ -28,10 +28,11 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
+import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
@@ -103,8 +104,8 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         collectionReader,
         AnalysisEngineFactory.createPrimitiveDescription(OnlyGoldModifiers.class),
         ModifierExtractorAnnotator.getDescription(
-            CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-            MultiClassLIBSVMDataWriterFactory.class.getName(),
+            DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+            LIBSVMStringOutcomeDataWriter.class,
             DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
             directory.getPath()));
     JarClassifierBuilder.trainAndPackage(directory, this.trainingArguments);
