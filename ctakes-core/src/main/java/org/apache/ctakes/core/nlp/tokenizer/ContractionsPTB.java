@@ -175,7 +175,6 @@ public class ContractionsPTB {
      * Note that if the text starting at 'position' is something like "n't" which 
      * isn't a complete word, returns null.
      * @param position  first char of next token 
-     * @param nextNonLetterDigitApostrophe 
      * @param lowerCasedText      text into which parameter position is an index into
      * @return the length of the WordToken part of the contraction.  Note this is not always the position of the 
      * apostrophe.  For example, for can't, which is tokenized as ca n't the 

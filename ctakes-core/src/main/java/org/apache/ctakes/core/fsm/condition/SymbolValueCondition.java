@@ -30,11 +30,6 @@ import net.openai.util.fsm.Condition;
 public class SymbolValueCondition extends Condition {
 	private char iv_symbolChar;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public SymbolValueCondition(char c) {
 		iv_symbolChar = c;
 	}

@@ -93,7 +93,7 @@ public class FilesInDirectoryCollectionReader extends CollectionReader_ImplBase
 	    
 	  public static final String PARAM_RECURSE = "Recurse";
 	  
-	  protected ArrayList iv_files;
+	  protected ArrayList<File> iv_files;
 	  private String iv_encoding;
 	  private String iv_language;
 	  private static String[] iv_extensions; 
@@ -132,7 +132,7 @@ public class FilesInDirectoryCollectionReader extends CollectionReader_ImplBase
 		
 		
 	    //get list of files (not subdirectories) in the specified directory
-	    iv_files = new ArrayList();
+	    iv_files = new ArrayList<File>();
 	    if(!iv_recurse)
 	    {
 	    	File[] files = directory.listFiles();
@@ -158,7 +158,7 @@ public class FilesInDirectoryCollectionReader extends CollectionReader_ImplBase
 	    }
     }
 	
-    private void collectFiles(File directory, List files) throws IOException
+    private void collectFiles(File directory, List<File> files) throws IOException
     {
         File[] dirFiles = directory.listFiles();
         for(int i=0; i<dirFiles.length;i++)
@@ -237,11 +237,6 @@ public class FilesInDirectoryCollectionReader extends CollectionReader_ImplBase
 				else
 				{ 
 					text = new String(contents); 
-				}
-				if(text == null)
-				{
-					System.out.println("text ==null!");
-					System.out.println("docID = "+docID);
 				}
 				//put document in CAS (assume CAS)
 				jcas.setDocumentText(text);

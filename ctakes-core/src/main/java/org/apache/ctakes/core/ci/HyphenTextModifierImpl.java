@@ -45,7 +45,7 @@ import org.apache.ctakes.core.nlp.tokenizer.Tokenizer;
  */
 public class HyphenTextModifierImpl implements TextModifier {
 
-	private Map iv_shouldbeHyphenMap = null;
+	private Map<String, Integer> iv_shouldbeHyphenMap = null;
 	private int iv_windowSize = 3; // default lookahead window
 	private Tokenizer iv_tokenizer = null;
 
@@ -67,7 +67,7 @@ public class HyphenTextModifierImpl implements TextModifier {
 
 			String line = "";
 
-			iv_shouldbeHyphenMap = new HashMap();
+			iv_shouldbeHyphenMap = new HashMap<String, Integer>();
 			while ((line = br.readLine()) != null) {
 				String[] toks = line.split("\\|");
 				String[] unh = toks[0].split("\\-");
@@ -93,13 +93,13 @@ public class HyphenTextModifierImpl implements TextModifier {
 	 * 
 	 * @param tokenList
 	 */
-	private void filterTokens(List tokenList) {
+	private void filterTokens(List<Token> tokenList) {
 
-		List removalList = new ArrayList();
-		Iterator tokenItr = tokenList.iterator();
+		List<Token> removalList = new ArrayList<Token>();
+		Iterator<Token> tokenItr = tokenList.iterator();
 
 		while (tokenItr.hasNext()) {
-			Token token = (Token) tokenItr.next();
+			Token token = tokenItr.next();
 			if (token.getType() == Token.TYPE_EOL) {
 				removalList.add(token);
 			}
@@ -117,10 +117,10 @@ public class HyphenTextModifierImpl implements TextModifier {
 
 		// intermediate data structure to use for easy adding of new
 		// TextModification objects
-		ArrayList textmods = new ArrayList();
+		ArrayList<TextModification> textmods = new ArrayList<TextModification>();
 
 		// Tokenize the input to get offset information
-		List inputtoks = iv_tokenizer.tokenizeAndSort(in);
+		List<Token> inputtoks = iv_tokenizer.tokenizeAndSort(in);
 
 		filterTokens(inputtoks);
 

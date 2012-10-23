@@ -126,9 +126,7 @@ public class TimeFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of TimeToken objects.
-	 * @throws Exception
 	 */
 	public Set<TimeToken> execute(List<? extends BaseToken> tokens)
 			throws Exception {

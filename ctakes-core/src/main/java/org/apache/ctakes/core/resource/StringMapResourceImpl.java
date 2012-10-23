@@ -44,7 +44,7 @@ public class StringMapResourceImpl
 
     private final String DELIMITER = "|";
 
-    Map iv_map = new HashMap();
+    Map<String, String> iv_map = new HashMap<String, String>();
 
     /**
      *  Loads data from a file.

@@ -117,7 +117,7 @@ public class JdbcConnectionResourceImpl implements JdbcConnectionResource,
             if (isolationStr != null)
             {
                 // use java reflection to obtain the corresponding level integer
-                Class connClass = Class.forName("java.sql.Connection");
+                Class<?> connClass = Class.forName("java.sql.Connection");
                 Field f = connClass.getField(isolationStr);
                 int level = f.getInt(null);
                 iv_logger.info("Connection transaction isolation level set: " +

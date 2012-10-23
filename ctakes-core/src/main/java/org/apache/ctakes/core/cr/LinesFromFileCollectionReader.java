@@ -93,7 +93,7 @@ public class LinesFromFileCollectionReader extends CollectionReader_ImplBase {
 
     public static final String PARAM_ID_DELIMETER = "IdDelimeter";
     
-	List iv_linesFromFile;
+	List<String> iv_linesFromFile;
 	int iv_currentIndex = 0;
 	String iv_language; 
 	String iv_delimeter;
@@ -116,7 +116,7 @@ public class LinesFromFileCollectionReader extends CollectionReader_ImplBase {
 			}
 			iv_delimeter =  (String)getConfigParameterValue(PARAM_ID_DELIMETER);
 				
-			iv_linesFromFile = new ArrayList();
+			iv_linesFromFile = new ArrayList<String>();
 			fileReader = new BufferedReader(new FileReader(fileLocation));
 			String line;
 			while((line = fileReader.readLine()) != null)

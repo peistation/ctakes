@@ -31,11 +31,6 @@ public class WordValueCondition extends Condition {
 	private String iv_word;
 	private boolean iv_isCaseSensitive;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public WordValueCondition(String value, boolean isCaseSensitive) {
 		iv_word = value;
 	}

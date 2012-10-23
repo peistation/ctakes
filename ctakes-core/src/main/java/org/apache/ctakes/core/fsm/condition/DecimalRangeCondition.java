@@ -31,11 +31,6 @@ public class DecimalRangeCondition extends Condition {
 	private double iv_lowNum;
 	private double iv_highNum;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public DecimalRangeCondition(double lowNumber, double highNumber) {
 		iv_lowNum = lowNumber;
 		iv_highNum = highNumber;

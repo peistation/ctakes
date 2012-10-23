@@ -62,25 +62,20 @@ public class FSUtil {
 	    FSMatchConstraint spanConstraint = constraintFactory.and(beginSpanConstraint, endSpanConstraint);
 	    
 	    JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-	    FSIndex annotIndex = indexes.getAnnotationIndex(type);
-	    FSIterator annotsInSpanItr = jcas.createFilteredIterator(annotIndex.iterator(), spanConstraint);
+	    FSIndex<?> annotIndex = indexes.getAnnotationIndex(type);
+	    FSIterator<?> annotsInSpanItr = jcas.createFilteredIterator(annotIndex.iterator(), spanConstraint);
 	    return annotsInSpanItr;
 	}
 	
 	/**
 	 * For correct behavior, requires types to be listed in TypePriorities so that the subiterator works as expected
-	 * @param jcas
-	 * @param type
-	 * @param beginSpan
-	 * @param endSpan
-	 * @return
 	 */
 	public static FSIterator getAnnotationsIteratorInSpan(JCas jcas, int type, int beginSpan, int endSpan)
 	{
 	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);
 	    ann.addToIndexes();
-	    AnnotationIndex annIdx = (AnnotationIndex)jcas.getAnnotationIndex(type);
-	    FSIterator itr = annIdx.subiterator(ann);
+	    AnnotationIndex<?> annIdx = jcas.getAnnotationIndex(type);
+	    FSIterator<?> itr = annIdx.subiterator(ann);
 	    ann.removeFromIndexes();
 	    return itr;
 	}
@@ -88,17 +83,11 @@ public class FSUtil {
 	/**
 	 * Does not use {@link #getAnnotationsInSpan(JCas, int, int, int, int[])} so we don't create a collection
 	 * unnecessarily.
-	 * @param jcas
-	 * @param type
-	 * @param beginSpan
-	 * @param endSpan
-	 * @param validNeTypes
-	 * @return
 	 */
 	public static int countAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan, int[] validNeTypes)
 	{
 	    int count=0;
-	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
+	    Iterator<?> itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
 	    	IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next();
@@ -119,8 +108,8 @@ public class FSUtil {
 	
 	public static List getAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan, int[] validNeTypes)
 	{
-	    List list = new ArrayList();
-	    Iterator itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
+	    List<IdentifiedAnnotation> list = new ArrayList<IdentifiedAnnotation>();
+	    Iterator<?> itr = getAnnotationsIteratorInSpan(jcas, type, beginSpan, endSpan);
 	    while(itr.hasNext())
 	    {
     		IdentifiedAnnotation ne = (IdentifiedAnnotation)itr.next(); // might be an EventMention or an EntityMention
@@ -134,28 +123,18 @@ public class FSUtil {
 	
 	/**
 	 * returns the number of annotations of specified type in the 
-	 * @param jcas
-	 * @param type
-	 * @param beginSpan
-	 * @param endSpan
-	 * @return
 	 */
 	public static int countAnnotationsInSpan(JCas jcas, int type, int beginSpan, int endSpan)
 	{
 	    Annotation ann = new Annotation(jcas, beginSpan, endSpan);
 	    ann.addToIndexes();
-	    AnnotationIndex annIdx = (AnnotationIndex)jcas.getAnnotationIndex(type);
+	    AnnotationIndex<?> annIdx = jcas.getAnnotationIndex(type);
 	    ann.removeFromIndexes();
 	    return annIdx.size();
 	}
 
 	/**
 	 * returns a true if the annotation type is present in the span 
-	 * @param jcas
-	 * @param type
-	 * @param beginSpan
-	 * @param endSpan
-	 * @return
 	 */
 	public static boolean isAnnotationPresentInSpan(JCas jcas, int type, int beginSpan, int endSpan)
 	{

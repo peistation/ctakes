@@ -18,10 +18,8 @@
  */
 package org.apache.ctakes.core.ae;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,10 +29,6 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Text;
-import org.jdom.input.SAXBuilder;
 
 
 import org.apache.ctakes.core.resource.FileResource;
@@ -43,7 +37,6 @@ import org.apache.ctakes.core.util.DocumentSection;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import findstruct.Section;
 import findstruct.StructFinder;
-import findstruct.StructModel;
 
 /**
  * Creates a single segment annotation that spans the entire document. This is
@@ -80,8 +73,6 @@ public class SectionSegmentAnnotator extends JCasAnnotator_ImplBase {
 	/**
 	 * Entry point for processing.
 	 * Identify all the sections of the medical record
-	 * @param jCas
-	 * @author andreea bodnari
 	 */
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
 

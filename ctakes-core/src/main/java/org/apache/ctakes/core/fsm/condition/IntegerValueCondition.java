@@ -30,11 +30,6 @@ import net.openai.util.fsm.Condition;
 public class IntegerValueCondition extends Condition {
 	private int iv_num;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public IntegerValueCondition(int value) {
 		iv_num = value;
 	}

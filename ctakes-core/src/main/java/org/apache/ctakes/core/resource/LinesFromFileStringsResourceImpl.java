@@ -43,8 +43,9 @@ public class LinesFromFileStringsResourceImpl implements StringsResource, Shared
     	try
     	{
 	    	File file = new File(dr.getUri());
+	      ArrayList<String> lines = new ArrayList<String>();
 	        BufferedReader fileReader = new BufferedReader(new FileReader(file));
-			ArrayList lines = new ArrayList();
+	        try {
 			
 			String line;
 			while((line = fileReader.readLine()) != null)
@@ -53,6 +54,9 @@ public class LinesFromFileStringsResourceImpl implements StringsResource, Shared
 					line.trim().length() > 0)
 					lines.add(line);
 			}
+	        } finally {
+	          fileReader.close();
+	        }
 	
 	    	this.lines = (String[])lines.toArray(new String[lines.size()]);
     	}

@@ -72,7 +72,7 @@ public class NormalizedFilesInDirectoryCasConsumer extends CasConsumer_ImplBase 
 			StringBuffer normalizedText = new StringBuffer();
 			
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-	        Iterator tokenItr = indexes.getAnnotationIndex(WordToken.type).iterator();
+	        Iterator<?> tokenItr = indexes.getAnnotationIndex(WordToken.type).iterator();
 	        while (tokenItr.hasNext())
 	        {
 	        	WordToken token = (WordToken) tokenItr.next();

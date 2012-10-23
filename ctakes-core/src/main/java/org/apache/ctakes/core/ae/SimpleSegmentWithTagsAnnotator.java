@@ -88,8 +88,6 @@ public class SimpleSegmentWithTagsAnnotator extends JCasAnnotator_ImplBase {
 			try {
 				while ((charNum = fileReader.read()) != -1) {
 
-					String segId = "";
-
 					if (charNum == '[') {
 						charPos++;
 						if (((charNum = fileReader.read()) == 's')
@@ -114,7 +112,7 @@ public class SimpleSegmentWithTagsAnnotator extends JCasAnnotator_ImplBase {
 										Segment sa = new Segment(jcas);
 										sa.setBegin(endStartSegment);
 										sa.setEnd(beginEndSegment);
-										sa.setId(segId.copyValueOf(sectIdArr));
+										sa.setId(String.copyValueOf(sectIdArr));
 										for (int i = 0; i < sectIdArr.length; i++)
 											sectIdArr[i] = ' ';
 										sa.addToIndexes();

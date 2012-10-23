@@ -33,11 +33,6 @@ public class TextSetCondition extends Condition {
 	private Set<String> iv_textSet;
 	private boolean iv_isCaseSensitive;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public TextSetCondition(Set<String> textSet, boolean isCaseSensitive) {
 		iv_textSet = textSet;
 	}

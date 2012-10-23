@@ -363,9 +363,7 @@ public class NegationFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of DateToken objects.
-	 * @throws Exception
 	 */
 	public Set<NegationIndicator> execute(List<?> tokens) throws Exception {
 		Set<NegationIndicator> outSet = new HashSet<NegationIndicator>();

@@ -30,11 +30,6 @@ import net.openai.util.fsm.Condition;
 public class DecimalValueCondition extends Condition {
 	private double iv_num;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public DecimalValueCondition(double value) {
 		iv_num = value;
 	}

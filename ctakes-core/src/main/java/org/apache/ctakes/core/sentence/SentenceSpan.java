@@ -126,7 +126,6 @@ public class SentenceSpan {
 	 * and trim each.
 	 * If is entirely whitespace, return an empty list
 	 * @param separatorPattern CR LF or CRLF
-	 * @return
 	 */
 	public List<SentenceSpan> splitAtLineBreaksAndTrim(String separatorPattern) {
 		

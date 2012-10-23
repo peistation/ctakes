@@ -70,7 +70,6 @@ public class TokenizerPTB {
 
 	/**
 	 * Tokenize text that starts at offset offsetAdjustment within the complete text
-	 * @param jcas
 	 * @param textSegment the text to tokenize
 	 * @param offsetAdjustment what to add to all offsets within textSegment to make them be offsets from the start of the text for the jcas
 	 * @param includeTextNotJustOffsets whether to copy the text covered by this token into the token object itself

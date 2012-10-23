@@ -249,9 +249,7 @@ public class DateFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of DateToken objects.
-	 * @throws Exception
 	 */
 	public Set<DateToken> execute(List<? extends BaseToken> tokens) throws Exception {
 		Set<DateToken> dateSet = new HashSet<DateToken>();

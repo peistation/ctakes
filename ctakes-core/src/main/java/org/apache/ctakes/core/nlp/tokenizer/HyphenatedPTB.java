@@ -19,7 +19,6 @@
 package org.apache.ctakes.core.nlp.tokenizer;
 
 import static org.apache.ctakes.core.nlp.tokenizer.TokenizerHelper.APOSTROPHE;
-import static org.apache.ctakes.core.nlp.tokenizer.TokenizerHelper.COMMA;
 import static org.apache.ctakes.core.nlp.tokenizer.TokenizerHelper.findNextNonAlphaNum;
 import static org.apache.ctakes.core.nlp.tokenizer.TokenizerHelper.startsWithWithoutBeingFollowedByLetter;
 
@@ -389,9 +388,8 @@ public class HyphenatedPTB {
      * 
      * @param lowerCasedString because of "-o-torium", input might contain more than 1 hyphen....
      * @return len to keep together, as far as we know. see hyphen hyphen hyphen case below. 
-     * throws exception if there's no hyphen
-     * 
-     * @return number of characters to keep. 
+     * throws exception if there's no hyphen;
+     * number of characters to keep. 
      * Does not mean to split at n+1 hyphen... need to recheck that one
      *  
      */

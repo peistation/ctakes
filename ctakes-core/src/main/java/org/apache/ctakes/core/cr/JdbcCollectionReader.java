@@ -114,7 +114,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
     // optional, will remain null if not set
     // Array of List objects. Each List objects represents a list of prepared
     // stmt values.
-    private List[] prepStmtValArr = null;
+    private List<String>[] prepStmtValArr = null;
     private int prepStmtValArrIdx = 0;
     private boolean usePrepStmtVals = false;
 
@@ -166,7 +166,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
      */
     private void loadValueFile(File valueFile) throws IOException
     {
-        List lineList = new ArrayList();
+        List<String> lineList = new ArrayList<String>();
         BufferedReader br = new BufferedReader(new FileReader(valueFile));
         String line = br.readLine();
         while (line != null)
@@ -180,7 +180,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
         for (int i = 0; i < lineList.size(); i++)
         {
             String currLine = (String) lineList.get(i);
-            List valList = new ArrayList();
+            List<String> valList = new ArrayList<String>();
             StringTokenizer st = new StringTokenizer(currLine, "\t");
             while (st.hasMoreTokens())
             {
@@ -213,7 +213,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
             int totalCnt = 0;
             for (int i = 0; i < prepStmtValArr.length; i++)
             {
-                List valList = prepStmtValArr[i];
+                List<String> valList = prepStmtValArr[i];
                 setPrepStmtValues(cntStmt, valList);
                 ResultSet rs = cntStmt.executeQuery();
                 rs.next();
@@ -234,7 +234,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
      * @param prepStmt
      * @param valList
      */
-    private void setPrepStmtValues(PreparedStatement prepStmt, List valList)
+    private void setPrepStmtValues(PreparedStatement prepStmt, List<String> valList)
             throws SQLException
     {
         prepStmt.clearParameters();
@@ -369,7 +369,7 @@ public class JdbcCollectionReader extends CollectionReader_ImplBase
             {
                 if (usePrepStmtVals)
                 {
-                    List valList = prepStmtValArr[prepStmtValArrIdx];
+                    List<String> valList = prepStmtValArr[prepStmtValArrIdx];
                     setPrepStmtValues(queryPrepStmt, valList);
                     prepStmtValArrIdx++;
                 }

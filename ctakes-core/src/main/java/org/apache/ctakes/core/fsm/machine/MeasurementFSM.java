@@ -229,9 +229,7 @@ public class MeasurementFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of RangeToken objects.
-	 * @throws Exception
 	 */
 	public Set<MeasurementToken> execute(List<? extends BaseToken> tokens,
 			Set<? extends BaseToken> overrideSet) throws Exception {

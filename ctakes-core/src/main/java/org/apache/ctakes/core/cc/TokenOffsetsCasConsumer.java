@@ -77,9 +77,9 @@ public class TokenOffsetsCasConsumer extends CasConsumer_ImplBase {
 			JCas jcas;
 			jcas = cas.getJCas();
 		
-			List offsets = new ArrayList();
+			List<String> offsets = new ArrayList<String>();
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-			Iterator tokenItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
+			Iterator<?> tokenItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
 	        while (tokenItr.hasNext())
 	        {
 	        	BaseToken token = (BaseToken) tokenItr.next();
@@ -97,7 +97,7 @@ public class TokenOffsetsCasConsumer extends CasConsumer_ImplBase {
 		}
 	}
 	
-	private void writeToFile(String documentID, List offsets) throws IOException
+	private void writeToFile(String documentID, List<String> offsets) throws IOException
 	{
 		File outputFile = new File(iv_outputDirectory, documentID);
 		outputFile.createNewFile();

@@ -97,9 +97,7 @@ public class PersonTitleFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of FractionToken objects.
-	 * @throws Exception
 	 */
 	public Set<PersonTitleToken> execute(List<? extends BaseToken> tokens)
 			throws Exception {

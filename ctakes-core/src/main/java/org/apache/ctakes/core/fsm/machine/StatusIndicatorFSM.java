@@ -201,9 +201,7 @@ public class StatusIndicatorFSM
     /**
      * Executes the finite state machines.
      * 
-     * @param tokens
      * @return Set of DateToken objects.
-     * @throws Exception
      */
     public Set<StatusIndicator> execute(List<TextToken> tokens) throws Exception
     {

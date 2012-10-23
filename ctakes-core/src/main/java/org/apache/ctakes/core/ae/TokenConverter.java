@@ -39,11 +39,6 @@ public class TokenConverter
 {
     /**
      * Converts from Java Tokenizer object into a JCas object.
-     * 
-     * @param tokenArr
-     * @param jcas
-     * @param beginPos
-     * @return
      */
     public static BaseToken convert(Token t, JCas jcas, int beginPos)
     {
@@ -142,9 +137,6 @@ public class TokenConverter
 
     /**
      * Convert from a JCas object into Java Tokenizer object.
-     * 
-     * @param bta
-     * @return
      */
     public static Token convert(BaseToken bta)
     {

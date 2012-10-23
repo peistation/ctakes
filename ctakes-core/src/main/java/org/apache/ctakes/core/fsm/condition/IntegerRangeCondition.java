@@ -31,11 +31,6 @@ public class IntegerRangeCondition extends Condition {
 	private int iv_lowNum;
 	private int iv_highNum;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public IntegerRangeCondition(int lowNumber, int highNumber) {
 		iv_lowNum = lowNumber;
 		iv_highNum = highNumber;

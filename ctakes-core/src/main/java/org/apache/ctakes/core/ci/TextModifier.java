@@ -30,7 +30,6 @@ public interface TextModifier
      *            Original document text.
      * @return Array of TextModification objects that describe the
      *         modifications. Offset values are relative to the String object.
-     * @throws Exception
      */
     public TextModification[] modify(String text) throws Exception;
 }

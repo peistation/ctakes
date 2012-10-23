@@ -29,7 +29,6 @@ public interface JdbcConnectionResource
 {
     /**
      * Gets the JDBC connection.
-     * @return
      */
     public Connection getConnection();
 }

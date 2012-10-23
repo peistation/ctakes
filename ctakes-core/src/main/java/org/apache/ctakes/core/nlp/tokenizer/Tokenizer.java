@@ -62,8 +62,6 @@ public class Tokenizer {
 
 	/**
 	 * Validate the structure of the hyphen map.
-	 * 
-	 * @param hyphMap
 	 */
 	public static void validateHyphenMap(Map<String, Integer> hyphMap)
 			throws Exception {
@@ -108,7 +106,6 @@ public class Tokenizer {
 	 * 
 	 * @param text The text to tokenize.
 	 * @return A list of Token objects.
-	 * @throws Exception
 	 */
 	public List<Token> tokenize(String text) throws Exception {
 		try {
@@ -456,7 +453,6 @@ public class Tokenizer {
 	/**
 	 * Applies number rules to the given token.
 	 * 
-	 * @param tokenText
 	 * @return True if the token is a number, false otherwise.
 	 */
 	public static boolean isNumber(String tokenText) {

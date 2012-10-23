@@ -45,7 +45,7 @@ public class StringIntegerMapResourceImpl
 
     private final String DELIMITER = "|";
 
-    Map iv_map = new HashMap();
+    Map<String, Integer> iv_map = new HashMap<String, Integer>();
 
     /**
      *  Loads data from a file.

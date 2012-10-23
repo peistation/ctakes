@@ -18,8 +18,6 @@
  */
 package org.apache.ctakes.core.ae;
 
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,13 +25,7 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.analysis_engine.ResultSpecification;
-import org.apache.uima.analysis_engine.annotator.AnnotatorConfigurationException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorContextException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
-import org.apache.uima.analysis_engine.annotator.JTextAnnotator_ImplBase;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
@@ -163,7 +155,7 @@ public class TokenizerAnnotatorPTB extends JCasAnnotator_ImplBase
 		}
 
 		// Now process each sentence
-		FSIterator sentencesIter = indexes.getAnnotationIndex(Sentence.type).iterator();
+		FSIterator<?> sentencesIter = indexes.getAnnotationIndex(Sentence.type).iterator();
 		// Tokenize each sentence, adding the tokens to the cas index
 		while (sentencesIter.hasNext()) {
 			Sentence sentence = (Sentence) sentencesIter.next();
@@ -186,7 +178,7 @@ public class TokenizerAnnotatorPTB extends JCasAnnotator_ImplBase
 		}
 
 		// Now add the tokenNumber in the order of offsets
-		FSIterator baseTokenIter = indexes.getAnnotationIndex(BaseToken.type).iterator();
+		FSIterator<?> baseTokenIter = indexes.getAnnotationIndex(BaseToken.type).iterator();
 		while (baseTokenIter.hasNext()) {
 			BaseToken bta = (BaseToken) baseTokenIter.next();
 			if (bta.getBegin()>=rangeBegin && bta.getBegin()<rangeEnd) {

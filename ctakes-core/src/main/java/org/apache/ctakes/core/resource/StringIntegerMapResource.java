@@ -28,7 +28,6 @@ public interface StringIntegerMapResource
 {
     /**
      * Gets a map of the String/Integer values.
-     * @return
      */
     public Map<String, Integer> getMap();
 }

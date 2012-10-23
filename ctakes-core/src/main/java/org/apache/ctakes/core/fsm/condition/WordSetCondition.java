@@ -33,11 +33,6 @@ public class WordSetCondition extends Condition {
 	private Set<String> iv_wordSet;
 	private boolean iv_isCaseSensitive;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public WordSetCondition(Set<String> wordSet, boolean isCaseSensitive) {
 		iv_wordSet = wordSet;
 	}

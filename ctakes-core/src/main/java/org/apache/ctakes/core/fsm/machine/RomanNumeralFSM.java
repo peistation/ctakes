@@ -82,9 +82,7 @@ public class RomanNumeralFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of RomanNumeralToken objects.
-	 * @throws Exception
 	 */
 	public Set<RomanNumeralToken> execute(List<? extends BaseToken> tokens)
 			throws Exception {

@@ -59,7 +59,7 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
 
     // key = annotation type (java.lang.Integer)
     // val = getter method (java.lang.reflect.Method)
-    private Map iv_getterMethMap = new HashMap();
+    private Map<Integer, Method> iv_getterMethMap = new HashMap<Integer, Method>();
 
     private int iv_count;
 
@@ -88,7 +88,7 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
                 if (st.countTokens() == 1)
                 {
                     String methName = st.nextToken().trim();
-                    Class c = Class.forName(classname);
+                    Class<?> c = Class.forName(classname);
                     Method meth = c.getMethod(methName, (Class[]) null);
                     iv_getterMethMap.put(new Integer(iv_nestedAnnTypeArr[i]),
                             meth);
@@ -111,11 +111,11 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
             htmlSB.append("<TITLE>?</TITLE>");
             htmlSB.append("<BODY>");
 
-            Iterator tSpanItr = jcas.getJFSIndexRepository()
+            Iterator<Annotation> tSpanItr = jcas.getJFSIndexRepository()
                     .getAnnotationIndex(iv_tableSpanType).iterator();
             while (tSpanItr.hasNext())
             {
-                Annotation tSpanAnn = (Annotation) tSpanItr.next();
+                Annotation tSpanAnn = tSpanItr.next();
                 String tSpanText = tSpanAnn.getCoveredText();
 
                 htmlSB.append("<TABLE border=1>");
@@ -131,7 +131,7 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
                 int tdStyleIdx = 0;
                 for (int nestIdx = 0; nestIdx < iv_nestedAnnTypeArr.length; nestIdx++)
                 {
-                    List nestedAnnList = getAnnotations(jcas,
+                    List<Annotation> nestedAnnList = getAnnotations(jcas,
                             iv_nestedAnnTypeArr[nestIdx], tSpanAnn.getBegin(),
                             tSpanAnn.getEnd());
 
@@ -139,21 +139,21 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
                     Collections.sort(nestedAnnList,
                             new AnnotationLengthComparator());
 
-                    List annotsAtRowList = arrangeIntoRows(tSpanAnn,
+                    List<List<Annotation>> annotsAtRowList = arrangeIntoRows(tSpanAnn,
                             nestedAnnList);
 
-                    Iterator trAnnItr = annotsAtRowList.iterator();
+                    Iterator<List<Annotation>> trAnnItr = annotsAtRowList.iterator();
                     while (trAnnItr.hasNext())
                     {
                         htmlSB.append("<TR>");
                         int cursor = tSpanAnn.getBegin();
-                        List annList = (List) trAnnItr.next();
+                        List<Annotation> annList = trAnnItr.next();
 
                         // sort annotations in this row by offset position
                         Collections.sort(annList,
                                 new AnnotationPositionComparator());
 
-                        Iterator annItr = annList.iterator();
+                        Iterator<Annotation> annItr = annList.iterator();
                         while (annItr.hasNext())
                         {
                             Annotation ann = (Annotation) annItr.next();
@@ -259,13 +259,13 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
      * @param nestedAnnList
      * @return
      */
-    private List arrangeIntoRows(Annotation tSpanAnn, List nestedAnnList)
+    private List<List<Annotation>> arrangeIntoRows(Annotation tSpanAnn, List<Annotation> nestedAnnList)
     {
         int tSpanSize = tSpanAnn.getCoveredText().length();
-        List maskAtRowList = new ArrayList();
+        List<BitSet> maskAtRowList = new ArrayList<BitSet>();
         maskAtRowList.add(new BitSet(tSpanSize));
 
-        List annotsAtRowList = new ArrayList();
+        List<List<Annotation>> annotsAtRowList = new ArrayList<List<Annotation>>();
 
         // divide parse annotations into rows
         while (nestedAnnList.size() != 0)
@@ -302,15 +302,15 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
                 rowFound = true;
             }
 
-            List annList = null;
+            List<Annotation> annList = null;
             if ((idx + 1) > annotsAtRowList.size())
             {
-                annList = new ArrayList();
+                annList = new ArrayList<Annotation>();
                 annList.add(ann);
                 annotsAtRowList.add(annList);
             } else
             {
-                annList = (List) annotsAtRowList.get(idx);
+                annList = annotsAtRowList.get(idx);
                 annList.add(ann);
             }
         }
@@ -323,18 +323,15 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
      * @author Mayo Clinic
      * 
      */
-    class AnnotationLengthComparator implements Comparator
+    class AnnotationLengthComparator implements Comparator<Annotation>
     {
         /*
          * (non-Javadoc)
          * 
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
-        public int compare(Object o1, Object o2)
+        public int compare(Annotation a1, Annotation a2)
         {
-            Annotation a1 = (Annotation) o1;
-            Annotation a2 = (Annotation) o2;
-
             Integer len1 = new Integer(a1.getCoveredText().length());
             Integer len2 = new Integer(a2.getCoveredText().length());
 
@@ -366,18 +363,15 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
      * @author Mayo Clinic
      * 
      */
-    class AnnotationPositionComparator implements Comparator
+    class AnnotationPositionComparator implements Comparator<Annotation>
     {
         /*
          * (non-Javadoc)
          * 
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
-        public int compare(Object o1, Object o2)
+        public int compare(Annotation a1, Annotation a2)
         {
-            Annotation a1 = (Annotation) o1;
-            Annotation a2 = (Annotation) o2;
-
             if (a1.getBegin() < a2.getBegin())
                 return -1;
             else if (a1.getBegin() > a2.getBegin())
@@ -394,10 +388,10 @@ public class HtmlTableCasConsumer extends CasConsumer_ImplBase
         }
     }
 
-    private List getAnnotations(JCas jcas, int annType, int begin, int end)
+    private List<Annotation> getAnnotations(JCas jcas, int annType, int begin, int end)
     {
-        List list = new ArrayList();
-        Iterator itr = jcas.getJFSIndexRepository().getAnnotationIndex(annType)
+        List<Annotation> list = new ArrayList<Annotation>();
+        Iterator<Annotation> itr = jcas.getJFSIndexRepository().getAnnotationIndex(annType)
                 .iterator();
         while (itr.hasNext())
         {

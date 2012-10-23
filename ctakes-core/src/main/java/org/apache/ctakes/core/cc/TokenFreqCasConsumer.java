@@ -43,8 +43,6 @@ import org.apache.ctakes.typesystem.type.syntax.WordToken;
  * This class creates a file that contains the frequencies of the word tokens found in a set
  * in a text collection.  This cas consumer could potentially be used to create a frequency
  * file for any kind of annotation but only counts Token annotations at the moment.   
- * 
- *  @see org.apache.ctakes.typesystem.type.syntax.WordToken.java
  */
 
 public class TokenFreqCasConsumer extends CasConsumer_ImplBase
@@ -57,7 +55,7 @@ public class TokenFreqCasConsumer extends CasConsumer_ImplBase
 
 	public static final String PARAM_WORD_FREQ_FILE = "TokenFreqFile";
 	File wordFreqFile;
-	Map wordFreqs;
+	Map<String, int[]> wordFreqs;
 
 /**
  * This method opens/creates the file specified by "TokenFreqFile" and initializes the 
@@ -79,7 +77,7 @@ public class TokenFreqCasConsumer extends CasConsumer_ImplBase
 		{
 			throw new ResourceInitializationException(ioe);
 		}
-		wordFreqs = new HashMap();
+		wordFreqs = new HashMap<String, int[]>();
 	}
 
 	/**
@@ -95,7 +93,7 @@ public class TokenFreqCasConsumer extends CasConsumer_ImplBase
 			JCas jcas;
 			jcas = cas.getJCas();
 			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-	        Iterator tokenItr = indexes.getAnnotationIndex(WordToken.type).iterator();
+	        Iterator<?> tokenItr = indexes.getAnnotationIndex(WordToken.type).iterator();
 	        while (tokenItr.hasNext())
 	        {
 	        	WordToken token = (WordToken) tokenItr.next();
@@ -122,12 +120,10 @@ public class TokenFreqCasConsumer extends CasConsumer_ImplBase
 		//sortedFreqs will contain objects of type Object[] of length 2.  The first object in the array
 		//will hold the token and the second the frequency.  We want to sort on the frequency first in 
 		//descending order and token in ascending order for those tokens with the same frequency. 
-		TreeSet sortedFreqs = new TreeSet(
-				new Comparator() {
-					public int compare(Object obj1, Object obj2)
+		TreeSet<Object[]> sortedFreqs = new TreeSet<Object[]>(
+				new Comparator<Object[]>() {
+					public int compare(Object[] tokenFreq1, Object[] tokenFreq2)
 					{
-						Object[] tokenFreq1 = (Object[]) obj1;
-						Object[] tokenFreq2 = (Object[]) obj2;
 						Integer freq1 = (Integer)tokenFreq1[1];
 						Integer freq2 = (Integer)tokenFreq2[1];
 						if(!freq2.equals(freq1))
@@ -138,16 +134,16 @@ public class TokenFreqCasConsumer extends CasConsumer_ImplBase
 					}
 				});
 		
-		Iterator words = wordFreqs.keySet().iterator();
+		Iterator<String> words = wordFreqs.keySet().iterator();
 		while(words.hasNext())
 		{
-			String word = (String) words.next();
+			String word = words.next();
 			int freq = ((int[])(wordFreqs.get(word)))[0];
 			sortedFreqs.add(new Object[] {word,new Integer(freq)});
 		}
 		
 		PrintStream out = new PrintStream(new FileOutputStream(wordFreqFile));
-		Iterator freqs = sortedFreqs.iterator(); 
+		Iterator<Object[]> freqs = sortedFreqs.iterator(); 
 		while(freqs.hasNext())
 		{
 			Object[] tokenFreq = (Object[]) freqs.next();

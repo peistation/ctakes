@@ -31,15 +31,6 @@ public class TextModification
     private int iv_newEndOffset;
     private String iv_newText;
  
-    /**
-     * Constructor
-     * 
-     * @param origStartOffset
-     * @param origEndOffset
-     * @param newStartOffset
-     * @param newEndOffset
-     * @param newText
-     */
     public TextModification(int origStartOffset, int origEndOffset,
             int newStartOffset, int newEndOffset, String newText)
     {

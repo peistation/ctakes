@@ -29,7 +29,6 @@ public interface MaxentModelResource
 {
     /**
      * Gets a Maxent Model.
-     * @return
      */
     public MaxentModel getModel();
 }

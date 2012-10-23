@@ -30,11 +30,6 @@ import net.openai.util.fsm.Condition;
 public class PunctuationValueCondition extends Condition {
 	private char iv_punctChar;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param t
-	 */
 	public PunctuationValueCondition(char c) {
 		iv_punctChar = c;
 	}

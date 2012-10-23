@@ -146,9 +146,7 @@ public class FractionFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of FractionToken objects.
-	 * @throws Exception
 	 */
 	public Set<FractionToken> execute(List<? extends BaseToken> tokens)
 			throws Exception {

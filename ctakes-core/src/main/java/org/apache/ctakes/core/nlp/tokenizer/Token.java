@@ -182,33 +182,21 @@ public class Token
         iv_numPosition = b;
     }
 
-    /**
-     * @return
-     */
     public String getText()
     {
         return iv_text;
     }
 
-    /**
-     * @param i
-     */
     public void setText(String s)
     {
         iv_text = s;
     }
 
-    /**
-     * @return
-     */
     public boolean isInteger()
     {
         return iv_isInteger;
     }
 
-    /**
-     * @param b
-     */
     public void setIsInteger(boolean isInteger)
     {
         iv_isInteger = isInteger;

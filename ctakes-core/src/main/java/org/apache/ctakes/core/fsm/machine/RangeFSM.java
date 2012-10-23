@@ -129,9 +129,7 @@ public class RangeFSM {
 	/**
 	 * Executes the finite state machines.
 	 * 
-	 * @param tokens
 	 * @return Set of RangeToken objects.
-	 * @throws Exception
 	 */
 	public Set<RangeToken> execute(List<? extends BaseToken> tokens,
 			Set<? extends BaseToken> overrideSet) throws Exception {
