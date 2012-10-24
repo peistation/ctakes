@@ -20,6 +20,7 @@ package org.apache.ctakes.temporal.ae;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,10 +57,12 @@ import org.cleartk.classifier.jar.JarClassifierFactory;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.io.LineProcessor;
+import com.google.common.io.Resources;
 
 public class EventAnnotator extends CleartkAnnotator<String> {
 
@@ -115,9 +118,9 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech")));
     // new SRLExtractor(),
-    // new CoveredTextToValuesExtractor("ACF", parseStringDoublesMap("/word_freq.lst")),
-    // new CoveredTextToValuesExtractor("PCA", parseStringDoublesMap("/word_pca.lst")),
-    // new CoveredTextToValuesExtractor("TimPCA", parseStringDoublesMap("/tim_word_pca.txt")),
+    // new CoveredTextToValuesExtractor("ACF", StringToDoublesProcessor.parse("/word_freq.lst")),
+    // new CoveredTextToValuesExtractor("PCA", StringToDoublesProcessor.parse("/word_pca.lst")),
+    // new CoveredTextToValuesExtractor("TimPCA", StringToDoublesProcessor.parse("/tim_word_pca.txt")),
     // new PhraseExtractor()));
     // } catch (IOException e) {
     // throw new ResourceInitializationException(e);
@@ -136,13 +139,6 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         new Preceding(3),
         new Following(3)));
   }
-
-  // private static Map<String, double[]> parseStringDoublesMap(String resourcePath)
-  // throws IOException {
-  // StringToDoublesProcessor processor = new StringToDoublesProcessor();
-  // URL url = EventAnnotator.class.getResource(resourcePath);
-  // return Resources.readLines(url, Charsets.US_ASCII, processor);
-  // }
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
@@ -236,7 +232,13 @@ public class EventAnnotator extends CleartkAnnotator<String> {
     };
   }
 
-  private static class StringToDoublesProcessor implements LineProcessor<Map<String, double[]>> {
+  static class StringToDoublesProcessor implements LineProcessor<Map<String, double[]>> {
+    public static Map<String, double[]> parse(String resourcePath) throws IOException {
+      StringToDoublesProcessor processor = new StringToDoublesProcessor();
+      URL url = EventAnnotator.class.getResource(resourcePath);
+      return Resources.readLines(url, Charsets.US_ASCII, processor);
+    }
+
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private Map<String, double[]> result = new HashMap<String, double[]>();
