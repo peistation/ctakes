@@ -29,8 +29,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
-import org.apache.ctakes.core.TestUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.utils.test.TestUtil;
 
 public class NegationAnnotatorTests {
 

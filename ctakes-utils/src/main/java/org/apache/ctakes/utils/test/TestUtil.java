@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.core;
+package org.apache.ctakes.utils.test;
 
 import static org.junit.Assert.assertEquals;
 

@@ -40,8 +40,8 @@ import org.apache.ctakes.typesystem.type.syntax.PRT;
 import org.apache.ctakes.typesystem.type.syntax.SBAR;
 import org.apache.ctakes.typesystem.type.syntax.UCP;
 import org.apache.ctakes.typesystem.type.syntax.VP;
-import org.apache.ctakes.core.TestUtil;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
+import org.apache.ctakes.utils.test.TestUtil;
 
 public class ChunkerTests {
 

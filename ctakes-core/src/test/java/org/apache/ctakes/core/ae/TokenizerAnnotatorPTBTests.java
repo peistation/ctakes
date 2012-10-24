@@ -29,13 +29,13 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.junit.Test;
 
-import org.apache.ctakes.core.TestUtil;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
 import org.apache.ctakes.typesystem.type.syntax.NumToken;
 import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
 import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.utils.test.TestUtil;
 
 public class TokenizerAnnotatorPTBTests {
 
