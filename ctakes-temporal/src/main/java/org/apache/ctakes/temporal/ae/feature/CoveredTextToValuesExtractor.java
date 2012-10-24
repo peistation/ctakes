@@ -64,8 +64,8 @@ public class CoveredTextToValuesExtractor implements SimpleFeatureExtractor {
     }
     ArrayList<Feature> features = new ArrayList<Feature>();
     for (int i = 0; i < values.length; ++i) {
-      String name = Feature.createName(this.name, String.valueOf(i));
-      features.add(new Feature(name, values[i]));
+      String featureName = Feature.createName(this.name, String.valueOf(i));
+      features.add(new Feature(featureName, values[i]));
     }
     return features;
   }

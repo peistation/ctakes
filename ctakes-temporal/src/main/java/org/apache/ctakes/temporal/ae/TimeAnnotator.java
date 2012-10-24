@@ -45,7 +45,8 @@ import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
-import org.cleartk.classifier.jar.JarClassifierFactory;
+import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
+import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
@@ -60,7 +61,7 @@ public class TimeAnnotator extends CleartkAnnotator<String> {
         true,
         DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
         dataWriterClass,
-        DefaultDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
         outputDirectory);
   }
 
@@ -70,7 +71,7 @@ public class TimeAnnotator extends CleartkAnnotator<String> {
         TimeAnnotator.class,
         CleartkAnnotator.PARAM_IS_TRAINING,
         false,
-        JarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(modelDirectory, "model.jar"));
   }
 

@@ -65,22 +65,22 @@ public class AnnotationCopier extends JCasAnnotator_ImplBase {
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
-    JCas sourceView, targetView;
+    JCas sourceJCas, targetJCas;
     try {
-      sourceView = jCas.getView(this.sourceView);
-      targetView = jCas.getView(this.targetView);
+      sourceJCas = jCas.getView(this.sourceView);
+      targetJCas = jCas.getView(this.targetView);
     } catch (CASException e) {
       throw new AnalysisEngineProcessException(e);
     }
-    CasCopier copier = new CasCopier(sourceView.getCas(), targetView.getCas());
-    for (TOP annotation : JCasUtil.select(sourceView, this.annotationClass)) {
+    CasCopier copier = new CasCopier(sourceJCas.getCas(), targetJCas.getCas());
+    for (TOP annotation : JCasUtil.select(sourceJCas, this.annotationClass)) {
       TOP copy = (TOP) copier.copyFs(annotation);
       // CasCopier does not change sofa of annotation; without the code below, you get the error:
       // the Annotation "..." is over view "GoldView" and cannot be added to indexes associated
       // with the different view "_InitialView".
       Feature sofaFeature = copy.getType().getFeatureByBaseName(CAS.FEATURE_BASE_NAME_SOFA);
       if (sofaFeature != null) {
-        copy.setFeatureValue(sofaFeature, targetView.getSofa());
+        copy.setFeatureValue(sofaFeature, targetJCas.getSofa());
       }
       copy.addToIndexes();
     }
