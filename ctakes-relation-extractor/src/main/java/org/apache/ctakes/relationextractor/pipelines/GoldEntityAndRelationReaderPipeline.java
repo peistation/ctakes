@@ -18,14 +18,17 @@
  */
 package org.apache.ctakes.relationextractor.pipelines;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
 import org.apache.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
+import org.apache.ctakes.relationextractor.eval.PreprocessAndWriteXmi.Options;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.kohsuke.args4j.Option;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -42,29 +45,54 @@ import org.uimafit.pipeline.SimplePipeline;
  */
 public class GoldEntityAndRelationReaderPipeline {
 
-	public static void main(String[] args) throws UIMAException, IOException {
-		
-		TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-				"/home/dima/workspaces/ctakes/ctakes-type-system/desc/common_type_system.xml");
-		
-		CollectionReaderDescription collectionReader = CollectionReaderFactory.createDescription(
-				FilesInDirectoryCollectionReader.class,
-				typeSystemDescription,
-				"InputDirectory",
-				"/home/dima/sharp/cloud/sharp/text/train/");
-		
-		AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
-				GoldEntityAndRelationReader.class,
-				typeSystemDescription,
-				"InputDirectory",
-				"/home/dima/sharp/cloud/sharp/xml/train/");
+  @Option(name = "-t", 
+      aliases = "--textRoot", 
+      usage = "specify the directory contraining the textFiles (for example /NLP/Corpus/Relations/mipacq/text/train",
+      required = true)
+  public File textRoot;
 
-    AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
-        XWriter.class,
-        typeSystemDescription,
-        XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
-        "/home/dima/temp/");
-    
-		SimplePipeline.runPipeline(collectionReader, goldAnnotator, xWriter);
+  @Option(name = "-x",
+      aliases = "--xmlRoot",
+      usage = "specify the directory containing the knowtator xml files (for example: /NLP/Corpus/Relations/mipacq/xml/train",
+      required = true)
+  public File xmlRoot;
+
+  @Option(name = "-o",
+      aliases = "--outputRoot",
+      usage = "specify the directory to write out CAS XMI files",
+      required = false)
+  public File outputRoot = new File("target/out/xmi/");
+
+  public static void main(String[] args) throws UIMAException, IOException {
+	
+    Options options = new Options();
+    options.parseOptions(args);
+  
+    File textRoot = options.textRoot;
+    File xmlRoot = options.xmlRoot;
+    File outputRoot = options.outputRoot;
+
+	  TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
+	      "/home/dima/workspaces/ctakes/ctakes-type-system/desc/common_type_system.xml");
+
+	  CollectionReaderDescription collectionReader = CollectionReaderFactory.createDescription(
+	      FilesInDirectoryCollectionReader.class,
+	      typeSystemDescription,
+	      "InputDirectory",
+	      textRoot.getPath());
+
+	  AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+	      GoldEntityAndRelationReader.class,
+	      typeSystemDescription,
+	      "InputDirectory",
+	      xmlRoot.getPath());
+
+	  AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
+	      XWriter.class,
+	      typeSystemDescription,
+	      XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+	      outputRoot.getPath());
+
+	  SimplePipeline.runPipeline(collectionReader, goldAnnotator, xWriter);
 	}
 }
