@@ -111,7 +111,6 @@ public class XcasFile implements Cloneable {
 	/**
 	 * Returns the line and column numbers of the specified <code>XcasAnnotation</code>,
 	 * which is included in this <code>XcasFile</code> object.
-	 * @param a
 	 * @return A string containing the line and column numbers of the specified object,
 	 *         in the form of <code>line_number:column_number</code>.
 	 * @see #getPositionOwn(int)
@@ -133,7 +132,6 @@ public class XcasFile implements Cloneable {
 	/**
 	 * Finds an <code>XcasAnnotation</code> with the same attributes as specified,
 	 * and returns its line and column numbers. 
-	 * @param a
 	 * @return A string containing the line and column numbers of the specified object,
 	 *         in the form of <code>line_number:column_number</code>.
 	 * @see #getPositionOwn(int)

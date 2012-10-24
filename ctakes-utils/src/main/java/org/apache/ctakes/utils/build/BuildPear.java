@@ -39,7 +39,6 @@ public class BuildPear {
 	/**
 	 * @param args optional - project name (directory name) of project to edu.mayo.bmi.utils.build, 
 	 * and in which to look for a BuildPear.properties file
-	 * @throws IOException 
 	 */
 	public static void main(String[] args) {
 		

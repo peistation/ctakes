@@ -63,7 +63,7 @@ import org.apache.uima.tools.cvd.MainFrame;
  * user and then run the installed AE in CVD.
  * 
  * This class was based on parts of <code>org.apache.uima.tools.pear.install.InstallPear</code>
- * @see <code>org.apache.uima.tools.pear.install.InstallPear</code>
+ * @see org.apache.uima.tools.pear.install.InstallPear
  */
 public class InstallPearSilently {
 
