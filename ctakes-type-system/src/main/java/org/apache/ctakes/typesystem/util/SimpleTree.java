@@ -33,11 +33,17 @@ public class SimpleTree {
 	}
 	
 	public SimpleTree(String c, SimpleTree p){
-		cat = c;
+		cat = escapeCat(c);
 		children = new ArrayList<SimpleTree>();
 		parent = p;
 	}
 	
+	private String escapeCat(String c) {
+		c = c.replaceAll("\\(", "LPAREN");
+		c = c.replaceAll("\\)", "RPAREN");
+		return c;
+	}
+
 	public void addChild(SimpleTree t){
 		children.add(t);
 	}
@@ -117,6 +123,10 @@ public class SimpleTree {
 		return children.toArray(new String[]{});
 	}
 	
+ 	public boolean isLeaf() {
+ 		return children == null || children.size() == 0;
+ 	}
+ 	
 	public static void main(String[] args){
 		SimpleTree t = new SimpleTree("TOP");
 		t.addChild(new SimpleTree("S"));
