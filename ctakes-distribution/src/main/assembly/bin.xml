@@ -24,7 +24,7 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 	<id>bin</id>
 	<formats>
-		<format>tar.gz</format>
+		<format>tar.gz</format> 
 		<format>zip</format>
 	</formats>
 
@@ -161,120 +161,138 @@
 		<!-- Copy all of the XML Descriptors. Temp Preserving this structure so 
 			that the relative paths still work. -->
 		<fileSet>
-			<directory>../ctakes-assertion/desc</directory>
+			<directory>../</directory>
+			<outputDirectory>desc</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-assertion/desc</outputDirectory>
+		      <includes>
+		        <include>*/desc/**</include>
+		      </includes>			
 		</fileSet>
+		
 		<fileSet>
-			<directory>../ctakes-chunker/desc</directory>
+		    <directory>../ctakes-assertion/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-chunker/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>
 		<fileSet>
-			<directory>../ctakes-clinical-pipeline/desc</directory>
+		    <directory>../ctakes-chunker/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-clinical-pipeline/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>
 		<fileSet>
-			<directory>../ctakes-constituency-paraser/desc</directory>
+		    <directory>../ctakes-clinical-pipeline/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-constituency-paraser/desc
-			</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-context-tokenizer/desc</directory>
+		    <directory>../ctakes-constituency-parser/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-context-tokenizer/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-core/desc</directory>
+		    <directory>../ctakes-context-tokenizer/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-core/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-coreference/desc</directory>
+		    <directory>../ctakes-core/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-coreference/desc</outputDirectory>
-		</fileSet>
+			<excludes><exclude>log4j.xml</exclude></excludes>
+    	</fileSet>
 		<fileSet>
-			<directory>../ctakes-dependency-parser/desc</directory>
+		    <directory>../ctakes-coreference/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-dependency-parser/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	   
 		<fileSet>
-			<directory>../ctakes-dictionary-lookup/desc</directory>
+		    <directory>../ctakes-dependency-parser/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-dictionary-lookup/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-drug-ner/desc</directory>
+		    <directory>../ctakes-dictionary-lookup/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-drug-ner/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	 	
 		<fileSet>
-			<directory>../ctakes-lvg/desc</directory>
+		    <directory>../ctakes-drug-ner/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-lvg/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-ne-contexts/desc</directory>
+		    <directory>../ctakes-lvg/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-ne-contexts/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-pad-term-spotter/desc</directory>
+		    <directory>../ctakes-ne-contexts/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-pad-term-spotter/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-pos-tagger/desc</directory>
+		    <directory>../ctakes-pad-term-spotter/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-pos-tagger/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-preprocessor/desc</directory>
+		    <directory>../ctakes-pos-tagger/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-preprocessor/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    
 		<fileSet>
-			<directory>../ctakes-relation-extractor/desc</directory>
+		    <directory>../ctakes-preprocessor/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-relation-extractor/desc
-			</outputDirectory>
-		</fileSet>
+    	</fileSet>    	
 		<fileSet>
-			<directory>../ctakes-side-effect/desc</directory>
+		    <directory>../ctakes-relation-extractor/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-side-effect/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>  
 		<fileSet>
-			<directory>../ctakes-smoking-status/desc</directory>
+		    <directory>../ctakes-side-effect/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-smoking-status/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>    	  		
 		<fileSet>
-			<directory>../ctakes-type-system/desc</directory>
+		    <directory>../ctakes-smoking-status/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-			<outputDirectory>desc/ctakes-type-system/desc</outputDirectory>
-		</fileSet>
+    	</fileSet>
+    	<!-- Type System types should already be in the jar -->
+    	<!-- 
+		<fileSet>
+		    <directory>../ctakes-type-system/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>   
+    	--> 	
+		<fileSet>
+		    <directory>../ctakes-utils/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>    	    	
 	</fileSets>
 </assembly>

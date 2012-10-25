@@ -38,6 +38,7 @@
         <exclude>**/.*/**</exclude>
         <exclude>**/pom.xml.releaseBackup</exclude>
         <exclude>**/release.properties</exclude>
+        <exclude>ctakes-temporal/**</exclude>
       </excludes>
     </fileSet>
   </fileSets>

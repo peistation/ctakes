@@ -1,5 +1,18 @@
 
-Javadocs are found within the docs directory.
+Apache cTAKES
+===============================
+Detail documentation could found on:
+http://incubator.apache.org/ctakes
 
-Other documentation is found online at
-https://cabig-kc.nci.nih.gov/Vocab/KC/index.php/OHNLP_Documentation_and_Downloads
+Requirements
+-----------
+Java 1.6 is required to run cTAKES
+Maven 3.0.0 is required for building it
+
+Running the default pipeline in the UIMA CAS Visual Debugger
+or Collection Processing Engine
+-----------
+Run bin/runctakesCVD/CPE.sh.bat
+Load AE (analysis engine)
+Select desc/ctakes-clinical-pipeline/desc/analysis_engine/AggregatePlaintextProcessor
+Enter note and run analysis engine.

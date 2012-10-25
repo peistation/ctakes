@@ -470,6 +470,15 @@
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.4</version>
+					<configuration>
+			          <includes>
+			          <!-- Resources will be copied by the assembly
+			          No need for it to be inside the jar -->
+			            <include>**/*.class</include>
+			            <include>**/types/*.xml</include>			            
+			            <include>**/META-INF/**</include>
+			          </includes>
+	        		</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
