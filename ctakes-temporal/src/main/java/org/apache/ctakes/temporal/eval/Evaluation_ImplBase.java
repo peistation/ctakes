@@ -247,13 +247,13 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
       }
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           UmlsDictionaryLookupAnnotator.class,
-          "UMLSAddr",
-          "https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser",
-          "UMLSVendor",
+          "ctakes.umlsaddr",
+          "https://uts-ws.nlm.nih.gov/restful/isValidctakes.umlsuser",
+          "ctakes.umlsvendor",
           "NLM-6515182895",
-          "UMLSUser",
+          "ctakes.umlsuser",
           umlsUser,
-          "UMLSPW",
+          "ctakes.umlspw",
           umlsPassword,
           "LookupDescriptor",
           ExternalResourceFactory.createExternalResourceDescription(

@@ -18,6 +18,10 @@
 #
 
 # Requires JAVA JDK 1.6+
+# If you plan to use the UMLS Resources, set/export env variables
+# export ctakes.umlsuser=[username], ctakes.umlspw=[password]
+# or add the properties
+# -Dctakes.umlsuser=[username] -Dctakes.umlspw=[password]
 
 PRG="$0"
 while [ -h "$PRG" ]; do

@@ -38,7 +38,7 @@
         <mandatory>false</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>UMLSAddr</name>
+        <name>ctakes.umlsaddr</name>
         <description>
         A UMLS is required to use the UMLS Dictionary.
         Address to verify UMLS License.  If you do not have one,
@@ -49,21 +49,21 @@
         <mandatory>true</mandatory>
       </configurationParameter>    
       <configurationParameter>
-        <name>UMLSVendor</name>
+        <name>ctakes.umlsvendor</name>
         <description>UMLS Vendor ID</description>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
       </configurationParameter>     
       <configurationParameter>
-        <name>UMLSUser</name>
+        <name>ctakes.umlsuser</name>
         <description>UMLS User Name</description>
         <type>String</type>
         <multiValued>false</multiValued>
         <mandatory>true</mandatory>
       </configurationParameter>    
       <configurationParameter>
-        <name>UMLSPW</name>
+        <name>ctakes.umlspw</name>
         <description>UMLS Password</description>
         <type>String</type>
         <multiValued>false</multiValued>
@@ -78,25 +78,25 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>UMLSAddr</name>
+        <name>ctakes.umlsaddr</name>
         <value>
-          <string>https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser</string>
+          <string>https://uts-ws.nlm.nih.gov/restful/isValidctakes.umlsuser</string>
         </value>
       </nameValuePair>    
       <nameValuePair>
-        <name>UMLSVendor</name>
+        <name>ctakes.umlsvendor</name>
         <value>
           <string>NLM-6515182895</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>UMLSUser</name>
+        <name>ctakes.umlsuser</name>
         <value>
           <string>YOUR_UMLS_USERNAME_HERE</string>
         </value>
       </nameValuePair> 
       <nameValuePair>
-        <name>UMLSPW</name>
+        <name>ctakes.umlspw</name>
         <value>
           <string>YOUR_UMLS_PASSWORD_HERE</string>
         </value>

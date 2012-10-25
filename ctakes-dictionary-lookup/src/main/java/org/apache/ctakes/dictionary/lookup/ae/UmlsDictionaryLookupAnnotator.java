@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.ctakes.utils.env.EnvironmentVariable;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -42,14 +43,13 @@ public class UmlsDictionaryLookupAnnotator extends DictionaryLookupAnnotator
 	 * Performs a check for user's UMLS licence at init time via their RESTful API
 	 * User's will need to configure their UMLS username/password in their config
 	 */
-	private final static String UMLSADDR_PARAM = "UMLSAddr";
-	private final static String UMLSVENDOR_PARAM = "UMLSVendor";
-	private final static String UMLSUSER_PARAM = "UMLSUser";
-	private final static String UMLSPW_PARAM = "UMLSPW";
+	private final static String UMLSADDR_PARAM = "ctakes.umlsaddr";
+	private final static String UMLSVENDOR_PARAM = "ctakes.umlsvendor";
+	private final static String UMLSUSER_PARAM = "ctakes.umlsuser";
+	private final static String UMLSPW_PARAM = "ctakes.umlspw";
 	
 	private Logger iv_logger = Logger.getLogger(getClass().getName());
-	private UimaContext iv_context;
-	private Set iv_lookupSpecSet = new HashSet();
+
 	private String UMLSAddr;
 	private String UMLSVendor;
 	private String UMLSUser;
@@ -59,15 +59,14 @@ public class UmlsDictionaryLookupAnnotator extends DictionaryLookupAnnotator
 			throws ResourceInitializationException
 	{
 		super.initialize(aContext);
-		iv_context = aContext;
 
 		try {
-			UMLSAddr = (String) iv_context.getConfigParameterValue(UMLSADDR_PARAM);
-			UMLSVendor = (String) iv_context.getConfigParameterValue(UMLSVENDOR_PARAM);
-			UMLSUser = (String) iv_context.getConfigParameterValue(UMLSUSER_PARAM);
-			UMLSPW = (String) iv_context.getConfigParameterValue(UMLSPW_PARAM);
+			UMLSAddr = EnvironmentVariable.getEnv(UMLSADDR_PARAM, aContext);
+			UMLSVendor = EnvironmentVariable.getEnv(UMLSVENDOR_PARAM, aContext);
+			UMLSUser = EnvironmentVariable.getEnv(UMLSUSER_PARAM, aContext);
+			UMLSPW = EnvironmentVariable.getEnv(UMLSPW_PARAM, aContext);
 			
-			iv_logger.info("Using " + UMLSADDR_PARAM + ":" + UMLSAddr + ":" + UMLSUser);
+			iv_logger.info("Using " + UMLSADDR_PARAM + ": " + UMLSAddr + ": " + UMLSUser);
 			if(!isValidUMLSUser(UMLSAddr, UMLSVendor, UMLSUser, UMLSPW))
 			{
 				iv_logger.error("Error: Invalid UMLS License.  A UMLS License is required to use the UMLS dictionary lookup. \n" +

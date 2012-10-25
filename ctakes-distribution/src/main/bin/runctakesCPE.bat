@@ -18,6 +18,10 @@
 @REM
 
 @REM Requires JAVA JDK 1.6+
+@REM If you plan to use the UMLS Resources, set/export env variables
+@REM set ctakes.umlsuser=[username], ctakes.umlspw=[password]
+@REM or add the properties
+@REM -Dctakes.umlsuser=[username] -Dctakes.umlspw=[password]
 
 @REM Guess CTAKES_HOME if not defined
 set CURRENT_DIR=%cd%
