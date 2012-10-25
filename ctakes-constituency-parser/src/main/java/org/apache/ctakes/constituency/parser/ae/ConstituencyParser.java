@@ -32,7 +32,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 
 public class ConstituencyParser extends JCasAnnotator_ImplBase {
-
+	public static final String PARAM_MODELFILE = "modelFilename";
 	ParserWrapper parser = null;
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -40,16 +40,10 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
 		super.initialize(aContext);
-		String modelFileOrDirname = (String) aContext.getConfigParameterValue("modelFilename");
-//		parser = new BerkeleyParserWrapper(modelFilename);
+		String modelFileOrDirname = (String) aContext.getConfigParameterValue(PARAM_MODELFILE);
 		try {
-//			synchronized(this.getClass()){
-//				if(parser == null){
 					logger.info("Initializing parser...");
 					parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
-//				}
-//			}
-//			parser = new ParallelParser(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.error("Error reading parser model file/directory: " + e.getMessage());
@@ -59,9 +53,6 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-//		TreebankParser p = new TreebankParser();
-//		synchronized(parser){
 			parser.createAnnotations(jcas);
-//		}
 	}
 }

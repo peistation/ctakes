@@ -18,10 +18,9 @@
  */
 package org.apache.ctakes.constituency.parser.util;
 
-import java.util.Iterator;
-
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
@@ -30,6 +29,54 @@ import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 
 
 public class AnnotationTreeUtils {
+	
+	public static TopTreebankNode getAnnotationTree(JCas jcas, Annotation annot){
+		TopTreebankNode tree = null;
+		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(TopTreebankNode.type).iterator();
+		while(iter.hasNext()){
+			TopTreebankNode root = (TopTreebankNode) iter.next();
+			if(root.getBegin() <= annot.getBegin() && root.getEnd() >= annot.getEnd()){
+				tree = root;
+				break;
+			}
+		}
+		return tree;
+	}
+
+	public static TopTreebankNode getTreeCopy(JCas jcas, TopTreebankNode orig){
+		TopTreebankNode copy = new TopTreebankNode(jcas);
+		copy.setNodeType(orig.getNodeType());
+		copy.setBegin(orig.getBegin());
+		copy.setEnd(orig.getEnd());
+		copy.setParent(null);
+		copy.setChildren(new FSArray(jcas,1));
+		copy.setTreebankParse(orig.getTreebankParse());
+		if(orig.getChildren() == null || orig.getChildren().size() == 0){
+			System.err.println("WHAT?");
+		}
+		copy.setChildren(0, getTreeCopy(jcas, orig.getChildren(0)));
+		return copy;
+	}
+
+	public static TreebankNode getTreeCopy(JCas jcas, TreebankNode orig){
+		TreebankNode copy = null;
+		if(orig instanceof TerminalTreebankNode){
+			copy = new TerminalTreebankNode(jcas);
+			copy.setLeaf(true);
+			copy.setChildren(null);
+		}else{
+			copy = new TreebankNode(jcas);
+			copy.setChildren(new FSArray(jcas, orig.getChildren().size()));
+			for(int i = 0; i < orig.getChildren().size(); i++){
+				copy.setChildren(i, getTreeCopy(jcas, orig.getChildren(i)));
+				copy.getChildren(i).setParent(copy);
+			}
+		}
+		copy.setNodeType(orig.getNodeType());
+		copy.setBegin(orig.getBegin());
+		copy.setEnd(orig.getEnd());
+		return copy;
+	}
 	
 	public static TreebankNode annotationNode(JCas jcas, Annotation annot){
 		return annotationNode(jcas, annot.getBegin(), annot.getEnd());
@@ -88,4 +135,113 @@ public class AnnotationTreeUtils {
 		return ret;
 	}
 
+	public static TreebankNode insertAnnotationNode(JCas jcas, TopTreebankNode root, Annotation arg1, String nodeType) {
+		// tree did not match the arg exactly, so if possible we'll insert a node in the tree here that
+		// is under tree but above its children.  So we'll try to find the start and end child that this
+		// arg covers if possible.
+		TreebankNode tree = root;
+		TreebankNode lastTree = null; //tree;
+		do{
+			lastTree = tree;
+			// only continue downward traversal if we are not at a POS node...
+			if(tree.getChildren().size() > 1 || tree.getChildren(0).getChildren() != null){
+				for(int i = 0; i < tree.getChildren().size(); i++){
+					TreebankNode child = tree.getChildren(i);
+					if(child.getBegin() <= arg1.getBegin() && child.getEnd() >= arg1.getEnd()){
+						tree = child;
+						break;  // break out of inner for-loop
+					}
+				}
+			}
+		}while(tree != lastTree);
+
+		TreebankNode newTree = null;
+		if(tree.getBegin() == arg1.getBegin() && tree.getEnd() == arg1.getEnd()){
+			while(tree.getParent() != null && tree.getParent().getBegin() == arg1.getBegin() && tree.getParent().getEnd() == arg1.getEnd()){
+				tree = tree.getParent();
+			}
+			// matches a node in tree, just insert one above it
+			newTree = new TreebankNode(jcas, tree.getBegin(), tree.getEnd());
+			newTree.setNodeType(tree.getNodeType());
+			newTree.setChildren(tree.getChildren());
+			newTree.setParent(tree);
+			tree.setNodeType(nodeType);
+			tree.setChildren(new FSArray(jcas, 1));
+			tree.setChildren(0,newTree);
+			newTree = tree;
+		}else{
+			// mismatch
+
+			int startChild = -1;
+			int endChild = -1;
+			for(int i = 0; i < tree.getChildren().size(); i++){
+				if(startChild == -1){
+					if(tree.getChildren(i).getBegin() == arg1.getBegin()){
+						startChild = i;
+					}
+				}else if(tree.getChildren(i).getEnd() == arg1.getEnd()){
+					endChild = i;
+					break;
+				}
+			}
+			// here is where we insert if possible
+			if(startChild >= 0 && endChild >= 0){
+				newTree = new TreebankNode(jcas, tree.getChildren(startChild).getBegin(), tree.getChildren(endChild).getEnd());
+				newTree.setNodeType(nodeType);
+				newTree.setParent(tree);
+				int numStolenChildren = endChild-startChild+1;
+				newTree.setChildren(new FSArray(jcas, numStolenChildren));
+				// add new children to new intermediate node
+				for(int i = startChild; i <= endChild; i++){
+					newTree.setChildren(i-startChild, tree.getChildren(i));
+				}
+				// create new children array for top node (tree)
+				FSArray children = new FSArray(jcas, tree.getChildren().size() - numStolenChildren + 1);
+				for(int i = 0; i < startChild; i++){
+					children.set(i, tree.getChildren(i));
+				}
+				children.set(startChild, newTree);
+				for(int i = endChild+1; i < tree.getChildren().size(); i++){
+					children.set(i-numStolenChildren+1, tree.getChildren(i));
+				}
+				tree.setChildren(children);
+			}else{
+				// just put above here...
+				newTree = new TreebankNode(jcas, tree.getBegin(), tree.getEnd());
+				newTree.setNodeType(tree.getNodeType());
+				newTree.setChildren(tree.getChildren());
+				newTree.setParent(tree);
+				tree.setNodeType(nodeType);
+				tree.setChildren(new FSArray(jcas, 1));
+				tree.setChildren(0,newTree);
+				newTree = tree;
+			}
+		}
+		return newTree;
+	}
+
+	public static void removeRightOfAnnotation(JCas jcas, TreebankNode node, Annotation annot) {
+		// if the whole tree is to the left of the annotation then do nothing:
+		if(node.getEnd() <= annot.getBegin() || node.getLeaf()) return;
+
+		// if there is some overlap then iterate over trees, ignoring those to the left, recursing on those that overlap, and deleting those to the right
+		for(int i = 0; i < node.getChildren().size(); i++){
+			TreebankNode child = node.getChildren(i);
+			if(child.getEnd() <= annot.getBegin()){
+				// child is to the left of annotation completely
+				continue;
+			}else if(child.getBegin() > annot.getEnd()){
+				// child is to the right of annotation completely -- remove it and all to the right
+				// TODO
+				FSArray newChildren = new FSArray(jcas, i);
+				for(int j = 0; j < i; j++){
+					newChildren.set(j, node.getChildren(j));
+				}
+				node.setChildren(newChildren);
+				break;
+			}else{
+				removeRightOfAnnotation(jcas, child, annot);
+			}
+		}
+	}
 }
