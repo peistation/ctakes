@@ -65,7 +65,7 @@ import org.apache.ctakes.coreference.util.ParentPtrTree;
 import org.apache.ctakes.coreference.util.SvmUtils;
 import org.apache.ctakes.coreference.util.SvmVectorCreator;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
-import org.apache.ctakes.typesystem.util.SimpleTree;
+import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.ctakes.coreference.type.MarkablePairSet;
 import org.apache.ctakes.coreference.type.Markable;
 import org.apache.ctakes.coreference.type.DemMarkable;

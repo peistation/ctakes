@@ -23,7 +23,7 @@ import opennlp.tools.parser.Parse;
 
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
-import org.apache.ctakes.typesystem.util.SimpleTree;
+import org.apache.ctakes.utils.tree.SimpleTree;
 
 import java.util.List;
 import java.util.ArrayList;

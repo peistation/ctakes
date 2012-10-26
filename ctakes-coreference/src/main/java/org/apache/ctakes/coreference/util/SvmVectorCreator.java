@@ -36,8 +36,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import org.apache.ctakes.coreference.type.Markable;
-import org.apache.ctakes.typesystem.util.FragmentUtils;
-import org.apache.ctakes.typesystem.util.SimpleTree;
+import org.apache.ctakes.utils.tree.FragmentUtils;
+import org.apache.ctakes.utils.tree.SimpleTree;
 
 public class SvmVectorCreator {
 	HashSet<String> stopwords = null;

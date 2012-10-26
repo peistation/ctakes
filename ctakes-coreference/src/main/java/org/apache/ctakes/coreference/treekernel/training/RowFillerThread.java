@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import org.apache.ctakes.constituency.parser.treekernel.TreeKernel;
 import org.apache.ctakes.coreference.util.ThreadDelegator;
-import org.apache.ctakes.typesystem.kernel.Kernel;
+import org.apache.ctakes.utils.kernel.Kernel;
 
 
 import opennlp.tools.parser.Parse;

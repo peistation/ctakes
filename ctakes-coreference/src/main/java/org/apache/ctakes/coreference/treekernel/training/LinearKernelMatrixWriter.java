@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.ctakes.coreference.util.ThreadDelegator;
-import org.apache.ctakes.typesystem.kernel.Kernel;
-import org.apache.ctakes.typesystem.kernel.LinearKernel;
-import org.apache.ctakes.typesystem.kernel.PolyKernel;
-import org.apache.ctakes.typesystem.kernel.RBFKernel;
+import org.apache.ctakes.utils.kernel.Kernel;
+import org.apache.ctakes.utils.kernel.LinearKernel;
+import org.apache.ctakes.utils.kernel.PolyKernel;
+import org.apache.ctakes.utils.kernel.RBFKernel;
 
 
 import libsvm.svm_node;
