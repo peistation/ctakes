@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.ctakes</groupId>
 	<artifactId>ctakes</artifactId>
-	<version>3.0.0-incubating</version>
+	<version>3.1.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Apache cTAKES</name>
 	<url>http://incubator.apache.org/ctakes/</url>
@@ -32,9 +32,9 @@
 	<scm>
 		<!-- In child modules, Maven will append ${artifactId} to the following 
 			URLs -->
-		<connection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/tags/3.0.0-incubating-rc1</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/tags/3.0.0-incubating-rc1</developerConnection>
-		<url>https://svn.apache.org/repos/asf/incubator/ctakes/tags/3.0.0-incubating-rc1</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/trunk</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/trunk</developerConnection>
+		<url>https://svn.apache.org/repos/asf/incubator/ctakes/trunk</url>
 	</scm>
 	<issueManagement>
 		<system>jira</system>
@@ -76,7 +76,7 @@
 		</mailingList>
 	</mailingLists>
 	<properties>
-		<ctakes.version>3.0.0-incubating</ctakes.version>
+		<ctakes.version>3.1.0-incubating-SNAPSHOT</ctakes.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
