@@ -108,7 +108,10 @@
 		<module>ctakes-relation-extractor</module>
 		<module>ctakes-pad-term-spotter</module>
 		<module>ctakes-assertion</module>
-		<module>ctakes-temporal</module>
+		
+		<!-- Temporarily commenting out temporal module
+		Since it will not be part of the 3.0 release -->
+		<!-- <module>ctakes-temporal</module> -->
 
 		<!-- pipeline and distribution should always be last -->
 		<module>ctakes-clinical-pipeline</module>
@@ -433,7 +436,7 @@
 						</properties>
 						<strictCheck>true</strictCheck>
 					</configuration>
-				</plugin>
+				</plugin>			
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>2.3</version>
