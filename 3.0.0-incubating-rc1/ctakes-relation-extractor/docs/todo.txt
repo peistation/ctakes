@@ -1,0 +1,8 @@
+To Do List
+==========
+
+* Add CUI features
+
+* Add WordNet features
+
+* Make sure word features are lowercased
