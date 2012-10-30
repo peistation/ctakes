@@ -41,12 +41,12 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
 
-import edu.mayo.bmi.uima.core.type.structured.DocumentID;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.EventMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 public class AssertionCleartkAnalysisEngine extends
     CleartkAnnotator<String>

@@ -36,12 +36,12 @@ import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.testing.util.HideOutput;
-import org.junit.Test;
+//import org.junit.Test;
 import org.apache.ctakes.assertion.medfacts.AssertionAnalysisEngine;
-import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 //import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
-import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
-import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.examples.pos.ExamplePOSPlainTextWriter;
 
@@ -88,7 +88,7 @@ public class TrainAssertionModel {
 	
 	protected String modelOutputDirectory = "/work/medfacts/cleartk/data/train.model";
 
-  @Test
+  //@Test
   public void testMaxent() throws Exception {
     
     String trainingDataDirectory = "/work/medfacts/cleartk/data/train";
