@@ -108,8 +108,6 @@
 			<directoryMode>755</directoryMode>
 			<includes>
 				<include>README</include>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -121,6 +119,8 @@
 			<includes>
 				<include>RELEASE_NOTES.html</include>
 				<include>DISCLAIMER</include>
+				<include>LICENSE</include>
+				<include>NOTICE</include>				
 			</includes>
 		</fileSet>
 		<fileSet>
