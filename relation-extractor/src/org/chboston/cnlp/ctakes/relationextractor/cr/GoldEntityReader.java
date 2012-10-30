@@ -85,9 +85,7 @@ public class GoldEntityReader extends JCasAnnotator_ImplBase {
       Document document;
       try {
         document = builder.build(new File(goldFilePath));
-      } catch (JDOMException e) {
-        throw new AnalysisEngineProcessException(e);
-      } catch (IOException e) {
+      } catch (Exception e) {
         throw new AnalysisEngineProcessException(e);
       }
 			
