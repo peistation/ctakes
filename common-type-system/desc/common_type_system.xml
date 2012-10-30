@@ -1112,11 +1112,35 @@ More qualifying information on how the procedure was done.</description>
       <name>edu.mayo.bmi.uima.core.type.relation.ElementRelation</name>
       <description>A super-type referring to real-world semantic relationships, e.g., TemporalRelations between two Events.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>arg1</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>arg2</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.AttributeRelation</name>
       <description>A real-world relationship between an Element and an Attribute.</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.relation.Relation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>arg1</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Element</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>arg2</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.relation.TemporalRelation</name>
@@ -1518,7 +1542,7 @@ More qualifying information on how the procedure was done.</description>
     </typeDescription>
     <typeDescription>
       <name>edu.mayo.bmi.uima.core.type.textsem.MedicationEventMention</name>
-      <description>A text string (EventMention and therefore IdentifiedAnnotation) that refers to a (Medication) Event.</description>
+      <description>A text string (EventMention and therefore IdentifiedAnnotation) that refers to a (Medication) Event. Note this is planned to be renamed MedicationMention in 3.0-incubating</description>
       <supertypeName>edu.mayo.bmi.uima.core.type.textsem.EventMention</supertypeName>
       <features>
         <featureDescription>
@@ -1558,13 +1582,18 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
         <featureDescription>
           <name>startDate</name>
-          <description/>
+          <description>Note this is planned to be changed to DateMention in 3.1-incubating</description>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>endDate</name>
-          <description/>
+          <description>Note this is planned to be changed to DateMention in 3.1-incubating</description>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Date</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>relativeTemporalContext</name>
+          <description/>
+          <rangeTypeName>edu.mayo.bmi.uima.core.type.relation.BinaryTextRelation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -1578,6 +1607,11 @@ More qualifying information on how the procedure was done.</description>
           <description/>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Time</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>timeClass</name>
+          <description>DATE, DURATION, QUANTIFIER, PREPOSTEXP, etc.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -1589,6 +1623,11 @@ More qualifying information on how the procedure was done.</description>
           <name>normalizedForm</name>
           <description/>
           <rangeTypeName>edu.mayo.bmi.uima.core.type.refsem.Attribute</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>category</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
