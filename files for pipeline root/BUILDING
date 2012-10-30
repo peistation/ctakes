@@ -1,0 +1,35 @@
+
+This information relates to building ctakes-2.6-incubating
+
+First, check out all projects from SVN.
+For example, assertion and chunker are separate projects.
+
+There are three ant scripts used to build cTAKES. The ant scripts
+can be found in project 'files for pipeline root'.
+
+The ant scripts rely on ant-contrib.jar and on xmltask.jar,
+which are separate downloads. 
+They also depend on UIMA, which is a separate download available 
+from http://uima.apache.org/
+
+The three ant scripts are:
+
+ build_step1.xml: Generate type system (jcasgen) and compile code.
+ 
+ build_step2.xml: Reorganize directories so there is a single bin
+                  directory, so all descriptors are within a single
+                  subtree (under cTAKESdesc), and so all resources 
+                  are within a single subtree (under resources).
+              
+ build_step3.xml: Create a single jar file with all .class files
+                  from bin and from all dependent jars.
+
+Script build_step1 relies on values within build_step1.properties
+Script build_step2 relies on values within build_step2.properties
+
+Update those properties files for your environment.
+
+Script build_step3 relies on the basedir value within build_script3.xml
+
+Update the basedir value for your environment
+ 

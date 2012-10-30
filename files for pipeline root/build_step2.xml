@@ -1,0 +1,1576 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+	This script builds the integrated cTAKES pipeline from multiple separate cTAKES projects. 
+	The 'build_step2.properties' file contains the values for the following properties:
+    ‘<path_and_project_name>’ specifies the location and name of existing project to be migrated.  
+	‘ <new_project_short_name>’  specifies the name to be used to provide the path and names for the packages and directories in the project.   
+ 	‘<resources_path>’ specifies the location of the resources to populate the new project.
+	‘<destination_path>’ specifies the location of the new project.
+	
+-->
+<project default="cTAKES-dirs" name="Consolidate traditional CTAKES directory structures into newer structuring">
+	<!-- dependent on Ant-Contrib -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+	<!-- dependent on XmlTask -->
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+	<property file="build_step2.properties" />
+    <property name="_drug_ner.dir" value="Drug NER" />
+	<target name="cTAKES-dirs">
+		<antcall target="cTAKES.assemble">
+		</antcall>
+	</target>
+	<target name="clean">
+		<delete dir="${CTAKES_HOME}" />
+	</target>
+	
+	<!-- make directories -->
+	<target name="prepare" depends="clean">
+		<mkdir dir="${CTAKES_HOME}"/>
+		<mkdir dir="${CTAKES_HOME}/auto_generatesrc"/>
+		<mkdir dir="${CTAKES_HOME}/bin"/>
+		<mkdir dir="${CTAKES_HOME}/cTAKESdesc"/>
+		<mkdir dir="${CTAKES_HOME}/docs"/>
+		<mkdir dir="${CTAKES_HOME}/lib"/>
+		<mkdir dir="${CTAKES_HOME}/resources"/>
+		<mkdir dir="${CTAKES_HOME}/scripts"/>
+		<mkdir dir="${CTAKES_HOME}/src"/>
+		<mkdir dir="${CTAKES_HOME}/testdata"/>
+		<!-- descriptors -->
+		<mkdir dir="${CTAKES_HOME}/cTAKESdesc/common-type-system"/>
+		<mkdir dir="${CTAKES_HOME}/cTAKESdesc/typesystem"/>
+		<!-- resources -->
+		<mkdir dir="${CTAKES_HOME}/resources/launch"/>
+		<mkdir dir="${CTAKES_HOME}/resources/chunkerresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/coreresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/docpreresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/dpresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/drugnerresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/lookupresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/lvgresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/necontextresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/padresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/posresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/sideeffectresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/smokingresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/constituencyresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/corefresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/assertionresources"/>
+		<mkdir dir="${CTAKES_HOME}/resources/relationresources"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/smokingtest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/smokingtest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/cdptest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/cdptest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/chunkertest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/chunkertest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/coretest/testsampleoutput"/>
+	    <mkdir dir="${CTAKES_HOME}/testdata/coretest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/docpretest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/docpretest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/dptest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/dptest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/drugnertest/testsampleoutput"/>
+	    <mkdir dir="${CTAKES_HOME}/testdata/drugnertest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/lookuptest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/lookuptest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/padtest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/padtest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/postest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/postest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/sideeffecttest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/sideeffecttest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/coreftest/testsampleoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/coreftest/testoutput"/>
+		<mkdir dir="${CTAKES_HOME}/testdata/constituencytest/testsampleoutput"/>
+	    <mkdir dir="${CTAKES_HOME}/testdata/constituencytest/testoutput"/>
+		<!-- assertion does not have its own separate test data, tested as part of cdp 
+			<mkdir dir="${CTAKES_HOME}/testdata/assertiontest/testsampleoutput"/>
+	    	<mkdir dir="${CTAKES_HOME}/testdata/assertiontest/testoutput"/>
+	    -->
+	    <mkdir dir="${CTAKES_HOME}/testdata/relationtest/testoutput"/>
+	</target>
+
+	<!-- copy UIMA binaries/jars -->
+	<target name="copylibs" >
+		<foreach list="core,dependency parser,document preprocessor,LVG,SideEffect,smoking status,coref-resolver,common-type-system,assertion,relation-extractor" delimiter="," target="collect.lib" param="collect.lib.name" />
+	</target>
+	<target name="collect.lib">
+		<echo>${workspace.home}/${collect.lib.name}/lib</echo>
+		<copy todir="${CTAKES_HOME}/lib">
+			<fileset dir="${workspace.home}/${collect.lib.name}/lib"/>
+		</copy>
+		<copy todir="${CTAKES_HOME}/lib">
+			<fileset dir="${uima.dir}/lib"/>
+		</copy>
+	</target>
+	
+	<!-- copy UIMA data/etc -->
+	<target name="copyetc" >
+		<foreach list="core" target="collect.etc" param="collect.etc.name" />
+	</target>
+	<target name="collect.etc">
+		<copy todir="${CTAKES_HOME}">
+			<fileset file="${workspace.home}/${collect.etc.name}/.*" />
+		</copy>
+		
+		<echo>collect.etc.name = ${collect.etc.name}</echo>
+		<echo>CTAKES_HOME = ${CTAKES_HOME}</echo>
+		<echo>workspace.home = ${workspace.home}</echo>
+
+		
+		<xmltask source="${workspace.home}/${collect.etc.name}/.project" dest="${CTAKES_HOME}/.project" >
+			<replace path="/projectDescription/name/text()" withText="cTAKES" />
+		</xmltask>
+		
+		<xmltask source="${workspace.home}/${collect.etc.name}/.classpath" dest="${CTAKES_HOME}/.classpath" >
+			
+			<replace path="/classpath/classpathentry[1]/@path" withText="auto_generatesrc" />
+			<replace path="/classpath/classpathentry[2]/@path" withText="src" />
+			
+			<remove path="/classpath/classpathentry[@path='lib/junit.jar']"/>
+			<remove path="/classpath/classpathentry[@path='org.eclipse.jdt.USER_LIBRARY/UIMA']"/>
+			<remove path="/classpath/classpathentry[@path='/common-type-system']"/>
+
+			<insert path="/classpath/classpathentry[2]" position="after" >
+				<![CDATA[<classpathentry exported="true" kind="lib" path="lib/uima-tools.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-examples.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-document-annotation.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-cpe.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-adapter-vinci.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uima-adapter-soap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lvg2010dist.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jVinci.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hppc-0.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/args4j-2.0.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/Jama-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/libsvm-2.91.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uimafit-1.2.0.jar" />
+	<classpathentry exported="true" kind="lib" path="lib/clearparser-0.33.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-util-0.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl-1.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcarafe-core_2.9.1-0.9.8.3.RC4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/med-facts-i2b2-1.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/med-facts-zoner-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sbinary_2.9.0-0.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/scala-library-2.9.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-chunker-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-ml-libsvm-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-ml-svmlight-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uimafit-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/args4j-2.0.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-10.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hppc-0.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-core-3.0.3.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/libsvm-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-eval-0.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-examples-0.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-ml-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-ml-opennlp-maxent-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-test-util-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-type-system-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cleartk-util-0.8.1.jar"/>]]>
+			</insert>
+		</xmltask>
+
+		<xmltask source="${workspace.home}/${collect.etc.name}/.project" dest="${CTAKES_HOME}/.project" >
+			<replace path="/projectDescription/name/text()" withText="cTAKES" />
+		</xmltask>
+		
+	</target>
+	
+	<!-- copy doc -->
+	<target name="copydocumentation" >
+		<foreach list="PAD term spotter,chunker,clinical documents pipeline,core,dependency parser,dictionary lookup,document preprocessor,Drug NER,LVG,NE contexts,POS tagger,SideEffect,smoking status,Constituency Parser,coref-resolver,common-type-system,assertion,relation-extractor" 
+			delimiter="," target="collect.doc" param="collect.doc.name" />
+	</target>
+	<target name="collect.doc">
+		<switch value="${collect.doc.name}">
+			<case value="PAD term spotter">
+				<copy todir="${CTAKES_HOME}/docs/paddoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}/doc" />
+				</copy>
+				<copy todir="${CTAKES_HOME}/docs/paddoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="chunker">
+				<copy todir="${CTAKES_HOME}/docs/chunkerdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+				</fileset>
+				</copy>
+			</case>
+			<case value="clinical documents pipeline">
+				<copy todir="${CTAKES_HOME}/docs/cdpdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+											<include name="README" />
+									</fileset>
+				</copy>
+			</case>
+			<case value="core">
+				<copy todir="${CTAKES_HOME}/docs/coredoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+											<include name="README" />
+									</fileset>
+				</copy>
+			</case>
+			<case value="dependency parser">
+				<copy todir="${CTAKES_HOME}/docs/dpdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+											<include name="README" />
+									</fileset>
+				</copy>
+			</case>
+			<case value="document preprocessor">
+				<copy todir="${CTAKES_HOME}/docs/docpredoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+											<include name="README" />
+									</fileset>
+				</copy>
+			</case>
+			<case value="dictionary lookup">
+				<copy todir="${CTAKES_HOME}/docs/lookupdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+											<include name="README" />
+									</fileset>
+				</copy>
+			</case>
+			<case value="Drug NER">
+				<copy todir="${CTAKES_HOME}/docs/drugnerdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="LVG">
+				<copy todir="${CTAKES_HOME}/docs/lvgdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="NE contexts">
+				<copy todir="${CTAKES_HOME}/docs/necontextdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="POS tagger">
+				<copy todir="${CTAKES_HOME}/docs/posdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="SideEffect">
+				<copy todir="${CTAKES_HOME}/docs/sideeffectdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="smoking status">
+				<copy todir="${CTAKES_HOME}/docs/smokingdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="Constituency Parser">
+				<copy todir="${CTAKES_HOME}/docs/constituencydoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="coref-resolver">
+				<copy todir="${CTAKES_HOME}/docs/corefdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="assertion">
+				<copy todir="${CTAKES_HOME}/docs/assertiondoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="relation-extractor">
+				<copy todir="${CTAKES_HOME}/docs/relationdoc" >
+					<fileset dir="${workspace.home}/${collect.doc.name}" >
+						<include name="README" />
+					</fileset>
+				</copy>
+			</case>
+			<default>
+				<echo>Currently no task defined for ${collect.doc.name}</echo>
+			</default>
+		</switch>
+	</target>
+	
+	<target name="copy.root.dir.files" depends="prepare">
+		<mkdir dir="${CTAKES_HOME}"/>
+		<echo>from ${workspace.home}/files for pipeline root</echo>
+		<echo>to ${CTAKES_HOME}</echo>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="LICENSE" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="README" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="NOTICE" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="BUILDING" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="CHANGES" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="KEYS" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/files for pipeline root">
+				<filename name="RELEASE_NOTES" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/clinical documents pipeline">
+				<filename name="runc*.sh" />
+			</fileset>
+		</copy>
+		<copy todir="${CTAKES_HOME}">
+			<fileset dir="${workspace.home}/clinical documents pipeline">
+				<filename name="runc*.bat" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="cTAKES.assemble" depends="prepare,copy.root.dir.files,copysourcetrees,copyscripts,handle.ner.vs.drugner">
+	</target>
+		
+		
+	
+	
+	<!-- copy src -->
+	
+	<!-- Notes: removed adjustcTAKESTypes after copysrctrees -->
+	<target name="handle.ner.vs.drugner" depends="copysourcetrees">
+		<!-- since in 2.0 the package declarations were not updated, the .class files ended up in bmi/fsm/ner -->
+		<!-- <move file="${CTAKES_HOME}/src/edu/mayo/bmi/fsm/ner" tofile="${CTAKES_HOME}/src/edu/mayo/bmi/fsm/drugner"/> --> <!-- rename ner drugner -->
+
+		<!-- now handle the files under uima/ner that were excluded when copy the rest of the source dirs --> 
+		<copy todir="${CTAKES_HOME}/src/edu/mayo/bmi/uima/drugner">
+			<fileset dir="${workspace.home}/${_drug_ner.dir}/src/edu/mayo/bmi/uima/ner">
+				<exclude name="**/type/**" />
+				<exclude name="**/*.xml" />
+			</fileset>
+		</copy>
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/uima/drugner">
+					<include name="**/*.java" />
+			<replacetoken><![CDATA[uima.ner]]></replacetoken>
+			 <replacevalue><![CDATA[uima.drugner]]></replacevalue>
+		</replace>	
+
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/nlp/parser/ae">
+					<include name="*.java" />
+			<replacetoken><![CDATA["/dependency/]]></replacetoken>
+			 <replacevalue><![CDATA["/dpresources/dependency/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/nlp/parser/ae">
+					<include name="*.java" />
+			<replacetoken><![CDATA["/lemmatizer/]]></replacetoken>
+			 <replacevalue><![CDATA["/dpresources/lemmatizer/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/nlp/parser/ae">
+					<include name="*.java" />
+			<replacetoken><![CDATA["/srl/]]></replacetoken>
+			 <replacevalue><![CDATA["/dpresources/srl/]]></replacevalue>
+		</replace>	
+	</target>
+
+	<target name="copyscripts" depends="prepare">
+		<foreach list="POS tagger,chunker,dictionary lookup" delimiter="," target="collect.src.scripts" param="collect.src.scripts.name" />
+	</target>
+	<target name="collect.src.scripts">
+		<echo>${workspace.home}/${collect.src.scripts.name}/scripts</echo>
+		<copy todir="${CTAKES_HOME}/scripts">
+			<fileset dir="${workspace.home}/${collect.src.scripts.name}/scripts">
+				<exclude name="**/JUNK/**" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copysourcetrees" depends="prepare,copysrctrees,collectconstants,copydescriptors,copyresources,copytestdata,copylibs,copyetc,jcasgen,copydocumentation">
+		<foreach list="common-type-system,clinical documents pipeline,context dependent tokenizer,core,POS tagger,chunker,dependency parser,dictionary lookup,document preprocessor,Drug NER,LVG,NE contexts,PAD term spotter,SideEffect,smoking status,Constituency Parser,coref-resolver,assertion,relation-extractor" delimiter="," target="collect.src" param="collect.src.name" />
+		<!-- REPLACE in SyntaxAttributeCalculator.java "corefresources/ngramids.mayo.txt" -->
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/coref">
+			<include name="**/SyntaxAttributeCalculator.java" />
+           <replacetoken><![CDATA["ngramids.mayo.txt"]]></replacetoken>
+			<replacevalue><![CDATA["corefresources/ngramids.mayo.txt"]]></replacevalue>
+		</replace>	
+		<!-- REPLACE in SyntaxAttributeCalculator.java "corefresources/pronngramids.mayo.txt" -->
+		<replace dir="${CTAKES_HOME}/src/edu/mayo/bmi/coref">
+			<include name="**/SyntaxAttributeCalculator.java" />
+           <replacetoken><![CDATA["pronngramids.mayo.txt"]]></replacetoken>
+			<replacevalue><![CDATA["corefresources/pronngramids.mayo.txt"]]></replacevalue>
+		</replace>	
+		<!-- REPLACE medfacts.types with medfacts.type in any import statements (or elsewhere) -->
+		<replace dir="${CTAKES_HOME}/src/org/mitre/">
+			<include name="**/*.java" />
+        	<replacetoken><![CDATA[org.mitre.medfacts.types]]></replacetoken>
+			<replacevalue><![CDATA[org.mitre.medfacts.type]]></replacevalue>
+		</replace>	
+	</target>
+	<target name="collectconstants">
+		<echo>copy CONST.java</echo>
+		<mkdir dir="${CTAKES_HOME}/src/edu/mayo/bmi/uima/core/type/constants"/>
+		<copy todir="${CTAKES_HOME}/src/edu/mayo/bmi/uima/core/type/constants">
+			<fileset dir="${workspace.home}/common-type-system/src/edu/mayo/bmi/uima/core/type/constants">
+				<exclude name="**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="collect.src">
+		<echo>${workspace.home}/${collect.src.name}/src</echo>
+		<copy todir="${CTAKES_HOME}/src">
+			<fileset dir="${workspace.home}/${collect.src.name}/src">
+				<exclude name="**/type/**" />
+				<exclude name="**/SmokingStatus/**" />
+				<exclude name="org/mitre/medfacts/types/**" />
+				<exclude name="**/*TypeSystem.xml" />
+				<exclude name="**/*.xml" />
+				<exclude name="**/uima/ner/**" /> <!-- what's in uima/ner should be in uima/drugner so copy those separately -->
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- POS tagger and chunker used to have a subdirectory called java under src -->
+	<!-- which was different than the other projects --> 
+	<target name="copysrctrees">
+		<foreach list="POS tagger,chunker" delimiter="," target="collect.src.java" param="collect.src.name" />
+	</target>
+	<target name="collect.src.java">
+		<echo>${workspace.home}/${collect.src.name}/src</echo>
+		<copy todir="${CTAKES_HOME}/src">
+			<fileset dir="${workspace.home}/${collect.src.name}/src">
+				<exclude name="**/type/**" />
+				<exclude name="**/*.xml" />
+				<exclude name="**/*TypeSystem.xml" />
+			</fileset>
+			<mapper type="regexp" from="(^.*java[\\])(edu[\\]mayo[\\]bmi[\\])(uima\\|fsm\\|lookup\\|termspotter\\)(.*\\.*\.java$|\\.*\.java$)" to="\2\3\4"/>
+		</copy>
+	</target>
+	
+	<!-- copy desc and update paths within the descriptors to match the icTAKES structures -->
+	<target name="copydescriptors" >
+		<foreach list="${projectList}" delimiter="," target="collect.desc" param="collect.desc.name" />
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA[../core/desc]]></replacetoken>
+			 <replacevalue><![CDATA[coredesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/chunkerdesc"> 
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA["../coredesc]]></replacetoken>
+			 <replacevalue><![CDATA["../../coredesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/chunkerdesc"> 
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA[location="POSTagger.xml]]></replacetoken>
+			 <replacevalue><![CDATA[location="../../posdesc/analysis_engine/POSTagger.xml]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA[../chunker/desc]]></replacetoken>
+			 <replacevalue><![CDATA[chunkerdesc/analysis_engine]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../clinical documents pipeline/desc]]></replacetoken>
+			<replacevalue><![CDATA[cdpdesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../context dependent tokenizer/desc]]></replacetoken>
+			<replacevalue><![CDATA[cdtdesc]]></replacevalue>
+		</replace>			
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../dependency parser/desc]]></replacetoken>
+			<replacevalue><![CDATA[dpdesc]]></replacevalue>
+			</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA[../document preprocessor/desc]]></replacetoken>
+			 <replacevalue><![CDATA[docpredesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			 <replacetoken><![CDATA[docpredesc/analysis_engine/CdaCas]]></replacetoken>
+			 <replacevalue><![CDATA[docpredesc/cas_initializer/CdaCas]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../dictionary lookup/desc]]></replacetoken>
+			<replacevalue><![CDATA[lookupdesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[uima.ner]]></replacetoken>
+			<replacevalue><![CDATA[uima.drugner]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[/CdaCasInitializer.xml]]></replacetoken>
+			<replacevalue><![CDATA[/cas_initializer/CdaCasInitializer.xml]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[.types.]]></replacetoken>
+			<replacevalue><![CDATA[.type.]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../Drug NER/desc]]></replacetoken>
+			<replacevalue><![CDATA[drugnerdesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/drugnerdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[lookup/]]></replacetoken>
+			<replacevalue><![CDATA[drugnerresources/lookup/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../LVG/desc]]></replacetoken>
+			<replacevalue><![CDATA[lvgdesc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../NE contexts/desc]]></replacetoken>
+			<replacevalue><![CDATA[necontextdesc/analysis_engine]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../POS tagger/desc]]></replacetoken>
+			<replacevalue><![CDATA[posdesc/analysis_engine]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/posdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[location="SimpleSegmentAnnotator.xml"]]></replacetoken>
+			<replacevalue><![CDATA[location="../../coredesc/analysis_engine/SimpleSegmentAnnotator.xml"]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/posdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[location="TokenizerAnnotator.xml"]]></replacetoken>
+			<replacevalue><![CDATA[location="../../coredesc/analysis_engine/TokenizerAnnotator.xml"]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/posdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[>models/]]></replacetoken>
+			<replacevalue><![CDATA[>posresources/models/]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/BaseToken.xml"/>]]></replacetoken>
+			 <replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/ContractionToken.xml"/>]]></replacetoken>
+			 <replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/NewlineToken.xml"/>]]></replacetoken>
+			 <replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/NumToken.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/PunctuationToken.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/SymbolToken.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/Sentence.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/Segment.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../core/src/edu/mayo/bmi/uima/core/type/DocumentID.xml"/>]]></replacetoken>
+			<replacevalue><![CDATA[<import location="../../typesystem/common_type_system.xml"/>]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../src/edu/mayo/bmi/uima/core/type]]></replacetoken>
+			<replacevalue><![CDATA[../typesystem]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../src/edu/mayo/bmi/uima/cdt/type/CdtTypeSystem]]></replacetoken>
+			<replacevalue><![CDATA[../typesystem/common_type_system]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:lvg/data]]></replacetoken>
+			<replacevalue><![CDATA[file:lvgresources/lvg/data]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:models/chunk]]></replacetoken>
+			<replacevalue><![CDATA[file:chunkerresources/models/chunk]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>models/chunk]]></replacetoken>
+			<replacevalue><![CDATA[<string>chunkerresources/models/chunk]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:sentdetect]]></replacetoken>
+			<replacevalue><![CDATA[file:coreresources/sentdetect]]></replacevalue>
+		</replace>	
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:tokenizer]]></replacetoken>
+			<replacevalue><![CDATA[file:coreresources/tokenizer]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:cc/jdbc]]></replacetoken>
+			<replacevalue><![CDATA[file:coreresources/cc/jdbc]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/corefdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:]]></replacetoken>
+			<replacevalue><![CDATA[file:corefresources/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/docpredesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:cda]]></replacetoken>
+			<replacevalue><![CDATA[file:docpreresources/cda]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:cni/negation/]]></replacetoken>
+			<replacevalue><![CDATA[file:necontextresources/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:negation/]]></replacetoken>
+			<replacevalue><![CDATA[file:necontextresources/]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[jdbc:hsqldb:file:../dictionary lookup/resources/lookup]]></replacetoken>
+			<replacevalue><![CDATA[jdbc:hsqldb:file:resources/lookupresources/lookup]]></replacevalue>
+			<!-- <replacevalue><![CDATA[jdbc:hsqldb:file:lookupresources/lookup]]></replacevalue> -->
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:sideeffect/lookup/]]></replacetoken>
+			<replacevalue><![CDATA[file:sideeffectresources/lookup/]]></replacevalue>
+		</replace>	
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>parsermodel</string>]]></replacetoken>
+			<replacevalue><![CDATA[<string>constituencyresources/parsermodel</string>]]></replacevalue>
+		</replace>	
+				
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../../Constituency Parser/desc/ConstituencyParser]]></replacetoken>
+			<replacevalue><![CDATA[<import location="../../constituencydesc/analysis_engine/ConstituencyParser]]></replacevalue>
+		</replace>	
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/constituencydesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>fastModel</string>]]></replacetoken>
+			<replacevalue><![CDATA[<string>constituencyresources/fastModel</string>]]></replacevalue>
+		</replace>	
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<import location="../../../assertion/desc/]]></replacetoken>
+			<replacevalue><![CDATA[<import location="../../assertiondesc/]]></replacevalue>
+		</replace>	
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<exclude name="/cdpdesc/**/*" />
+				<exclude name="/chunkerdesc/**/*" />
+				<exclude name="/necontextdesc/**/*" />
+				<exclude name="/posdesc/**/*" />
+				<replacetoken><![CDATA[location="TypeSystem]]></replacetoken>
+				<replacevalue><![CDATA[location="../typesystem/common_type_system]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/dpdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[location="../TypeSystem]]></replacetoken>
+				<replacevalue><![CDATA[location="../../typesystem/common_type_system]]></replacevalue>
+		</replace>
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="/cdpdesc/**/*" />
+				<include name="/chunkerdesc/**/*" />
+				<include name="/necontextdesc/**/*" />
+				<include name="/posdesc/**/*" />
+				<replacetoken><![CDATA[location="TypeSystem]]></replacetoken>
+				<replacevalue><![CDATA[location="../../typesystem/common_type_system]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[typesystem/TypeSystem]]></replacetoken>
+				<replacevalue><![CDATA[typesystem/common_type_system]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[../core/src/edu/mayo/bmi/uima/core/type/TypeSystem.xml]]></replacetoken>
+				<replacevalue><![CDATA[typesystem/common_type_system.xml]]></replacevalue>
+		</replace>
+<!--
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+						<include name="**/*.xml" />
+				<replacetoken><![CDATA[type_system/SmokingProductionTypeSystem.xml]]></replacetoken>
+				 <replacevalue><![CDATA[../typesystem/common_type_system.xml]]></replacevalue>
+		</replace>
+-->
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/smokingdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[ss/data]]></replacetoken>
+				 <replacevalue><![CDATA[smokingresources/data]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[resources/data]]></replacetoken>
+				 <replacevalue><![CDATA[sideeffectresources/data]]></replacevalue>
+		</replace>
+<!--
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[<import location="../type_system/NERTypeSystem.xml"/>]]></replacetoken>
+				 <replacevalue><![CDATA[]]></replacevalue>
+		</replace>
+-->
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA["core/]]></replacetoken>
+				 <replacevalue><![CDATA["]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/corefdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[<import location="../../common-type-system/desc/common_type_system.xml"/>]]></replacetoken>
+				 <replacevalue><![CDATA[<import location="../common-type-system/desc/common_type_system.xml"/>]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[<import location="../../../common-type-system/desc/common_type_system.xml"/>]]></replacetoken>
+				 <replacevalue><![CDATA[<import location="../../common-type-system/desc/common_type_system.xml"/>]]></replacevalue>
+		</replace>
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/dpdesc"> <!-- dependency parser depends on POS models -->
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>models]]></replacetoken>
+			<replacevalue><![CDATA[<string>posresources/models]]></replacevalue>
+		</replace>	
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/dpdesc/analysis_engine">
+					<include name="*.xml" />
+			<replacetoken><![CDATA[<string>/lvg]]></replacetoken>
+			 <replacevalue><![CDATA[<string>/lvgresources/lvg]]></replacevalue>
+		</replace>	
+		
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/assertiondesc">
+				<include name="**/*.xml" />
+				<replacetoken><![CDATA[<import location="../../common-type-system/desc/common_type_system.xml"/>]]></replacetoken>
+				 <replacevalue><![CDATA[<import location="../common-type-system/desc/common_type_system.xml"/>]]></replacevalue>
+		</replace>
+			
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA["../../core/]]>
+			</replacetoken>
+			<replacevalue><![CDATA["../../]]>
+			</replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<fileUrl>file:lookup/radiology/]]></replacetoken>
+			<replacevalue><![CDATA[<fileUrl>file:padresources/lookup/]]></replacevalue>
+		</replace>
+		<!-- _after_ lookup/radiology is replaced, replace all other occurrences file:lookup -->
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<fileUrl>file:lookup/]]></replacetoken>
+			<replacevalue><![CDATA[<fileUrl>file:lookupresources/lookup/]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:lookup/Lookup]]></replacetoken>
+			<replacevalue><![CDATA[file:lookupresources/lookup/Lookup]]></replacevalue>
+		</replace>
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>lookup/]]></replacetoken>
+			<replacevalue><![CDATA[<string>lookupresources/lookup/]]></replacevalue>
+		</replace>
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/smokingdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<fileUrl>file:ss/]]></replacetoken>
+			<replacevalue><![CDATA[<fileUrl>file:smokingresources/]]></replacevalue>
+		</replace>
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/smokingdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<fileUrl>file:analysis_engine/]]></replacetoken>
+			<replacevalue><![CDATA[<fileUrl>file:smokingdesc/analysis_engine/]]></replacevalue>
+		</replace>
+
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/smokingdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[file:NegationAnnotator.xml]]></replacetoken>
+			<replacevalue><![CDATA[../../necontextdesc/analysis_engine/NegationAnnotator.xml]]></replacevalue>
+		</replace>
+		
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/lvgdesc">
+			<include name="**/*.xml" />
+			<replacetoken>
+				<![CDATA[<imports>]]></replacetoken>
+			<replacevalue><![CDATA[<imports><import location="../typesystem/common_type_system.xml"/>]]></replacevalue>
+		</replace>
+
+		<replace dir="${CTAKES_HOME}/cTAKESdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[fileUrl>file:org]]></replacetoken>
+			<replacevalue><![CDATA[fileUrl>file:assertionresources/org]]></replacevalue>
+		</replace>
+		
+		<!-- REPLACE ../ConstituencyParserAnnotator.xml with just ConstituencyParserAnnotator.xml in AggregateParsingProcessor.xml -->
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/constituencydesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[../ConstituencyParserAnnotator.xml]]></replacetoken>
+			<replacevalue><![CDATA[ConstituencyParserAnnotator.xml]]></replacevalue>
+		</replace>	
+		
+		<!-- <string>resources/models/degree_of/model.jar</string> -->
+		<replace dir="${CTAKES_HOME}/cTAKESdesc/relationdesc">
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[<string>resources/models/]]></replacetoken>
+			<replacevalue><![CDATA[<string>resources/relationresources/models/]]></replacevalue>
+		</replace>	
+		
+	</target>
+	
+	<target name="collect.desc">
+		<switch value="${collect.desc.name}">
+			<case value="common-type-system">
+				<echo message="copying from ${workspace.home}/${collect.desc.name}/desc" />
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/typesystem" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="*.xml" />
+						</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/common-type-system/desc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="*.xml" />
+						</fileset>
+				</copy>
+			</case>
+			<case value="chunker">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/chunkerdesc/analysis_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*CPE*.xml" />
+						<exclude name="*TypeSystem*.xml" />
+						<exclude name="POSTagger.xml" />
+						</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/chunkerdesc/collection_processing_engine" >
+						<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+							<include name="*CPE*.xml" />
+							<exclude name="*TypeSystem*.xml" />
+						</fileset>
+				</copy>
+			</case>
+			<case value="clinical documents pipeline">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/cdpdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="context dependent tokenizer">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/cdtdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="core">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/coredesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="dependency parser">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/dpdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="document preprocessor">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/docpredesc/analysis_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="Aggregate*.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/docpredesc/cas_initializer" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="CdaCasInitializer.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/docpredesc/collection_processing_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="CPE_CdaCasInitializer.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="dictionary lookup">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/lookupdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="Drug NER">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/drugnerdesc">
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="LVG">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/lvgdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="NE contexts">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/necontextdesc/analysis_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="PAD term spotter">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/paddesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="POS tagger">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/posdesc/analysis_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="*Aggregate*.xml" />
+						<include name="POSTagger*.xml" />
+						<exclude name="POSTaggerCPE.xml" />
+						<exclude name="Sentence*.xml" />
+						<exclude name="Tokenizer*.xml" />
+						<exclude name="Simple*.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/posdesc/collection_reader" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="Open*.xml" />
+						<exclude name="Sentence*.xml" />
+						<exclude name="Tokenizer*.xml" />
+						<exclude name="Simple*.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/posdesc/collection_processing_engine" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<include name="*CPE*.xml" />
+						<exclude name="Sentence*.xml" />
+						<exclude name="Tokenizer*.xml" />
+						<exclude name="Simple*.xml" />
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="SideEffect">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<move todir="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/collection_processing_engine">
+					<fileset dir="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/cpe/" />
+				</move>
+				<delete dir="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/cpe" />
+			</case>
+			<case value="smoking status">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/smokingdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				
+				<!-- do not include ExternalBaseAggregateTAEStyleMap.xml --> 
+				<delete file="${CTAKES_HOME}/cTAKESdesc/smokingdesc/analysis_engine/ExternalBaseAggregateTAEStyleMap.xml"/>
+			</case>
+			<case value="Constituency Parser">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/constituencydesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+				<!-- MOVE ConstituencyParserAnnotator.xml -->
+				<move file="${CTAKES_HOME}/cTAKESdesc/constituencydesc/ConstituencyParserAnnotator.xml" tofile="${CTAKES_HOME}/cTAKESdesc/constituencydesc/analysis_engine/ConstituencyParserAnnotator.xml"/>
+			</case>
+			<case value="coref-resolver">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/corefdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<exclude name="*TypeSystem*.xml" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="assertion">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/assertiondesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+						<!-- <exclude name="*TypeSystem*.xml" /> --> <!-- include type system so user can re-generate types if they wish -->
+					</fileset>
+				</copy>
+			</case>
+			<case value="relation-extractor">
+				<copy todir="${CTAKES_HOME}/cTAKESdesc/relationdesc" >
+					<fileset dir="${workspace.home}/${collect.desc.name}/desc" >
+					</fileset>
+				</copy>
+			</case>
+		</switch>
+	</target>
+	
+	<!-- copy test data -->
+	<target name="copytestdata" >
+		<foreach list="clinical documents pipeline,chunker,core,dependency parser,Drug NER,PAD term spotter,POS tagger,smoking status,Constituency Parser,coref-resolver,assertion,relation-extractor" delimiter="," target="collect.data" param="collect.data.name" />
+	</target>
+	<target name="collect.data">
+		<switch value="${collect.data.name}">
+			<case value="clinical documents pipeline">
+				<copy todir="${CTAKES_HOME}/testdata/cdptest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data" >
+						<exclude name="**/cda/**" />
+						<exclude name="**/output/**" />
+						<exclude name="*.*" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/cdptest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data" >
+						<exclude name="**/cda/**" />
+						<exclude name="**/output/**" />
+						<exclude name="*.*" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/cdptest/testinput/cda" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data" >
+						<exclude name="**/cda/**" />
+						<exclude name="**/plaintext/**" />
+						<exclude name="**/output/**" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="chunker">
+				<copy todir="${CTAKES_HOME}/testdata/chunkertest" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data" />
+				</copy>
+			</case>
+			<case value="chunker">
+				<copy todir="${CTAKES_HOME}/testdata/chunkertest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data/text-files" />
+				</copy>
+			</case>
+			<case value="core">
+				<copy todir="${CTAKES_HOME}/testdata/coretest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/sample_notes_plaintext" />
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/coretest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output" />
+				</copy>
+			</case>
+			<case value="dependency parser">
+				<!-- "dependency parser" no longer contains data
+				<case value="dependency parser">
+					<copy todir="${CTAKES_HOME}/testdata/dptest" >
+						<fileset dir="${workspace.home}/${collect.data.name}/data" />
+					</copy>
+				</case>
+				--> 
+			</case>
+			<case value="document preprocessor">
+				<copy todir="${CTAKES_HOME}/testdata/docpretest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data">
+						<exclude name="**/output/**" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/docpretest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/test/data/output">
+					</fileset>
+				</copy>
+			</case>
+			<case value="Drug NER">
+				<copy todir="${CTAKES_HOME}/testdata/drugnertest/testinput/cda" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/cda" />
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/drugnertest/testinput/plaintext" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data">
+						<exclude name="**/output/**" />
+						<exclude name="**/cda/**" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/drugnertest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/output" />
+				</copy>
+			</case>
+			<case value="LVG">
+				<copy todir="${CTAKES_HOME}/testdata/lvgtest" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data" />
+				</copy>
+			</case>
+			<case value="PAD term spotter">
+				<copy todir="${CTAKES_HOME}/testdata/padtest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data" />
+				</copy>
+			</case>
+			<case value="POS tagger">
+				<copy todir="${CTAKES_HOME}/testdata/postest" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data">
+						<exclude name="**/pos/**" /> <!-- don't want training data tests included -->
+					</fileset>
+				</copy>
+			</case>
+			<case value="smoking status">
+				<copy todir="${CTAKES_HOME}/testdata/smokingtest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output" />
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/smokingtest/testinput/testcda" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/cda" >
+						<exclude name="**/output/**" />
+						</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/smokingtest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test" >
+						<exclude name="**/output/**" />
+						<exclude name="**/cda/**" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="Constituency Parser">
+				<copy todir="${CTAKES_HOME}/testdata/constituencytest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test">
+						<exclude name="**/output/**" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/constituencytest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output">
+					</fileset>
+				</copy>
+			</case>
+			<case value="coref-resolver">
+				<copy todir="${CTAKES_HOME}/testdata/coreftest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test">
+						<exclude name="**/output/**" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/coreftest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output">
+					</fileset>
+				</copy>
+			</case>
+			<case value="SideEffect">
+				<mkdir dir="${CTAKES_HOME}/testdata/sideeffecttest/testinput"/>
+				<copy todir="${CTAKES_HOME}/testdata/sideeffecttest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}" includes="sample*.txt">
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/sideeffecttest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output">
+					</fileset>
+				</copy>
+			</case>
+			<case value="assertion">
+				<echo message="assertion does not have its own separate test data, tested as part of cdp"/>
+				<!-- assertion does not have its own separate test data, tested as part of cdp 
+				<copy todir="${CTAKES_HOME}/testdata/assertiontest" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data" />
+				</copy>
+				-->
+			</case>
+			<case value="relation-extractor">
+<!-- Uncomment these lines once the relation-extractor has its sample test data 				
+				<mkdir dir="${CTAKES_HOME}/testdata/relationtest/testinput"/>
+				<copy todir="${CTAKES_HOME}/testdata/relationtest/testinput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test">
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/testdata/relationtest/testsampleoutput" >
+					<fileset dir="${workspace.home}/${collect.data.name}/data/test/output">
+					</fileset>
+				</copy>
+-->
+			</case>
+		</switch>
+	</target>
+	
+	<!-- copy resources -->
+	<target name="copyresources" depends="prepare">
+		<foreach list="PAD term spotter,chunker,clinical documents pipeline,core,dependency parser,dictionary lookup,document preprocessor,Drug NER,LVG,NE contexts,POS tagger,SideEffect,smoking status,Constituency Parser,coref-resolver,assertion,relation-extractor" delimiter="," target="collect.resources" param="collect.resource.name" />
+	</target>
+	<target name="collect.resources">
+		<switch value="${collect.resource.name}">
+			<case value="PAD term spotter">
+				<copy todir="${CTAKES_HOME}/resources/padresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" >
+						<exclude name="**/radiology/**" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/resources/padresources/lookup" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources/lookup/radiology" />
+				</copy>
+			</case>
+			<case value="chunker">
+				<copy todir="${CTAKES_HOME}/resources/chunkerresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="clinical documents pipeline">
+				<copy todir="${CTAKES_HOME}/resources/cdpresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources">
+						<exclude name="launch" />
+						<exclude name="**/*.launch" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/resources/launch">
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources/launch">
+						<include name="C*launch" />
+						<exclude name="**/*--*" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="core">
+				<copy todir="${CTAKES_HOME}/resources/coreresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+				<copy todir="${CTAKES_HOME}/resources/coreresources/cda" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/data/test/output">
+						<include name="Notes*DTD" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="dependency parser">
+				<copy todir="${CTAKES_HOME}/resources/dpresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="document preprocessor">
+				<copy todir="${CTAKES_HOME}/resources/docpreresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="dictionary lookup">
+				<copy todir="${CTAKES_HOME}/resources/lookupresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="Drug NER">
+				<copy todir="${CTAKES_HOME}/resources/drugnerresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="LVG">
+				<copy todir="${CTAKES_HOME}/resources/lvgresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="NE contexts">
+				<copy todir="${CTAKES_HOME}/resources/necontextresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources">
+						<exclude name="launch" />
+						<exclude name="**/*.launch" />
+					</fileset>
+				</copy>
+				<!-- copy these two into necontextsresources
+					PAD term spotter/resources/lookup/radiology/StopWords.txt
+					smoking status/resources/ss/data/context/boundaryData.txt
+				-->
+				<copy todir="${CTAKES_HOME}/resources/necontextresources" >
+					<fileset dir="${workspace.home}/PAD term spotter/resources/lookup/radiology">
+						<include name="StopWords.txt" />
+					</fileset>
+				</copy>
+				<copy todir="${CTAKES_HOME}/resources/necontextresources" >
+					<fileset dir="${workspace.home}/smoking status/resources/ss/data/context">
+						<include name="boundaryData.txt" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="POS tagger">
+				<copy todir="${CTAKES_HOME}/resources/posresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources">
+						<exclude name="launch" />
+						<exclude name="**/*.launch" />
+					</fileset>
+				</copy>
+			</case>
+			<case value="SideEffect">
+				<copy todir="${CTAKES_HOME}/resources/sideeffectresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources/sideeffect" />
+				</copy>
+			</case>
+			<case value="smoking status">
+				<copy todir="${CTAKES_HOME}/resources/smokingresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources/ss" />
+				</copy>
+			</case>
+			<case value="Constituency Parser">
+				<copy todir="${CTAKES_HOME}/resources/constituencyresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="coref-resolver">
+				<copy todir="${CTAKES_HOME}/resources/corefresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" />
+				</copy>
+			</case>
+			<case value="assertion">
+				<copy todir="${CTAKES_HOME}/resources/assertionresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" >
+					</fileset>
+				</copy>
+			</case>
+			<case value="relation-extractor">
+				<copy todir="${CTAKES_HOME}/resources/relationresources" >
+					<fileset dir="${workspace.home}/${collect.resource.name}/resources" >
+					</fileset>
+				</copy>
+			</case>
+			
+		</switch>
+	</target>
+
+	<target name="collect.types">
+		<echo>"${collect.types.name}"</echo>
+		<basename property="temp.filename.core" file="${collect.types.name}"/>
+		<copy todir="${typeSystem.dir}">
+			<fileset file="${collect.types.name}" />
+		</copy>
+
+		<xmltask source="${collect.types.name}">
+			<copy path="/:typeSystemDescription/:types/:typeDescription" buffer="descBuffer" />
+		</xmltask>
+		<xmltask sourcebuffer="descBuffer" dest="${typeSystem.dir}/${temp.filename.core}">
+			<paste path="/:typeSystemDescription/:types/:typeDescription" position="after"  />
+		</xmltask>
+	</target>
+	<target name="project.desc.dirs">
+		<xmltask source="${typeSystem.target}" dest="${typeSystem.target}">
+			<insert path="/:typeSystemDescription/:vendor" file="${dir.desc.name}" position="after"/>
+		</xmltask>
+		<delete file="${dir.desc.name}"/>
+	</target>
+	
+	<target name="jcasgen" depends="classpath">
+		<!-- replaces need to be moved to the correct place -->
+		<xmltask source="${CTAKES_HOME}/cTAKESdesc/smokingdesc/type_system/SmokingProductionTypeSystem.xml" 
+			dest="${CTAKES_HOME}/cTAKESdesc/smokingdesc/type_system/SmokingProductionTypeSystem.xml" >
+			<replace path="/:typeSystemDescription/:imports/:import[@location='../../../common-type-system/desc/common_type_system.xml']/@location" 
+				withText="../../../cTAKESdesc/common-type-system/desc/common_type_system.xml" />
+		</xmltask>
+		<xmltask source="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/type_system/SideEffectTypeSystem.xml" 
+			dest="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/type_system/SideEffectTypeSystem.xml" >
+			<replace path="/:typeSystemDescription/:imports/:import[@location='../../../common-type-system/desc/common_type_system.xml']/@location" 
+				withText="../../../cTAKESdesc/common-type-system/desc/common_type_system.xml" />
+		</xmltask>
+		<xmltask source="${CTAKES_HOME}/cTAKESdesc/paddesc/type_system/PADSiteAndTerm.xml" 
+			dest="${CTAKES_HOME}/cTAKESdesc/paddesc/type_system/PADSiteAndTerm.xml" >
+			<replace path="/:typeSystemDescription/:imports/:import[@location='../../../common-type-system/desc/common_type_system.xml']/@location" 
+				withText="../../../cTAKESdesc/common-type-system/desc/common_type_system.xml" />
+		</xmltask>
+		
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/common-type-system/desc/common_type_system.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/drugnerdesc/type_system/NERTypeSystem.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/sideeffectdesc/type_system/SideEffectTypeSystem.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>	
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/smokingdesc/type_system/SmokingProductionTypeSystem.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/paddesc/type_system/PADSiteAndTerm.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/corefdesc/type-system/CorefTypes.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>		
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/corefdesc/type-system/VecInst.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>		
+		<exec executable="${uima.dir}/bin/jcasgen_merge.bat">
+			<env key="ECLIPSE_HOME" value="${eclipse.home}" />
+			<env key="UIMA_HOME" value="${uima.dir}" />
+			<env key="TEMP" value="${tempDir}" />
+			<arg value="${CTAKES_HOME}/cTAKESdesc/assertiondesc/medfactsTypeSystem.xml" />
+			<arg value="${CTAKES_HOME}/auto_generatesrc" />
+		</exec>		
+		
+	</target>
+	
+	<target name="classpath">
+		<path id="_ctakes.cp">
+			<pathelement location="lib/uima_tools.jar" />
+			<pathelement location="lib/uima-tools.jar"/>
+			<pathelement location="lib/uima-examples.jar"/>
+			<pathelement location="lib/uima-document-annotation.jar"/>
+			<pathelement location="lib/uima-cpe.jar"/>
+			<pathelement location="lib/uima-core.jar"/>
+			<pathelement location="lib/uima-adapter-vinci.jar"/>
+			<pathelement location="lib/uima-adapter-soap.jar"/>
+			<pathelement location="lib/opennlp-tools-1.4.3.jar"/>
+			<pathelement location="lib/OpenAI_FSM.jar"/>
+			<pathelement location="lib/maxent-2.5.0.jar"/>
+			<pathelement location="lib/lvg2010dist.jar"/>
+			<pathelement location="lib/lucene-core-3.0.2.jar"/>
+			<pathelement location="lib/log4j-1.2.15.jar"/>
+			<pathelement location="lib/jVinci.jar"/>
+			<pathelement location="lib/jdom.jar"/>
+			<pathelement location="lib/hppc-0.3.1.jar"/>
+			<pathelement location="lib/args4j-2.0.16.jar"/>
+			<pathelement location="lib/junit.jar"/>
+			<pathelement location="lib/libsvm-2.91.jar"/>
+			<!-- <pathelement location="lib/liblinear-1.51.jar"/> -->
+			<pathelement location="lib/xercesImpl-2.6.2.jar"/>
+            <pathelement location="lib/xercesImpl-2.6.2.jar"/>
+            <pathelement location="lib/FindStructAPI.jar"/>
+            <pathelement location="lib/uimafit-1.2.0.jar" />
+            <pathelement location="lib/clearparser-0.33.jar"/>
+            <pathelement location="lib/cleartk-util-0.8.1.jar"/>
+            <pathelement location="lib/commons-io-2.0.1.jar"/>
+            <pathelement location="lib/commons-lang-2.4.jar"/>
+            <pathelement location="lib/commons-logging-1.1.1.jar"/>
+            <pathelement location="lib/commons-cli-1.2.jar"/>
+            <pathelement location="lib/commons-lang-2.6.jar"/>
+            <pathelement location="lib/jackson-core-asl-1.5.0.jar"/>
+            <pathelement location="lib/jackson-mapper-asl-1.5.0.jar"/>
+            <pathelement location="lib/jcarafe-core_2.9.1-0.9.8.3.RC4.jar"/>
+            <pathelement location="lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar"/>
+            <pathelement location="lib/med-facts-i2b2-1.2-SNAPSHOT.jar"/>
+            <pathelement location="lib/med-facts-zoner-1.1.jar"/>
+            <pathelement location="lib/sbinary_2.9.0-0.4.0.jar"/>
+            <pathelement location="lib/scala-library-2.9.0.jar"/>
+			<pathelement location="lib/cleartk-chunker-1.0.1.jar"/>
+			<pathelement location="lib/cleartk-ml-libsvm-1.0.1.jar"/>
+			<pathelement location="lib/cleartk-ml-svmlight-1.0.2.jar"/>
+			<pathelement location="lib/uimafit-1.2.0.jar"/>
+			<pathelement location="lib/args4j-2.0.16.jar"/>
+			<pathelement location="lib/guava-10.0.jar"/>
+			<pathelement location="lib/hppc-0.4.1.jar"/>
+			<pathelement location="lib/spring-core-3.0.3.RELEASE.jar"/>
+			<pathelement location="lib/jdom.jar"/>
+			<pathelement location="lib/libsvm-3.1.jar"/>
+			<pathelement location="lib/cleartk-eval-0.8.1.jar"/>
+			<pathelement location="lib/cleartk-examples-0.6.0.jar"/>
+			<pathelement location="lib/cleartk-ml-1.0.1.jar"/>
+			<pathelement location="lib/cleartk-ml-opennlp-maxent-1.0.2.jar"/>
+			<pathelement location="lib/cleartk-test-util-1.0.1.jar"/>
+			<pathelement location="lib/cleartk-type-system-1.0.0.jar"/>
+			<pathelement location="lib/cleartk-util-0.8.1.jar"/>
+		</path>
+	</target>
+</project>
