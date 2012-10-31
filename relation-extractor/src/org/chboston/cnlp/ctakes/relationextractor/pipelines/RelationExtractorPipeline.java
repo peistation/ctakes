@@ -1,12 +1,6 @@
 /*
  * Copyright: (c) 2012  Children's Hospital Boston, Regents of the University of Colorado 
  *
- * Except as contained in the copyright notice above, or as used to identify
- * MFMER as the author of this software, the trade names, trademarks, service
- * marks, or product names of the copyright holder shall not be used in
- * advertising, promotion or otherwise in connection with this software without
- * prior written authorization of the copyright holder.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at

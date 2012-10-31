@@ -1,18 +1,11 @@
 /*
- * Copyright: (c) 2010   Mayo Foundation for Medical Education and 
- * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
- * triple-shield Mayo logo are trademarks and service marks of MFMER.
- *
- * Except as contained in the copyright notice above, or as used to identify 
- * MFMER as the author of this software, the trade names, trademarks, service
- * marks, or product names of the copyright holder shall not be used in
- * advertising, promotion or otherwise in connection with this software without
- * prior written authorization of the copyright holder.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0 
  * 
  * Unless required by applicable law or agreed to in writing, software
