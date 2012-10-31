@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.ctakes</groupId>
 	<artifactId>ctakes</artifactId>
-	<version>3.1.0-incubating</version>
+	<version>3.1.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Apache cTAKES</name>
 	<url>http://incubator.apache.org/ctakes/</url>
@@ -76,7 +76,7 @@
 		</mailingList>
 	</mailingLists>
 	<properties>
-		<ctakes.version>3.1.0-incubating</ctakes.version>
+		<ctakes.version>3.1.0-incubating-SNAPSHOT</ctakes.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
