@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="cTAKES-jar" name="Create Runnable Jar for cTAKES" basedir="C:\\cTAKES\\2.6\\building-2.6\\cTAKES-2.6-incubating.alpha-005">
+<project default="cTAKES-jar" name="Create Runnable Jar for cTAKES" basedir="C:\\cTAKES\\2.6\\building-2.6\\cTAKES-2.6-incubating.RC1">
     <target name="cTAKES-jar">
         <mkdir dir="bin"/>
         <path id="_ctakes.cp">
