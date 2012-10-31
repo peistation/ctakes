@@ -1,8 +1,11 @@
 
-This information relates to building ctakes-2.6-incubating
+To build ctakes-2.6-incubating:
 
-First, check out all projects from SVN.
-For example, assertion and chunker are separate projects.
+NOTE: This documentation applies to ctakes-2.6-incubating but does not 
+apply to ctakes-3.0-incubating or later.
+
+First, check out all projects from SVN 
+For example, assertion and chunker are separate projects. 
 
 There are three ant scripts used to build cTAKES. The ant scripts
 can be found in project 'files for pipeline root'.
@@ -32,4 +35,3 @@ Update those properties files for your environment.
 Script build_step3 relies on the basedir value within build_script3.xml
 
 Update the basedir value for your environment
- 

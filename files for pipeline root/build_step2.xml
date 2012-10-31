@@ -357,11 +357,6 @@
 				<filename name="KEYS" />
 			</fileset>
 		</copy>
-		<copy todir="${CTAKES_HOME}">
-			<fileset dir="${workspace.home}/files for pipeline root">
-				<filename name="RELEASE_NOTES" />
-			</fileset>
-		</copy>
 		
 		<copy todir="${CTAKES_HOME}">
 			<fileset dir="${workspace.home}/clinical documents pipeline">
