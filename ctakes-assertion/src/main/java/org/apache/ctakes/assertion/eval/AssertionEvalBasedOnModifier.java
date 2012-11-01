@@ -18,7 +18,6 @@
  */
 package org.apache.ctakes.assertion.eval;
 
-
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
