@@ -25,9 +25,9 @@
 <annotatorImplementationName>org.apache.ctakes.postagger.POSTagger</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>POSTagger</name>
-<description></description>
+<description/>
 <version>1.0</version>
-<vendor></vendor>
+<vendor/>
 <configurationParameters>
 <configurationParameter>
 <name>PosModelFile</name>
@@ -72,9 +72,16 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
+<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
 </imports>
 </typeSystemDescription>
-<typePriorities/>
+<typePriorities>
+<priorityList>
+<type>org.apache.ctakes.typesystem.type.textspan.Segment</type>
+<type>org.apache.ctakes.typesystem.type.textspan.Sentence</type>
+<type>org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
+</priorityList>
+</typePriorities>
 <fsIndexCollection/>
 <capabilities>
 <capability>
