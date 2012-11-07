@@ -76,8 +76,17 @@
 		<dependency>
 			<groupId>org.cleartk</groupId>
 			<artifactId>cleartk-examples</artifactId>
-		</dependency>
-				<dependency>
+			<exclusions>
+				<exclusion>
+				<!-- Excluding mallet/trove4j dependencies due to 
+				licence in compatible until we could remove the
+				cleartk-examples dependency. -->
+					<groupId>org.cleartk</groupId>
+	          		<artifactId>cleartk-ml-mallet</artifactId>
+	          	</exclusion>
+			</exclusions>
+		</dependency>			
+		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>
 		</dependency>
