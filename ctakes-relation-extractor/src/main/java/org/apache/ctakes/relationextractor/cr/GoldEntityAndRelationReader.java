@@ -247,13 +247,13 @@ public class GoldEntityAndRelationReader extends JCasAnnotator_ImplBase {
 
 			RelationArgument relationArgument1 = new RelationArgument(jCas);
 			relationArgument1.setId(relationArgumentId++);
-			relationArgument1.setArgument(modifier);
-			relationArgument1.setRole(Constants.shareModifierRole);
+			relationArgument1.setArgument(entityMention);
+			relationArgument1.setRole(Constants.shareEntityMentionRole);
 
-			RelationArgument relationArgument2 = new RelationArgument(jCas);
-			relationArgument2.setId(relationArgumentId++);
-			relationArgument2.setArgument(entityMention);
-			relationArgument2.setRole(Constants.shareEntityMentionRole);
+      RelationArgument relationArgument2 = new RelationArgument(jCas);
+      relationArgument2.setId(relationArgumentId++);
+      relationArgument2.setArgument(modifier);
+      relationArgument2.setRole(Constants.shareModifierRole);
 
 			BinaryTextRelation binaryTextRelation = new BinaryTextRelation(jCas);
 			binaryTextRelation.setArg1(relationArgument1);

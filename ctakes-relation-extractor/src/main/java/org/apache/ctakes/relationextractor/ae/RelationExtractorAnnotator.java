@@ -346,43 +346,37 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    */
   public static class HashableArguments {
 
-  	protected int arg1begin;
+    protected int arg1begin;
     protected int arg1end;
     protected int arg2begin;
     protected int arg2end;
 
-    public HashableArguments(Annotation arg1, Annotation arg2) {
-    	arg1begin = arg1.getBegin();
-    	arg1end = arg1.getEnd();
-    	arg2begin = arg2.getBegin();
-    	arg2end = arg2.getEnd();
-    	this.init(arg1begin, arg1end, arg2begin, arg2end);
+    public HashableArguments(int arg1begin, int arg1end, int arg2begin, int arg2end) {
+      this.arg1begin = arg1begin;
+      this.arg1end = arg1end;
+      this.arg2begin = arg2begin;
+      this.arg2end = arg2end;
     }
-    
-	public HashableArguments(BinaryTextRelation relation) {
-		Annotation arg1, arg2;
-		String role = relation.getArg1().getRole();
-		if (role == null || role.equals("Argument")) {
-			arg1 = relation.getArg1().getArgument();
-			arg2 = relation.getArg2().getArgument();
-		} else {
-			arg2 = relation.getArg1().getArgument();
-			arg1 = relation.getArg2().getArgument();
-		}	
-		this.init(arg1.getBegin(), arg1.getEnd(), arg2.getBegin(), arg2.getEnd());
-	}
-    
-	public void init (
-			int arg1begin,
-			int arg1end,
-			int arg2begin,
-			int arg2end) {
-		this.arg1begin = arg1begin;
-		this.arg1end = arg1end;
-		this.arg2begin = arg2begin;
-		this.arg2end = arg2end;
-	}
 
+    public HashableArguments(Annotation arg1, Annotation arg2) {
+      this(arg1.getBegin(), arg1.getEnd(), arg2.getBegin(), arg2.getEnd());
+    }
+
+    public HashableArguments(BinaryTextRelation relation) {
+      this(getArg1(relation), getArg2(relation));
+    }
+
+    // HACK: arg1 is not always arg1 because of bugs in the reader
+    private static Annotation getArg1(BinaryTextRelation rel) {
+      RelationArgument arg1 = rel.getArg1();
+      return arg1.getRole().equals("Argument") ? arg1.getArgument() : rel.getArg2().getArgument();
+    }
+
+    // HACK: arg2 is not always arg2 because of bugs in the reader
+    private static Annotation getArg2(BinaryTextRelation rel) {
+      RelationArgument arg2 = rel.getArg2();
+      return arg2.getRole().equals("Related_to") ? arg2.getArgument() : rel.getArg1().getArgument();
+    }
 
 	@Override
 	public boolean equals(Object otherObject) {
