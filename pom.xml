@@ -564,7 +564,35 @@
 							</excludes>
 						<numUnapprovedLicenses>0</numUnapprovedLicenses>								
 					</configuration>
-				</plugin>					
+				</plugin>
+				<!--
+				Ignore the Maven remote resources plugin in Eclipse. We don't use it from Eclipse,
+				and it causes a warning if m2e is not configured to ignore it as below.
+				-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-remote-resources-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>process</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
