@@ -54,7 +54,7 @@ public class Stats {
 		int totalEntityCount = 0;
 
 		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};
@@ -95,7 +95,7 @@ public class Stats {
 	  int totalRelationCount = 0;
 		
 	  FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};

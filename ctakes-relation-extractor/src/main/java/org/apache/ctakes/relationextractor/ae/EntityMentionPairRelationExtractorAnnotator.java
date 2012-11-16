@@ -83,34 +83,36 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
 
 		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
+		String category;
 		if (this.classifyBothDirections) {
 			// if classifying both directions, we'll see {X, Y} once when X is first and
 			// once when Y is first, so just do the single direction lookup here
 			if (relation != null) {
-				return relation.getCategory();
+				category = relation.getCategory();
 			} else if (coin.nextDouble() <= this.probabilityOfKeepingANegativeExample) {
-				return NO_RELATION_CATEGORY;
+			  category = NO_RELATION_CATEGORY;
 			} else {
-				return null;
+			  category = null;
 			}
 		} else {
 			// if classifying in a single direction, we'll see {X, Y} only once,
 			// so do lookups in both directions, and change the category name for
 			// the relations in the reverse order
 			if (relation != null) {
-				return relation.getCategory();
+			  category = relation.getCategory();
 			} else {
 				relation = relationLookup.get(Arrays.asList(arg2, arg1));
 				if (relation != null) {
 					// Change category name to show reverse order
-					return relation.getCategory() + "-1";
+				  category = relation.getCategory() + "-1";
 				} else if (coin.nextDouble() <= this.probabilityOfKeepingANegativeExample) {
-					return NO_RELATION_CATEGORY;
+				  category = NO_RELATION_CATEGORY;
 				} else {
-					return null;
+				  category = null;
 				}
 			}
 		}
+		return category;
 	}
 
 }

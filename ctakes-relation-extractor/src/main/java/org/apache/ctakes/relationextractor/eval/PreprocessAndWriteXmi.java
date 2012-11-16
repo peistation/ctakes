@@ -19,7 +19,6 @@
 package org.apache.ctakes.relationextractor.eval;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -31,7 +30,6 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
@@ -185,17 +183,20 @@ public class PreprocessAndWriteXmi {
 			  if (documentID == null) {
 			    throw new IllegalArgumentException("No documentID for CAS:\n" + jCas);
 			  }
-			   File outFile = new File(this.outputDirectory, documentID + ".xmi");
-			   ContentHandler handler = new XMLSerializer(new FileOutputStream(outFile)).getContentHandler();
-				new XmiCasSerializer(jCas.getTypeSystem()).serialize(jCas.getCas(), handler);
-			} catch (CASRuntimeException e) {
+        File outFile = new File(this.outputDirectory, documentID + ".xmi");
+        FileOutputStream stream = new FileOutputStream(outFile);
+        try {
+          ContentHandler handler = new XMLSerializer(stream).getContentHandler();
+          new XmiCasSerializer(jCas.getTypeSystem()).serialize(jCas.getCas(), handler);
+        } finally {
+          stream.close();
+        }
+			} catch (UIMAException e) {
 				throw new AnalysisEngineProcessException(e);
 			} catch (SAXException e) {
 				throw new AnalysisEngineProcessException(e);
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				throw new AnalysisEngineProcessException(e);
-			} catch (CASException e) {
-			  throw new AnalysisEngineProcessException(e);
       }	
 		}
 		

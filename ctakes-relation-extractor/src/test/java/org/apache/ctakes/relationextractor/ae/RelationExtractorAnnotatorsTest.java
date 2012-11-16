@@ -48,9 +48,9 @@ public class RelationExtractorAnnotatorsTest {
   public void test() throws Exception {
     // create the pipeline
     AggregateBuilder builder = new AggregateBuilder();
-    builder.add(this.findDescription(ModifierExtractorAnnotator.class));
-    builder.add(this.findDescription(DegreeOfRelationExtractorAnnotator.class));
-    builder.add(this.findDescription(EntityMentionPairRelationExtractorAnnotator.class));
+    builder.add(findDescription(ModifierExtractorAnnotator.class));
+    builder.add(findDescription(DegreeOfRelationExtractorAnnotator.class));
+    builder.add(findDescription(EntityMentionPairRelationExtractorAnnotator.class));
     AnalysisEngine engine = builder.createAggregate();
     JCas jCas = engine.newJCas();
 
@@ -99,7 +99,7 @@ public class RelationExtractorAnnotatorsTest {
     assertEquals(fracture, fractureFibula.getArg2().getArgument());
   }
 
-  private AnalysisEngineDescription findDescription(Class<? extends JCasAnnotator_ImplBase> cls)
+  private static AnalysisEngineDescription findDescription(Class<? extends JCasAnnotator_ImplBase> cls)
       throws Exception {
     File directory = new File("desc/analysis_engine");
     File file = new File(directory, cls.getSimpleName() + ".xml");

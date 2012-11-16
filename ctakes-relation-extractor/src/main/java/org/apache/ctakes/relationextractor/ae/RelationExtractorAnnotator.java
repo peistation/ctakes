@@ -290,7 +290,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    * @param relationView
    * @return
    */
-  private Map<List<Annotation>, BinaryTextRelation> createRelationLookup(
+  private static Map<List<Annotation>, BinaryTextRelation> createRelationLookup(
 		  JCas relationView) {
 	  Map<List<Annotation>, BinaryTextRelation> relationLookup;
 	  relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
@@ -315,7 +315,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    * @param goldView
    * @return
    */
-  private HashMap<HashableArguments, String> createCategoryLookup(JCas goldView) {
+  private static HashMap<HashableArguments, String> createCategoryLookup(JCas goldView) {
 	  // save gold relations for lookup during error analysis; normalize order of arguments
 	  HashMap<HashableArguments, String> categoryLookup = new HashMap<HashableArguments, String>();
 	  for (BinaryTextRelation relation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
@@ -380,16 +380,16 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
 
 	@Override
 	public boolean equals(Object otherObject) {
+	  boolean result = false;
 		if (otherObject instanceof HashableArguments) {
 			HashableArguments other = (HashableArguments) otherObject;
-			return (this.getClass() == other.getClass() && 
+			result = (this.getClass() == other.getClass() && 
 					this.arg1begin == other.arg1begin && 
 					this.arg1end == other.arg1end && 
 					this.arg2begin == other.arg2begin && 
 					this.arg2end == other.arg2end);
-		} else {
-			return false;
 		}
+		return result;
 	}
 	
     @Override

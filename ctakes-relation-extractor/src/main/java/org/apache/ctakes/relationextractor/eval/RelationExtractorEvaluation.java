@@ -301,6 +301,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     HideOutput hider = new HideOutput();
     JarClassifierBuilder.trainAndPackage(directory, this.trainingArguments);
     hider.restoreOutput();
+    hider.close(); // workaround for https://code.google.com/p/uimafit/issues/detail?id=129
   }
 
   @Override
