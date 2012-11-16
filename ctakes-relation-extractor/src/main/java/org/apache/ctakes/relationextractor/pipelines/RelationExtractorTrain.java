@@ -122,7 +122,8 @@ public class RelationExtractorTrain {
 	    		annotatorClass,
 	    		dataWriterClass,
 	    		additionalParameters,
-	    		trainingArguments);
+	    		trainingArguments,
+	    		false);
 	    
 	    CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);
 	    evaluation.train(collectionReader, modelsDir);

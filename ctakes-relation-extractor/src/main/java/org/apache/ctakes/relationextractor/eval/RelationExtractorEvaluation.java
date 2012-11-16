@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -37,6 +39,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.util.CasCopier;
 import org.apache.uima.util.Level;
+import org.apache.uima.util.XMLInputSource;
 import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
@@ -99,6 +102,11 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             + "it uses the normal entity mention pair relation extractor")
     public boolean runDegreeOf = false;
 
+    @Option(
+        name = "--test-on-ctakes",
+        usage = "evaluate test performance on ctakes entities, instead of gold standard entities")
+    public boolean testOnCTakes = false;
+
   }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
@@ -156,7 +164,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           annotatorClass,
           dataWriterClass,
           additionalParameters,
-          trainingArguments);
+          trainingArguments,
+          options.testOnCTakes);
       
       if(options.testDirectory == null) {
       	// run n-fold cross-validation
@@ -222,18 +231,22 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
    *          Additional parameters that should be supplied when creating the CleartkAnnotator
    * @param trainingArguments
    *          Arguments that should be passed to the classifier's train method
+   * @param testOnCTakes
+   *          During testing, use annotations from cTAKES, not from the gold standard
    */
   public RelationExtractorEvaluation(
       File baseDirectory,
       Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass,
       Class<? extends DataWriter<String>> dataWriterClass,
       Object[] additionalParameters,
-      String[] trainingArguments) {
+      String[] trainingArguments,
+      boolean testOnCTakes) {
     super(baseDirectory);
     this.classifierAnnotatorClass = classifierAnnotatorClass;
     this.dataWriterClass = dataWriterClass;
     this.additionalParameters = additionalParameters;
     this.trainingArguments = trainingArguments;
+    this.testOnCTakes = testOnCTakes;
   }
 
   private Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass;
@@ -243,6 +256,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   private Object[] additionalParameters;
 
   private String[] trainingArguments;
+  
+  private boolean testOnCTakes;
 
   @Override
   public CollectionReader getCollectionReader(List<File> items) throws Exception {
@@ -292,8 +307,17 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
-    // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+    if (this.testOnCTakes) {
+      // add the modifier extractor
+      File file = new File("desc/analysis_engine/ModifierExtractorAnnotator.xml");
+      XMLInputSource source = new XMLInputSource(file);
+      builder.add(UIMAFramework.getXMLParser().parseAnalysisEngineDescription(source));
+      // replace entity mentions in the gold view with the cTAKES entity mentions 
+      builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
+    } else {
+      // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
+      builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+    }
     // add the relation extractor, configured for classification mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
@@ -569,60 +593,41 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         // attempt to replace the gold RelationArguments with system ones
         int replacedArgumentCount = 0;
         for (RelationArgument relArg : Arrays.asList(relation.getArg1(), relation.getArg2())) {
-          Annotation goldArg = relArg.getArgument();
-          Class<? extends Annotation> argClass = goldArg.getClass();
+          IdentifiedAnnotation goldArg = (IdentifiedAnnotation) relArg.getArgument();
+          Class<? extends IdentifiedAnnotation> argClass = goldArg.getClass();
 
           // find all annotations covered by the gold argument and of the same class (these should
           // be the ones copied over from the cTAKES output earlier)
-          List<? extends Annotation> systemArgs = JCasUtil.selectCovered(
+          List<? extends IdentifiedAnnotation> systemArgs = JCasUtil.selectCovered(
               goldView,
               argClass,
               goldArg);
 
-          // no ctakes annotation found
-          if (systemArgs.size() == 0) {
-            String word = "no";
-            String className = argClass.getSimpleName();
-            String argText = goldArg.getCoveredText();
-            String message = String.format("%s %s for \"%s\"", word, className, argText);
-            this.getContext().getLogger().log(Level.FINE, message);
-            continue;
+          // find the largest covered annotation that has the same type
+          IdentifiedAnnotation bestFitArg = null;
+          int maxSize = 0;
+          for (IdentifiedAnnotation systemArg : systemArgs) {
+            int size = systemArg.getEnd() - systemArg.getBegin();
+            if (size >= maxSize && goldArg.getTypeID() == systemArg.getTypeID()) {
+              maxSize = size;
+              bestFitArg = systemArg;
+            }
           }
-          
-          // if there's exactly one annotation, replace the gold one with that
-          if (systemArgs.size() == 1) {
-            relArg.setArgument(systemArgs.get(0));
+          if (bestFitArg != null) {
+            relArg.setArgument(bestFitArg);
             replacedArgumentCount += 1;
           }
 
-          else {
-          	// multiple ctakes arguments found; look for one that matches exactly
-          	// e.g. gold: "right breast", ctakes: "right breast", "breast"                                             
-          	for (Annotation systemArg : systemArgs) {
-          		String goldArgText = goldArg.getCoveredText();
-          		String systemArgText = systemArg.getCoveredText();
-          		if (systemArgText.equals(goldArgText)) {
-          			relArg.setArgument(systemArg);
-          			replacedArgumentCount += 1;
-          		}
-          	}
-          	
-          	if(replacedArgumentCount < 1) {
-          		// issue a warning message
-          		String word = "multiple";
-          		String className = argClass.getSimpleName();
-          		String argText = goldArg.getCoveredText();
-          		String message = String.format("%s %s for \"%s\"", word, className, argText);
-          		this.getContext().getLogger().log(Level.FINE, message);
-
-          		System.out.println("gold argument: " + goldArg.getCoveredText());
-          		System.out.println("gold type: " + ((IdentifiedAnnotation)goldArg).getTypeID());
-          		for(Annotation systemArg : systemArgs) {
-          			System.out.println("ctakes argument: " + systemArg.getCoveredText());
-          			System.out.println("ctakes type: " + ((IdentifiedAnnotation)systemArg).getTypeID());
-          		}
-          		System.out.println();
-          	}
+          // log a message if we didn't find a perfect match
+          if (maxSize != goldArg.getEnd() - goldArg.getBegin()) {
+            List<String> choices = new ArrayList<String>();
+            for (IdentifiedAnnotation systemArg : systemArgs) {
+              choices.add(format(systemArg));
+            }
+            String actionFormat = bestFitArg == null ? "dropping" : "using %s instead of";
+            String action = String.format(actionFormat, format(bestFitArg));
+            String message = String.format("%s %s; choices: %s", action, format(goldArg), choices);
+            this.getContext().getLogger().log(Level.WARNING, message);
           }
         }
 
@@ -631,6 +636,10 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           relation.removeFromIndexes();
         }
       }
+    }
+
+    private static String format(IdentifiedAnnotation a) {
+      return a == null ? null : String.format("\"%s\"(type=%d)", a.getCoveredText(), a.getTypeID());
     }
   }
 }
