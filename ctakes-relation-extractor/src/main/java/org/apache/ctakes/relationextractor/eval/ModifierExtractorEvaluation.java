@@ -51,11 +51,22 @@ import org.apache.ctakes.typesystem.type.textsem.Modifier;
 public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics<String>> {
 
   public static class Options extends Options_ImplBase {
+    
     @Option(
         name = "--train-dir",
-        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
+        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/sharp/xmi/train)",
         required = true)
     public File trainDirectory;
+    
+    @Option(
+        name = "--n-folds",
+        usage = "number of folds for use in cross-validation (only used when --test-dir is not provided)")
+    public int nFolds = 10;
+    
+    @Option(
+        name = "--test-dir",
+        usage = "specify the directory contraining the XMI testing files (for example, /NLP/Corpus/Relations/sharp/xmi/dev)")
+    public File testDirectory;
   }
 
   public static void main(String[] args) throws Exception {
@@ -68,11 +79,20 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         modelsDir,
         "-t",
         "0",
+        "-h",
+        "0",
         "-c",
         "1000");
-
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
-    AnnotationStatistics<String> overallStats = AnnotationStatistics.addAll(foldStats);
+    
+    AnnotationStatistics<String> overallStats;
+    if (options.testDirectory == null) {
+      List<AnnotationStatistics<String>> foldStats;
+      foldStats = evaluation.crossValidation(trainFiles, options.nFolds);
+      overallStats = AnnotationStatistics.addAll(foldStats);
+    } else {
+      List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
+      overallStats = evaluation.trainAndTest(trainFiles, testFiles);
+    }
     System.err.println("Overall:");
     System.err.println(overallStats);
   }
