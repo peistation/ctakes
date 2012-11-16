@@ -620,6 +620,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     public String type;
 
     public KnowtatorAnnotation uncertainty;
+    
+    public DelayedRelation() {
+    }
 
     public void addToIndexes(JCas jCas, Map<String, Annotation> idAnnotationMap) {
       if (this.source == null) {
