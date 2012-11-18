@@ -137,7 +137,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     eventRelationTypes.add("ALINK");
 
     // create a CAS object for each annotation
-    Map<String, Annotation> idAnnotationMap = new HashMap<String, Annotation>();
+    Map<String, TOP> idAnnotationMap = new HashMap<String, TOP>();
     List<DelayedRelation> delayedRelations = new ArrayList<DelayedRelation>();
     List<DelayedFeature<?>> delayedFeatures = new ArrayList<DelayedFeature<?>>();
     for (KnowtatorAnnotation annotation : annotations) {
@@ -577,13 +577,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         strength.addToIndexes();
         delayedFeatures.add(new DelayedFeature<MedicationStrength>(strength, unit) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setUnit(...)
           }
         });
         delayedFeatures.add(new DelayedFeature<MedicationStrength>(strength, number) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setNumber(...)
           }
         });
@@ -611,13 +611,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         frequency.addToIndexes();
         delayedFeatures.add(new DelayedFeature<MedicationFrequency>(frequency, unit) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setUnit(...)
           }
         });
         delayedFeatures.add(new DelayedFeature<MedicationFrequency>(frequency, number) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setNumber(...)
           }
         });
@@ -656,13 +656,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         labValue.addToIndexes();
         delayedFeatures.add(new DelayedFeature<LabValue>(labValue, unit) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setUnit(...)
           }
         });
         delayedFeatures.add(new DelayedFeature<LabValue>(labValue, number) {
           @Override
-          protected void setValue(Annotation valueAnnotation) {
+          protected void setValue(TOP valueAnnotation) {
             // TODO: this.annotation.setNumber(...)
           }
         });
@@ -823,14 +823,14 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       }
     }
 
-    // all mentions should be added, so add features that required other annotations
-    for (DelayedFeature<?> delayedFeature : delayedFeatures) {
-      delayedFeature.setValueFrom(idAnnotationMap);
-    }
-
     // all mentions should be added, so add relations between annotations
     for (DelayedRelation delayedRelation : delayedRelations) {
       delayedRelation.addToIndexes(jCas, idAnnotationMap);
+    }
+
+    // all mentions should be added, so add features that required other annotations
+    for (DelayedFeature<?> delayedFeature : delayedFeatures) {
+      delayedFeature.setValueFrom(idAnnotationMap);
     }
   }
 
@@ -842,7 +842,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       Map<String, String> stringSlots,
       Map<String, Boolean> booleanSlots,
       Map<String, KnowtatorAnnotation> annotationSlots,
-      Map<String, Annotation> idAnnotationMap,
+      Map<String, TOP> idAnnotationMap,
       List<DelayedFeature<?>> delayedFeatures) {
     entityMention.setTypeID(typeID);
     entityMention.setConfidence(1.0f);
@@ -925,7 +925,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     public DelayedRelation() {
     }
 
-    public void addToIndexes(JCas jCas, Map<String, Annotation> idAnnotationMap) {
+    public void addToIndexes(JCas jCas, Map<String, TOP> idAnnotationMap) {
       if (this.source == null) {
         // throw new UnsupportedOperationException(String.format(
         LOGGER.error(String.format(
@@ -944,10 +944,21 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             this.sourceFile));
         return;
       }
-      
-      // look up the relations in the map and issue an error if they're missing
-      Annotation sourceMention = idAnnotationMap.get(this.source.id);
-      Annotation targetMention = idAnnotationMap.get(this.target.id);
+
+      // look up the relations in the map and issue an error if they're missing or an invalid type
+      Annotation sourceMention, targetMention;
+      try {
+        sourceMention = (Annotation)idAnnotationMap.get(this.source.id);
+      } catch (ClassCastException e) {
+        LOGGER.error(String.format("invalid source %s: %s", this.source.id, e.getMessage()));
+        return;
+      }
+      try {
+        targetMention = (Annotation)idAnnotationMap.get(this.target.id);
+      } catch (ClassCastException e) {
+        LOGGER.error(String.format("invalid target %s: %s", this.target.id, e.getMessage()));
+        return;
+      }
       if (sourceMention == null) {
         LOGGER.error(String.format(
             "no Annotation for source id '%s' in %s",
@@ -964,7 +975,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       // get the conditional
       if (this.conditional != null) {
-        Annotation conditionalAnnotation = idAnnotationMap.get(this.conditional.id);
+        Annotation conditionalAnnotation = (Annotation)idAnnotationMap.get(this.conditional.id);
         if (conditionalAnnotation == null) {
           throw new UnsupportedOperationException(String.format(
               "no annotation with id '%s' in %s",
@@ -975,7 +986,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       // get the negation
       if (this.negation != null) {
-        Annotation negationAnnotation = idAnnotationMap.get(this.negation.id);
+        Annotation negationAnnotation = (Annotation)idAnnotationMap.get(this.negation.id);
         if (negationAnnotation == null) {
           throw new UnsupportedOperationException(String.format(
               "no annotation with id '%s' in %s",
@@ -986,7 +997,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       // get the uncertainty
       if (this.uncertainty != null) {
-        Annotation uncertaintyAnnotation = idAnnotationMap.get(this.uncertainty.id);
+        Annotation uncertaintyAnnotation = (Annotation)idAnnotationMap.get(this.uncertainty.id);
         if (uncertaintyAnnotation == null) {
           throw new UnsupportedOperationException(String.format(
               "no annotation with id '%s' in %s",
@@ -1012,6 +1023,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       relation.setArg1(sourceRA);
       relation.setArg2(targetRA);
       relation.addToIndexes();
+      
+      // add the relation to the map so it can be used in features of other annotations
+      idAnnotationMap.put(this.annotation.id, relation);
     }
   }
 
@@ -1025,9 +1039,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       this.featureValueID = featureValue == null ? null : featureValue.id;
     }
 
-    public void setValueFrom(Map<String, ? extends Annotation> idAnnotationMap) {
+    public void setValueFrom(Map<String, ? extends TOP> idAnnotationMap) {
       if (this.featureValueID != null) {
-        Annotation valueAnnotation = idAnnotationMap.get(this.featureValueID);
+        TOP valueAnnotation = idAnnotationMap.get(this.featureValueID);
         if (valueAnnotation == null) {
           LOGGER.warn(String.format(
               "%s found no annotation %s",
@@ -1038,7 +1052,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       }
     }
 
-    protected abstract void setValue(Annotation valueAnnotation);
+    protected abstract void setValue(TOP valueAnnotation);
   }
   
   private static class AlleviatingFactorFeature extends DelayedFeature<EntityMention> {
@@ -1046,7 +1060,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setAlleviatingFactor(...)
     }
   }
@@ -1056,7 +1070,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setSignOrSymptom(...)
     }
   }
@@ -1066,7 +1080,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setBodySide(...)
     }
   }
@@ -1076,7 +1090,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setBodyLaterality(...)
     }
   }
@@ -1086,7 +1100,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setBodyLocation(...)
     }
   }
@@ -1096,7 +1110,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setCourse(...)
     }
   }
@@ -1106,7 +1120,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setConditional(...)
     }
   }
@@ -1116,7 +1130,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setExacerbatingFactor(...)
     }
   }
@@ -1126,7 +1140,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setGeneric(...)
     }
   }
@@ -1136,7 +1150,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setHistoryOf(...)
     }
   }
@@ -1146,7 +1160,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setLabOrdinal(...)
     }
   }
@@ -1156,7 +1170,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setLabReferenceRange(...)
     }
   }
@@ -1166,7 +1180,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setLabValue(...)
     }
   }
@@ -1176,7 +1190,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setAllergy(...)
     }
   }
@@ -1186,7 +1200,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setDosage(...)
     }
   }
@@ -1196,7 +1210,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setDuration(...)
     }
   }
@@ -1206,7 +1220,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setMedicationForm(...)
     }
   }
@@ -1216,7 +1230,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setFrequency(...)
     }
   }
@@ -1226,7 +1240,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setRoute(...)
     }
   }
@@ -1236,7 +1250,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setStartDate(...)
     }
   }
@@ -1246,7 +1260,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setMedicationStatusChange(...)
     }
   }
@@ -1256,7 +1270,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setMedicationStrength(...)
     }
   }
@@ -1266,7 +1280,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setNegation(...)
     }
   }
@@ -1276,7 +1290,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setProcedureDevice(...)
     }
   }
@@ -1286,7 +1300,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setProcedureMethod(...)
     }
   }
@@ -1296,7 +1310,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setSeverity(...)
     }
   }
@@ -1306,7 +1320,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setSubject(...)
     }
   }
@@ -1316,7 +1330,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       super(entityMention, value);
     }
     @Override
-    protected void setValue(Annotation valueAnnotation) {
+    protected void setValue(TOP valueAnnotation) {
       // TODO: this.annotation.setUncertainty(...)
     }
   }
