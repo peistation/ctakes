@@ -35,6 +35,7 @@ import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.BodySide;
 import org.apache.ctakes.typesystem.type.refsem.Course;
+import org.apache.ctakes.typesystem.type.refsem.Date;
 import org.apache.ctakes.typesystem.type.refsem.Event;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.refsem.LabValue;
@@ -423,6 +424,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         severity.setValue(stringSlots.remove("severity_normalization"));
         severity.addToIndexes();
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS);
         modifier.setNormalizedForm(severity);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
@@ -440,6 +442,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         course.setValue(stringSlots.remove("course_normalization"));
         course.addToIndexes();
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_COURSE_CLASS);
         modifier.setNormalizedForm(course);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
@@ -473,6 +476,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         BodySide bodySide = new BodySide(jCas);
         bodySide.setValue(stringSlots.remove("body_side_normalization"));
         bodySide.addToIndexes();
+        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.setNormalizedForm(bodySide);
         modifier.addToIndexes();
@@ -545,7 +549,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Route".equals(annotation.type)) {
-        // TODO: there's currently no Route in the type system
         String value = stringSlots.remove("route_values");
         MedicationRoute route = new MedicationRoute(jCas);
         route.setValue(value);
@@ -684,8 +687,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("lab_interpretation_indicator".equals(annotation.type)) {
         // TODO: unclear where the slot value goes
         String value = stringSlots.remove("lab_interpretation_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_LAB_INTERPRETATION_INDICATOR);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -704,9 +707,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Date".equals(annotation.type)) {
-        // TODO: unclear where these slot values go
         String month = stringSlots.remove("month");
         String day = stringSlots.remove("day");
+        // TODO: not clear where to add this Date to
+        Date date = new Date(jCas);
+        date.setMonth(month);
+        date.setDay(day);
+        date.addToIndexes();
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.addToIndexes();
@@ -1020,7 +1027,14 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
     public void setValueFrom(Map<String, ? extends Annotation> idAnnotationMap) {
       if (this.featureValueID != null) {
-        this.setValue(idAnnotationMap.get(this.featureValueID));
+        Annotation valueAnnotation = idAnnotationMap.get(this.featureValueID);
+        if (valueAnnotation == null) {
+          LOGGER.warn(String.format(
+              "%s found no annotation %s",
+              this.getClass().getSimpleName(),
+              this.featureValueID));
+        }
+        this.setValue(valueAnnotation);
       }
     }
 
