@@ -19,7 +19,6 @@
 package org.apache.ctakes.dictionary.lookup.lucene;
 
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,18 +28,17 @@ import org.apache.ctakes.dictionary.lookup.Dictionary;
 import org.apache.ctakes.dictionary.lookup.DictionaryException;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.util.Version;
 
 
@@ -50,7 +48,7 @@ import org.apache.lucene.util.Version;
  */
 public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictionary
 {
-    private Searcher iv_searcher;
+    private IndexSearcher iv_searcher;
     private String iv_lookupFieldName;
     //ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
     private int iv_maxHits;
@@ -62,7 +60,7 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
      * Constructor
      *
      */
-    public LuceneDictionaryImpl(Searcher searcher, String lookupFieldName)
+    public LuceneDictionaryImpl(IndexSearcher searcher, String lookupFieldName)
     {
 	this(searcher, lookupFieldName, Integer.MAX_VALUE);
 
@@ -74,7 +72,7 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
      * Constructor
      *
      */
-    public LuceneDictionaryImpl(Searcher searcher, String lookupFieldName, int maxListHits)
+    public LuceneDictionaryImpl(IndexSearcher searcher, String lookupFieldName, int maxListHits)
     {
         iv_searcher = searcher;
         iv_lookupFieldName = lookupFieldName;
@@ -96,9 +94,12 @@ public class LuceneDictionaryImpl extends BaseDictionaryImpl implements Dictiona
     			topDoc = iv_searcher.search(q, iv_maxHits);
     		}
     		else {  // needed the KeyworkAnalyzer for situations where the hypen was included in the f-word
-    			QueryParser query = new QueryParser(Version.LUCENE_30, iv_lookupFieldName, new KeywordAnalyzer());
+    			QueryParser query = new QueryParser(Version.LUCENE_40, iv_lookupFieldName, new KeywordAnalyzer());
     			try {
-					 topDoc = iv_searcher.search(query.parse(str.replace('-', ' ')), iv_maxHits);
+   				 	//CTAKES-63 - I believe all of the chars in the str token should be escaped to avoid issues such as a token ending with ']'
+					//topDoc = iv_searcher.search(query.parse(str.replace('-', ' ')), iv_maxHits);
+   				 	String escaped = QueryParserBase.escape(str.replace('-', ' '));
+					 topDoc = iv_searcher.search(query.parse(escaped), iv_maxHits);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

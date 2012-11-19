@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.RAMDirectory;
 
 import org.apache.uima.resource.DataResource;
@@ -65,7 +66,7 @@ public class LuceneIndexReaderResourceImpl
 
                 iv_logger.info("Loading Lucene Index into memory: " + indexDir);
                 FSDirectory fsd = FSDirectory.open(indexDir);
-                Directory d = new RAMDirectory(fsd);
+                Directory d = new RAMDirectory(fsd, IOContext.DEFAULT);
                 iv_indexReader = IndexReader.open(d);
             }
             else {

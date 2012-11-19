@@ -30,7 +30,7 @@ import org.apache.ctakes.dictionary.lookup.BaseMetaDataHitImpl;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexableField;
 
 
 /**
@@ -48,9 +48,9 @@ public class LuceneDocumentMetaDataHitImpl extends BaseMetaDataHitImpl
     {
         iv_doc = luceneDoc;
 
-        List<Fieldable> fieldEnumList = iv_doc.getFields();
+        List<IndexableField> fieldEnumList = iv_doc.getFields();
         
-        ListIterator<Fieldable> fieldEnum = fieldEnumList.listIterator();
+        ListIterator<IndexableField> fieldEnum = fieldEnumList.listIterator();
         while (fieldEnum.hasNext())
         {
             Field f = (Field) fieldEnum.next();

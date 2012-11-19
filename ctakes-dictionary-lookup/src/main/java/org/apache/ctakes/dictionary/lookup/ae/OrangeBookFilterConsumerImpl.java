@@ -23,28 +23,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.ctakes.core.resource.LuceneIndexReaderResource;
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
-
-
-import org.apache.ctakes.core.resource.LuceneIndexReaderResource;
-import org.apache.ctakes.dictionary.lookup.MetaDataHit;
-import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
-import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
-import org.apache.ctakes.typesystem.type.constants.CONST;
 
 /**
  * Implementation that takes Rxnorm dictionary lookup hits and stores only the
@@ -66,7 +62,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl
 
 	private Properties iv_props;
 
-	private Searcher iv_searcher;
+	private IndexSearcher iv_searcher;
 	//ohnlp-Bugs-3296301 limits the search results to fixed 100 records.
 	// Added 'MaxListSize'
 	private int iv_maxHits;
