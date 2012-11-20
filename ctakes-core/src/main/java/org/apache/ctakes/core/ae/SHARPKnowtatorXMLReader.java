@@ -72,15 +72,22 @@ import org.uimafit.util.JCasUtil;
 public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   static Logger LOGGER = Logger.getLogger(SHARPKnowtatorXMLReader.class);
   
-  private static String getJCasURIString(JCas jCas) {
-    return JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID();
+  /**
+   * Get the URI that the text in this class was loaded from
+   */
+  protected URI getTextURI(JCas jCas) throws AnalysisEngineProcessException {
+    try {
+      return new URI(JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
+    } catch (URISyntaxException e) {
+      throw new AnalysisEngineProcessException(e);
+    }
   }
   
   /**
-   * Given the URI of the plain text file, determines the URI of the Knowtator XML file
+   * Get the URI for the Knowtator XML file that should be loaded
    */
-  protected URI getKnowtatorXML(JCas jCas) throws AnalysisEngineProcessException {
-    String textURI = getJCasURIString(jCas);
+  protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
+    String textURI = this.getTextURI(jCas).toString();
     String xmlURI = textURI.replaceAll("Knowtator/text", "Knowtator_XML") + ".knowtator.xml";
     try {
       return new URI(xmlURI);
@@ -98,12 +105,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
+    URI textURI = this.getTextURI(jCas);
+    LOGGER.info("processing " + textURI);
+
     // determine Knowtator XML file from the CAS
-    String uriString = getJCasURIString(jCas);
-    LOGGER.info("processing " + uriString);
-    URI knowtatorXML = this.getKnowtatorXML(jCas);
-    if (!new File(knowtatorXML).exists()) {
-      LOGGER.fatal("no such Knowtator XML file " + knowtatorXML);
+    URI knowtatorURI = this.getKnowtatorURI(jCas);
+    if (!new File(knowtatorURI).exists()) {
+      LOGGER.fatal("no such Knowtator XML file " + knowtatorURI);
       return;
     }
 
@@ -111,7 +119,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     KnowtatorXMLParser parser = new KnowtatorXMLParser(this.getAnnotatorNames());
     Collection<KnowtatorAnnotation> annotations;
     try {
-      annotations = parser.parse(knowtatorXML);
+      annotations = parser.parse(knowtatorURI);
     } catch (JDOMException e) {
       throw new AnalysisEngineProcessException(e);
     } catch (IOException e) {
@@ -779,7 +787,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if (eventRelationTypes.contains(annotation.type)) {
         // store the ALINK information for later, once all annotations are in the CAS
         DelayedRelation relation = new DelayedRelation();
-        relation.sourceFile = knowtatorXML;
+        relation.sourceFile = knowtatorURI;
         relation.annotation = annotation;
         relation.source = annotationSlots.remove("Event");
         relation.target = annotationSlots.remove("related_to");
@@ -789,7 +797,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if (entityRelationTypes.contains(annotation.type)) {
         // store the relation information for later, once all annotations are in the CAS
         DelayedRelation relation = new DelayedRelation();
-        relation.sourceFile = knowtatorXML;
+        relation.sourceFile = knowtatorURI;
         relation.annotation = annotation;
         relation.source = annotationSlots.remove("Argument_CU");
         relation.target = annotationSlots.remove("Related_to_CU");
@@ -802,7 +810,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         throw new UnsupportedOperationException(String.format(
             "unrecognized type '%s' in %s",
             annotation.type,
-            knowtatorXML));
+            knowtatorURI));
       }
 
       // make sure all slots have been consumed
@@ -818,7 +826,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
               annotation.type,
               entry.getKey(),
               remainingSlots,
-              knowtatorXML));
+              knowtatorURI));
         }
       }
     }

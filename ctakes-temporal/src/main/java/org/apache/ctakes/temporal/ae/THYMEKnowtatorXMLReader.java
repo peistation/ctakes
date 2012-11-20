@@ -46,10 +46,15 @@ public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
         THYMEKnowtatorXMLReader.PARAM_KNOWTATOR_XML_DIRECTORY,
         knowtatorXMLDirectory);
   }
+  
+  @Override
+  protected URI getTextURI(JCas jCas) throws AnalysisEngineProcessException {
+    return ViewURIUtil.getURI(jCas);
+  }
 
   @Override
-  protected URI getKnowtatorXML(JCas jCas) throws AnalysisEngineProcessException {
-    URI uri = ViewURIUtil.getURI(jCas);
+  protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
+    URI uri = this.getTextURI(jCas);
     File file = new File(uri.getPath());
     String subDir = file.getParentFile().getName();
     Matcher matcher = Pattern.compile("^doc(\\d+)$").matcher(subDir);
