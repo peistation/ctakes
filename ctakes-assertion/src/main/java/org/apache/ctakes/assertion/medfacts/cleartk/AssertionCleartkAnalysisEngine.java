@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -66,7 +66,7 @@ import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
-public class AssertionCleartkAnalysisEngine extends
+public abstract class AssertionCleartkAnalysisEngine extends
     CleartkAnnotator<String>
 {
   Logger logger = Logger.getLogger(AssertionCleartkAnalysisEngine.class);
@@ -170,6 +170,7 @@ public class AssertionCleartkAnalysisEngine extends
 
   }
 
+  public abstract void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException;
 
 
   @Override
@@ -271,32 +272,7 @@ public class AssertionCleartkAnalysisEngine extends
         instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
       }
       
-      if (this.isTraining())
-      {
-        String polarity = (entityMention.getPolarity() == -1) ? "negated" : "present";
-        instance.setOutcome(polarity);
-        if ("negated".equals(polarity))
-        {
-          logger.info("TRAINING: " + polarity);
-        }
-        this.dataWriter.write(instance);
-      } else
-      {
-        String label = this.classifier.classify(instance.getFeatures());
-        int polarity = 1;
-        if (label!= null && label.equals("present"))
-        {
-          polarity = 0;
-        } else if (label != null && label.equals("negated"))
-        {
-          polarity = -1;
-        }
-        entityMention.setPolarity(polarity);
-        if ("negated".equals(label))
-        {
-          logger.info(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityMention.getBegin(), entityMention.getEnd(), entityMention.getClass().getName()));
-        }
-      }
+      setClassLabel(entityMention, instance);
       
     }
     

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -53,7 +55,14 @@ import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
+import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -82,7 +91,7 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
-public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, AnnotationStatistics> {
+public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
   
   private static Logger logger = Logger.getLogger(AssertionEvalBasedOnModifier.class); 
 
@@ -105,18 +114,58 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
         required = true)
     public File modelsDirectory;
     
+    @Option(
+            name = "--run-polarity",
+            usage = "specify whether polarity processing should be run (true or false). default: true",
+            required = false)
+    public boolean runPolarity = true;
+        
+    @Option(
+            name = "--run-conditional",
+            usage = "specify whether conditional processing should be run (true or false). default: true",
+            required = false)
+    public boolean runConditional = true;
+        
+    @Option(
+            name = "--run-uncertainty",
+            usage = "specify whether uncertainty processing should be run (true or false). default: true",
+            required = false)
+    public boolean runUncertainty = true;
+        
+    @Option(
+            name = "--run-subject",
+            usage = "specify whether subject processing should be run (true or false). default: true",
+            required = false,
+            handler=BooleanOptionHandler.class)
+    public boolean runSubject = true;
+        
+    @Option(
+            name = "--run-generic",
+            usage = "specify whether generic processing should be run (true or false). default: true",
+            required = false)
+    public boolean runGeneric = true;
+        
     
   }
+  
+  protected ArrayList<String> annotationTypes;
 
   private Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass;
 
   private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
 
   
+  protected static Options options = new Options();
   
   public static void main(String[] args) throws Exception {
-    Options options = new Options();
+    //Options options = new Options();
     options.parseOptions(args);
+    
+    System.err.println("forcing skipping of subject processing!!!");
+    options.runSubject = false;
+    System.err.println("forcing skipping of generic processing!!!");
+    options.runGeneric = false;
+    printOptionsForDebugging(options);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     //File modelsDir = new File("models/modifier");
     File modelsDir = options.modelsDirectory;
@@ -134,9 +183,17 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     
     Class<? extends AssertionCleartkAnalysisEngine> annotatorClass = AssertionCleartkAnalysisEngine.class;
 
+    //String [] annotationTypes = { "polarity", "conditional", "uncertainty", "subject", "generic" };
+    ArrayList<String> annotationTypes = new ArrayList<String>();
+    if (options.runPolarity) { annotationTypes.add("polarity"); }
+    if (options.runConditional) { annotationTypes.add("conditional"); }
+    if (options.runUncertainty) { annotationTypes.add("uncertainty"); }
+    if (options.runSubject) { annotationTypes.add("subject"); }
+    if (options.runGeneric) { annotationTypes.add("generic"); }
     
     AssertionEvalBasedOnModifier evaluation = new AssertionEvalBasedOnModifier(
         modelsDir,
+        annotationTypes,
         annotatorClass,
         dataWriterFactoryClass
         );
@@ -164,19 +221,26 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     
     if(options.testDirectory == null) {
       // run n-fold cross-validation
-      List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
+      List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, 2);
       //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
-      AnnotationStatistics overallStats = new AnnotationStatistics();
-      for (AnnotationStatistics singleFoldStats : foldStats)
+      Map<String, AnnotationStatistics> overallStats = new TreeMap<String, AnnotationStatistics>();
+      
+      for (String currentAnnotationType : annotationTypes)
       {
-        overallStats.addAll(singleFoldStats);
+    	  AnnotationStatistics currentAnnotationStatistics = new AnnotationStatistics();
+    	  overallStats.put(currentAnnotationType, currentAnnotationStatistics);
+      }
+      for (Map<String, AnnotationStatistics> singleFoldMap : foldStats)
+      {
+    	  for (String currentAnnotationType : annotationTypes)
+    	  {
+    	    AnnotationStatistics currentFoldStatistics = singleFoldMap.get(currentAnnotationType);
+    	    overallStats.get(currentAnnotationType).addAll(currentFoldStatistics);
+    	  }
       }
       
-      System.err.println("overall:");
-      System.err.print(overallStats);
-      System.err.println(overallStats.confusions());
-      System.err.println();
-
+      AssertionEvalBasedOnModifier.printScore(overallStats,  "CROSS FOLD OVERALL");
+      
     } else {
       // train on the entire training set and evaluate on the test set
       List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
@@ -185,21 +249,65 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
       evaluation.train(trainCollectionReader, modelsDir);
       
       CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
-      AnnotationStatistics stats = evaluation.test(testCollectionReader, modelsDir);
-      return;
+      Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
+      
+      AssertionEvalBasedOnModifier.printScore(stats,  modelsDir.getAbsolutePath());
     }
     
+    System.out.println("Finished.");
+    
+  }
+  
+  private static void printOptionsForDebugging(Options options)
+  {
+	System.out.format(
+		"training dir: %s%n" +
+	    "test dir: %s%n" + 
+	    "model dir: %s%n" +
+	    "run polarity: %b%n" +
+	    "run conditional: %b%n" +
+	    "run uncertainty: %b%n" +
+	    "run subject: %b%n" +
+	    "run generic: %b%n" +
+	    "%n%n",
+	    options.trainDirectory.getAbsolutePath(),
+	    options.testDirectory.getAbsolutePath(),
+	    options.modelsDirectory.getAbsolutePath(),
+	    options.runPolarity,
+	    options.runConditional,
+	    options.runUncertainty,
+	    options.runSubject,
+	    options.runGeneric
+	    );
+  }
+
+public static void printScore(Map<String, AnnotationStatistics> map, String directory)
+  {
+      for (Map.Entry<String, AnnotationStatistics> currentEntry : map.entrySet())
+	  {
+    	  String annotationType = currentEntry.getKey();
+    	  AnnotationStatistics stats = currentEntry.getValue();
+    	  
+    	  System.out.format("directory: \"%s\"; assertion type: %s%n%n%s%n%n",
+    	    directory,
+    	    annotationType.toUpperCase(),
+    	    stats.toString());
+	  }
+      
   }
 
   private String[] trainingArguments;
 
   public AssertionEvalBasedOnModifier(
       File directory,
+      ArrayList<String> annotationTypes,
       Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass,
       Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
       String... trainingArguments
       ) {
     super(directory);
+    
+    this.annotationTypes = annotationTypes;
 
     this.classifierAnnotatorClass = classifierAnnotatorClass;
     this.dataWriterFactoryClass = dataWriterFactoryClass;
@@ -216,7 +324,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     }
     return CollectionReaderFactory.createCollectionReader(
         XMIReader.class,
-        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../common-type-system/desc/common_type_system.xml"),
+        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(),
         XMIReader.PARAM_FILES,
         paths);
   }
@@ -244,17 +352,80 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
     
-    AnalysisEngineDescription assertionAnnotator = AnalysisEngineFactory.createPrimitiveDescription(AssertionCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-    ConfigurationParameterFactory.addConfigurationParameters(
-        assertionAnnotator,
-        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-        this.dataWriterFactoryClass.getName(),
-        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-        directory.getPath()
-        );
-    builder.add(assertionAnnotator);
+    if (options.runPolarity)
+    {
+	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        polarityAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+	        this.dataWriterFactoryClass.getName(),
+	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+	        new File(directory, "polarity").getPath()
+	        );
+	    builder.add(polarityAnnotator);
+    }
+
+    if (options.runConditional)
+    {
+	    AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        conditionalAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+	        this.dataWriterFactoryClass.getName(),
+	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+	        new File(directory, "conditional").getPath()
+	        );
+	    builder.add(conditionalAnnotator);
+    }
+
+    if (options.runUncertainty)
+    {
+	    AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        uncertaintyAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+	        this.dataWriterFactoryClass.getName(),
+	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+	        new File(directory, "uncertainty").getPath()
+	        );
+	    builder.add(uncertaintyAnnotator);
+    }
+
+    if (options.runSubject)
+    {
+	    AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        subjectAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+	        this.dataWriterFactoryClass.getName(),
+	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+	        new File(directory, "subject").getPath()
+	        );
+	    builder.add(subjectAnnotator);
+    }
+
+    if (options.runGeneric)
+    {
+		AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+		    genericAnnotator,
+		    AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+		    AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+		    CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+		    this.dataWriterFactoryClass.getName(),
+		    DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+		    new File(directory, "generic").getPath()
+		    );
+		builder.add(genericAnnotator);
+    }
 
 /*
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
@@ -274,12 +445,16 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     SimplePipeline.runPipeline(collectionReader,  builder.createAggregateDescription());
     
     HideOutput hider = new HideOutput();
-    JarClassifierBuilder.trainAndPackage(directory, this.trainingArguments);
+    for (String currentAssertionAttribute : annotationTypes)
+    {
+    	File currentDirectory = new File(directory, currentAssertionAttribute);
+    	JarClassifierBuilder.trainAndPackage(currentDirectory, trainingArguments);
+    }
     hider.restoreOutput();
   }
 
   @Override
-  protected AnnotationStatistics test(CollectionReader collectionReader, File directory)
+  protected Map<String, AnnotationStatistics> test(CollectionReader collectionReader, File directory)
       throws Exception {
 //    AnalysisEngine classifierAnnotator = AnalysisEngineFactory.createPrimitive(AssertionCleartkAnalysisEngine.getDescription(
 //        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
@@ -293,21 +468,107 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
     
-    AnalysisEngineDescription assertionAnnotator = AnalysisEngineFactory.createPrimitiveDescription(AssertionCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-    ConfigurationParameterFactory.addConfigurationParameters(
-        assertionAnnotator,
-        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-        new File(directory, "model.jar").getPath()
-        );
-    builder.add(assertionAnnotator);
+    if (options.runPolarity)
+    {
+	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        polarityAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	        new File(new File(directory, "polarity"), "model.jar").getPath()
+	        );
+	    builder.add(polarityAnnotator);
+    }
+    
+    if (options.runConditional)
+    {
+	    AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        conditionalAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	        new File(new File(directory, "conditional"), "model.jar").getPath()
+	        );
+	    builder.add(conditionalAnnotator);
+    }
+    
+    if (options.runUncertainty)
+    {
+	    AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        uncertaintyAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	        new File(new File(directory, "uncertainty"), "model.jar").getPath()
+	        );
+	    builder.add(uncertaintyAnnotator);
+    }
+    
+    if (options.runSubject)
+    {
+	    AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        subjectAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	        new File(new File(directory, "subject"), "model.jar").getPath()
+	        );
+	    builder.add(subjectAnnotator);
+    }
+    
+    if (options.runGeneric)
+    {
+	    AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+	    ConfigurationParameterFactory.addConfigurationParameters(
+	        genericAnnotator,
+	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+	        new File(new File(directory, "generic"), "model.jar").getPath()
+	        );
+	    builder.add(genericAnnotator);
+    }
     
     //SimplePipeline.runPipeline(collectionReader,  builder.createAggregateDescription());
     AnalysisEngineDescription aggregateDescription = builder.createAggregateDescription();
     AnalysisEngine aggregate = builder.createAggregate();
     
-    AnnotationStatistics stats = new AnnotationStatistics();
+    AnnotationStatistics polarityStats = new AnnotationStatistics();
+    AnnotationStatistics conditionalStats = new AnnotationStatistics();
+    AnnotationStatistics uncertaintyStats = new AnnotationStatistics();
+    AnnotationStatistics subjectStats = new AnnotationStatistics();
+    AnnotationStatistics genericStats = new AnnotationStatistics();
+    
+    Map<String, AnnotationStatistics> map = new TreeMap<String, AnnotationStatistics>(); 
+    if (options.runPolarity)
+    {
+      map.put("polarity",  polarityStats);
+    }
+
+    if (options.runConditional)
+    {
+      map.put("conditional",  conditionalStats);
+    }
+
+    if (options.runUncertainty)
+    {
+      map.put("uncertainty",  uncertaintyStats);
+    }
+
+    if (options.runSubject)
+    {
+      map.put("subject", subjectStats);
+    }
+
+    if (options.runGeneric)
+    {
+      map.put("generic", genericStats);
+    }
+
     for (JCas jCas : new JCasIterable(collectionReader, aggregate)) {
       JCas goldView;
       try {
@@ -315,21 +576,62 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
-      Collection<IdentifiedAnnotation> goldEntities = new ArrayList<IdentifiedAnnotation>(); 
-      goldEntities.addAll(JCasUtil.select(goldView, EntityMention.class));
-      goldEntities.addAll(JCasUtil.select(goldView, EventMention.class));
       
-      Collection<IdentifiedAnnotation> systemEntities = new ArrayList<IdentifiedAnnotation>();
-      systemEntities.addAll(JCasUtil.select(jCas, EntityMention.class));
-      systemEntities.addAll(JCasUtil.select(jCas, EventMention.class));
+      String documentId = DocumentIDAnnotationUtil.getDocumentID(jCas);
+      System.out.format("document id: %s%n", documentId);
       
-      stats.add(goldEntities, systemEntities,
-		  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-		  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
+      Collection<IdentifiedAnnotation> goldEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>(); 
+      Collection<EntityMention> goldEntities = JCasUtil.select(goldView, EntityMention.class);
+	  goldEntitiesAndEvents.addAll(goldEntities);
+      Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
+      goldEntitiesAndEvents.addAll(goldEvents);
+      System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
+      
+      Collection<IdentifiedAnnotation> systemEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>();
+      Collection<EntityMention> systemEntities = JCasUtil.select(jCas, EntityMention.class);
+      systemEntitiesAndEvents.addAll(systemEntities);
+      Collection<EventMention> systemEvents = JCasUtil.select(jCas, EventMention.class);
+      systemEntitiesAndEvents.addAll(systemEvents);
+      System.out.format("system entities: %d%nsystem events: %d%n%n", systemEntities.size(), systemEvents.size());
+      
+      if (options.runPolarity)
+      {
+	      polarityStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
+      }
+
+      if (options.runConditional)
+      {
+	      conditionalStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("conditional"));
+      }
+
+      if (options.runUncertainty)
+      {
+	      uncertaintyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
+      }
+
+      if (options.runSubject)
+      {
+	      subjectStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("subject"));
+      }
+
+      if (options.runGeneric)
+      {
+	      genericStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("generic"));
+      }
+
     }
-    System.err.println(directory.getName() + ":");
-    System.err.println(stats);
-    return stats;
+    
+    return map;
   }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
@@ -413,134 +715,134 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Anno
     }
   }
   
-  public static class ReplaceGoldEntityMentionsAndModifiersWithCTakes extends
-      JCasAnnotator_ImplBase
-  {
-
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException
-    {
-      JCas goldView, systemView;
-      try
-      {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
-        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
-      } catch (CASException e)
-      {
-        throw new AnalysisEngineProcessException(e);
-      }
-
-      // remove manual EntityMentions and Modifiers from gold view
-      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
-      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
-      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
-      for (IdentifiedAnnotation goldMention : goldMentions)
-      {
-        goldMention.removeFromIndexes();
-      }
-
-      // copy cTAKES EntityMentions and Modifiers to gold view
-      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
-      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
-      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
-      CasCopier copier = new CasCopier(systemView.getCas(), goldView.getCas());
-      for (IdentifiedAnnotation cTakesMention : cTakesMentions)
-      {
-        Annotation copy = (Annotation) copier.copyFs(cTakesMention);
-        Feature sofaFeature = copy.getType().getFeatureByBaseName("sofa");
-        copy.setFeatureValue(sofaFeature, goldView.getSofa());
-        copy.addToIndexes();
-      }
-
-      // replace gold EntityMentions and Modifiers in relations with cTAKES ones
-      List<BinaryTextRelation> relations = new ArrayList<BinaryTextRelation>();
-      relations.addAll(JCasUtil.select(goldView, BinaryTextRelation.class));
-      for (BinaryTextRelation relation : relations)
-      {
-
-        // attempt to replace the gold RelationArguments with system ones
-        int replacedArgumentCount = 0;
-        for (RelationArgument relArg : Arrays.asList(relation.getArg1(),
-            relation.getArg2()))
-        {
-          Annotation goldArg = relArg.getArgument();
-          Class<? extends Annotation> argClass = goldArg.getClass();
-
-          // find all annotations covered by the gold argument and of the same
-          // class (these should
-          // be the ones copied over from the cTAKES output earlier)
-          List<? extends Annotation> systemArgs = JCasUtil.selectCovered(
-              goldView, argClass, goldArg);
-
-          // no ctakes annotation found
-          if (systemArgs.size() == 0)
-          {
-            String word = "no";
-            String className = argClass.getSimpleName();
-            String argText = goldArg.getCoveredText();
-            String message = String.format("%s %s for \"%s\"", word, className,
-                argText);
-            this.getContext().getLogger().log(Level.FINE, message);
-            continue;
-          }
-
-          // if there's exactly one annotation, replace the gold one with that
-          if (systemArgs.size() == 1)
-          {
-            relArg.setArgument(systemArgs.get(0));
-            replacedArgumentCount += 1;
-          }
-
-          else
-          {
-            // multiple ctakes arguments found; look for one that matches
-            // exactly
-            // e.g. gold: "right breast", ctakes: "right breast", "breast"
-            for (Annotation systemArg : systemArgs)
-            {
-              String goldArgText = goldArg.getCoveredText();
-              String systemArgText = systemArg.getCoveredText();
-              if (systemArgText.equals(goldArgText))
-              {
-                relArg.setArgument(systemArg);
-                replacedArgumentCount += 1;
-              }
-            }
-
-            if (replacedArgumentCount < 1)
-            {
-              // issue a warning message
-              String word = "multiple";
-              String className = argClass.getSimpleName();
-              String argText = goldArg.getCoveredText();
-              String message = String.format("%s %s for \"%s\"", word,
-                  className, argText);
-              this.getContext().getLogger().log(Level.FINE, message);
-
-              System.out.println("gold argument: " + goldArg.getCoveredText());
-              System.out.println("gold type: "
-                  + ((IdentifiedAnnotation) goldArg).getTypeID());
-              for (Annotation systemArg : systemArgs)
-              {
-                System.out.println("ctakes argument: "
-                    + systemArg.getCoveredText());
-                System.out.println("ctakes type: "
-                    + ((IdentifiedAnnotation) systemArg).getTypeID());
-              }
-              System.out.println();
-            }
-          }
-        }
-
-        // if replacements were not found for both arguments, remove the
-        // relation
-        if (replacedArgumentCount < 2)
-        {
-          relation.removeFromIndexes();
-        }
-      }
-    }
-  }
+//  public static class ReplaceGoldEntityMentionsAndModifiersWithCTakes extends
+//      JCasAnnotator_ImplBase
+//  {
+//
+//    @Override
+//    public void process(JCas jCas) throws AnalysisEngineProcessException
+//    {
+//      JCas goldView, systemView;
+//      try
+//      {
+//        goldView = jCas.getView(GOLD_VIEW_NAME);
+//        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+//      } catch (CASException e)
+//      {
+//        throw new AnalysisEngineProcessException(e);
+//      }
+//
+//      // remove manual EntityMentions and Modifiers from gold view
+//      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
+//      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
+//      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
+//      for (IdentifiedAnnotation goldMention : goldMentions)
+//      {
+//        goldMention.removeFromIndexes();
+//      }
+//
+//      // copy cTAKES EntityMentions and Modifiers to gold view
+//      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
+//      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
+//      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
+//      CasCopier copier = new CasCopier(systemView.getCas(), goldView.getCas());
+//      for (IdentifiedAnnotation cTakesMention : cTakesMentions)
+//      {
+//        Annotation copy = (Annotation) copier.copyFs(cTakesMention);
+//        Feature sofaFeature = copy.getType().getFeatureByBaseName("sofa");
+//        copy.setFeatureValue(sofaFeature, goldView.getSofa());
+//        copy.addToIndexes();
+//      }
+//
+//      // replace gold EntityMentions and Modifiers in relations with cTAKES ones
+//      List<BinaryTextRelation> relations = new ArrayList<BinaryTextRelation>();
+//      relations.addAll(JCasUtil.select(goldView, BinaryTextRelation.class));
+//      for (BinaryTextRelation relation : relations)
+//      {
+//
+//        // attempt to replace the gold RelationArguments with system ones
+//        int replacedArgumentCount = 0;
+//        for (RelationArgument relArg : Arrays.asList(relation.getArg1(),
+//            relation.getArg2()))
+//        {
+//          Annotation goldArg = relArg.getArgument();
+//          Class<? extends Annotation> argClass = goldArg.getClass();
+//
+//          // find all annotations covered by the gold argument and of the same
+//          // class (these should
+//          // be the ones copied over from the cTAKES output earlier)
+//          List<? extends Annotation> systemArgs = JCasUtil.selectCovered(
+//              goldView, argClass, goldArg);
+//
+//          // no ctakes annotation found
+//          if (systemArgs.size() == 0)
+//          {
+//            String word = "no";
+//            String className = argClass.getSimpleName();
+//            String argText = goldArg.getCoveredText();
+//            String message = String.format("%s %s for \"%s\"", word, className,
+//                argText);
+//            this.getContext().getLogger().log(Level.FINE, message);
+//            continue;
+//          }
+//
+//          // if there's exactly one annotation, replace the gold one with that
+//          if (systemArgs.size() == 1)
+//          {
+//            relArg.setArgument(systemArgs.get(0));
+//            replacedArgumentCount += 1;
+//          }
+//
+//          else
+//          {
+//            // multiple ctakes arguments found; look for one that matches
+//            // exactly
+//            // e.g. gold: "right breast", ctakes: "right breast", "breast"
+//            for (Annotation systemArg : systemArgs)
+//            {
+//              String goldArgText = goldArg.getCoveredText();
+//              String systemArgText = systemArg.getCoveredText();
+//              if (systemArgText.equals(goldArgText))
+//              {
+//                relArg.setArgument(systemArg);
+//                replacedArgumentCount += 1;
+//              }
+//            }
+//
+//            if (replacedArgumentCount < 1)
+//            {
+//              // issue a warning message
+//              String word = "multiple";
+//              String className = argClass.getSimpleName();
+//              String argText = goldArg.getCoveredText();
+//              String message = String.format("%s %s for \"%s\"", word,
+//                  className, argText);
+//              this.getContext().getLogger().log(Level.FINE, message);
+//
+//              System.out.println("gold argument: " + goldArg.getCoveredText());
+//              System.out.println("gold type: "
+//                  + ((IdentifiedAnnotation) goldArg).getTypeID());
+//              for (Annotation systemArg : systemArgs)
+//              {
+//                System.out.println("ctakes argument: "
+//                    + systemArg.getCoveredText());
+//                System.out.println("ctakes type: "
+//                    + ((IdentifiedAnnotation) systemArg).getTypeID());
+//              }
+//              System.out.println();
+//            }
+//          }
+//        }
+//
+//        // if replacements were not found for both arguments, remove the
+//        // relation
+//        if (replacedArgumentCount < 2)
+//        {
+//          relation.removeFromIndexes();
+//        }
+//      }
+//    }
+//  }
   
   /**
    * Class that copies the manual {@link Modifier} annotations to the default CAS.
