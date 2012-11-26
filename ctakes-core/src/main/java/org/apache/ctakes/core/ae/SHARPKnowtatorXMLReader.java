@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
 import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.BodyLaterality;
 import org.apache.ctakes.typesystem.type.refsem.BodySide;
 import org.apache.ctakes.typesystem.type.refsem.Course;
 import org.apache.ctakes.typesystem.type.refsem.Date;
@@ -47,6 +48,7 @@ import org.apache.ctakes.typesystem.type.refsem.MedicationRoute;
 import org.apache.ctakes.typesystem.type.refsem.MedicationStatusChange;
 import org.apache.ctakes.typesystem.type.refsem.MedicationStrength;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.refsem.ProcedureDevice;
 import org.apache.ctakes.typesystem.type.refsem.ProcedureMethod;
 import org.apache.ctakes.typesystem.type.refsem.Severity;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
@@ -68,6 +70,9 @@ import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
 public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   static Logger LOGGER = Logger.getLogger(SHARPKnowtatorXMLReader.class);
@@ -419,11 +424,59 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, timeMention);
         // TODO
         
+      } else if ("conditional_class".equals(annotation.type)) {
+        Boolean value = booleanSlots.remove("conditional_normalization");
+        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setConditional(value == null ? false : value);
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
       } else if ("generic_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
         Boolean value = booleanSlots.remove("generic_normalization");
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setGeneric(value == null ? false : value);
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("negation_indicator_class".equals(annotation.type)) {
+        String value = stringSlots.remove("negation_indicator_normalization");
+        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming NE_POLARITY_NEGATION_PRESENT for \"%s\" with id \"%s\"",
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          modifier.setPolarity(CONST.NE_POLARITY_NEGATION_PRESENT);
+        } else if (value.equals("negation_absent")) {
+          modifier.setPolarity(CONST.NE_POLARITY_NEGATION_ABSENT);
+        } else if (value.equals("negation_present")) {
+          modifier.setPolarity(CONST.NE_POLARITY_NEGATION_PRESENT);
+        } else {
+          throw new UnsupportedOperationException("Invalid negation: " + value);
+        }
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("uncertainty_indicator_class".equals(annotation.type)) {
+        String value = stringSlots.remove("uncertainty_indicator_normalization");
+        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming NE_UNCERTAINTY_PRESENT for \"%s\" with id \"%s\"",
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          modifier.setPolarity(CONST.NE_UNCERTAINTY_PRESENT);
+        } else if (value.equals("indicator_absent")) {
+          modifier.setUncertainty(CONST.NE_UNCERTAINTY_ABSENT);
+        } else if (value.equals("indicator_present")) {
+          modifier.setUncertainty(CONST.NE_UNCERTAINTY_PRESENT);
+        } else {
+          throw new UnsupportedOperationException("Invalid uncertainty: " + value);
+        }
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -437,14 +490,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("conditional_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
-        Boolean value = booleanSlots.remove("conditional_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
       } else if ("course_class".equals(annotation.type)) {
         Course course = new Course(jCas);
         course.setValue(stringSlots.remove("course_normalization"));
@@ -452,22 +497,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.setTypeID(CONST.MODIFIER_TYPE_ID_COURSE_CLASS);
         modifier.setNormalizedForm(course);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("uncertainty_indicator_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
-        String value = stringSlots.remove("uncertainty_indicator_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("distal_or_proximal".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
-        String value = stringSlots.remove("distal_or_proximal_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -490,14 +519,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("negation_indicator_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
-        String value = stringSlots.remove("negation_indicator_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
       } else if ("historyOf_indicator_class".equals(annotation.type)) {
         // TODO: unclear where this slot goes
         String value = stringSlots.remove("historyOf_normalization");
@@ -506,27 +527,95 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
+      } else if ("distal_or_proximal".equals(annotation.type)) {
+        String value = stringSlots.remove("distal_or_proximal_normalization");
+        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
+        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLaterality laterality = new BodyLaterality(jCas);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming \"%s\" for \"%s\" with id \"%s\"",
+              CONST.ATTR_BODYLATERALITY_UNMARKED,
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          value = CONST.ATTR_BODYLATERALITY_UNMARKED;
+        } else if (!value.equals(CONST.ATTR_BODYLATERALITY_DISTAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_PROXIMAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_UNMARKED)) {
+          throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
+        }
+        laterality.setValue(value);
+        laterality.addToIndexes();
+        modifier.setNormalizedForm(laterality);
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
       } else if ("superior_or_inferior".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
         String value = stringSlots.remove("superior_or_inferior_normalization");
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLaterality laterality = new BodyLaterality(jCas);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming \"%s\" for \"%s\" with id \"%s\"",
+              CONST.ATTR_BODYLATERALITY_UNMARKED,
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          value = CONST.ATTR_BODYLATERALITY_UNMARKED;
+        } else if (!value.equals(CONST.ATTR_BODYLATERALITY_DISTAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_SUPERIOR) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_INFERIOR)) {
+          throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
+        }
+        laterality.setValue(value);
+        laterality.addToIndexes();
+        modifier.setNormalizedForm(laterality);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("medial_or_lateral".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
         String value = stringSlots.remove("medial_or_lateral_normalization");
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLaterality laterality = new BodyLaterality(jCas);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming \"%s\" for \"%s\" with id \"%s\"",
+              CONST.ATTR_BODYLATERALITY_UNMARKED,
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          value = CONST.ATTR_BODYLATERALITY_UNMARKED;
+        } else if (!value.equals(CONST.ATTR_BODYLATERALITY_DISTAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_MEDIAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_LATERAL)) {
+          throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
+        }
+        laterality.setValue(value);
+        laterality.addToIndexes();
+        modifier.setNormalizedForm(laterality);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("dorsal_or_ventral".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
         String value = stringSlots.remove("dorsal_or_ventral_normalization");
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLaterality laterality = new BodyLaterality(jCas);
+        if (value == null) {
+          LOGGER.warn(String.format(
+              "assuming \"%s\" for \"%s\" with id \"%s\"",
+              CONST.ATTR_BODYLATERALITY_UNMARKED,
+              modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
+              annotation.id));
+          value = CONST.ATTR_BODYLATERALITY_UNMARKED;
+        } else if (!value.equals(CONST.ATTR_BODYLATERALITY_DISTAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_DORSAL) &&
+            !value.equals(CONST.ATTR_BODYLATERALITY_VENTRAL)) {
+          throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
+        }
+        laterality.setValue(value);
+        laterality.addToIndexes();
+        modifier.setNormalizedForm(laterality);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -541,10 +630,12 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("device_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
         String code = stringSlots.remove("associatedCode");
+        ProcedureDevice device = new ProcedureDevice(jCas);
+        device.setValue(code);
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(device);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -1357,6 +1448,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       File knowtatorTextDirectory = new File(knowtatorTextDirectoryPath);
       for (File textFile : knowtatorTextDirectory.listFiles()) {
         JCas jCas = engine.newJCas();
+        jCas.setDocumentText(Files.toString(textFile, Charsets.US_ASCII));
         DocumentID documentID = new DocumentID(jCas);
         documentID.setDocumentID(textFile.toURI().toString());
         documentID.addToIndexes();
