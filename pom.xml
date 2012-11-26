@@ -442,6 +442,10 @@
 					<version>2.3</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>				
+				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>2.4.1</version>
 				</plugin>
@@ -501,6 +505,10 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.5</version>
 				</plugin>
+				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>				
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.1</version>
@@ -564,7 +572,34 @@
 							</excludes>
 						<numUnapprovedLicenses>0</numUnapprovedLicenses>								
 					</configuration>
-				</plugin>					
+				</plugin>
+				<!-- This is needed to execute/unpack resources in m2e eclipse ide -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.6,)</versionRange>
+										<goals>
+											<goal>unpack-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>							
 			</plugins>
 		</pluginManagement>
 	</build>
