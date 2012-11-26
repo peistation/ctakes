@@ -88,6 +88,12 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     public File trainDirectory;
 
     @Option(
+        name = "--dev-dir",
+        usage = "specify the directory contraining the XMI development files (for example, /NLP/Corpus/Relations/mipacq/xmi/dev)",
+        required = false)
+    public File devDirectory;
+    
+    @Option(
         name = "--test-dir",
         usage = "specify the directory contraining the XMI testing files (for example, /NLP/Corpus/Relations/mipacq/xmi/test)",
         required = false)
@@ -114,6 +120,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.parseOptions(args);
+    
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     
     // define the output directory for models
@@ -167,8 +174,9 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           trainingArguments,
           options.testOnCTakes);
       
-      if(options.testDirectory == null) {
-      	// run n-fold cross-validation
+      if(options.testDirectory == null && options.devDirectory == null) {
+      	// run n-fold cross-validation on the training set
+        
       	List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
       	params.stats = AnnotationStatistics.addAll(foldStats);
         
@@ -177,13 +185,27 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         System.err.println(params.stats.confusions());
         System.err.println();
 
-        // store these parameter settings
+        // store these parameter settings and the respective performance
+        scoredParams.put(params, params.stats.f1());
+      } else if(options.devDirectory != null && options.gridSearch) {
+        // tune parameters on the development set
+        
+        List<File> devFiles = Arrays.asList(options.devDirectory.listFiles());
+        params.stats = evaluation.trainAndTest(trainFiles, devFiles);
+        
+        System.err.println("overall:");
+        System.err.print(params.stats);
+        System.err.println(params.stats.confusions());
+        System.err.println();
+        
+        // store these parameter settings and the respective performance
         scoredParams.put(params, params.stats.f1());
       } else {
       	// train on the entire training set and evaluate on the test set
+        
       	List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
       	AnnotationStatistics<String> stats = evaluation.trainAndTest(trainFiles, testFiles);
-        System.err.print(stats);
+      	System.err.print(stats);
       	return;
       }
     }
