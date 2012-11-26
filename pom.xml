@@ -573,7 +573,8 @@
 						<numUnapprovedLicenses>0</numUnapprovedLicenses>								
 					</configuration>
 				</plugin>
-				<!-- This is needed to execute/unpack resources in m2e eclipse ide -->
+				<!-- This is needed to execute/unpack resources in m2e eclipse ide 
+				     Currently used in the ctakes-dictionary-lookup project -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
