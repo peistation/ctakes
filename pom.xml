@@ -111,7 +111,7 @@
 		
 		<!-- Temporarily commenting out temporal module
 		Since it will not be part of the 3.0 release -->
-		<!-- <module>ctakes-temporal</module> -->
+		<module>ctakes-temporal</module>
 
 		<!-- pipeline and distribution should always be last -->
 		<module>ctakes-clinical-pipeline</module>
@@ -241,6 +241,13 @@
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
 					ctakes-relation-extractor
+				</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ctakes</groupId>
+				<artifactId>
+					ctakes-temporal
 				</artifactId>
 				<version>${ctakes.version}</version>
 			</dependency>
