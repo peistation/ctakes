@@ -1739,7 +1739,7 @@ Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Properties</description>
       <supertypeName>org.apache.ctakes.typesystem.type.util.Pairs</supertypeName>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.structured.DocumentClass</name>
+      <name>org.apache.ctakes.typesystem.type.structured.DocumentClassification</name>
       <description/>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
