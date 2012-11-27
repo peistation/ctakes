@@ -44,7 +44,7 @@ public class PhraseExtractor implements SimpleFeatureExtractor {
         break;
       }
     }
-    return Collections.singletonList(new Feature(featureValue));
+    return Collections.singletonList(new Feature("PhraseType", featureValue));
   }
 
 }
