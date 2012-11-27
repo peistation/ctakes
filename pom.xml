@@ -521,6 +521,10 @@
 					<version>2.5</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>				
+				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.1</version>
 				</plugin>
@@ -584,18 +588,37 @@
 						<numUnapprovedLicenses>0</numUnapprovedLicenses>								
 					</configuration>
 				</plugin>
-				<!--
-				Ignore the Maven remote resources plugin in Eclipse. We don't use it from Eclipse,
-				and it causes a warning if m2e is not configured to ignore it as below.
-				-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
+					<version>1.0</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
 								<pluginExecution>
+								<!-- 
+								This is needed to execute/unpack resources in m2e eclipse ide
+								Currently used in the ctakes-dictionary-lookup project  
+								-->
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.6,)</versionRange>
+										<goals>
+											<goal>unpack-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+								<!--
+								Ignore the Maven remote resources plugin in Eclipse. We don't use it from Eclipse,
+								and it causes a warning if m2e is not configured to ignore it as below.
+								-->								
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-remote-resources-plugin</artifactId>
@@ -607,7 +630,7 @@
 									<action>
 										<ignore />
 									</action>
-								</pluginExecution>
+								</pluginExecution>																
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>

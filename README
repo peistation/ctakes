@@ -19,7 +19,12 @@ Enter note and run analysis engine.
 
 Notes
 -----------
-If you plan to use the UMLS Resources, set/export env variables
+If you plan to use the UMLS Resources,
+Download and unpack the umls resources and add them to the resources directory
+from http://search.maven.org/remotecontent?filepath=net/sourceforge/ctakesresources/ctakes-resources-distribution/3.1.0/ctakes-resources-distribution-3.1.0-bin.zip
+http://sourceforge.net/projects/ctakesresources/files/
+
+Also set/export env variables
 export ctakes.umlsuser=[username], ctakes.umlspw=[password]
 or add the system properties to the java args
 -Dctakes.umlsuser=[username] -Dctakes.umlspw=[password]
