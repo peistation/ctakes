@@ -57,7 +57,7 @@ public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
-    this.chunking = new BIOChunking<BaseToken, Modifier>(BaseToken.class, Modifier.class);
+    this.chunking = new BIOChunking<BaseToken, Modifier>(BaseToken.class, Modifier.class, "typeID");
   }
 
   @Override
