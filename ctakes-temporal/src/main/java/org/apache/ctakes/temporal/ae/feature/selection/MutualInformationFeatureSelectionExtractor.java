@@ -20,8 +20,6 @@ import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.apache.ctakes.temporal.ae.feature.selection.MutualInformationFeatureSelectionExtractor.CombineScoreMethod.CombineScoreFunction;
-import org.apache.ctakes.temporal.ae.feature.selection.MutualInformationFeatureSelectionExtractor.MutualInformationStats.ComputeFeatureScore;
 import org.cleartk.classifier.feature.transform.TransformableFeature;
 
 import com.google.common.base.Function;
@@ -60,11 +58,8 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
     // MERGE, // Take k-largest mutual information values for each class and merge into a single
     // collection - currently omitted because it requires a different extraction flow
 
-    public abstract static class CombineScoreFunction<OUTCOME_T> implements
-        Function<Map<OUTCOME_T, Double>, Double> {
-    }
-
-    public static class AverageScores<OUTCOME_T> extends CombineScoreFunction<OUTCOME_T> {
+    public static class AverageScores<OUTCOME_T>
+    implements Function<Map<OUTCOME_T, Double>, Double> {
       @Override
       public Double apply(Map<OUTCOME_T, Double> input) {
         Collection<Double> scores = input.values();
@@ -78,7 +73,8 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
       }
     }
 
-    public static class MaxScores<OUTCOME_T> extends CombineScoreFunction<OUTCOME_T> {
+    public static class MaxScores<OUTCOME_T>
+    implements Function<Map<OUTCOME_T, Double>, Double> {
       @Override
       public Double apply(Map<OUTCOME_T, Double> input) {
         return Ordering.natural().max(input.values());
@@ -118,7 +114,7 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
       int[][] featureOutcomeCounts = new int[2][2];
 
       int n = this.classCounts.size();
-      featureCounts[1] = this.sum(this.classConditionalCounts.row(featureName).values());
+      featureCounts[1] = sum(this.classConditionalCounts.row(featureName).values());
       featureCounts[0] = n - featureCounts[1];
       outcomeCounts[1] = this.classCounts.count(outcome);
       outcomeCounts[0] = n - outcomeCounts[1];
@@ -145,7 +141,7 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
       return information;
     }
 
-    private int sum(Collection<Integer> values) {
+    private static int sum(Collection<Integer> values) {
       int total = 0;
       for (int v : values) {
         total += v;
@@ -186,7 +182,7 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
 
       private MutualInformationStats<OUTCOME_T> stats;
 
-      private CombineScoreFunction<OUTCOME_T> combineScoreFunction;
+      private Function<Map<OUTCOME_T, Double>, Double> combineScoreFunction;
 
       public ComputeFeatureScore(
           MutualInformationStats<OUTCOME_T> stats,

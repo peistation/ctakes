@@ -39,7 +39,7 @@ public class SurfaceFormFeatureExtractor implements SimpleFeatureExtractor {
 	    int end = focusAnnotation.getEnd();
 	    String text = jCasText == null ? null : jCasText.substring(begin, end);
 	    features.add(new Feature(this.FEATURE_SURF, getStrType(text)));
-	    int length = text.length();
+	    int length = text == null ? 0 : text.length();
 	    if (length <=1) features.add(new Feature(this.FEATURE_LENGTH, "single"));
 	    else features.add(new Feature(this.FEATURE_LENGTH, "multiple"));
 
