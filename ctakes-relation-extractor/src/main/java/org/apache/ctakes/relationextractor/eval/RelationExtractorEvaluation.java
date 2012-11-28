@@ -51,6 +51,7 @@ import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -103,10 +104,10 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     public boolean gridSearch = false;
 
     @Option(
-        name = "--run-degree-of",
-        usage = "if true runs the degree of relation extractor otherwise "
-            + "it uses the normal entity mention pair relation extractor")
-    public boolean runDegreeOf = false;
+        name = "--relations",
+        usage = "determines which relations to evaluate on (separately)",
+        required = false)
+    public List<String> relations = Arrays.asList("degree_of", "location_of");
 
     @Option(
         name = "--test-on-ctakes",
@@ -116,124 +117,127 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
-
+  
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.parseOptions(args);
-    
+
     // error on invalid option combinations
     if (options.testDirectory != null && options.gridSearch) {
       throw new IllegalArgumentException("grid search can only be run on the train or dev sets");
     }
-    
+
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-    
-    // define the output directory for models
-    File modelsDir = options.runDegreeOf
-        ? new File("target/models/degree_of")
-        : new File("target/models/em_pair");
 
-    // determine class for the classifier annotator
-    Class<? extends RelationExtractorAnnotator> annotatorClass = options.runDegreeOf
-        ? DegreeOfRelationExtractorAnnotator.class
-        : EntityMentionPairRelationExtractorAnnotator.class;
+    for (String relationCategory : options.relations) {
 
-    // determine the type of classifier to be trained
-    Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
+      // define the output directory for models
+      File modelsDir = new File("target/models/" + relationCategory);
 
-    // define the set of possible training parameters
-    List<ParameterSettings> possibleParams = options.runDegreeOf
-        ? getDegreeOfParameterSpace(options.gridSearch)
-        : getEMPairParameterSpace(options.gridSearch);
+      // determine class for the classifier annotator
+      boolean isDegreeOf = relationCategory.equals("degree_of");
+      Class<? extends RelationExtractorAnnotator> annotatorClass = isDegreeOf
+          ? DegreeOfRelationExtractorAnnotator.class
+          : EntityMentionPairRelationExtractorAnnotator.class;
 
-    // run an evaluation for each set of parameters
-    Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
-    for (ParameterSettings params : possibleParams) {
-      System.err.println(params);
-      System.err.println();
+      // determine the type of classifier to be trained
+      Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
 
-      // define additional configuration parameters for the annotator
-      Object[] additionalParameters = new Object[] {
-          RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-          params.probabilityOfKeepingANegativeExample,
-          EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-  			  params.classifyBothDirections,
-          RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-          false };
+      // define the set of possible training parameters
+      List<ParameterSettings> possibleParams = isDegreeOf
+          ? getDegreeOfParameterSpace(options.gridSearch)
+          : getEMPairParameterSpace(options.gridSearch);
 
-      // define arguments to be passed to the classifier
-      String[] trainingArguments = new String[] {
-          "-t",
-          String.valueOf(params.svmKernelIndex),
-          "-c",
-          String.valueOf(params.svmCost),
-          "-g",
-          String.valueOf(params.svmGamma) };
+      // run an evaluation for each set of parameters
+      Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
+      for (ParameterSettings params : possibleParams) {
+        System.err.println(relationCategory + ": " + params);
+        System.err.println();
 
-      // create the evaluation
-      RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
-          modelsDir,
-          annotatorClass,
-          dataWriterClass,
-          additionalParameters,
-          trainingArguments,
-          options.testOnCTakes);
-      
-      if (options.devDirectory != null) {
-        if (options.testDirectory != null) {
-          // train on the training set + dev set and evaluate on the test set
-          List<File> allTrainFiles = new ArrayList<File>();
-          allTrainFiles.addAll(trainFiles);
-          allTrainFiles.addAll(Arrays.asList(options.devDirectory.listFiles()));
-          List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
-          params.stats = evaluation.trainAndTest(allTrainFiles, testFiles);
+        // define additional configuration parameters for the annotator
+        Object[] additionalParameters = new Object[] {
+            RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
+            params.probabilityOfKeepingANegativeExample,
+            EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
+            params.classifyBothDirections,
+            RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
+            false };
+
+        // define arguments to be passed to the classifier
+        String[] trainingArguments = new String[] {
+            "-t",
+            String.valueOf(params.svmKernelIndex),
+            "-c",
+            String.valueOf(params.svmCost),
+            "-g",
+            String.valueOf(params.svmGamma) };
+
+        // create the evaluation
+        RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
+            modelsDir,
+            relationCategory,
+            annotatorClass,
+            dataWriterClass,
+            additionalParameters,
+            trainingArguments,
+            options.testOnCTakes);
+
+        if (options.devDirectory != null) {
+          if (options.testDirectory != null) {
+            // train on the training set + dev set and evaluate on the test set
+            List<File> allTrainFiles = new ArrayList<File>();
+            allTrainFiles.addAll(trainFiles);
+            allTrainFiles.addAll(Arrays.asList(options.devDirectory.listFiles()));
+            List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
+            params.stats = evaluation.trainAndTest(allTrainFiles, testFiles);
+          } else {
+            // train on the training set and evaluate on the dev set
+            List<File> devFiles = Arrays.asList(options.devDirectory.listFiles());
+            params.stats = evaluation.trainAndTest(trainFiles, devFiles);
+          }
         } else {
-          // train on the training set and evaluate on the dev set
-          List<File> devFiles = Arrays.asList(options.devDirectory.listFiles());
-          params.stats = evaluation.trainAndTest(trainFiles, devFiles);
+          if (options.testDirectory != null) {
+            // train on the training set and evaluate on the test set
+            List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
+            params.stats = evaluation.trainAndTest(trainFiles, testFiles);
+          } else {
+            // run n-fold cross-validation on the training set
+            List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
+            params.stats = AnnotationStatistics.addAll(foldStats);
+          }
         }
-      } else {
-        if (options.testDirectory != null) {
-          // train on the training set and evaluate on the test set
-          List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
-          params.stats = evaluation.trainAndTest(trainFiles, testFiles);
-        } else {
-          // run n-fold cross-validation on the training set
-          List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
-          params.stats = AnnotationStatistics.addAll(foldStats);
+        scoredParams.put(params, params.stats.f1());
+      }
+
+      // print parameters sorted by F1
+      List<ParameterSettings> list = new ArrayList<ParameterSettings>(scoredParams.keySet());
+      Function<ParameterSettings, Double> getCount = Functions.forMap(scoredParams);
+      Collections.sort(list, Ordering.natural().onResultOf(getCount));
+
+      // print performance of each set of parameters
+      if (list.size() > 1) {
+        System.err.println(relationCategory + ": summary:");
+        for (ParameterSettings params : list) {
+          System.err.printf(
+              "F1=%.3f P=%.3f R=%.3f %s\n",
+              params.stats.f1(),
+              params.stats.precision(),
+              params.stats.recall(),
+              params);
         }
+        System.err.println();
       }
-      scoredParams.put(params, params.stats.f1());
-    }
 
-    // print parameters sorted by F1
-    List<ParameterSettings> list = new ArrayList<ParameterSettings>(scoredParams.keySet());
-    Function<ParameterSettings, Double> getCount = Functions.forMap(scoredParams);
-    Collections.sort(list, Ordering.natural().onResultOf(getCount));
-
-    // print performance of each set of parameters
-    if (list.size() > 1) {
-      System.err.println("Summary:");
-      for (ParameterSettings params : list) {
-        System.err.printf(
-            "F1=%.3f P=%.3f R=%.3f %s\n",
-            params.stats.f1(),
-            params.stats.precision(),
-            params.stats.recall(),
-            params);
+      // print overall best model
+      if (!list.isEmpty()) {
+        ParameterSettings lastParams = list.get(list.size() - 1);
+        System.err.println(relationCategory + ": best model:");
+        System.err.print(lastParams.stats);
+        System.err.println(lastParams);
+        System.err.println(lastParams.stats.confusions());
+        System.err.println();
+        System.err.println(lastParams.stats.confusions().toHTML());
       }
-      System.err.println();
-    }
-
-    // print overall best model
-    if (!list.isEmpty()) {
-      ParameterSettings lastParams = list.get(list.size() - 1);
-      System.err.println("Best model:");
-      System.err.print(lastParams.stats);
-      System.err.println(lastParams);
-      System.err.println(lastParams.stats.confusions());
-      System.err.println();
-      System.err.println(lastParams.stats.confusions().toHTML());
     }
   }
 
@@ -255,18 +259,22 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
    */
   public RelationExtractorEvaluation(
       File baseDirectory,
+      String relationCategory,
       Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass,
       Class<? extends DataWriter<String>> dataWriterClass,
       Object[] additionalParameters,
       String[] trainingArguments,
       boolean testOnCTakes) {
     super(baseDirectory);
+    this.relationCategory = relationCategory;
     this.classifierAnnotatorClass = classifierAnnotatorClass;
     this.dataWriterClass = dataWriterClass;
     this.additionalParameters = additionalParameters;
     this.trainingArguments = trainingArguments;
     this.testOnCTakes = testOnCTakes;
   }
+  
+  private String relationCategory;
 
   private Class<? extends RelationExtractorAnnotator> classifierAnnotatorClass;
 
@@ -297,6 +305,12 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   @Override
   public void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
+    // remove all but the relation of interest from the gold annotations
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(
+        RemoveOtherRelations.class,
+        RemoveOtherRelations.PARAM_RELATION_CATEGORY,
+        this.relationCategory),
+        CAS.NAME_DEFAULT_SOFA, GOLD_VIEW_NAME);
     // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
     // add the relation extractor, configured for training mode
@@ -327,6 +341,12 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
+    // remove all but the relation of interest from the gold annotations
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(
+        RemoveOtherRelations.class,
+        RemoveOtherRelations.PARAM_RELATION_CATEGORY,
+        this.relationCategory),
+        CAS.NAME_DEFAULT_SOFA, GOLD_VIEW_NAME);
     if (this.testOnCTakes) {
       // add the modifier extractor
       File file = new File("desc/analysis_engine/ModifierExtractorAnnotator.xml");
@@ -386,7 +406,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           getOutcome);
     }
 
-    System.err.println(directory.getName() + ":");
+    System.err.printf("%s: %s:\n", this.relationCategory, directory.getName());
     System.err.print(stats);
     System.err.println(stats.confusions());
     System.err.println();
@@ -660,6 +680,25 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
 
     private static String format(IdentifiedAnnotation a) {
       return a == null ? null : String.format("\"%s\"(type=%d)", a.getCoveredText(), a.getTypeID());
+    }
+  }
+  
+  public static class RemoveOtherRelations extends JCasAnnotator_ImplBase {
+    
+    public static final String PARAM_RELATION_CATEGORY = "RelationCategory";
+    @ConfigurationParameter(name = PARAM_RELATION_CATEGORY)
+    private String relationCategory;
+    
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      List<BinaryTextRelation> relations = new ArrayList<BinaryTextRelation>();
+      relations.addAll(JCasUtil.select(jCas, BinaryTextRelation.class));
+      for (BinaryTextRelation relation : relations) {
+        if (!relation.getCategory().equals(this.relationCategory)) {
+          relation.removeFromIndexes();
+        }
+      }
     }
   }
 }

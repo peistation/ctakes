@@ -95,6 +95,7 @@ public class RelationExtractorTrain {
   public static AnalysisEngineDescription trainRelationExtractor(
 		  File modelsDir, 
 		  List<File> trainFiles,
+		  String relationCategory,
 		  Class<? extends RelationExtractorAnnotator> annotatorClass, 
 		  Class<? extends DataWriter<String>> dataWriterClass,
 		  ParameterSettings params) throws Exception {
@@ -119,6 +120,7 @@ public class RelationExtractorTrain {
 	  
 	    RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
 	    		modelsDir,
+	    		relationCategory,
 	    		annotatorClass,
 	    		dataWriterClass,
 	    		additionalParameters,
@@ -167,9 +169,9 @@ public class RelationExtractorTrain {
     // Train and write models
     AnalysisEngineDescription modifierExtractorDesc = trainModifierExtractor(modelsDirModExtractor, trainFiles);
     writeDesc(options.descDir, "ModifierExtractorAnnotator", modifierExtractorDesc);
-    AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterClass, degreeOfParams);
+    AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, "degree_of", DegreeOfRelationExtractorAnnotator.class, dataWriterClass, degreeOfParams);
     writeDesc(options.descDir, "DegreeOfRelationExtractorAnnotator", degreeOfRelationExtractorDesc);
-    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterClass, emPairParams);
+    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, "location_of", EntityMentionPairRelationExtractorAnnotator.class, dataWriterClass, emPairParams);
     writeDesc(options.descDir, "EntityMentionPairRelationExtractorAnnotator", emPairRelationExtractorDesc);
 
     // create the aggregate description
