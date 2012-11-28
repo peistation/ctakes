@@ -66,6 +66,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
@@ -118,6 +119,10 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
 
   public static final String GOLD_VIEW_NAME = "GoldView";
   
+  private static final ParameterSettings BEST_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 1.0f, "linear", 0.1, 1.0);
+  
+  private static final ParameterSettings BEST_NON_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 0.5f, "linear", 0.1, 1.0);
+  
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.parseOptions(args);
@@ -144,9 +149,40 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
 
       // define the set of possible training parameters
-      List<ParameterSettings> possibleParams = isDegreeOf
-          ? getDegreeOfParameterSpace(options.gridSearch)
-          : getEMPairParameterSpace(options.gridSearch);
+      List<ParameterSettings> possibleParams = Lists.newArrayList();
+      if (options.gridSearch) {
+        boolean[] classifyBothDirectionsOptions = isDegreeOf
+            ? new boolean[] { false }
+            : new boolean[] { false, true };
+        for (boolean classifyBothDirections : classifyBothDirectionsOptions) {
+          for (float probabilityOfKeepingANegativeExample : new float[] { 0.25f, 0.5f, 1.0f }) {
+            // linear kernels
+            for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1 }) {
+              possibleParams.add(new ParameterSettings(
+                  classifyBothDirections,
+                  probabilityOfKeepingANegativeExample,
+                  "linear",
+                  svmCost,
+                  1.0));
+            }
+            // RBF kernels
+            for (double svmCost : new double[] { 1, 10, 100 }) {
+              for (double gamma : new double[] { 0.001, 0.01, 0.1 }) {
+                possibleParams.add(new ParameterSettings(
+                  classifyBothDirections,
+                  probabilityOfKeepingANegativeExample,
+                  "radial basis function",
+                  svmCost,
+                  gamma));
+              }
+            }
+          }
+        }
+      } else if (isDegreeOf) {
+        possibleParams.add(BEST_DEGREE_OF_PARAMETERS);
+      } else {
+        possibleParams.add(BEST_NON_DEGREE_OF_PARAMETERS);
+      }
 
       // run an evaluation for each set of parameters
       Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
@@ -411,68 +447,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     System.err.println(stats.confusions());
     System.err.println();
     return stats;
-  }
-
-  /**
-   * Defines the parameter space for Entity Mention Pair Relation Extraction
-   * 
-   * @param gridSearch
-   * @return
-   */
-  private static List<ParameterSettings> getEMPairParameterSpace(boolean gridSearch) {
-    // define the grid of parameters over which we will search
-    List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
-    if (gridSearch) {
-      for (boolean classifyBothDirections : new boolean[] { false, true }) {
-        for (float probabilityOfKeepingANegativeExample : new float[] {
-            0.1f,
-            0.15f,
-            0.2f,
-            0.25f,
-            0.5f }) {
-          for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
-            // linear kernel (gamma doesn't matter)
-            possibleParams.add(new ParameterSettings(
-                classifyBothDirections,
-                probabilityOfKeepingANegativeExample,
-                "linear",
-                svmCost,
-                1.0));
-          }
-        }
-      }
-    } else {
-      possibleParams.add(new ParameterSettings(false, 0.5f, "linear", 0.05, 1.0));
-    }
-    return possibleParams;
-
-  }
-
-  /**
-   * Defines the parameter space for Degree_Of Relation Extraction
-   * 
-   * @param gridSearch
-   * @return
-   */
-  private static List<ParameterSettings> getDegreeOfParameterSpace(boolean gridSearch) {
-    // define the grid of parameters over which we will search
-    List<ParameterSettings> possibleParams = new ArrayList<ParameterSettings>();
-    if (gridSearch) {
-      for (float probabilityOfKeepingANegativeExample : new float[] { 0.5f, 1.0f }) {
-        for (double svmCost : new double[] { 0.05, 0.1, 0.5, 1, 5, 10, 50 }) {
-          // linear kernel (gamma doesn't matter)
-          possibleParams.add(new ParameterSettings(
-              false,
-              probabilityOfKeepingANegativeExample,
-              "linear",
-              svmCost,
-              1.0));
-        }
-      }
-    } else {
-      possibleParams.add(new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0));
-    }
-    return possibleParams;
   }
 
   /**
