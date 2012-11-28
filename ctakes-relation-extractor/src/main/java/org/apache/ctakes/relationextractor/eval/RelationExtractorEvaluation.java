@@ -388,6 +388,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       File file = new File("desc/analysis_engine/ModifierExtractorAnnotator.xml");
       XMLInputSource source = new XMLInputSource(file);
       builder.add(UIMAFramework.getXMLParser().parseAnalysisEngineDescription(source));
+      // remove extraneous entity mentions
+      builder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveSmallerEntityMentions.class));
       // replace entity mentions in the gold view with the cTAKES entity mentions 
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
     } else {
@@ -651,10 +653,10 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         }
       }
     }
-
-    private static String format(IdentifiedAnnotation a) {
-      return a == null ? null : String.format("\"%s\"(type=%d)", a.getCoveredText(), a.getTypeID());
-    }
+  }
+  
+  static String format(IdentifiedAnnotation a) {
+    return a == null ? null : String.format("\"%s\"(type=%d)", a.getCoveredText(), a.getTypeID());
   }
   
   public static class RemoveOtherRelations extends JCasAnnotator_ImplBase {
@@ -671,6 +673,32 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       for (BinaryTextRelation relation : relations) {
         if (!relation.getCategory().equals(this.relationCategory)) {
           relation.removeFromIndexes();
+        }
+      }
+    }
+  }
+  
+  public static class RemoveSmallerEntityMentions extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      Collection<EntityMention> mentions = JCasUtil.select(jCas, EntityMention.class);
+      for (EntityMention mention : Lists.newArrayList(mentions)) {
+        int begin = mention.getBegin();
+        int end = mention.getEnd();
+        int typeID = mention.getTypeID();
+        List<EntityMention> subMentions = JCasUtil.selectCovered(jCas, EntityMention.class, mention);
+        for (EntityMention subMention : subMentions) {
+          if (subMention.getBegin() > begin || subMention.getEnd() < end) {
+            if (subMention.getTypeID() == typeID) {
+              String message = String.format(
+                  "removed %s inside %s",
+                  format(subMention),
+                  format(mention));
+              this.getContext().getLogger().log(Level.WARNING, message);
+              subMention.removeFromIndexes();
+            }
+          }
         }
       }
     }
