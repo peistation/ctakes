@@ -21,6 +21,7 @@ package org.apache.ctakes.constituency.parser.util;
 import opennlp.tools.parser.Parse;
 
 
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.utils.tree.SimpleTree;
@@ -104,27 +105,57 @@ public class TreeUtils {
 //		return same;
 //	}
 	
+	public static boolean containsIgnoreCase(SimpleTree node, SimpleTree frag){
+		return contains(node, frag, true);
+	}
+
 	public static boolean contains(SimpleTree node, SimpleTree frag){
-		if(fragmentMatch(node,frag)) return true;
-		
+		return contains(node, frag, false);
+	}
+
+	public static boolean contains(SimpleTree node, SimpleTree frag, boolean ignoreCase){
+		if(fragmentMatch(node,frag, ignoreCase)) return true;
+
 		for(int i = 0; i < node.children.size(); i++){
-			if(contains(node.children.get(i), frag)) return true;
+			if(contains(node.children.get(i), frag, ignoreCase)) return true;
 		}
 		return false;
 	}
 
-	private static boolean fragmentMatch(SimpleTree node, SimpleTree frag){
+	private static boolean fragmentMatch(SimpleTree node, SimpleTree frag, boolean ignoreCase){
 		boolean same = false;
-		if(node.cat.equals(frag.cat) && (frag.children.size() == 0 || node.children.size() == frag.children.size())){
-			same = true;
-			for(int i = 0; i < frag.children.size(); i++){
-				if(!fragmentMatch(node.children.get(i), frag.children.get(i))){
-					same = false;
-					break;
+		if((ignoreCase && node.cat.equalsIgnoreCase(frag.cat)) || (!ignoreCase && node.cat.equals(frag.cat))){
+			if((frag.children.size() == 0 || node.children.size() == frag.children.size())){
+
+				same = true;
+				for(int i = 0; i < frag.children.size(); i++){
+					if(!fragmentMatch(node.children.get(i), frag.children.get(i), ignoreCase)){
+						same = false;
+						break;
+					}
 				}
 			}
 		}
 		return same;
+	}
+
+	private static int getHighestIndexTerm(TreebankNode inTree) {
+		if(inTree instanceof TerminalTreebankNode){
+			return ((TerminalTreebankNode) inTree).getIndex();
+		}else{
+			return getHighestIndexTerm(inTree.getChildren(inTree.getChildren().size()-1));
+		}
+	}
+
+	public static TopTreebankNode getTopNode(TreebankNode inTree) {
+		TreebankNode cur = inTree;
+		TopTreebankNode top = null;
+		
+		while(!(cur instanceof TopTreebankNode)){
+			cur = cur.getParent();
+		}
+		top = (TopTreebankNode) cur;
+		return top;
 	}
 }
 
