@@ -105,9 +105,7 @@ public class RelationExtractorTrain {
 			  RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
 			  params.probabilityOfKeepingANegativeExample,
         EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-			  params.classifyBothDirections,
-			  RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-			  false };
+			  params.classifyBothDirections };
   
 	  // define arguments to be passed to the classifier
 	  String[] trainingArguments = new String[] {
@@ -125,6 +123,7 @@ public class RelationExtractorTrain {
 	    		dataWriterClass,
 	    		additionalParameters,
 	    		trainingArguments,
+	    		false,
 	    		false);
 	    
 	    CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);

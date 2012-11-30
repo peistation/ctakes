@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -67,12 +68,13 @@ import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.HashableArguments;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
@@ -114,6 +116,11 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         name = "--test-on-ctakes",
         usage = "evaluate test performance on ctakes entities, instead of gold standard entities")
     public boolean testOnCTakes = false;
+
+    @Option(
+        name = "--print-errors",
+        usage = "print relations that were incorrectly predicted")
+    public boolean printErrors = false;
 
   }
 
@@ -195,9 +202,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
             params.probabilityOfKeepingANegativeExample,
             EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-            params.classifyBothDirections,
-            RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-            false };
+            params.classifyBothDirections };
 
         // define arguments to be passed to the classifier
         String[] trainingArguments = new String[] {
@@ -216,7 +221,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             dataWriterClass,
             additionalParameters,
             trainingArguments,
-            options.testOnCTakes);
+            options.testOnCTakes,
+            options.printErrors);
 
         if (options.devDirectory != null) {
           if (options.testDirectory != null) {
@@ -300,7 +306,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Class<? extends DataWriter<String>> dataWriterClass,
       Object[] additionalParameters,
       String[] trainingArguments,
-      boolean testOnCTakes) {
+      boolean testOnCTakes,
+      boolean printErrors) {
     super(baseDirectory);
     this.relationCategory = relationCategory;
     this.classifierAnnotatorClass = classifierAnnotatorClass;
@@ -308,6 +315,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     this.additionalParameters = additionalParameters;
     this.trainingArguments = trainingArguments;
     this.testOnCTakes = testOnCTakes;
+    this.printErrors = printErrors;
   }
   
   private String relationCategory;
@@ -321,6 +329,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   private String[] trainingArguments;
   
   private boolean testOnCTakes;
+  
+  private boolean printErrors;
 
   @Override
   public CollectionReader getCollectionReader(List<File> items) throws Exception {
@@ -442,6 +452,32 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           systemBinaryTextRelations,
           getSpan,
           getOutcome);
+      
+      // print errors if requested
+      if (this.printErrors) {
+        Map<HashableArguments, BinaryTextRelation> goldMap = Maps.newHashMap();
+        for (BinaryTextRelation relation : goldBinaryTextRelations) {
+          goldMap.put(new HashableArguments(relation), relation);
+        }
+        Map<HashableArguments, BinaryTextRelation> systemMap = Maps.newHashMap();
+        for (BinaryTextRelation relation : systemBinaryTextRelations) {
+          systemMap.put(new HashableArguments(relation), relation);
+        }
+        Set<HashableArguments> all = Sets.union(goldMap.keySet(), systemMap.keySet());
+        List<HashableArguments> sorted = Lists.newArrayList(all);
+        Collections.sort(sorted);
+        for (HashableArguments key : sorted) {
+          BinaryTextRelation goldRelation = goldMap.get(key);
+          BinaryTextRelation systemRelation = systemMap.get(key);
+          if (goldRelation == null) {
+            System.out.println("System added:         " + formatRelation(systemRelation));
+          } else if (systemRelation == null) {
+            System.out.println("System dropped:       " + formatRelation(systemRelation));
+          } else if (!systemRelation.getCategory().equals(goldRelation.getCategory())) {
+            System.out.println("System misclassified: " + formatRelation(systemRelation));
+          }
+        }
+      }
     }
 
     System.err.printf("%s: %s:\n", this.relationCategory, directory.getName());
@@ -449,6 +485,22 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     System.err.println(stats.confusions());
     System.err.println();
     return stats;
+  }
+  
+  private static String formatRelation(BinaryTextRelation relation) {
+    String text = relation.getCAS().getDocumentText();
+    Annotation arg1 = relation.getArg1().getArgument();
+    Annotation arg2 = relation.getArg2().getArgument();
+    int begin = Math.min(arg1.getBegin(), arg2.getBegin());
+    int end = Math.max(arg1.getBegin(), arg2.getBegin());
+    begin = Math.max(0, begin - 50);
+    end = Math.min(text.length(), end + 50);
+    return String.format(
+        "%s(%s, %s) in ...%s...",
+        relation.getCategory(),
+        arg1.getCoveredText(),
+        arg2.getCoveredText(),
+        text.substring(begin, end).replaceAll("[\r\n]", " "));
   }
 
   /**
@@ -700,6 +752,91 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             }
           }
         }
+      }
+    }
+  }
+  
+  /**
+   * This class is useful for mapping the spans of relation arguments to the relation's category.
+   */
+  public static class HashableArguments implements Comparable<HashableArguments> {
+
+    protected int arg1begin;
+
+    protected int arg1end;
+
+    protected int arg2begin;
+
+    protected int arg2end;
+
+    public HashableArguments(int arg1begin, int arg1end, int arg2begin, int arg2end) {
+      this.arg1begin = arg1begin;
+      this.arg1end = arg1end;
+      this.arg2begin = arg2begin;
+      this.arg2end = arg2end;
+    }
+
+    public HashableArguments(Annotation arg1, Annotation arg2) {
+      this(arg1.getBegin(), arg1.getEnd(), arg2.getBegin(), arg2.getEnd());
+    }
+
+    public HashableArguments(BinaryTextRelation relation) {
+      this(getArg1(relation), getArg2(relation));
+    }
+
+    // HACK: arg1 is not always arg1 because of bugs in the reader
+    private static Annotation getArg1(BinaryTextRelation rel) {
+      RelationArgument arg1 = rel.getArg1();
+      return arg1.getRole().equals("Argument") ? arg1.getArgument() : rel.getArg2().getArgument();
+    }
+
+    // HACK: arg2 is not always arg2 because of bugs in the reader
+    private static Annotation getArg2(BinaryTextRelation rel) {
+      RelationArgument arg2 = rel.getArg2();
+      return arg2.getRole().equals("Related_to")
+          ? arg2.getArgument()
+          : rel.getArg1().getArgument();
+    }
+
+    @Override
+    public boolean equals(Object otherObject) {
+      boolean result = false;
+      if (otherObject instanceof HashableArguments) {
+        HashableArguments other = (HashableArguments) otherObject;
+        result = (this.getClass() == other.getClass() && this.arg1begin == other.arg1begin
+            && this.arg1end == other.arg1end && this.arg2begin == other.arg2begin && this.arg2end == other.arg2end);
+      }
+      return result;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(this.arg1begin, this.arg1end, this.arg2begin, this.arg2end);
+    }
+
+    @Override
+    public String toString() {
+      return String.format(
+          "%s(%s,%s,%s,%s)",
+          this.getClass().getSimpleName(),
+          this.arg1begin,
+          this.arg1end,
+          this.arg2begin,
+          this.arg2end);
+    }
+
+    @Override
+    public int compareTo(HashableArguments that) {
+      int thisBegin = Math.min(this.arg1begin, this.arg2begin);
+      int thatBegin = Math.min(that.arg1begin, that.arg2begin);
+      if (thisBegin < thatBegin) {
+        return -1;
+      } else if (thisBegin > thatBegin) {
+        return +1;
+      } else if (this.equals(that)) {
+        return 0;
+      } else {
+        return +1; // arbitrary choice for overlapping
       }
     }
   }
