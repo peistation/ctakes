@@ -470,11 +470,12 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           BinaryTextRelation goldRelation = goldMap.get(key);
           BinaryTextRelation systemRelation = systemMap.get(key);
           if (goldRelation == null) {
-            System.out.println("System added:         " + formatRelation(systemRelation));
+            System.out.println("System added: " + formatRelation(systemRelation));
           } else if (systemRelation == null) {
-            System.out.println("System dropped:       " + formatRelation(systemRelation));
+            System.out.println("System dropped: " + formatRelation(goldRelation));
           } else if (!systemRelation.getCategory().equals(goldRelation.getCategory())) {
-            System.out.println("System misclassified: " + formatRelation(systemRelation));
+            String label = systemRelation.getCategory();
+            System.out.printf("System labeled %s for %s\n", label, formatRelation(systemRelation));
           }
         }
       }
@@ -488,18 +489,20 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
   
   private static String formatRelation(BinaryTextRelation relation) {
-    String text = relation.getCAS().getDocumentText();
-    Annotation arg1 = relation.getArg1().getArgument();
-    Annotation arg2 = relation.getArg2().getArgument();
+    IdentifiedAnnotation arg1 = (IdentifiedAnnotation)relation.getArg1().getArgument();
+    IdentifiedAnnotation arg2 = (IdentifiedAnnotation)relation.getArg2().getArgument();
+    String text = arg1.getCAS().getDocumentText();
     int begin = Math.min(arg1.getBegin(), arg2.getBegin());
     int end = Math.max(arg1.getBegin(), arg2.getBegin());
     begin = Math.max(0, begin - 50);
     end = Math.min(text.length(), end + 50);
     return String.format(
-        "%s(%s, %s) in ...%s...",
+        "%s(%s(type=%d), %s(type=%d)) in ...%s...",
         relation.getCategory(),
         arg1.getCoveredText(),
+        arg1.getTypeID(),
         arg2.getCoveredText(),
+        arg2.getTypeID(),
         text.substring(begin, end).replaceAll("[\r\n]", " "));
   }
 
