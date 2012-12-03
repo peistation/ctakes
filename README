@@ -1,29 +1,32 @@
 
 Apache cTAKES
-===============================
-Detail documentation could found on:
+==================================
+Detail documentation can found at:
 http://incubator.apache.org/ctakes
 
 Requirements
------------
+---------------------------------------
 Java 1.6 is required to run cTAKES
 Maven 3.0.0 is required for building it
 
 Running the default pipeline in the UIMA CAS Visual Debugger
-or Collection Processing Engine
------------
+or in the Collection Processing Engine
+----------------------------------------------------------------
 Run bin/runctakesCVD/CPE.sh.bat
 Load AE (analysis engine)
 Select desc/ctakes-clinical-pipeline/desc/analysis_engine/AggregatePlaintextProcessor
-Enter note and run analysis engine.
+Enter note or other text
+Run analysis engine
+NOTE: The included example dictionary is very small. Try a sentence such as: 
+Patient took aspirin for knee pain
 
-Notes
------------
-If you plan to use the UMLS Resources,
-Download and unpack the umls resources and add them to the resources directory
+Using UMLS resources
+----------------------------------------------------------------
+If you plan to use the UMLS Resources:
+Download and unpack the UMLS resources and add them to the resources directory
 from http://sourceforge.net/projects/ctakesresources/files/
 
 Also set/export env variables
 export ctakes.umlsuser=[username], ctakes.umlspw=[password]
-or add the system properties to the java args
+Or add the system properties to the java args
 -Dctakes.umlsuser=[username] -Dctakes.umlspw=[password]
