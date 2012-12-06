@@ -20,6 +20,7 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -31,12 +32,17 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.apache.ctakes.temporal.ae.EventAnnotator;
+import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.transform.InstanceStream;
+import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.util.ViewURIUtil;
 import org.uimafit.factory.AggregateBuilder;
@@ -86,6 +92,25 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
     aggregateBuilder.add(this.getPreprocessorTrainDescription());
     aggregateBuilder.add(this.getDataWriterDescription(directory));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
+    
+    if( EventAnnotator.featureTrim > 0 ){
+    	//Extracting features and writing instances
+        Iterable<Instance<String>> instances = InstanceStream.loadFromDirectory(directory);
+        // Collect MinMax stats for feature normalization
+        URI chi2NbFsURI = EventAnnotator.createNbFSURI(directory);
+        Chi2NeighborFSExtractor<String> chi2NbFsExtractor = new Chi2NeighborFSExtractor<String>(EventAnnotator.FS_NEIGHBOR_EXTRACTOR_KEY, EventAnnotator.featureTrim);
+        chi2NbFsExtractor.train(instances);
+        chi2NbFsExtractor.save(chi2NbFsURI);
+        //now write in the libsvm format
+        this.logger.info("Write out model training data");
+        LIBSVMStringOutcomeDataWriter dataWriter = new LIBSVMStringOutcomeDataWriter(directory);
+        for (Instance<String> instance : instances) {
+          instance = chi2NbFsExtractor.transform(instance);
+          dataWriter.write(instance);
+        }
+        dataWriter.finish();
+    }
+    
     this.trainAndPackage(directory);
   }
 

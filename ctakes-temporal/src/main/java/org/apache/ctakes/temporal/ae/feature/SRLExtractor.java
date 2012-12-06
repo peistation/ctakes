@@ -19,6 +19,7 @@
 package org.apache.ctakes.temporal.ae.feature;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
@@ -38,23 +39,23 @@ public class SRLExtractor implements SimpleFeatureExtractor {
   public List<Feature> extract(JCas jCas, Annotation focusAnnotation)
       throws CleartkExtractorException {
     // and cache the results so that we only do this once per CAS
-	//String jCasText = jCas.getDocumentText();
+	String jCasText = jCas.getDocumentText();
 	String roleFeat = "SemanticRole";
-	//String roleVerbFeat = "RoleAndVerb";
-	//String verb = "noVerb";
+	String roleVerbFeat = "RoleAndVerb";
+	String verb = "noVerb";
     Feature role = new Feature(roleFeat, "NoRole");
-    //Feature roleVerb = new Feature(roleVerbFeat, "NoRole"+verb);
+    Feature roleVerb = new Feature(roleVerbFeat, "NoRole"+verb);
     ArrayList<Feature> features = new ArrayList<Feature>();
     for (Predicate predicate : JCasUtil.select(jCas, Predicate.class)) {
 
       for (BaseToken token : JCasUtil.selectCovered(jCas, BaseToken.class, predicate)) {
         if (token.equals(focusAnnotation)) {// token.getBegin()==focusAnnotation.getBegin()){
           role = new Feature(roleFeat,"Predicate");
-          //verb = jCasText.substring(predicate.getBegin(), predicate.getEnd());
-          //roleVerb = new Feature(roleVerbFeat, "Predicate::"+verb);
+          verb = jCasText.substring(predicate.getBegin(), predicate.getEnd());
+          roleVerb = new Feature(roleVerbFeat, "Predicate::"+verb);
           
           features.add(role);
-          //features.add(roleVerb);
+          features.add(roleVerb);
           return features;
         }
       }
@@ -67,13 +68,13 @@ public class SRLExtractor implements SimpleFeatureExtractor {
         for (BaseToken token : JCasUtil.selectCovered(jCas, BaseToken.class, arg)) {
           if (token.equals(focusAnnotation)) {// token.getBegin()==focusAnnotation.getBegin()){
             String label = arg.getLabel();
-            //Predicate currentPred = relation.getPredicate();
-            //verb = jCasText.substring(currentPred.getBegin(), currentPred.getEnd());
+            Predicate currentPred = relation.getPredicate();
+            verb = jCasText.substring(currentPred.getBegin(), currentPred.getEnd());
             role = new Feature(roleFeat, label);
-            //roleVerb = new Feature(roleVerbFeat, label+"::"+verb);
+            roleVerb = new Feature(roleVerbFeat, label+"::"+verb);
             
             features.add(role);
-            //features.add(roleVerb);
+            features.add(roleVerb);
             return features;
           }
         }
@@ -81,7 +82,7 @@ public class SRLExtractor implements SimpleFeatureExtractor {
     }
 
     features.add(role);
-    //features.add(roleVerb);
+    features.add(roleVerb);
     return features;
   }
 

@@ -70,7 +70,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   public enum AnnotatorType {
     PART_OF_SPEECH_TAGS, UMLS_NAMED_ENTITIES, LEXICAL_VARIANTS, DEPENDENCIES, SEMANTIC_ROLES
-  }
+  };
 
   protected final String GOLD_VIEW_NAME = "GoldView";
 
@@ -84,6 +84,12 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
     @Option(longName = "patients")
     public CommandLine.IntegerRanges getPatients();
+    
+    @Option(longName = "downratio")
+	public float getDownSampleRatio();
+
+    @Option(longName = "featureSelect")
+    public float getFeatureSelect(); //get feature selection cut off threshold is it is > 0. apply no FS if featureSelect == 0 
   }
 
   protected File rawTextDirectory;
@@ -112,9 +118,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   }
 
   @Override
-  protected CollectionReader getCollectionReader(List<Integer> selectedPatientSets) throws Exception {
+  protected CollectionReader getCollectionReader(List<Integer> patientSets) throws Exception {
     List<File> files = new ArrayList<File>();
-    for (Integer set : selectedPatientSets) {
+    for (Integer set : patientSets) {
       File setTextDirectory = new File(this.rawTextDirectory, "doc" + set);
       for (File file : setTextDirectory.listFiles()) {
         files.add(file);
@@ -137,7 +143,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   private static enum PipelineType {
     TRAIN, TEST
-  }
+  };
 
   private AnalysisEngineDescription getPreprocessorDescription(PipelineType pipelineType)
       throws Exception {
@@ -247,13 +253,13 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
       }
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           UmlsDictionaryLookupAnnotator.class,
-          "ctakes.umlsaddr",
-          "https://uts-ws.nlm.nih.gov/restful/isValidctakes.umlsuser",
-          "ctakes.umlsvendor",
+          "UMLSAddr",
+          "https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser",
+          "UMLSVendor",
           "NLM-6515182895",
-          "ctakes.umlsuser",
+          "UMLSUser",
           umlsUser,
-          "ctakes.umlspw",
+          "UMLSPW",
           umlsPassword,
           "LookupDescriptor",
           ExternalResourceFactory.createExternalResourceDescription(

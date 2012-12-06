@@ -8,11 +8,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor.Chi2Evaluator.ComputeFeatureScore;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -106,6 +109,12 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 
 			 public double Chi2Cal(String featureName) {
 			      // notation index of 0 means false, 1 mean true
+				  //Contingency Table:
+				  //    | class1 | class2 | class3 | sum
+				  //posi| 		 |        |        | posiFeatCount
+				  //nega|        |        |        | negaFeatCount
+				  //    | outcnt1| outcnt2| outcnt3| n
+				  
 				  int numOfClass = this.classCounts.elementSet().size();
 			      int[] posiOutcomeCounts = new int[numOfClass];
 			      int[] outcomeCounts = new int[numOfClass];
@@ -129,16 +138,28 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 			    	  return chi2val;			    	  
 			      }
 			      
+			      boolean yates = true;
 			      for (int lbl =0; lbl < numOfClass; lbl++){
-			    	  //for positive part of feature:
-			    	  double expected = outcomeCounts[lbl]*posiFeatCount/(double)n;
-			    	  if (expected > 0)
-			    		  chi2val += Math.pow(posiOutcomeCounts[lbl]-expected,2)/expected;
-			    	  //for negative part of feature:
-			    	  expected = outcomeCounts[lbl]*negaFeatCount/(double)n;
-			    	  double observ = outcomeCounts[lbl]-posiOutcomeCounts[lbl];
-			    	  if (expected > 0)
-			    		  chi2val += Math.pow(observ-expected,2)/expected;
+			    	  	//for positive part of feature:
+				    	  double expected = (outcomeCounts[lbl]/(double)n)*(posiFeatCount);
+				    	  if (expected > 0){
+				    		  double diff = Math.abs(posiOutcomeCounts[lbl]-expected);
+				    		  if (yates){ // apply Yate's correction
+				    			  diff -= 0.5;
+				    		  }
+				    		  if (diff>0) chi2val += Math.pow(diff,2)/expected;
+				    	  }
+				    		  
+				    	  //for negative part of feature:
+				    	  expected = (outcomeCounts[lbl]/(double)n)*(negaFeatCount);
+				    	  double observ = outcomeCounts[lbl]-posiOutcomeCounts[lbl];
+				    	  if (expected > 0){
+				    		  double diff = Math.abs(observ-expected);
+				    		  if (yates){ // apply Yate's correction
+				    			  diff -= 0.5;
+				    		  }
+				    		  if (diff>0) chi2val += Math.pow(diff,2)/expected;
+				    	  }
 			      }
 
 			      return chi2val;
@@ -210,6 +231,12 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 		this.annotationClass = annotationClass;
 		this.init(featureExtractor, thres);
 		this.contexts = contexts;
+	}
+
+	public Chi2NeighborFSExtractor(String fsNeighborExtractorKey, Float thres) {
+		super(fsNeighborExtractorKey);
+		this.isTrained=false;
+		this.chi2Threshold = thres;
 	}
 
 	private void init(CombinedExtractor featureExtractor, double thres) {
@@ -299,6 +326,8 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 	          for (Feature untransformedFeature : ((TransformableFeature) feature).getFeatures()) {
 	        	  chi2Evaluator.update(this.nameFeature(untransformedFeature), outcome, 1);
 	          }
+	        }else{
+	        	chi2Evaluator.update(this.nameFeature(feature), outcome, 1);
 	        }
 	      }
 	    }
@@ -317,11 +346,31 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 	    	}
 	    }
 	    
+//	    this.selectedFeatures = new ArrayList<String>();
+//	    for (String feature : featureNames){
+//	    	this.selectedFeatures.add(feature);
+//	    }
+//	    
 	    //step4:get selected features
 	    this.selectedFeatures = Ordering.natural().onResultOf(
         this.chi2Evaluator.getScoreFunction()).reverse().immutableSortedCopy(
         featureNames);
-		
+	    
+//	    Iterator<String> iter = featureNames.iterator();
+//	    ComputeFeatureScore<OUTCOME_T> computeScore = this.chi2Evaluator.getScoreFunction();
+//	    this.selectedFeatures = new ArrayList<String>();
+//	    while (iter.hasNext()){
+//	    	String feat = iter.next();
+//	    	Double chi2 = computeScore.apply(feat);
+//	    	if(chi2 > this.chi2Threshold){
+//	    		this.selectedFeatures.add(feat);
+//	    	}
+//	    }
+//		//order the list 
+//	    this.selectedFeatures = Ordering.natural().onResultOf(
+//	          this.chi2Evaluator.getScoreFunction()).reverse().immutableSortedCopy(
+//	        		  this.selectedFeatures);
+	    
 		this.isTrained = true;
 		
 	}
@@ -370,6 +419,53 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
 	    // FIXME: creating a new annotation may leak memory - is there a better approach?
 	    Annotation focusAnnotation = new Annotation(jCas, begin, end);
 	    return this.extract(jCas, focusAnnotation, new NoBounds());
+	}
+
+	public Collection<? extends Feature> extract(int[] entityTypeIDs, Map<Integer, List<String>> entityTagsByType, int tokenIndex, int window) {
+		List<Feature> extracted = new ArrayList<Feature>();
+	    List<Feature> result = new ArrayList<Feature>();
+	    for (int typeID : entityTypeIDs) {
+            List<String> tokenEntityTags = entityTagsByType.get(typeID);
+            int begin = Math.max(tokenIndex - window, 0);
+            int end = Math.min(tokenIndex + window, tokenEntityTags.size());
+            for (int i = begin; i < end; ++i) {
+              String name = String.format("EntityTag_%d_%d", typeID, i - begin);
+              extracted.add(new Feature(name, tokenEntityTags.get(i)));
+            }
+          }
+		if (this.isTrained){
+	    	// Filter out selected features
+		    result.addAll(Collections2.filter(extracted, this));
+	    }else{
+	    	// We haven't trained this extractor yet, so just mark the existing features
+		    // for future modification, by creating one uber-container feature
+		    result.add(new TransformableFeature(this.name, extracted));
+	    }
+	    
+	    return result;
+	}
+
+	public Collection<? extends Feature> extract(int nPreviousClassifications,
+			int tokenIndex, List<String> outcomes) {
+		List<Feature> extracted = new ArrayList<Feature>();
+	    List<Feature> result = new ArrayList<Feature>();
+		// features from previous classifications
+        for (int i = nPreviousClassifications; i > 0; --i) {
+          int index = tokenIndex - i;
+          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
+          extracted.add(new Feature("PreviousOutcome_" + i, previousOutcome));
+        }
+        
+        if (this.isTrained){
+	    	// Filter out selected features
+		    result.addAll(Collections2.filter(extracted, this));
+	    }else{
+	    	// We haven't trained this extractor yet, so just mark the existing features
+		    // for future modification, by creating one uber-container feature
+		    result.add(new TransformableFeature(this.name, extracted));
+	    }
+	    
+	    return result;
 	}
 
 }

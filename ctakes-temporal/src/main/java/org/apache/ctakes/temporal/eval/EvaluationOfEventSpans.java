@@ -32,6 +32,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.feature.transform.InstanceDataWriter;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
@@ -47,7 +48,9 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         new File("target/eval"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
+        options.getPatients().getList(),
+        options.getDownSampleRatio(),
+    	options.getFeatureSelect()); //control apply feature selection or not
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
     List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
     for (AnnotationStatistics<String> stats : foldStats) {
@@ -56,30 +59,47 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
     System.err.println("OVERALL");
     System.err.println(AnnotationStatistics.addAll(foldStats));
   }
+  
+  private float downratio;
+  private float featureTrim;
 
   public EvaluationOfEventSpans(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
+      List<Integer> patientSets,
+      float downratio, float featureSelect) {
     super(
         baseDirectory,
         rawTextDirectory,
         knowtatorXMLDirectory,
         patientSets,
-        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
-    // AnnotatorType.UMLS_NAMED_ENTITIES,
-    // AnnotatorType.LEXICAL_VARIANTS,
-    // AnnotatorType.DEPENDENCIES,
-    // AnnotatorType.SEMANTIC_ROLES));
+        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS,
+        //AnnotatorType.UMLS_NAMED_ENTITIES,
+//        AnnotatorType.LEXICAL_VARIANTS,
+        AnnotatorType.DEPENDENCIES,
+        AnnotatorType.SEMANTIC_ROLES));
+    this.downratio = downratio;
+    this.featureTrim = featureSelect;
   }
 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-    return EventAnnotator.createDataWriterDescription(
-        LIBSVMStringOutcomeDataWriter.class,
-        directory);
+	if(this.featureTrim > 0){
+		return EventAnnotator.createDataWriterDescription(
+		    	InstanceDataWriter.class.getName(),
+		        directory,
+		        this.downratio,
+		        this.featureTrim);
+	}
+	return EventAnnotator.createDataWriterDescription(
+	        LIBSVMStringOutcomeDataWriter.class.getName(),
+	        directory,
+	        this.downratio,
+	        this.featureTrim);
+	
+    
   }
 
   @Override
