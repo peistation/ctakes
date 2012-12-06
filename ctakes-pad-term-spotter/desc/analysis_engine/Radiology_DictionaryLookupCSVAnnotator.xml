@@ -32,7 +32,7 @@
 <configurationParameterSettings/>
 <typeSystemDescription>
 <imports>
-<import location="../type_system/PADSiteAndTerm.xml"/>
+<import name="org.apache.ctakes.padtermspotter.types.Typesystem"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
