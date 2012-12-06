@@ -86,7 +86,7 @@ This param is optional.  If not specified, then the classification feature of th
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../type_system/SmokingProductionTypeSystem.xml"/>
+		<import name="org.apache.ctakes.smokingstatus.types.Typesystem"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
