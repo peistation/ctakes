@@ -40,7 +40,7 @@
           <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.NamedEntity</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.lookup.type.NamedEntity</type>
         </outputs>
         <languagesSupported/>
       </capability>

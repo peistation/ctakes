@@ -85,6 +85,14 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/../ctakes-core/lib/OpenAI_FSM.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-chunker</artifactId>
+		</dependency>
+				<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-lvg</artifactId>
+		</dependency>
 	</dependencies>
 	
 	<build>

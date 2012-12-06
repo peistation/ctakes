@@ -22,7 +22,7 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>edu.mayo.bmi.uima.ctx.ae.ContextAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.ctx.ae.ContextAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>NegationAnnotator</name>
 <description>Changes in 1.1:
@@ -121,11 +121,11 @@
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.common.types.NamedEntityAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.common.types.NamedEntityAnnotation</type>
 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">edu.mayo.bmi.uima.ctx.types.ContextAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.ctx.types.ContextAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>
@@ -139,7 +139,7 @@
 <externalResourceDependency>
 <key>BoundaryData</key>
 <description>the file resource handle that will be used in the annotator</description>
-<interfaceName>edu.mayo.bmi.uima.common.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.common.resource.FileResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
@@ -151,7 +151,7 @@
 <fileResourceSpecifier>
 <fileUrl>file:org/apache/ctakes/drugner/cni/negation/boundaryData.txt</fileUrl>
 </fileResourceSpecifier>
-<implementationName>edu.mayo.bmi.uima.common.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.common.resource.FileResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>

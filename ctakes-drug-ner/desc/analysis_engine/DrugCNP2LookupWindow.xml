@@ -1,24 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-
--->
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
@@ -67,7 +47,7 @@
       <nameValuePair>
         <name>destDrugObjClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation</string>
+          <string>org.apache.ctakes.typesystem.type.textspan.DrugLookupWindowAnnotation</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -93,16 +73,16 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../type_system/NERTypeSystem.xml"/>
+        <import name="org.apache.ctakes.drugner.types.Typesystem"/>
       </imports>
       <types>
         <typeDescription>
-          <name>edu.mayo.bmi.uima.common.types.CopySrcAnnotation</name>
+          <name>org.apache.ctakes.common.types.CopySrcAnnotation</name>
           <description>Used for testing CopyAnnotator.</description>
           <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
         <typeDescription>
-          <name>edu.mayo.bmi.uima.common.types.CopyDestAnnotation</name>
+          <name>org.apache.ctakes.common.types.CopyDestAnnotation</name>
           <description>Used for testing CopyAnnotator.</description>
           <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
@@ -118,7 +98,7 @@
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.DrugLookupWindowAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>
