@@ -60,12 +60,14 @@ import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.log4j.Logger;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -77,15 +79,26 @@ import com.google.common.io.Files;
 public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   static Logger LOGGER = Logger.getLogger(SHARPKnowtatorXMLReader.class);
   
+  // paramater that should contain the path to text files, with Knowtator XML in a "nephew"
+  public static final String PARAM_TEXTURI = "TextURI";
+  // path to knowtator xml files
+  public static File textURIDirectory;
+
   /**
    * Get the URI that the text in this class was loaded from
    */
   protected URI getTextURI(JCas jCas) throws AnalysisEngineProcessException {
+	  
     try {
-      return new URI(JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
+	  if (!(textURIDirectory==null) && !"".equals(textURIDirectory.toString())) {
+	    return new URI(textURIDirectory.toURI().toString() +File.separator+ JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
+	  } else {
+		return new URI(JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
+	  }
+	  
     } catch (URISyntaxException e) {
-      throw new AnalysisEngineProcessException(e);
-    }
+	  throw new AnalysisEngineProcessException(e);
+	}
   }
   
   /**
@@ -93,7 +106,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
    */
   protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
     String textURI = this.getTextURI(jCas).toString();
-    String xmlURI = textURI.replaceAll("Knowtator/text", "Knowtator_XML") + ".knowtator.xml";
+    String xmlURI = textURI.replaceAll("Knowtator"+File.separator+"text", "Knowtator_XML") + ".knowtator.xml";
     try {
       return new URI(xmlURI);
     } catch (URISyntaxException e) {
@@ -106,6 +119,17 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
    */
   protected String[] getAnnotatorNames() {
     return new String[] { "consensus set annotator team" };
+  }
+
+  @Override
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+	super.initialize(aContext);
+
+	try {
+		textURIDirectory = new File( (String) aContext.getConfigParameterValue(PARAM_TEXTURI) );
+	} catch (NullPointerException e) {
+		textURIDirectory = null;
+	}
   }
 
   @Override
