@@ -110,7 +110,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         name = "--relations",
         usage = "determines which relations to evaluate on (separately)",
         required = false)
-    public List<String> relations = Arrays.asList("degree_of", "location_of");
+    public List<String> relations = null;
 
     @Option(
         name = "--test-on-ctakes",
@@ -133,6 +133,9 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.parseOptions(args);
+    if (options.relations == null) {
+      options.relations = Arrays.asList("degree_of", "location_of");
+    }
 
     // error on invalid option combinations
     if (options.testDirectory != null && options.gridSearch) {
