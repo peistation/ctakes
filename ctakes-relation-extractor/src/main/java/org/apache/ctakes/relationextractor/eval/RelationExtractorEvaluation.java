@@ -126,9 +126,9 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
 
   public static final String GOLD_VIEW_NAME = "GoldView";
   
-  private static final ParameterSettings BEST_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 1.0f, "linear", 0.1, 1.0);
-  
-  private static final ParameterSettings BEST_NON_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 0.5f, "linear", 0.1, 1.0);
+  // parameter settings currently optimized for SHARP data
+  private static final ParameterSettings BEST_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 0.5f, "radial basis function", 10.0, 0.0010);
+  private static final ParameterSettings BEST_NON_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 1.0f, "radial basis function", 10.0, 0.01);
   
   public static void main(String[] args) throws Exception {
     Options options = new Options();
