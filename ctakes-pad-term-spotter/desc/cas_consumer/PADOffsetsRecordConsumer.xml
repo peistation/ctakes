@@ -56,9 +56,6 @@
 </nameValuePair>
 </configurationParameterSettings>
 <typeSystemDescription>
-<imports>
-<import location="../type_system/PADSiteAndTerm.xml"/>
-</imports>
 </typeSystemDescription>
 <capabilities/>
 <operationalProperties>

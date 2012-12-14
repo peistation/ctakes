@@ -85,10 +85,6 @@
       </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>
-      <imports>
-        <import location="../type_system/NERTypeSystem.xml"/>
-        <import location="../../../ctakes-clinical-pipeline/desc/CDAToTextTypeSystem.xml"/>
-      </imports>
     </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
