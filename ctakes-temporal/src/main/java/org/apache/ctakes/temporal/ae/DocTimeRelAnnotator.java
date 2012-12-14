@@ -94,8 +94,10 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
         String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
         this.dataWriter.write(new Instance<String>(outcome, features));
       } else {
-        String outcome = this.classifier.classify(features);
-        eventMention.getEvent().getProperties().setDocTimeRel(outcome);
+    	if (eventMention.getEvent() != null){
+    		String outcome = this.classifier.classify(features);
+    		eventMention.getEvent().getProperties().setDocTimeRel(outcome);
+    	}
       }
     }
   }
