@@ -56,6 +56,10 @@
 				<include>org.apache.ctakes:ctakes-type-system</include>
 				<include>org.apache.ctakes:ctakes-utils</include>
 			</includes>
+			
+            <excludes>
+	        	<exclude>net.sourceforge.ctakesresources:*</exclude>
+	        </excludes>			
 			<unpack>false</unpack>
 			<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveFiltering>true</useTransitiveFiltering>
