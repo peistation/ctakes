@@ -36,7 +36,7 @@
 <import location="PcsClassifierAnnotator_libsvm.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="NegationAnnotator">
-<import location="../../../../ctakes-ne-contexts/desc/NegationAnnotator.xml"/>
+<import location="file:NegationAnnotator.xml"/>
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
