@@ -24,13 +24,13 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="TokenizerAnnotator">
-      <import location="../../../../../../../../ctakes-core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+      <import name="org.apache.ctakes.core.analysis_engine.TokenizerAnnotator"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="KuRuleBasedClassifierAnnotator">
-      <import location="../../../../../../../desc/analysis_engine/KuRuleBasedClassifierAnnotator.xml"/>
+      <import location="KuRuleBasedClassifierAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceDetectAnnotator">
-      <import location="../../../../../../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+      <import name="org.apache.ctakes.core.analysis_engine.SentenceDetectorAnnotator"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

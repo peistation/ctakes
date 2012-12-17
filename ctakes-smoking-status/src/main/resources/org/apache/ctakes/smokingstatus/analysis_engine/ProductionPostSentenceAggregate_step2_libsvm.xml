@@ -3,19 +3,19 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="NegationAnnotator">
-      <import location="../../../../../../../../ctakes-ne-contexts/desc/NegationAnnotator.xml"/>
+      <import name="org.apache.ctakes.necontexts.desc.NegationAnnotator"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SentenceAdjuster">
-      <import location="../../../../../../../desc/analysis_engine/SentenceAdjuster.xml"/>
+      <import location="SentenceAdjuster.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SmokingStatusDictionaryLookupAnnotator">
-      <import location="../../../../../../../desc/analysis_engine/SmokingStatusDictionaryLookupAnnotator.xml"/>
+      <import location="SmokingStatusDictionaryLookupAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="PcsClassifierAnnotator_libsvm">
-      <import location="../../../../../../../desc/analysis_engine/PcsClassifierAnnotator_libsvm.xml"/>
+      <import location="PcsClassifierAnnotator_libsvm.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ArtificialSentenceAnnotator">
-      <import location="../../../../../../../desc/analysis_engine/ArtificialSentenceAnnotator.xml"/>
+      <import location="ArtificialSentenceAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
