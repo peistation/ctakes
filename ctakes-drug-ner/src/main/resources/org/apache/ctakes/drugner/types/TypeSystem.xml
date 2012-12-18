@@ -327,7 +327,7 @@ Strongly encouraged to use bold text</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>edu.mayo.bmi.uima.lookup.type.DrugLookupWindowAnnotation</name>
+      <name>org.apache.ctakes.typesystem.type.textspan.DrugLookupWindowAnnotation</name>
       <description>Similar to LookupWindowAnnotation however, these annotations are restricted to the segments/sections specified in the parameter - sectionOverrideSet - in DrugCNP2LookupWindow</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>

@@ -86,7 +86,7 @@ This param is optional.  If not specified, then the classification feature of th
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../type_system/SmokingProductionTypeSystem.xml"/>
+		<import name="org.apache.ctakes.smokingstatus.types.Typesystem"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
@@ -128,7 +128,7 @@ This param is optional.  If not specified, then the classification feature of th
         <name>UimaDescriptorStep1</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:analysis_engine/ProductionPostSentenceAggregate_step1.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/smokingstatus/analysis_engine/ProductionPostSentenceAggregate_step1.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -136,7 +136,7 @@ This param is optional.  If not specified, then the classification feature of th
         <name>UimaDescriptorStep2</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/smokingstatus/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

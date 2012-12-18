@@ -22,29 +22,38 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.core.ae.SentenceDetector</annotatorImplementationName>
 <analysisEngineMetaData>
-<name>NonsmokerDictionaryLookupAnnotator</name>
-<description>Performs nonsmoker dictionary lookup and stores the hits as NonsmokerNamedEntityAnnotation objects.</description>
-<version></version>
-<vendor></vendor>
-<configurationParameters/>
-<configurationParameterSettings/>
-<typeSystemDescription>
-<imports>
-        <import name="org.apache.ctakes.smokingstatus.types.Typesystem"/>
-</imports>
-</typeSystemDescription>
+<name>Sentence Detector annotator</name>
+<description>Discovers sentence boundaries.</description>
+<version>2.1</version>
+<vendor>Mayo Clinic</vendor>
+<configurationParameters>
+<configurationParameter>
+<name>SegmentsToSkip</name>
+<type>String</type>
+<multiValued>true</multiValued>
+<mandatory>false</mandatory>
+</configurationParameter>
+</configurationParameters>
+<configurationParameterSettings>
+<nameValuePair>
+<name>SegmentsToSkip</name>
+<value>
+<array/>
+</value>
+</nameValuePair>
+</configurationParameterSettings>
+<typeSystemDescription/>
 <typePriorities/>
 <fsIndexCollection/>
 <capabilities>
 <capability>
 <inputs>
 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
-<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.NonSmokerNamedEntityAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
 </outputs>
 <languagesSupported/>
 </capability>
@@ -57,45 +66,27 @@
 </analysisEngineMetaData>
 <externalResourceDependencies>
 <externalResourceDependency>
-<key>LookupDescriptor</key>
+<key>MaxentModel</key>
 <description></description>
-<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
-<optional>false</optional>
-</externalResourceDependency>
-<externalResourceDependency>
-<key>NonSmokerDictionary</key>
-<description></description>
-<interfaceName>org.apache.ctakes.core.resource.FileResource</interfaceName>
+<interfaceName>org.apache.ctakes.core.resource.MaxentModelResource</interfaceName>
 <optional>false</optional>
 </externalResourceDependency>
 </externalResourceDependencies>
 <resourceManagerConfiguration>
 <externalResources>
 <externalResource>
-<name>LookupDescriptorFileNonSmoker</name>
+<name>MaxentModelFile</name>
 <description></description>
 <fileResourceSpecifier>
-<fileUrl>file:org/apache/ctakes/smokingstatus/data/SmokingStatusLookupConfig.xml</fileUrl>
+<fileUrl>file:org/apache/ctakes/core/sentdetect/sdmed.mod</fileUrl>
 </fileResourceSpecifier>
-<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
-</externalResource>
-<externalResource>
-<name>DictionaryFileNonSmoker</name>
-<description></description>
-<fileResourceSpecifier>
-<fileUrl>file:org/apache/ctakes/smokingstatus/data/nonsmoker.dictionary</fileUrl>
-</fileResourceSpecifier>
-<implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
+<implementationName>org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl</implementationName>
 </externalResource>
 </externalResources>
 <externalResourceBindings>
 <externalResourceBinding>
-<key>LookupDescriptor</key>
-<resourceName>LookupDescriptorFileNonSmoker</resourceName>
-</externalResourceBinding>
-<externalResourceBinding>
-<key>NonSmokerDictionary</key>
-<resourceName>DictionaryFileNonSmoker</resourceName>
+<key>MaxentModel</key>
+<resourceName>MaxentModelFile</resourceName>
 </externalResourceBinding>
 </externalResourceBindings>
 </resourceManagerConfiguration>

@@ -22,13 +22,9 @@
 <taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
 <primitive>true</primitive>
-<annotatorImplementationName>org.apache.ctakes.ctx.ae.ContextAnnotator</annotatorImplementationName>
+<annotatorImplementationName>org.apache.ctakes.necontexts.ContextAnnotator</annotatorImplementationName>
 <analysisEngineMetaData>
 <name>NegationAnnotator</name>
-<description>Changes in 1.1:
-	Boundary tokens moved to external resource - cni/negation/boundaryData.txt</description>
-<version>1.1</version>
-<vendor>Mayo</vendor>
 <configurationParameters>
 <configurationParameter>
 <name>MaxLeftScopeSize</name>
@@ -45,13 +41,6 @@
 <mandatory>true</mandatory>
 </configurationParameter>
 <configurationParameter>
-<name>CacheHits</name>
-<description></description>
-<type>Boolean</type>
-<multiValued>false</multiValued>
-<mandatory>true</mandatory>
-</configurationParameter>
-<configurationParameter>
 <name>ScopeOrder</name>
 <description></description>
 <type>String</type>
@@ -59,15 +48,32 @@
 <mandatory>true</mandatory>
 </configurationParameter>
 <configurationParameter>
-<name>ContextInitializerClass</name>
+<name>ContextAnalyzerClass</name>
+<type>String</type>
+<multiValued>false</multiValued>
+<mandatory>true</mandatory>
+</configurationParameter>
+<configurationParameter>
+<name>ContextHitConsumerClass</name>
 <description></description>
 <type>String</type>
 <multiValued>false</multiValued>
 <mandatory>true</mandatory>
 </configurationParameter>
 <configurationParameter>
-<name>ContextConsumerClass</name>
-<description></description>
+<name>WindowAnnotationClass</name>
+<type>String</type>
+<multiValued>false</multiValued>
+<mandatory>true</mandatory>
+</configurationParameter>
+<configurationParameter>
+<name>FocusAnnotationClass</name>
+<type>String</type>
+<multiValued>false</multiValued>
+<mandatory>true</mandatory>
+</configurationParameter>
+<configurationParameter>
+<name>ContextAnnotationClass</name>
 <type>String</type>
 <multiValued>false</multiValued>
 <mandatory>true</mandatory>
@@ -77,19 +83,13 @@
 <nameValuePair>
 <name>MaxLeftScopeSize</name>
 <value>
-<integer>16</integer>
+<integer>7</integer>
 </value>
 </nameValuePair>
 <nameValuePair>
 <name>MaxRightScopeSize</name>
 <value>
 <integer>7</integer>
-</value>
-</nameValuePair>
-<nameValuePair>
-<name>CacheHits</name>
-<value>
-<boolean>true</boolean>
 </value>
 </nameValuePair>
 <nameValuePair>
@@ -102,15 +102,33 @@
 </value>
 </nameValuePair>
 <nameValuePair>
-<name>ContextInitializerClass</name>
+<name>ContextHitConsumerClass</name>
 <value>
-<string>org.apache.ctakes.drugner.ae.impl.NegContextInitializerImpl</string>
+<string>org.apache.ctakes.necontexts.negation.NegationContextHitConsumer</string>
 </value>
 </nameValuePair>
 <nameValuePair>
-<name>ContextConsumerClass</name>
+<name>WindowAnnotationClass</name>
 <value>
-<string>org.apache.ctakes.drugner.ae.impl.NegContextConsumerImpl</string>
+<string>org.apache.ctakes.typesystem.type.textspan.Sentence</string>
+</value>
+</nameValuePair>
+<nameValuePair>
+<name>FocusAnnotationClass</name>
+<value>
+<string>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</string>
+</value>
+</nameValuePair>
+<nameValuePair>
+<name>ContextAnnotationClass</name>
+<value>
+<string>org.apache.ctakes.typesystem.type.syntax.BaseToken</string>
+</value>
+</nameValuePair>
+<nameValuePair>
+<name>ContextAnalyzerClass</name>
+<value>
+<string>org.apache.ctakes.necontexts.negation.NegationContextAnalyzer</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
@@ -118,14 +136,16 @@
 <imports>
 </imports>
 </typeSystemDescription>
+<typePriorities/>
+<fsIndexCollection/>
 <capabilities>
 <capability>
 <inputs>
-<type allAnnotatorFeatures="true">org.apache.ctakes.common.types.NamedEntityAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</type>
 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
 </inputs>
 <outputs>
-<type allAnnotatorFeatures="true">org.apache.ctakes.ctx.types.ContextAnnotation</type>
+<type allAnnotatorFeatures="true">org.apache.ctakes.necontexts.type.ContextAnnotation</type>
 </outputs>
 <languagesSupported/>
 </capability>
@@ -133,32 +153,8 @@
 <operationalProperties>
 <modifiesCas>true</modifiesCas>
 <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+<outputsNewCASes>false</outputsNewCASes>
 </operationalProperties>
 </analysisEngineMetaData>
-<externalResourceDependencies>
-<externalResourceDependency>
-<key>BoundaryData</key>
-<description>the file resource handle that will be used in the annotator</description>
-<interfaceName>org.apache.ctakes.common.resource.FileResource</interfaceName>
-<optional>false</optional>
-</externalResourceDependency>
-</externalResourceDependencies>
-<resourceManagerConfiguration>
-<externalResources>
-<externalResource>
-<name>BoundaryDataFile</name>
-<description>Represents tokens that signifies negation boundary</description>
-<fileResourceSpecifier>
-<fileUrl>file:org/apache/ctakes/drugner/cni/negation/boundaryData.txt</fileUrl>
-</fileResourceSpecifier>
-<implementationName>org.apache.ctakes.common.resource.FileResourceImpl</implementationName>
-</externalResource>
-</externalResources>
-<externalResourceBindings>
-<externalResourceBinding>
-<key>BoundaryData</key>
-<resourceName>BoundaryDataFile</resourceName>
-</externalResourceBinding>
-</externalResourceBindings>
-</resourceManagerConfiguration>
+<resourceManagerConfiguration/>
 </taeDescription>

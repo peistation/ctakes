@@ -19,50 +19,58 @@
     under the License.
 
 -->
-<casConsumerDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-<implementationName>org.apache.ctakes.padtermspotter.cc.PADOffSetsRecord</implementationName>
-<processingResourceMetaData>
-<name>PADOffSetRecord</name>
-<description>Processes a given CAS to identify predetermined list of PAD terms</description>
-<version>1.0</version>
-<vendor>Mayo</vendor>
+<primitive>true</primitive>
+<annotatorImplementationName>org.apache.ctakes.core.ae.TokenizerAnnotatorPTB</annotatorImplementationName>
+<analysisEngineMetaData>
+<name>TokenizerAnnotatorPTB</name>
+<description>Discovers tokens in the given text, following Penn TreeBank tokenization rules.  These tokens consist of words, punctuation, etc...</description>
+<version>2.3</version>
+<vendor>Mayo Clinic</vendor>
 <configurationParameters>
 <configurationParameter>
-<name>outputFileName</name>
+<name>SegmentsToSkip</name>
+<description>Segments to skip.</description>
 <type>String</type>
-<multiValued>false</multiValued>
-<mandatory>true</mandatory>
-</configurationParameter>
-<configurationParameter>
-<name>usingAlternateAlgorithm</name>
-<type>Boolean</type>
-<multiValued>false</multiValued>
+<multiValued>true</multiValued>
 <mandatory>false</mandatory>
 </configurationParameter>
 </configurationParameters>
 <configurationParameterSettings>
 <nameValuePair>
-<name>outputFileName</name>
+<name>SegmentsToSkip</name>
 <value>
-<string>C:\\temp\\PAD_output.txt</string>
-</value>
-</nameValuePair>
-<nameValuePair>
-<name>usingAlternateAlgorithm</name>
-<value>
-<boolean>false</boolean>
+<array/>
 </value>
 </nameValuePair>
 </configurationParameterSettings>
 <typeSystemDescription>
+<imports>
+<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
+</imports>
 </typeSystemDescription>
-<capabilities/>
+<typePriorities/>
+<fsIndexCollection/>
+<capabilities>
+<capability>
+<inputs>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Segment</type>
+</inputs>
+<outputs>
+<type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.BaseToken</type>
+</outputs>
+<languagesSupported/>
+</capability>
+</capabilities>
 <operationalProperties>
-<modifiesCas>false</modifiesCas>
-<multipleDeploymentAllowed>false</multipleDeploymentAllowed>
+<modifiesCas>true</modifiesCas>
+<multipleDeploymentAllowed>true</multipleDeploymentAllowed>
 <outputsNewCASes>false</outputsNewCASes>
 </operationalProperties>
-</processingResourceMetaData>
-<resourceManagerConfiguration/>
-</casConsumerDescription>
+</analysisEngineMetaData>
+<externalResourceDependencies>
+</externalResourceDependencies>
+<resourceManagerConfiguration>
+</resourceManagerConfiguration>
+</taeDescription>
