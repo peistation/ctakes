@@ -51,10 +51,11 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
     EvaluationOfClearTKEventSpans evaluation = new EvaluationOfClearTKEventSpans(
         new File("target/eval"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
+        options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-event-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
+        options.getPatients().getList(),
+        4);
     for (AnnotationStatistics<String> stats : foldStats) {
       System.err.println(stats);
     }
@@ -65,13 +66,11 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
   public EvaluationOfClearTKEventSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
+      File knowtatorXMLDirectory) {
     super(
         baseDirectory,
         rawTextDirectory,
         knowtatorXMLDirectory,
-        patientSets,
         EnumSet.noneOf(AnnotatorType.class));
   }
 

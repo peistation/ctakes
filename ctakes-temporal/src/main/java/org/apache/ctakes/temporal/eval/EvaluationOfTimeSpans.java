@@ -44,10 +44,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     EvaluationOfTimeSpans evaluation = new EvaluationOfTimeSpans(
         new File("target/eval"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
+        options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-time-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
+        options.getPatients().getList(),
+        4);
     for (AnnotationStatistics<String> stats : foldStats) {
       System.err.println(stats);
     }
@@ -58,13 +59,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   public EvaluationOfTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
+      File knowtatorXMLDirectory) {
     super(
         baseDirectory,
         rawTextDirectory,
         knowtatorXMLDirectory,
-        patientSets,
         EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
   }
 

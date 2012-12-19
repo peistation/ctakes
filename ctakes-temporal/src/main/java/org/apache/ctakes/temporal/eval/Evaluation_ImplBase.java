@@ -90,31 +90,23 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   protected File knowtatorXMLDirectory;
 
-  protected List<Integer> patientSets;
-
   private Set<AnnotatorType> annotatorFlags;
 
   public Evaluation_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      List<Integer> patientSets,
       Set<AnnotatorType> annotatorFlags) {
     super(baseDirectory);
     this.rawTextDirectory = rawTextDirectory;
     this.knowtatorXMLDirectory = knowtatorXMLDirectory;
-    this.patientSets = patientSets;
     this.annotatorFlags = annotatorFlags;
   }
 
-  public List<STATISTICS_TYPE> crossValidation(int nFolds) throws Exception {
-    return this.crossValidation(this.patientSets, nFolds);
-  }
-
   @Override
-  protected CollectionReader getCollectionReader(List<Integer> selectedPatientSets) throws Exception {
+  protected CollectionReader getCollectionReader(List<Integer> patientSets) throws Exception {
     List<File> files = new ArrayList<File>();
-    for (Integer set : selectedPatientSets) {
+    for (Integer set : patientSets) {
       File setTextDirectory = new File(this.rawTextDirectory, "doc" + set);
       for (File file : setTextDirectory.listFiles()) {
         files.add(file);

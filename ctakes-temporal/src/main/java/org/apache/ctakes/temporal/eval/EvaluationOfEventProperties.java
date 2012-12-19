@@ -60,9 +60,9 @@ public class EvaluationOfEventProperties extends
     EvaluationOfEventProperties evaluation = new EvaluationOfEventProperties(
         new File("target/eval"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
-    List<Map<String, AnnotationStatistics<String>>> foldStats = evaluation.crossValidation(4);
+        options.getKnowtatorXMLDirectory());
+    List<Map<String, AnnotationStatistics<String>>> foldStats = evaluation.crossValidation(
+        options.getPatients().getList(), 4);
     Map<String, AnnotationStatistics<String>> overallStats = new HashMap<String, AnnotationStatistics<String>>();
     for (String name : PROPERTY_NAMES) {
       overallStats.put(name, new AnnotationStatistics<String>());
@@ -89,13 +89,11 @@ public class EvaluationOfEventProperties extends
   public EvaluationOfEventProperties(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
+      File knowtatorXMLDirectory) {
     super(
         baseDirectory,
         rawTextDirectory,
         knowtatorXMLDirectory,
-        patientSets,
         EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
   }
 

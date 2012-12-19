@@ -65,11 +65,12 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         new File("target/eval"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList(),
         options.getProbabilityOfKeepingANegativeExample(),
         options.getFeatureSelectionThreshold());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(2);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
+        options.getPatients().getList(),
+        2);
     for (AnnotationStatistics<String> stats : foldStats) {
       System.err.println(stats);
     }
@@ -85,10 +86,9 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      List<Integer> patientSets,
       float probabilityOfKeepingANegativeExample,
       float featureSelectionThreshold) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, patientSets, EnumSet.of(
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, EnumSet.of(
         AnnotatorType.PART_OF_SPEECH_TAGS));
         //AnnotatorType.UMLS_NAMED_ENTITIES,
         //AnnotatorType.LEXICAL_VARIANTS,

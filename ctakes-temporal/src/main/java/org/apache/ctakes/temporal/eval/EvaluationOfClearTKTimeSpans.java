@@ -50,10 +50,11 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
         new File("target/eval"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
+        options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
+        options.getPatients().getList(),
+        4);
     for (AnnotationStatistics<String> stats : foldStats) {
       System.err.println(stats);
     }
@@ -64,13 +65,11 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
   public EvaluationOfClearTKTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
+      File knowtatorXMLDirectory) {
     super(
         baseDirectory,
         rawTextDirectory,
         knowtatorXMLDirectory,
-        patientSets,
         EnumSet.noneOf(AnnotatorType.class));
   }
 
