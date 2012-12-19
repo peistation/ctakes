@@ -119,7 +119,15 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
       stats.add(goldAnnotations, systemAnnotations);
 
       Set<Annotation> goldSet = new TreeSet<Annotation>(bySpans);
-      goldSet.addAll(goldAnnotations);
+      for (Annotation goldAnnotation : goldAnnotations) {
+        // TODO: fix data so that this is not necessary
+        if (goldAnnotation.getBegin() == Integer.MAX_VALUE || goldAnnotation.getEnd() == Integer.MIN_VALUE) {
+          this.logger.warning("Invalid annotation");
+          continue;
+        }
+        goldSet.add(goldAnnotation);
+      }
+      //goldSet.addAll(goldAnnotations);
       Set<Annotation> systemSet = new TreeSet<Annotation>(bySpans);
       systemSet.addAll(systemAnnotations);
 
