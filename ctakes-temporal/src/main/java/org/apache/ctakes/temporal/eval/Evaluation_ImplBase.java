@@ -84,12 +84,6 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
     @Option(longName = "patients")
     public CommandLine.IntegerRanges getPatients();
-    
-    @Option(longName = "downratio", defaultValue="1")
-    public float getDownSampleRatio();
-
-    @Option(longName = "featureSelect", defaultValue="0")
-    public float getFeatureSelect(); //get feature selection cut off threshold is it is > 0. apply no FS if featureSelect == 0 
   }
 
   protected File rawTextDirectory;

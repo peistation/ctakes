@@ -19,28 +19,45 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.ctakes.temporal.ae.EventAnnotator;
+import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.transform.InstanceDataWriter;
+import org.cleartk.classifier.feature.transform.InstanceStream;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
+import org.uimafit.factory.AggregateBuilder;
+import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
 import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
 
 public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase {
+
+  static interface Options extends Evaluation_ImplBase.Options {
+
+    @Option(longName = "downratio", defaultValue = "1")
+    public float getProbabilityOfKeepingANegativeExample();
+
+    @Option(longName = "featureSelectionThreshold", defaultValue = "0")
+    public float getFeatureSelectionThreshold();
+  }
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
@@ -49,57 +66,78 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getPatients().getList(),
-        options.getDownSampleRatio(),
-    	options.getFeatureSelect()); //control apply feature selection or not
+        options.getProbabilityOfKeepingANegativeExample(),
+        options.getFeatureSelectionThreshold());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
+    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(2);
     for (AnnotationStatistics<String> stats : foldStats) {
       System.err.println(stats);
     }
     System.err.println("OVERALL");
     System.err.println(AnnotationStatistics.addAll(foldStats));
   }
-  
-  private float downratio;
-  private float featureTrim;
+
+  private float probabilityOfKeepingANegativeExample;
+
+  private float featureSelectionThreshold;
 
   public EvaluationOfEventSpans(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
       List<Integer> patientSets,
-      float downratio, float featureSelect) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        patientSets,
-        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS,
+      float probabilityOfKeepingANegativeExample,
+      float featureSelectionThreshold) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, patientSets, EnumSet.of(
+        AnnotatorType.PART_OF_SPEECH_TAGS));
         //AnnotatorType.UMLS_NAMED_ENTITIES,
-//        AnnotatorType.LEXICAL_VARIANTS,
-        AnnotatorType.DEPENDENCIES,
-        AnnotatorType.SEMANTIC_ROLES));
-    this.downratio = downratio;
-    this.featureTrim = featureSelect;
+        //AnnotatorType.LEXICAL_VARIANTS,
+        //AnnotatorType.DEPENDENCIES,
+        //AnnotatorType.SEMANTIC_ROLES));
+    this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
+    this.featureSelectionThreshold = featureSelectionThreshold;
   }
 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-	if(this.featureTrim > 0){
-		return EventAnnotator.createDataWriterDescription(
-		    	InstanceDataWriter.class.getName(),
-		        directory,
-		        this.downratio,
-		        this.featureTrim);
-	}
-	return EventAnnotator.createDataWriterDescription(
-	        LIBSVMStringOutcomeDataWriter.class.getName(),
-	        directory,
-	        this.downratio,
-	        this.featureTrim);
-	
-    
+    Class<?> dataWriterClass = this.featureSelectionThreshold > 0f
+        ? InstanceDataWriter.class
+        : LIBSVMStringOutcomeDataWriter.class;
+    return EventAnnotator.createDataWriterDescription(
+        dataWriterClass,
+        directory,
+        this.probabilityOfKeepingANegativeExample,
+        this.featureSelectionThreshold);
+  }
+
+  @Override
+  protected void train(CollectionReader collectionReader, File directory) throws Exception {
+    AggregateBuilder aggregateBuilder = new AggregateBuilder();
+    aggregateBuilder.add(this.getPreprocessorTrainDescription());
+    aggregateBuilder.add(this.getDataWriterDescription(directory));
+    SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
+
+    if (this.featureSelectionThreshold > 0) {
+      // Extracting features and writing instances
+      Iterable<Instance<String>> instances = InstanceStream.loadFromDirectory(directory);
+      // Collect MinMax stats for feature normalization
+      URI chi2NbFsURI = EventAnnotator.createFeatureSelectionURI(directory);
+      Chi2NeighborFSExtractor<String> chi2NbFsExtractor = new Chi2NeighborFSExtractor<String>(
+          EventAnnotator.FEATURE_SELECTION_NAME,
+          this.featureSelectionThreshold);
+      chi2NbFsExtractor.train(instances);
+      chi2NbFsExtractor.save(chi2NbFsURI);
+      // now write in the libsvm format
+      LIBSVMStringOutcomeDataWriter dataWriter = new LIBSVMStringOutcomeDataWriter(directory);
+      for (Instance<String> instance : instances) {
+        instance = chi2NbFsExtractor.transform(instance);
+        dataWriter.write(instance);
+      }
+      dataWriter.finish();
+    }
+
+    this.trainAndPackage(directory);
   }
 
   @Override
