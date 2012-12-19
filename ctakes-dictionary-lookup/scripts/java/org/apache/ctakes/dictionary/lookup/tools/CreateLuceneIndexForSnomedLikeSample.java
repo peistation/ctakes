@@ -173,9 +173,9 @@ public class CreateLuceneIndexForSnomedLikeSample {
 			 	{ "00000205", "Cui0205", "cough",            "cough",                   "CodingScheme#Cui0205#Ver", "Oui0006", "+", "T_SS"},
 			 	{ "00000206", "Cui0206", "pain",             "pain",                    "CodingScheme#Cui0206#Ver", "Oui0007", "+", "T_SS"},
 				
-				{ "00000306", "Cui0306", "carcinoma",        "carcinoma",               "CodingScheme#Cui0306#Ver", "Oui0008", "+", "T_DD"},
+				{ "00000306", "Cui0306", "carcinoma",        "carcinoma",               "CodingScheme#Cui0306#Ver", "Oui0009", "+", "T_DD"},
 				{ "0000a307", "Cui0307", "carcinoma",        "carcinoma secondary",     "CodingScheme#Cui0307#Ver", "Oui0009", "+", "T_DD"}, // same first_word
-				{ "0000b307", "Cui0307", "carcinoma",        "carcinoma metastatic",    "CodingScheme#Cui0307#Ver", "Oui0010", "+", "T_DD"}, // same CUI
+				{ "0000b307", "Cui0307", "carcinoma",        "carcinoma metastatic",    "CodingScheme#Cui0307#Ver", "Oui0009", "+", "T_DD"}, // same CUI
 				{ "00000309", "Cui0309", "hyperlipidemia",   "hyperlipidemia",          "CodingScheme#Cui0309#Ver", "Oui0011", "+", "T_DD"},
 				
 				{ "xxxxxxxx", "Cuixxxx", "zyxabc123",        "zyxabc123 for testing",   "CodingScheme#Cuixxxx#Vxx", "Ouixxxx", "-", "T_xx"}  // termStatus "-"
@@ -193,27 +193,27 @@ public class CreateLuceneIndexForSnomedLikeSample {
 		
 		String [] []  entries =  {
                 // rowId     umlsCode   snomedCode
-				{ "000001", "Cui0001", "100001", "+"},  // pretend 2 Snomed codes for this umls term
-				{ "000002", "Cui0001", "200001", "+"},
+				{ "000001", "Cui0001", "Oui0001", "+"},  // pretend 2 Snomed codes for this umls term
+				{ "000002", "Cui0001", "Oui2221", "+"},
 
-				{ "000003", "Cui0002", "100002", "+"},
+				{ "000003", "Cui0002", "Oui0002", "+"},
 
-				{ "000004", "Cui0100", "100100", "+"},  // pretend 3 Snomed codes map to this umls term
-				{ "000005", "Cui0100", "200100", "+"},
-				{ "000006", "Cui0100", "300100", "+"},
+				{ "000004", "Cui0100", "Oui0003", "+"},  // pretend 3 Snomed codes map to this umls term
+				{ "000005", "Cui0100", "Oui2223", "+"},
+				{ "000006", "Cui0100", "Oui3333", "+"},
 
-				{ "000007", "Cui0101", "100101", "+"},
-				{ "000008", "Cui0102", "100102", "+"},
+				{ "000007", "Cui0101", "Oui0004", "+"},
+				{ "000008", "Cui0102", "Oui0005", "+"},
 				
-				{ "000009", "Cui0205", "100205", "+"},
-				{ "000010", "Cui0206", "100206", "+"},
+				{ "000009", "Cui0205", "Oui0006", "+"},
+				{ "000010", "Cui0206", "Oui0007", "+"},
 				
-				{ "000011", "Cui0306", "100306", "+"},
-				{ "000012", "Cui0307", "100307", "+"},  // note pretend only 1 example snomed code for the 2 UMLS terms
+				{ "000011", "Cui0306", "Oui0009", "+"},
+				{ "000012", "Cui0307", "Oui0009", "+"},  // note pretend only 1 example snomed code for the 2 UMLS terms
 				
-				{ "000013", "Cui0309", "100309", "+"},  // pretend 2 Snomed codes for this umls term
-				{ "000014", "Cui0309", "200309", "+"},
-				{ "xxxxxx", "Cuixxxx", "zzzzzz", "+"}
+				{ "000013", "Cui0309", "Oui0011", "+"},  // pretend 2 Snomed codes for this umls term
+				{ "000014", "Cui0309", "Oui0012", "+"},
+				{ "xxxxxx", "Cuixxxx", "zzzzzzz", "+"}
 
 				
 				};
