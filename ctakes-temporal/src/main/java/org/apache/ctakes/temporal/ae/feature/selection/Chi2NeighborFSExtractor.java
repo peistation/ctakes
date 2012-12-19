@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor.Chi2Evaluator.ComputeFeatureScore;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -429,8 +428,8 @@ public class Chi2NeighborFSExtractor<OUTCOME_T> extends FeatureSelectionExtracto
             int begin = Math.max(tokenIndex - window, 0);
             int end = Math.min(tokenIndex + window, tokenEntityTags.size());
             for (int i = begin; i < end; ++i) {
-              String name = String.format("EntityTag_%d_%d", typeID, i - begin);
-              extracted.add(new Feature(name, tokenEntityTags.get(i)));
+              String featureName = String.format("EntityTag_%d_%d", typeID, i - begin);
+              extracted.add(new Feature(featureName, tokenEntityTags.get(i)));
             }
           }
 		if (this.isTrained){

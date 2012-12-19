@@ -70,7 +70,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   public enum AnnotatorType {
     PART_OF_SPEECH_TAGS, UMLS_NAMED_ENTITIES, LEXICAL_VARIANTS, DEPENDENCIES, SEMANTIC_ROLES
-  };
+  }
 
   protected final String GOLD_VIEW_NAME = "GoldView";
 
@@ -118,9 +118,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   }
 
   @Override
-  protected CollectionReader getCollectionReader(List<Integer> patientSets) throws Exception {
+  protected CollectionReader getCollectionReader(List<Integer> selectedPatientSets) throws Exception {
     List<File> files = new ArrayList<File>();
-    for (Integer set : patientSets) {
+    for (Integer set : selectedPatientSets) {
       File setTextDirectory = new File(this.rawTextDirectory, "doc" + set);
       for (File file : setTextDirectory.listFiles()) {
         files.add(file);
@@ -143,7 +143,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   private static enum PipelineType {
     TRAIN, TEST
-  };
+  }
 
   private AnalysisEngineDescription getPreprocessorDescription(PipelineType pipelineType)
       throws Exception {

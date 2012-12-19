@@ -19,7 +19,6 @@
 package org.apache.ctakes.temporal.ae.feature;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
