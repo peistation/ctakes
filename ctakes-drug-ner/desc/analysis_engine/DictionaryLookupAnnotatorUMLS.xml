@@ -178,7 +178,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>org/apache/ctakes/drugner/lookup/rxnorm_index</string>
+                  <string>org/apache/ctakes/dictionary/lookup/rxnorm_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
