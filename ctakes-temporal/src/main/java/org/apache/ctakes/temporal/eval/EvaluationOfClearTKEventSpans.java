@@ -49,7 +49,7 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
     EvaluationOfClearTKEventSpans evaluation = new EvaluationOfClearTKEventSpans(
-        new File("target/eval"),
+        new File("target/eval/cleartk-event-spans"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-event-errors.log"));

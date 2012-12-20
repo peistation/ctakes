@@ -48,7 +48,7 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
-        new File("target/eval"),
+        new File("target/eval/cleartk-time-spans"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));

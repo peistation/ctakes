@@ -58,7 +58,7 @@ public class EvaluationOfEventProperties extends
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
     EvaluationOfEventProperties evaluation = new EvaluationOfEventProperties(
-        new File("target/eval"),
+        new File("target/eval/event-properties"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory());
     List<Map<String, AnnotationStatistics<String>>> foldStats = evaluation.crossValidation(

@@ -7,30 +7,23 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.ctakes.temporal.ae.feature.selection.MutualInformationFeatureSelection.MutualInformationStats.ComputeFeatureScore;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
-import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
-import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
-import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.transform.TransformableFeature;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
 /**
@@ -45,8 +38,7 @@ import com.google.common.collect.Table;
  * @author Lee Becker
  * 
  */
-public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
-    FeatureSelectionExtractor<OUTCOME_T> implements SimpleFeatureExtractor {
+public class MutualInformationFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T> {
 
   /**
    * Specifies how scores for each outcome should be combined/aggregated into a single score
@@ -58,8 +50,8 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
     // MERGE, // Take k-largest mutual information values for each class and merge into a single
     // collection - currently omitted because it requires a different extraction flow
 
-    public static class AverageScores<OUTCOME_T>
-    implements Function<Map<OUTCOME_T, Double>, Double> {
+    public static class AverageScores<OUTCOME_T> implements
+        Function<Map<OUTCOME_T, Double>, Double> {
       @Override
       public Double apply(Map<OUTCOME_T, Double> input) {
         Collection<Double> scores = input.values();
@@ -73,8 +65,7 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
       }
     }
 
-    public static class MaxScores<OUTCOME_T>
-    implements Function<Map<OUTCOME_T, Double>, Double> {
+    public static class MaxScores<OUTCOME_T> implements Function<Map<OUTCOME_T, Double>, Double> {
       @Override
       public Double apply(Map<OUTCOME_T, Double> input) {
         return Ordering.natural().max(input.values());
@@ -211,102 +202,55 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
 
   }
 
-  public String nameFeature(Feature feature) {
-    return (feature.getValue() instanceof Number) ? feature.getName() : feature.getName() + ":"
-        + feature.getValue();
-  }
-
-  protected boolean isTrained;
-
   private MutualInformationStats<OUTCOME_T> mutualInfoStats;
-
-  private CombinedExtractor subExtractor;
 
   private int numFeatures;
 
   private CombineScoreMethod combineScoreMethod;
 
-  private List<String> selectedFeatures;
-
   private double smoothingCount;
 
-  public MutualInformationFeatureSelectionExtractor(String name, CombinedExtractor  extractor) {
-    super(name);
-    this.init(extractor, CombineScoreMethod.MAX, 1.0, 10);
+  public MutualInformationFeatureSelection(String name) {
+    this(name, CombineScoreMethod.MAX, 1.0, 10);
   }
 
-  public MutualInformationFeatureSelectionExtractor(
-      String name,
-      CombinedExtractor  extractor,
-      int numFeatures) {
-    super(name);
-    this.init(extractor, CombineScoreMethod.MAX, 1.0, numFeatures);
+  public MutualInformationFeatureSelection(String name, int numFeatures) {
+    this(name, CombineScoreMethod.MAX, 1.0, numFeatures);
   }
 
-  public MutualInformationFeatureSelectionExtractor(
+  public MutualInformationFeatureSelection(
       String name,
-      CombinedExtractor  extractor,
-      CombineScoreMethod combineMeasureType,
+      CombineScoreMethod combineScoreMethod,
       double smoothingCount,
       int numFeatures) {
     super(name);
-    this.init(extractor, combineMeasureType, smoothingCount, numFeatures);
-  }
-
-  private void init(
-	  CombinedExtractor  extractor,
-      CombineScoreMethod method,
-      double smoothCount,
-      int n) {
-    this.subExtractor = extractor;
-    this.combineScoreMethod = method;
-    this.smoothingCount = smoothCount;
-    this.numFeatures = n;
-  }
-
-  @Override
-  public List<Feature> extract(JCas view, Annotation focusAnnotation)
-      throws CleartkExtractorException {
-
-    List<Feature> extracted = this.subExtractor.extract(view, focusAnnotation);
-    List<Feature> result = new ArrayList<Feature>();
-    if (this.isTrained) {
-      // Filter out selected features
-      result.addAll(Collections2.filter(extracted, this));
-    } else {
-      // We haven't trained this extractor yet, so just mark the existing features
-      // for future modification, by creating one uber-container feature
-//      List<TransformableFeature> transExtracted = new ArrayList<TransformableFeature>();
-//      for (Feature feat: extracted){
-//    	  transExtracted.add(new TransformableFeature(feat.getName(), feat));
-//      }
-      result.add(new TransformableFeature(this.name, extracted));
-    }
-
-    return result;
+    this.combineScoreMethod = combineScoreMethod;
+    this.smoothingCount = smoothingCount;
+    this.numFeatures = numFeatures;
   }
 
   @Override
   public void train(Iterable<Instance<OUTCOME_T>> instances) {
     // aggregate statistics for all features and classes
     this.mutualInfoStats = new MutualInformationStats<OUTCOME_T>(this.smoothingCount);
-
     for (Instance<OUTCOME_T> instance : instances) {
       OUTCOME_T outcome = instance.getOutcome();
       for (Feature feature : instance.getFeatures()) {
         if (this.isTransformable(feature)) {
           for (Feature untransformedFeature : ((TransformableFeature) feature).getFeatures()) {
-            mutualInfoStats.update(this.nameFeature(untransformedFeature), outcome, 1);
+            mutualInfoStats.update(this.getFeatureName(untransformedFeature), outcome, 1);
           }
         }
       }
     }
-    // Compute mutual information score for each feature
+    
+    // sort features by mutual information score
     Set<String> featureNames = mutualInfoStats.classConditionalCounts.rowKeySet();
-
-    this.selectedFeatures = Ordering.natural().onResultOf(
-        this.mutualInfoStats.getScoreFunction(this.combineScoreMethod)).reverse().immutableSortedCopy(
-        featureNames);
+    ComputeFeatureScore<OUTCOME_T> scoreFunction = this.mutualInfoStats.getScoreFunction(this.combineScoreMethod);
+    Ordering<String> ordering = Ordering.natural().onResultOf(scoreFunction).reverse();
+    
+    // keep only the top N features
+    this.selectedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(0, this.numFeatures));
     this.isTrained = true;
   }
 
@@ -319,46 +263,35 @@ public class MutualInformationFeatureSelectionExtractor<OUTCOME_T> extends
     BufferedWriter writer = new BufferedWriter(new FileWriter(out));
     writer.append("CombineScoreType\t");
     writer.append(this.combineScoreMethod.toString());
-    writer.append("\n");
+    writer.append('\n');
 
-//    ComputeFeatureScore<OUTCOME_T> computeScore = this.mutualInfoStats.getScoreFunction(this.combineScoreMethod);
-    for (String feature : this.selectedFeatures) {
-      writer.append(String.format("%s\n", feature));//, computeScore.apply(feature)));
+    for (String featureName : this.selectedFeatureNames) {
+      writer.append(featureName);
+      writer.append('\n');
     }
 
     writer.close();
-
   }
 
   @Override
   public void load(URI uri) throws IOException {
-    this.selectedFeatures = Lists.newArrayList();
+    this.selectedFeatureNames = Sets.newLinkedHashSet();
     File in = new File(uri);
     BufferedReader reader = new BufferedReader(new FileReader(in));
 
     // First line specifies the combine utility type
-    this.combineScoreMethod = CombineScoreMethod.valueOf(reader.readLine().split("\\t")[1]);
+    this.combineScoreMethod = CombineScoreMethod.valueOf(reader.readLine().split("\t")[1]);
 
     // The rest of the lines are feature + selection scores
     String line = null;
     int n = 0;
     while ((line = reader.readLine()) != null && n < this.numFeatures) {
-      String featureValue = line.trim();
-      this.selectedFeatures.add(featureValue);
+      String featureName = line.trim();
+      this.selectedFeatureNames.add(featureName);
       n++;
     }
 
     reader.close();
     this.isTrained = true;
   }
-
-  @Override
-  public boolean apply(Feature feature) {
-    return this.selectedFeatures.contains(this.nameFeature(feature));
-  }
-
-  public final List<String> getSelectedFeatures() {
-    return this.selectedFeatures;
-  }
-
 }

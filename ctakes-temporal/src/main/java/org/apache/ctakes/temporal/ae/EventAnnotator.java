@@ -31,7 +31,8 @@ import java.util.Random;
 import org.apache.ctakes.temporal.ae.feature.PhraseExtractor;
 import org.apache.ctakes.temporal.ae.feature.SRLExtractor;
 import org.apache.ctakes.temporal.ae.feature.SurfaceFormFeatureExtractor;
-import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor;
+import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
+import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
@@ -60,7 +61,6 @@ import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Predicate;
@@ -114,35 +114,36 @@ public class EventAnnotator extends CleartkAnnotator<String> {
 
   public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
       throws ResourceInitializationException {
-    AnalysisEngineDescription fsEventAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+    return AnalysisEngineFactory.createPrimitiveDescription(
         EventAnnotator.class,
         CleartkAnnotator.PARAM_IS_TRAINING,
         false,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-        new File(modelDirectory, "model.jar"));
-    ConfigurationParameterFactory.addConfigurationParameter(
-        fsEventAnnotator,
+        new File(modelDirectory, "model.jar"),
         EventAnnotator.PARAM_FEATURE_SELECTION_URI,
         EventAnnotator.createFeatureSelectionURI(modelDirectory));
-
-    return (fsEventAnnotator);
   }
 
-  protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
+  protected SimpleFeatureExtractor tokenFeatureExtractor;
 
-  protected List<CleartkExtractor> contextFeatureExtractors;
+  protected CleartkExtractor contextFeatureExtractor;
 
   private BIOChunking<BaseToken, EntityMention> entityChunking;
 
   private BIOChunking<BaseToken, EventMention> eventChunking;
 
-  public static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
+  private FeatureSelection<String> featureSelection;
 
-  private Chi2NeighborFSExtractor<String> featureSelectionExtractor;
+  private static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
 
+  public static FeatureSelection<String> createFeatureSelection(double threshold) {
+    return new Chi2FeatureSelection<String>(EventAnnotator.FEATURE_SELECTION_NAME, threshold);
+  }
+  
   public static URI createFeatureSelectionURI(File outputDirectoryName) {
     return new File(outputDirectoryName, FEATURE_SELECTION_NAME + "_Chi2_extractor.dat").toURI();
   }
+
 
   // *****feature selection related parameters
 
@@ -159,39 +160,31 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         BaseToken.class,
         EventMention.class);
 
-    CombinedExtractor subExtractor = new CombinedExtractor(
+    this.tokenFeatureExtractor = new CombinedExtractor(
         new CoveredTextExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
         new SurfaceFormFeatureExtractor(),
         new PhraseExtractor(),
         new SRLExtractor());
+    this.contextFeatureExtractor = new CleartkExtractor(
+        BaseToken.class,
+        this.tokenFeatureExtractor,
+        new Preceding(3),
+        new Following(3));
 
-    if (featureSelectionThreshold > 0) {
-      this.featureSelectionExtractor = new Chi2NeighborFSExtractor<String>(
-          EventAnnotator.FEATURE_SELECTION_NAME,
-          BaseToken.class,
-          subExtractor,
-          this.featureSelectionThreshold,
-          new Preceding(4),
-          new Following(4));
+    if (featureSelectionThreshold == 0) {
+      this.featureSelection = null;
+    } else {
+      this.featureSelection = EventAnnotator.createFeatureSelection(this.featureSelectionThreshold);
 
       if (this.featureSelectionURI != null) {
         try {
-          this.featureSelectionExtractor.load(this.featureSelectionURI);
+          this.featureSelection.load(this.featureSelectionURI);
         } catch (IOException e) {
           throw new ResourceInitializationException(e);
         }
       }
-    } else {
-      this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
-      this.tokenFeatureExtractors.add(subExtractor);
-      this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
-      this.contextFeatureExtractors.add(new CleartkExtractor(
-          BaseToken.class,
-          subExtractor,
-          new Preceding(3),
-          new Following(3)));
     }
   }
 
@@ -240,53 +233,39 @@ public class EventAnnotator extends CleartkAnnotator<String> {
 
         List<Feature> features = new ArrayList<Feature>();
 
-        if (featureSelectionThreshold > 0) {// if feature selection
-          features.addAll(this.featureSelectionExtractor.extract(jCas, token)); // base features
-          features.addAll(this.featureSelectionExtractor.extractWithin(jCas, token, sentence)); // neighbor
-          // features
-          features.addAll(this.featureSelectionExtractor.extract(
-              entityTypeIDs,
-              entityTagsByType,
-              tokenIndex,
-              window)); // features from surrounding entities
-          features.addAll(this.featureSelectionExtractor.extract(
-              nPreviousClassifications,
-              tokenIndex,
-              outcomes)); // features from previous classifications
-        } else { // if no feature selection
-          // features from token attributes
-          for (SimpleFeatureExtractor extractor : this.tokenFeatureExtractors) {
-            features.addAll(extractor.extract(jCas, token));
+        // features from token attributes
+        features.addAll(this.tokenFeatureExtractor.extract(jCas, token));
+
+        // features from surrounding tokens
+        features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
+
+        // features from surrounding entities
+        for (int typeID : entityTypeIDs) {
+          List<String> tokenEntityTags = entityTagsByType.get(typeID);
+          int begin = Math.max(tokenIndex - window, 0);
+          int end = Math.min(tokenIndex + window, tokenEntityTags.size());
+          for (int i = begin; i < end; ++i) {
+            String name = String.format("EntityTag_%d_%d", typeID, i - begin);
+            features.add(new Feature(name, tokenEntityTags.get(i)));
           }
-          // features from surrounding tokens
-          for (CleartkExtractor extractor : this.contextFeatureExtractors) {
-            features.addAll(extractor.extractWithin(jCas, token, sentence));
-          }
-          // features from surrounding entities
-          for (int typeID : entityTypeIDs) {
-            List<String> tokenEntityTags = entityTagsByType.get(typeID);
-            int begin = Math.max(tokenIndex - window, 0);
-            int end = Math.min(tokenIndex + window, tokenEntityTags.size());
-            for (int i = begin; i < end; ++i) {
-              String name = String.format("EntityTag_%d_%d", typeID, i - begin);
-              features.add(new Feature(name, tokenEntityTags.get(i)));
-            }
-          }
-          // features from previous classifications
-          for (int i = nPreviousClassifications; i > 0; --i) {
-            int index = tokenIndex - i;
-            String previousOutcome = index < 0 ? "O" : outcomes.get(index);
-            features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
-          }
+        }
+        // features from previous classifications
+        for (int i = nPreviousClassifications; i > 0; --i) {
+          int index = tokenIndex - i;
+          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
+          features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
+        }
+
+        // apply feature selection, if necessary
+        if (this.featureSelection != null) {
+          features = this.featureSelection.transform(features);
         }
 
         // if training, write to data file
         if (this.isTraining()) {
           String outcome = outcomes.get(tokenIndex);
-          if (outcome.equals("O")) { // if it is an "O". downsample it
-            if (rand.nextDouble() <= probabilityOfKeepingANegativeExample)
-              this.dataWriter.write(new Instance<String>(outcome, features));
-          } else {
+          // if it is an "O" down-sample it
+          if (!outcome.equals("O") || rand.nextDouble() <= this.probabilityOfKeepingANegativeExample) {
             this.dataWriter.write(new Instance<String>(outcome, features));
           }
         }
@@ -311,9 +290,5 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         return mention.getTypeID() == typeID;
       }
     };
-  }
-
-  public Chi2NeighborFSExtractor<String> getChi2NbSubExtractor() {
-    return this.featureSelectionExtractor;
   }
 }

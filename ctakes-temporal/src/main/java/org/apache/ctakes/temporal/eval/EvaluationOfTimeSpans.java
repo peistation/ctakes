@@ -41,19 +41,16 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    List<Integer> patientSets = options.getPatients().getList();
+    List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     EvaluationOfTimeSpans evaluation = new EvaluationOfTimeSpans(
-        new File("target/eval"),
+        new File("target/eval/time-spans"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-time-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
-        options.getPatients().getList(),
-        4);
-    for (AnnotationStatistics<String> stats : foldStats) {
-      System.err.println(stats);
-    }
-    System.err.println("OVERALL");
-    System.err.println(AnnotationStatistics.addAll(foldStats));
+    AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+    System.err.println(stats);
   }
 
   public EvaluationOfTimeSpans(

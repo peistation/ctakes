@@ -19,14 +19,13 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.ctakes.temporal.ae.EventAnnotator;
-import org.apache.ctakes.temporal.ae.feature.selection.Chi2NeighborFSExtractor;
+import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -61,21 +60,18 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    List<Integer> patientSets = options.getPatients().getList();
+    List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     EvaluationOfEventSpans evaluation = new EvaluationOfEventSpans(
-        new File("target/eval"),
+        new File("target/eval/event-spans"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getProbabilityOfKeepingANegativeExample(),
         options.getFeatureSelectionThreshold());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
-        options.getPatients().getList(),
-        2);
-    for (AnnotationStatistics<String> stats : foldStats) {
-      System.err.println(stats);
-    }
-    System.err.println("OVERALL");
-    System.err.println(AnnotationStatistics.addAll(foldStats));
+    AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+    System.err.println(stats);
   }
 
   private float probabilityOfKeepingANegativeExample;
@@ -122,17 +118,13 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       // Extracting features and writing instances
       Iterable<Instance<String>> instances = InstanceStream.loadFromDirectory(directory);
       // Collect MinMax stats for feature normalization
-      URI chi2NbFsURI = EventAnnotator.createFeatureSelectionURI(directory);
-      Chi2NeighborFSExtractor<String> chi2NbFsExtractor = new Chi2NeighborFSExtractor<String>(
-          EventAnnotator.FEATURE_SELECTION_NAME,
-          this.featureSelectionThreshold);
-      chi2NbFsExtractor.train(instances);
-      chi2NbFsExtractor.save(chi2NbFsURI);
+      FeatureSelection<String> featureSelection = EventAnnotator.createFeatureSelection(this.featureSelectionThreshold);
+      featureSelection.train(instances);
+      featureSelection.save(EventAnnotator.createFeatureSelectionURI(directory));
       // now write in the libsvm format
       LIBSVMStringOutcomeDataWriter dataWriter = new LIBSVMStringOutcomeDataWriter(directory);
       for (Instance<String> instance : instances) {
-        instance = chi2NbFsExtractor.transform(instance);
-        dataWriter.write(instance);
+        dataWriter.write(featureSelection.transform(instance));
       }
       dataWriter.finish();
     }
