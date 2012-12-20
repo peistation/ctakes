@@ -124,13 +124,13 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         EventAnnotator.createFeatureSelectionURI(modelDirectory));
   }
 
-  protected SimpleFeatureExtractor tokenFeatureExtractor;
-
-  protected CleartkExtractor contextFeatureExtractor;
-
   private BIOChunking<BaseToken, EntityMention> entityChunking;
 
   private BIOChunking<BaseToken, EventMention> eventChunking;
+
+  protected SimpleFeatureExtractor tokenFeatureExtractor;
+
+  protected CleartkExtractor contextFeatureExtractor;
 
   private FeatureSelection<String> featureSelection;
 
@@ -143,9 +143,6 @@ public class EventAnnotator extends CleartkAnnotator<String> {
   public static URI createFeatureSelectionURI(File outputDirectoryName) {
     return new File(outputDirectoryName, FEATURE_SELECTION_NAME + "_Chi2_extractor.dat").toURI();
   }
-
-
-  // *****feature selection related parameters
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
