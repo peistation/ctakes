@@ -74,6 +74,7 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
@@ -172,6 +173,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     Set<String> eventRelationTypes = new HashSet<String>();
     eventRelationTypes.add("TLINK");
     eventRelationTypes.add("ALINK");
+    
+    Set<String> nonAnnotationTypes = Sets.newHashSet("Strength", "Frequency", "Value");
+    nonAnnotationTypes.addAll(entityRelationTypes);
+    nonAnnotationTypes.addAll(eventRelationTypes);
 
     // create a CAS object for each annotation
     Map<String, TOP> idAnnotationMap = new HashMap<String, TOP>();
@@ -185,6 +190,25 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       Map<String, KnowtatorAnnotation> annotationSlots = new HashMap<String, KnowtatorAnnotation>(
           annotation.annotationSlots);
       KnowtatorAnnotation.Span coveringSpan = annotation.getCoveringSpan();
+      
+      if (nonAnnotationTypes.contains(annotation.type)) {
+        if (coveringSpan.begin != Integer.MAX_VALUE || coveringSpan.end != Integer.MIN_VALUE) {
+          LOGGER.error(String.format(
+              "expected no span but found %s for '%s' with id '%s' in %s'",
+              annotation.spans,
+              annotation.type,
+              annotation.id,
+              knowtatorURI));
+        }
+      } else {
+        if (coveringSpan.begin == Integer.MAX_VALUE || coveringSpan.end == Integer.MIN_VALUE) {
+          LOGGER.error(String.format(
+              "expected span but found none for '%s' with id '%s' in %s'",
+              annotation.type,
+              annotation.id,
+              knowtatorURI));
+        }
+      }
 
       if ("Anatomical_site".equals(annotation.type)) {
         EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
@@ -1052,7 +1076,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       if (this.source == null) {
         // throw new UnsupportedOperationException(String.format(
         LOGGER.error(String.format(
-            "no source for '%s' with annotationSlots %s in %s",
+            "no source for '%s' with id '%s' and annotationSlots %s in %s",
+            this.annotation.type,
             this.annotation.id,
             this.annotation.annotationSlots.keySet(),
             this.sourceFile));
@@ -1061,7 +1086,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       if (this.target == null) {
         // throw new UnsupportedOperationException(String.format(
         LOGGER.error(String.format(
-            "no target for '%s' with annotationSlots %s in %s",
+            "no target for '%s' with id '%s' and annotationSlots %s in %s",
+            this.annotation.type,
             this.annotation.id,
             this.annotation.annotationSlots.keySet(),
             this.sourceFile));
