@@ -30,7 +30,6 @@ import java.util.Random;
 
 import org.apache.ctakes.temporal.ae.feature.PhraseExtractor;
 import org.apache.ctakes.temporal.ae.feature.SRLExtractor;
-import org.apache.ctakes.temporal.ae.feature.SurfaceFormFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.constants.CONST;
@@ -161,7 +160,6 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         new CoveredTextExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-        new SurfaceFormFeatureExtractor(),
         new PhraseExtractor(),
         new SRLExtractor());
     this.contextFeatureExtractor = new CleartkExtractor(
