@@ -12,9 +12,11 @@ import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.transform.TransformableFeature;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
@@ -31,7 +33,7 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
   /**
    * Helper class for aggregating and computing mutual Chi2 statistics
    */
-  private static class Chi2Scorer<OUTCOME_T> {
+  private static class Chi2Scorer<OUTCOME_T> implements Function<String, Double> {
     protected Multiset<OUTCOME_T> classCounts;
 
     protected Table<String, OUTCOME_T, Integer> featValueClassCount;
@@ -48,6 +50,10 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
       }
       this.featValueClassCount.put(featureName, outcome, count + occurrences);
       this.classCounts.add(outcome, occurrences);
+    }
+    
+    public Double apply(String featureName) {
+      return this.score(featureName);
     }
 
     public double score(String featureName) {
@@ -163,7 +169,8 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
     File out = new File(uri);
     BufferedWriter writer = new BufferedWriter(new FileWriter(out));
 
-    for (String feature : this.selectedFeatureNames) {
+    Ordering<String> ordering = Ordering.natural().onResultOf(this.chi2Function).reverse();
+    for (String feature : ordering.immutableSortedCopy(this.selectedFeatureNames)) {
       writer.append(String.format("%s\t%f\n", feature, this.chi2Function.score(feature)));
     }
 
