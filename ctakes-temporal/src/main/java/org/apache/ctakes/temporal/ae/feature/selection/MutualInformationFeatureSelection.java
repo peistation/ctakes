@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ctakes.temporal.ae.feature.selection.MutualInformationFeatureSelection.MutualInformationStats.ComputeFeatureScore;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.transform.TransformableFeature;
@@ -43,31 +42,21 @@ public class MutualInformationFeatureSelection<OUTCOME_T> extends FeatureSelecti
   /**
    * Specifies how scores for each outcome should be combined/aggregated into a single score
    */
-  public static enum CombineScoreMethod {
-    AVERAGE, // Average mutual information across all classes and take features with k-largest
-             // values
-    MAX; // Take highest mutual information value for each class
-    // MERGE, // Take k-largest mutual information values for each class and merge into a single
-    // collection - currently omitted because it requires a different extraction flow
-
-    public static class AverageScores<OUTCOME_T> implements
-        Function<Map<OUTCOME_T, Double>, Double> {
-      @Override
-      public Double apply(Map<OUTCOME_T, Double> input) {
+  public static enum CombineScoreMethod implements Function<Map<?, Double>, Double> {
+    AVERAGE {
+      public Double apply(Map<?, Double> input) {
         Collection<Double> scores = input.values();
         int size = scores.size();
         double total = 0;
-
         for (Double score : scores) {
           total += score;
         }
         return total / size;
       }
-    }
-
-    public static class MaxScores<OUTCOME_T> implements Function<Map<OUTCOME_T, Double>, Double> {
+    },
+    MAX {
       @Override
-      public Double apply(Map<OUTCOME_T, Double> input) {
+      public Double apply(Map<?, Double> input) {
         return Ordering.natural().max(input.values());
       }
     }
@@ -165,41 +154,20 @@ public class MutualInformationFeatureSelection<OUTCOME_T> extends FeatureSelecti
       writer.close();
     }
 
-    public ComputeFeatureScore<OUTCOME_T> getScoreFunction(CombineScoreMethod combineScoreMethod) {
-      return new ComputeFeatureScore<OUTCOME_T>(this, combineScoreMethod);
-    }
+    public Function<String, Double> getScoreFunction(final CombineScoreMethod combineScoreMethod) {
+      return new Function<String, Double>() {
 
-    public static class ComputeFeatureScore<OUTCOME_T> implements Function<String, Double> {
-
-      private MutualInformationStats<OUTCOME_T> stats;
-
-      private Function<Map<OUTCOME_T, Double>, Double> combineScoreFunction;
-
-      public ComputeFeatureScore(
-          MutualInformationStats<OUTCOME_T> stats,
-          CombineScoreMethod combineMeasureType) {
-        this.stats = stats;
-        switch (combineMeasureType) {
-          case AVERAGE:
-            this.combineScoreFunction = new CombineScoreMethod.AverageScores<OUTCOME_T>();
-          case MAX:
-            this.combineScoreFunction = new CombineScoreMethod.MaxScores<OUTCOME_T>();
+        @Override
+        public Double apply(String featureName) {
+          Set<OUTCOME_T> outcomes = classConditionalCounts.columnKeySet();
+          Map<OUTCOME_T, Double> featureOutcomeMI = Maps.newHashMap();
+          for (OUTCOME_T outcome : outcomes) {
+            featureOutcomeMI.put(outcome, mutualInformation(featureName, outcome));
+          }
+          return combineScoreMethod.apply(featureOutcomeMI);
         }
-
-      }
-
-      @Override
-      public Double apply(String featureName) {
-        Set<OUTCOME_T> outcomes = stats.classConditionalCounts.columnKeySet();
-        Map<OUTCOME_T, Double> featureOutcomeMI = Maps.newHashMap();
-        for (OUTCOME_T outcome : outcomes) {
-          featureOutcomeMI.put(outcome, stats.mutualInformation(featureName, outcome));
-        }
-        return this.combineScoreFunction.apply(featureOutcomeMI);
-      }
-
+      };
     }
-
   }
 
   private MutualInformationStats<OUTCOME_T> mutualInfoStats;
@@ -243,14 +211,16 @@ public class MutualInformationFeatureSelection<OUTCOME_T> extends FeatureSelecti
         }
       }
     }
-    
+
     // sort features by mutual information score
     Set<String> featureNames = mutualInfoStats.classConditionalCounts.rowKeySet();
-    ComputeFeatureScore<OUTCOME_T> scoreFunction = this.mutualInfoStats.getScoreFunction(this.combineScoreMethod);
+    Function<String, Double> scoreFunction = this.mutualInfoStats.getScoreFunction(this.combineScoreMethod);
     Ordering<String> ordering = Ordering.natural().onResultOf(scoreFunction).reverse();
-    
+
     // keep only the top N features
-    this.selectedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(0, this.numFeatures));
+    this.selectedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(
+        0,
+        this.numFeatures));
     this.isTrained = true;
   }
 
