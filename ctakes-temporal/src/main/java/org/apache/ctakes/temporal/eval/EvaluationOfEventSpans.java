@@ -85,7 +85,8 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       float probabilityOfKeepingANegativeExample,
       float featureSelectionThreshold) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, EnumSet.of(
-        AnnotatorType.PART_OF_SPEECH_TAGS));
+        AnnotatorType.PART_OF_SPEECH_TAGS,
+        AnnotatorType.CHUNKS));
         //AnnotatorType.UMLS_NAMED_ENTITIES,
         //AnnotatorType.LEXICAL_VARIANTS,
         //AnnotatorType.DEPENDENCIES,

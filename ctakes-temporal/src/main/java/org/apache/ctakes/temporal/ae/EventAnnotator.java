@@ -23,17 +23,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import org.apache.ctakes.temporal.ae.feature.PhraseExtractor;
+import org.apache.ctakes.temporal.ae.feature.ChunkingExtractor;
 import org.apache.ctakes.temporal.ae.feature.SRLExtractor;
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -127,10 +126,12 @@ public class EventAnnotator extends CleartkAnnotator<String> {
 
   private BIOChunking<BaseToken, EventMention> eventChunking;
 
+  private BIOChunking<BaseToken, Chunk> phraseChunking;
+
   protected SimpleFeatureExtractor tokenFeatureExtractor;
 
   protected CleartkExtractor contextFeatureExtractor;
-
+  
   private FeatureSelection<String> featureSelection;
 
   private static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
@@ -152,6 +153,10 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         BaseToken.class,
         EntityMention.class,
         "typeID");
+    this.phraseChunking = new BIOChunking<BaseToken, Chunk>(
+        BaseToken.class,
+        Chunk.class,
+        "chunkType");
     this.eventChunking = new BIOChunking<BaseToken, EventMention>(
         BaseToken.class,
         EventMention.class);
@@ -160,7 +165,6 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         new CoveredTextExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-        new PhraseExtractor(),
         new SRLExtractor());
     this.contextFeatureExtractor = new CleartkExtractor(
         BaseToken.class,
@@ -211,16 +215,22 @@ public class EventAnnotator extends CleartkAnnotator<String> {
           CONST.NE_TYPE_ID_PROCEDURE,
           CONST.NE_TYPE_ID_UNKNOWN };
       List<EntityMention> entities = JCasUtil.selectCovered(jCas, EntityMention.class, sentence);
-      Map<Integer, List<String>> entityTagsByType = new HashMap<Integer, List<String>>();
+      List<ChunkingExtractor> chunkingExtractors = Lists.newArrayList(); 
       for (int typeID : entityTypeIDs) {
         Predicate<EntityMention> hasTypeID = hasEntityType(typeID);
+        String name = String.format("EntityTag_%d", typeID);
         List<EntityMention> subEntities = Lists.newArrayList(Iterables.filter(entities, hasTypeID));
-        entityTagsByType.put(typeID, this.entityChunking.createOutcomes(jCas, tokens, subEntities));
+        chunkingExtractors.add(new ChunkingExtractor(name, this.entityChunking, jCas, tokens, subEntities));
       }
+      
+      // add extractor for phase chunks
+      List<Chunk> chunks = JCasUtil.selectCovered(jCas, Chunk.class, sentence);
+      chunkingExtractors.add(new ChunkingExtractor("PhraseTag", this.phraseChunking, jCas, tokens, chunks));
 
       // extract features for all tokens
       int tokenIndex = -1;
-      int window = 2;
+      int nChunkLabelsBefore = 2;
+      int nChunkLabelsAfter = 2;
       int nPreviousClassifications = 2;
 
       for (BaseToken token : tokens) {
@@ -234,16 +244,11 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         // features from surrounding tokens
         features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
 
-        // features from surrounding entities
-        for (int typeID : entityTypeIDs) {
-          List<String> tokenEntityTags = entityTagsByType.get(typeID);
-          int begin = Math.max(tokenIndex - window, 0);
-          int end = Math.min(tokenIndex + window, tokenEntityTags.size());
-          for (int i = begin; i < end; ++i) {
-            String name = String.format("EntityTag_%d_%d", typeID, i - begin);
-            features.add(new Feature(name, tokenEntityTags.get(i)));
-          }
+        // features from surrounding entity, phrase, etc. chunk-labels
+        for (ChunkingExtractor extractor : chunkingExtractors) {
+          features.addAll(extractor.extract(tokenIndex, nChunkLabelsBefore, nChunkLabelsAfter));
         }
+
         // features from previous classifications
         for (int i = nPreviousClassifications; i > 0; --i) {
           int index = tokenIndex - i;

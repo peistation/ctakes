@@ -69,7 +69,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     org.cleartk.eval.Evaluation_ImplBase<Integer, STATISTICS_TYPE> {
 
   public enum AnnotatorType {
-    PART_OF_SPEECH_TAGS, UMLS_NAMED_ENTITIES, LEXICAL_VARIANTS, DEPENDENCIES, SEMANTIC_ROLES
+    PART_OF_SPEECH_TAGS, UMLS_NAMED_ENTITIES, LEXICAL_VARIANTS, CHUNKS, DEPENDENCIES, SEMANTIC_ROLES
   }
 
   protected final String GOLD_VIEW_NAME = "GoldView";
@@ -187,11 +187,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           POSTagger.CASE_SENSITIVE_PARAM,
           true));
     }
-
-    // identify UMLS named entities if requested
-    if (this.annotatorFlags.contains(AnnotatorType.UMLS_NAMED_ENTITIES)) {
-      // remove gold mentions if they're there (we'll add cTAKES mentions later instead)
-      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
+    
+    if (this.annotatorFlags.contains(AnnotatorType.CHUNKS)) {
       // identify chunks
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           Chunker.class,
@@ -199,6 +196,12 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           Chunker.class.getResource("../models/chunk-model.claims-1.5.zip").toURI().getPath(),
           Chunker.CHUNKER_CREATOR_CLASS_PARAM,
           DefaultChunkCreator.class));
+    }
+
+    // identify UMLS named entities if requested
+    if (this.annotatorFlags.contains(AnnotatorType.UMLS_NAMED_ENTITIES)) {
+      // remove gold mentions if they're there (we'll add cTAKES mentions later instead)
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
       // adjust NP in NP NP to span both
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           ChunkAdjuster.class,
