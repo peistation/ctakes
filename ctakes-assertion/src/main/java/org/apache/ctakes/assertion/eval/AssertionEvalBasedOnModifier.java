@@ -21,6 +21,7 @@ package org.apache.ctakes.assertion.eval;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +57,9 @@ import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
+import org.mitre.medfacts.uima.ZoneAnnotator;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
 import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
@@ -64,6 +67,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine
 import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -115,6 +119,12 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     public File modelsDirectory;
     
     @Option(
+            name = "--evaluation-output-dir",
+            usage = "specify the directory where the evaluation output xmi files will go",
+            required = false)
+    public File evaluationOutputDirectory;
+        
+    @Option(
             name = "--run-polarity",
             usage = "specify whether polarity processing should be run (true or false). default: true",
             required = false)
@@ -153,6 +163,8 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
   private Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass;
 
   private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
+  
+  private File evaluationOutputDirectory;
 
   
   protected static Options options = new Options();
@@ -169,6 +181,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     //File modelsDir = new File("models/modifier");
     File modelsDir = options.modelsDirectory;
+    File evaluationOutputDirectory = options.evaluationOutputDirectory;
 
     // determine the type of classifier to be trained
     Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMaxentDataWriterFactory.class;
@@ -193,6 +206,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     
     AssertionEvalBasedOnModifier evaluation = new AssertionEvalBasedOnModifier(
         modelsDir,
+        evaluationOutputDirectory,
         annotationTypes,
         annotatorClass,
         dataWriterFactoryClass
@@ -299,13 +313,14 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
   private String[] trainingArguments;
 
   public AssertionEvalBasedOnModifier(
-      File directory,
+      File modelDirectory,
+      File evaluationOutputDirectory,
       ArrayList<String> annotationTypes,
       Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass,
       Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
       String... trainingArguments
       ) {
-    super(directory);
+    super(modelDirectory);
     
     this.annotationTypes = annotationTypes;
 
@@ -313,6 +328,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     this.dataWriterFactoryClass = dataWriterFactoryClass;
 
     this.trainingArguments = trainingArguments;
+    this.evaluationOutputDirectory = evaluationOutputDirectory;
   }
 
   @Override
@@ -351,6 +367,29 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
+    
+    URI generalSectionRegexFileUri =
+        this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/section_regex.xml").toURI();
+//      ExternalResourceDescription generalSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
+//          SectionRegexConfigurationResource.class, new File(generalSectionRegexFileUri));
+      AnalysisEngineDescription zonerAnnotator =
+          AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+              ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+              generalSectionRegexFileUri
+              );
+      builder.add(zonerAnnotator);
+
+      URI mayoSectionRegexFileUri =
+          this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/mayo_sections.xml").toURI();
+//        ExternalResourceDescription mayoSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
+//            SectionRegexConfigurationResource.class, new File(mayoSectionRegexFileUri));
+      AnalysisEngineDescription mayoZonerAnnotator =
+          AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+              ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+              mayoSectionRegexFileUri
+              );
+      builder.add(mayoZonerAnnotator);
+    
     
     if (options.runPolarity)
     {
@@ -531,6 +570,19 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	        new File(new File(directory, "generic"), "model.jar").getPath()
 	        );
 	    builder.add(genericAnnotator);
+    }
+    
+    if (evaluationOutputDirectory != null)
+    {
+        AnalysisEngineDescription xwriter =
+    		AnalysisEngineFactory.createPrimitiveDescription(
+	            XWriter.class,
+	            AssertionComponents.CTAKES_CTS_TYPE_SYSTEM_DESCRIPTION,
+	            XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+	            evaluationOutputDirectory,
+	            XWriter.PARAM_XML_SCHEME_NAME,
+	            XWriter.XMI);
+        builder.add(xwriter);
     }
     
     //SimplePipeline.runPipeline(collectionReader,  builder.createAggregateDescription());

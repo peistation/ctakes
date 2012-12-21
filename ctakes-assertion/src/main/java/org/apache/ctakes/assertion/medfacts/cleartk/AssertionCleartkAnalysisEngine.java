@@ -32,12 +32,15 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 //import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.CleartkAnnotatorDescriptionFactory;
 import org.cleartk.classifier.CleartkSequenceAnnotator;
+import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.ContextExtractor;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
@@ -59,6 +62,8 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.SurroundingExtractor;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
@@ -96,6 +101,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
   private List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
   private List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
   private List<SimpleFeatureExtractor> entityFeatureExtractors;
+  private List<SimpleFeatureExtractor> surroundingFeatureExtractors;
   
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
@@ -167,6 +173,10 @@ public abstract class AssertionCleartkAnalysisEngine extends
         */
         );
     tokenContextFeatureExtractors.add(extractor2);
+    
+    this.surroundingFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+    SimpleFeatureExtractor surround1 = new SurroundingExtractor();
+    this.surroundingFeatureExtractors.add(surround1);
 
   }
 
@@ -271,6 +281,17 @@ public abstract class AssertionCleartkAnalysisEngine extends
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
         instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
       }
+      
+      for (SimpleFeatureExtractor extractor : this.surroundingFeatureExtractors)
+      {
+    	  instance.addAll(extractor.extract(identifiedAnnotationView,  entityMention));
+      }
+      
+      logger.log(Level.INFO,  String.format("[%s] expected: ''; actual: ''; features: %s",
+    		  this.getClass().getSimpleName(),
+    		  instance.toString()
+    		  //StringUtils.join(instance.getFeatures(), ", ")
+    		  ));
       
       setClassLabel(entityMention, instance);
       
