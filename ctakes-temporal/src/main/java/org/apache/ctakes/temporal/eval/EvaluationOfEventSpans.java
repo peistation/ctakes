@@ -86,7 +86,9 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       float featureSelectionThreshold) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, EnumSet.of(
         AnnotatorType.PART_OF_SPEECH_TAGS,
-        AnnotatorType.CHUNKS));
+        AnnotatorType.CHUNKS,
+        AnnotatorType.DEPENDENCIES,
+        AnnotatorType.SEMANTIC_ROLES));
         //AnnotatorType.UMLS_NAMED_ENTITIES,
         //AnnotatorType.LEXICAL_VARIANTS,
         //AnnotatorType.DEPENDENCIES,

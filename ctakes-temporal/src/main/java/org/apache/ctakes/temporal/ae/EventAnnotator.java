@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.ctakes.temporal.ae.feature.ChunkingExtractor;
-import org.apache.ctakes.temporal.ae.feature.SRLExtractor;
+import org.apache.ctakes.temporal.ae.feature.PredicateArgumentExtractor;
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.constants.CONST;
@@ -164,8 +164,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
     this.tokenFeatureExtractor = new CombinedExtractor(
         new CoveredTextExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
-        new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-        new SRLExtractor());
+        new TypePathExtractor(BaseToken.class, "partOfSpeech"));
     this.contextFeatureExtractor = new CleartkExtractor(
         BaseToken.class,
         this.tokenFeatureExtractor,
@@ -189,6 +188,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
+    PredicateArgumentExtractor predicateArgumentExtractor = new PredicateArgumentExtractor(jCas);
 
     Random rand = new Random();
     // classify tokens within each sentence
@@ -241,13 +241,16 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         // features from token attributes
         features.addAll(this.tokenFeatureExtractor.extract(jCas, token));
 
-        // features from surrounding tokens
-        features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
-
         // features from surrounding entity, phrase, etc. chunk-labels
         for (ChunkingExtractor extractor : chunkingExtractors) {
           features.addAll(extractor.extract(tokenIndex, nChunkLabelsBefore, nChunkLabelsAfter));
         }
+        
+        // features from semantic roles
+        features.addAll(predicateArgumentExtractor.extract(token));
+
+        // features from surrounding tokens
+        features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
 
         // features from previous classifications
         for (int i = nPreviousClassifications; i > 0; --i) {
@@ -255,7 +258,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
           String previousOutcome = index < 0 ? "O" : outcomes.get(index);
           features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
         }
-
+        
         // apply feature selection, if necessary
         if (this.featureSelection != null) {
           features = this.featureSelection.transform(features);
