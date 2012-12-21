@@ -106,16 +106,16 @@ public class ZoneAnnotator extends JCasAnnotator_ImplBase {
 		    logger.info(String.format("added new zone annotation [%d-%d] \"%s\"", zAnnot.getBegin(), zAnnot.getEnd(), zAnnot.getCoveredText()));
 		}
 		
-		List<Range> subsectionRangeList = zonerCli.getSubsections();
-		for (Iterator<Range> i = subsectionRangeList.iterator(); i.hasNext();  ) {
-			Range r = i.next();
-		    Subzone sAnnot = new Subzone(jcas);	
-		    sAnnot.setBegin(r.getBegin());
-		    sAnnot.setEnd(r.getEnd());
-		    sAnnot.setLabel(r.getLabel());
-		    sAnnot.addToIndexes();
-		    logger.info(String.format("added new subzone annotation [%d-%d] \"%s\"", sAnnot.getBegin(), sAnnot.getEnd(), sAnnot.getCoveredText()));
-		}
+//		List<Range> subsectionRangeList = zonerCli.getSubsections();
+//		for (Iterator<Range> i = subsectionRangeList.iterator(); i.hasNext();  ) {
+//			Range r = i.next();
+//		    Subzone sAnnot = new Subzone(jcas);	
+//		    sAnnot.setBegin(r.getBegin());
+//		    sAnnot.setEnd(r.getEnd());
+//		    sAnnot.setLabel(r.getLabel());
+//		    sAnnot.addToIndexes();
+//		    logger.info(String.format("added new subzone annotation [%d-%d] \"%s\"", sAnnot.getBegin(), sAnnot.getEnd(), sAnnot.getCoveredText()));
+//		}
 		
 		
 		
