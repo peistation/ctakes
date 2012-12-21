@@ -108,6 +108,7 @@
 		<module>ctakes-relation-extractor</module>
 		<module>ctakes-pad-term-spotter</module>
 		<module>ctakes-assertion</module>
+		<module>ctakes-assertion-zoner</module>
 		<module>ctakes-temporal</module>
 
 		<!-- pipeline and distribution should always be last -->
@@ -189,6 +190,13 @@
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
 					ctakes-assertion
+				</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ctakes</groupId>
+				<artifactId>
+					ctakes-assertion-zoner
 				</artifactId>
 				<version>${ctakes.version}</version>
 			</dependency>
