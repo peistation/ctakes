@@ -30,6 +30,7 @@ import org.apache.ctakes.temporal.ae.feature.ChunkingExtractor;
 import org.apache.ctakes.temporal.ae.feature.PredicateArgumentExtractor;
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
+import org.apache.ctakes.temporal.utils.SMOTEplus;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
@@ -191,6 +192,10 @@ public class EventAnnotator extends CleartkAnnotator<String> {
     PredicateArgumentExtractor predicateArgumentExtractor = new PredicateArgumentExtractor(jCas);
 
     Random rand = new Random();
+    
+    //TRY SMOTE algorithm here to generate more minority class samples
+    SMOTEplus smote = new SMOTEplus();
+        
     // classify tokens within each sentence
     for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
       List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
@@ -268,8 +273,13 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         if (this.isTraining()) {
           String outcome = outcomes.get(tokenIndex);
           // if it is an "O" down-sample it
-          if (!outcome.equals("O") || rand.nextDouble() <= this.probabilityOfKeepingANegativeExample) {
-            this.dataWriter.write(new Instance<String>(outcome, features));
+          if (outcome.equals("O")) {
+        	  if (rand.nextDouble() <= this.probabilityOfKeepingANegativeExample)
+        		  this.dataWriter.write(new Instance<String>(outcome, features));
+          }else{//for minority instances:
+        	  Instance<String> minorityInst = new Instance<String>(outcome, features);
+        	  this.dataWriter.write(minorityInst);
+        	  smote.addInstance(minorityInst);
           }
         }
 
@@ -284,6 +294,13 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         this.eventChunking.createChunks(jCas, tokens, outcomes);
       }
     }
+    if(this.isTraining()){ //add synthetic instances to datawriter
+    	Iterable<Instance<String>> syntheticInsts = smote.populateMinorityClass();
+    	for( Instance<String> sytheticInst: syntheticInsts){
+    		this.dataWriter.write(sytheticInst);
+    	}
+    }
+    
   }
 
   private static Predicate<EntityMention> hasEntityType(final int typeID) {
