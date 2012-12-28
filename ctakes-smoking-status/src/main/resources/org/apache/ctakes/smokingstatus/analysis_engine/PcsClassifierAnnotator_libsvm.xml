@@ -46,7 +46,7 @@
 </configurationParameterSettings>
 <typeSystemDescription>
 <imports>
-        <import name="org.apache.ctakes.smokingstatus.types.Typesystem"/>
+        <import name="org.apache.ctakes.smokingstatus.types.TypeSystem"/>
 </imports>
 </typeSystemDescription>
 <typePriorities/>
