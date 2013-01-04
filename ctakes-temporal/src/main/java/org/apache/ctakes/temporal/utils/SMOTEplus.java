@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import com.google.common.collect.HashBasedTable;
@@ -17,15 +15,15 @@ import com.google.common.collect.Table;
 /**
  * A simple implementation of SMOTE algorithm. 
  * Nitesh V. Shawla et. al. SMOTE: Synthetic Minority Over-sampling Technique, 06/02
- * currently only get the nearest neighbor for each minority instance.
- * May be modified to my SMOTE-plus algorithm.
+ * Find K nearest neighbor for each minority instance.
  *  
  * @author Chen Lin
+ * @DCT: 12/28/2012
+ * Modified on 1/4/2013
  */
 public class SMOTEplus {
 
 	protected List<Instance<String>> minorityInsts;
-	protected List<Instance<String>> majorityInsts;
 	protected Table<Instance<String>, String, Integer> instanceFeatureCount;
 	protected Table<Instance<String>, Instance<String>, Double> interInstanceDistance;
 	protected List<Instance<String>> syntheticInsts;
@@ -80,8 +78,6 @@ public class SMOTEplus {
 		return this.syntheticInsts;
 	}
 
-	private static Random rand = new Random();
-	
 	private Instance<String> generateInstance(Instance<String> aMinorityInst,
 			Instance<String> nearestNeighbor) {
 		List<Feature> features = new ArrayList<Feature>();
@@ -93,7 +89,7 @@ public class SMOTEplus {
 				features.add(feature);
 			}
 		}
-		String outcome = rand.nextBoolean()? aMinorityInst.getOutcome() : nearestNeighbor.getOutcome();
+		String outcome = nearestNeighbor.getOutcome();
 		Instance<String> syntheticInst = new Instance<String>(outcome, features);
 		return syntheticInst;
 	}
