@@ -1,7 +1,12 @@
 package org.apache.ctakes.temporal.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
@@ -20,13 +25,18 @@ import com.google.common.collect.Table;
 public class SMOTEplus {
 
 	protected List<Instance<String>> minorityInsts;
+	protected List<Instance<String>> majorityInsts;
 	protected Table<Instance<String>, String, Integer> instanceFeatureCount;
+	protected Table<Instance<String>, Instance<String>, Double> interInstanceDistance;
 	protected List<Instance<String>> syntheticInsts;
+	protected final int numOfNearestNeighbors;
 	
-	public SMOTEplus() {
-		this.minorityInsts = Lists.newArrayList();
+	public SMOTEplus(int numNeighbors) {
+		this.minorityInsts 	= Lists.newArrayList();
 		this.syntheticInsts = Lists.newArrayList();
-		this.instanceFeatureCount = HashBasedTable.<Instance<String>, String, Integer> create();
+		this.instanceFeatureCount 	= HashBasedTable.<Instance<String>, String, Integer> create();
+		this.interInstanceDistance	= HashBasedTable.<Instance<String>, Instance<String>, Double> create();
+		this.numOfNearestNeighbors	= numNeighbors;
 	}
 	
 	public Iterable<Instance<String>> populateMinorityClass() {
@@ -38,60 +48,85 @@ public class SMOTEplus {
 		}
 		
 		//2. Iterate through all minority instances:
-		for (Instance<String> aMinorityInst : this.instanceFeatureCount.rowKeySet()) {
+		for (Instance<String> aMinorityInst : this.minorityInsts) {
 			//3. find its nearest neighbor minority instance:
-			//TODO: Should be modified to take nearest K neighbors
-			double minDis = Double.MAX_VALUE;
-			Instance<String> nearestNeighbor = null;
-			for (Instance<String> bMinorityInst : this.instanceFeatureCount.rowKeySet()){
-				if ( aMinorityInst==bMinorityInst || (aMinorityInst!=null && aMinorityInst.equals(bMinorityInst)) ){
-					double distance = calculateDistance(aMinorityInst, bMinorityInst);
-					if (distance < minDis){
-						minDis = distance;
-						nearestNeighbor = bMinorityInst;
-					}
-				}
+			List<Object[]> distToMe = new LinkedList<Object[]>();
+			for ( Instance<String> bInst : this.instanceFeatureCount.rowKeySet()){
+				double distance = calculateDistance(aMinorityInst, bInst);
+				distToMe.add(new Object[] {distance, bInst});
 			}
-			Instance<String> sytheticInst = generateInstance(aMinorityInst, nearestNeighbor);
-			this.syntheticInsts.add(sytheticInst);
+			
+			//sort list and find nearest neighbors:
+			Collections.sort(distToMe, new Comparator<Object>(){
+				public int compare(Object o1, Object o2){
+					double dist1 = (Double) ((Object[])o1)[0];
+					double dist2 = (Double) ((Object[])o2)[0];
+					return (int) Math.ceil(dist1 - dist2);
+				}
+			});
+			
+			//populate the nearest neighbor, create synthetic data:
+			Iterator<Object[]> neighborIter = distToMe.iterator();
+			int idx = 0;
+			while( neighborIter.hasNext() && idx < this.numOfNearestNeighbors){
+				@SuppressWarnings("unchecked")
+				Instance<String> nearestNeighbor = ((Instance<String>) neighborIter.next()[1]);
+				Instance<String> sytheticInst = generateInstance(aMinorityInst, nearestNeighbor);
+				this.syntheticInsts.add(sytheticInst);
+				idx ++;
+			}
 		}
 		
 		return this.syntheticInsts;
 	}
 
+	private static Random rand = new Random();
+	
 	private Instance<String> generateInstance(Instance<String> aMinorityInst,
 			Instance<String> nearestNeighbor) {
 		List<Feature> features = new ArrayList<Feature>();
 		//iterate through all features:
-		for( String featureName: this.instanceFeatureCount.columnKeySet()){
-			Integer valA = this.instanceFeatureCount.get(aMinorityInst, featureName);
+		for(Feature feature: aMinorityInst.getFeatures()){
+			String featureName = getFeatureName(feature);
 			Integer valB = this.instanceFeatureCount.get(nearestNeighbor, featureName);
-			if (valA != null && valB != null){
-				features.add(new Feature(featureName.split(":",2)[0],featureName.split(":",2)[1]));
+			if(valB != null){
+				features.add(feature);
 			}
 		}
-		Instance<String> syntheticInst = new Instance<String>(aMinorityInst.getOutcome(), features);
+		String outcome = rand.nextBoolean()? aMinorityInst.getOutcome() : nearestNeighbor.getOutcome();
+		Instance<String> syntheticInst = new Instance<String>(outcome, features);
 		return syntheticInst;
 	}
 
 	private double calculateDistance(Instance<String> instA,
 			Instance<String> instB) {
 		double distance = 0;
-		//iterate through all features:
-		for( String featureName: this.instanceFeatureCount.columnKeySet()){
-			Integer valA = this.instanceFeatureCount.get(instA, featureName);
-			Integer valB = this.instanceFeatureCount.get(instB, featureName);
-			if ( (valA!=null && valB == null) || (valA==null && valB != null)){
-				distance ++;
+		Double dis1 = this.interInstanceDistance.get(instA, instB);
+		Double dis2 = this.interInstanceDistance.get(instB, instA);
+
+		if (dis1 == null && dis2 == null){ //if this pair's distance hasn't been calculated, then calculate it.
+			//iterate through all features:
+			for(Feature feature: instA.getFeatures()){
+				String featureName = getFeatureName(feature);
+				Integer valB = this.instanceFeatureCount.get(instB, featureName);
+				if ( valB == null ){
+					distance ++;
+				}
 			}
+			distance = Math.pow(distance, .5);
+			this.interInstanceDistance.put(instA, instB, distance);
+		}else{
+			distance = dis1 == null?  dis2 : dis1;
 		}
-		return Math.pow(distance, .5);
+
+		return distance;
 	}
 
 	public String getFeatureName(Feature feature) {
 	    String featureName = feature.getName();
 	    Object featureValue = feature.getValue();
-	    return featureValue instanceof Number ? featureName : featureName + ":" + featureValue;
+	    //return featureValue instanceof Number ? featureName : featureName + ":" + featureValue;
+	    return featureName + ":" + featureValue;
 	  }
 
 	public void addInstance(Instance<String> minorityInst) {

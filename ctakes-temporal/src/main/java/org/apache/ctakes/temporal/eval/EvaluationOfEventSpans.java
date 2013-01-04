@@ -56,6 +56,9 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
 
     @Option(longName = "featureSelectionThreshold", defaultValue = "0")
     public float getFeatureSelectionThreshold();
+    
+    @Option(longName = "SMOTENeighborNumber", defaultValue = "1")
+    public float getSMOTENeighborNumber();
   }
 
   public static void main(String[] args) throws Exception {
@@ -68,7 +71,8 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getProbabilityOfKeepingANegativeExample(),
-        options.getFeatureSelectionThreshold());
+        options.getFeatureSelectionThreshold(),
+        options.getSMOTENeighborNumber());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
@@ -77,13 +81,15 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
   private float probabilityOfKeepingANegativeExample;
 
   private float featureSelectionThreshold;
+  
+  private float smoteNeighborNumber;
 
   public EvaluationOfEventSpans(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
       float probabilityOfKeepingANegativeExample,
-      float featureSelectionThreshold) {
+      float featureSelectionThreshold, float numOfSmoteNeighbors) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, EnumSet.of(
         AnnotatorType.PART_OF_SPEECH_TAGS,
         AnnotatorType.CHUNKS,
@@ -95,6 +101,7 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         //AnnotatorType.SEMANTIC_ROLES));
     this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
     this.featureSelectionThreshold = featureSelectionThreshold;
+    this.smoteNeighborNumber = numOfSmoteNeighbors;
   }
 
   @Override
@@ -107,7 +114,8 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         dataWriterClass,
         directory,
         this.probabilityOfKeepingANegativeExample,
-        this.featureSelectionThreshold);
+        this.featureSelectionThreshold,
+        this.smoteNeighborNumber);
   }
 
   @Override

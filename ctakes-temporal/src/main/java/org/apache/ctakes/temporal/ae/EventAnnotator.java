@@ -83,6 +83,14 @@ public class EventAnnotator extends CleartkAnnotator<String> {
       mandatory = false,
       description = "the Chi-squared threshold at which features should be removed")
   protected Float featureSelectionThreshold = 0f;
+  
+  public static final String PARAM_SMOTE_NUM_NEIGHBORS = "NumOfNeighborForSMOTE";
+  
+  @ConfigurationParameter(
+	      name = PARAM_SMOTE_NUM_NEIGHBORS,
+	      mandatory = false,
+	      description = "the number of neighbors used for minority instances for SMOTE algorithm")
+	  protected Float smoteNumOfNeighbors = 0f;
 
   public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
 
@@ -96,7 +104,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
       Class<?> dataWriter,
       File outputDirectory,
       float downratio,
-      float featureSelect) throws ResourceInitializationException {
+      float featureSelect, float smoteNeighborNumber) throws ResourceInitializationException {
     return AnalysisEngineFactory.createPrimitiveDescription(
         EventAnnotator.class,
         CleartkAnnotator.PARAM_IS_TRAINING,
@@ -108,7 +116,9 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         EventAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
         downratio,
         EventAnnotator.PARAM_FEATURE_SELECTION_THRESHOLD,
-        featureSelect);
+        featureSelect,
+        EventAnnotator.PARAM_SMOTE_NUM_NEIGHBORS,
+        smoteNeighborNumber);
   }
 
   public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
@@ -194,7 +204,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
     Random rand = new Random();
     
     //TRY SMOTE algorithm here to generate more minority class samples
-    SMOTEplus smote = new SMOTEplus();
+    SMOTEplus smote = new SMOTEplus((int)Math.ceil(this.smoteNumOfNeighbors));
         
     // classify tokens within each sentence
     for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
@@ -274,12 +284,13 @@ public class EventAnnotator extends CleartkAnnotator<String> {
           String outcome = outcomes.get(tokenIndex);
           // if it is an "O" down-sample it
           if (outcome.equals("O")) {
-        	  if (rand.nextDouble() <= this.probabilityOfKeepingANegativeExample)
+        	  if (rand.nextDouble() <= this.probabilityOfKeepingANegativeExample){
         		  this.dataWriter.write(new Instance<String>(outcome, features));
+        	  }		  
           }else{//for minority instances:
         	  Instance<String> minorityInst = new Instance<String>(outcome, features);
         	  this.dataWriter.write(minorityInst);
-        	  smote.addInstance(minorityInst);
+        	  smote.addInstance(minorityInst);//add minority instances to SMOTE algorithm
           }
         }
 
@@ -294,7 +305,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         this.eventChunking.createChunks(jCas, tokens, outcomes);
       }
     }
-    if(this.isTraining()){ //add synthetic instances to datawriter
+    if(this.isTraining() && this.smoteNumOfNeighbors >= 1){ //add synthetic instances to datawriter, if smote is selected
     	Iterable<Instance<String>> syntheticInsts = smote.populateMinorityClass();
     	for( Instance<String> sytheticInst: syntheticInsts){
     		this.dataWriter.write(sytheticInst);
