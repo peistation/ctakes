@@ -33,7 +33,7 @@
     <typeSystemDescription>
       <imports>
         <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
-        <import location="type-system/CorefTypes.xml"/>
+        <import name="org.apache.ctakes.coreference.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
