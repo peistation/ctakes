@@ -18,8 +18,12 @@
  */
 package org.apache.ctakes.relationextractor.data;
 
+import java.util.Collection;
+
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -42,12 +46,16 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 
 	public static final String goldViewName = "GoldView";
 	public int tokenCount;
+	public int sentenceCount;
+	public int entityMentionCount;
 	public Multiset<String> relationTypes;
 	
 	@Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
 	  
 	  tokenCount = 0;
+	  sentenceCount = 0;
+	  entityMentionCount = 0;
 	  relationTypes = HashMultiset.create();
 	}
   
@@ -56,6 +64,8 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 
 	  System.out.println();
 	  System.out.println("token count: " + tokenCount);
+	  System.out.println("sentence count: " + sentenceCount);
+	  System.out.println("entity mention count: " + entityMentionCount);
 	  System.out.println("location_of count: " + relationTypes.count("location_of"));
 	  System.out.println("degree_of count: " + relationTypes.count("degree_of"));
   }
@@ -71,21 +81,32 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     }	  
 
     countTokens(jCas); // tokens exist in system view (not in gold)
-    countRelationTypes(goldView); // gold relations are in gold view
+    countSentences(jCas);
+    countEntities(goldView);
+    countRelationTypes(goldView); 
   }
 	
 	private void countTokens(JCas jCas) {
     
-	  for(BaseToken baseToken : JCasUtil.select(jCas, BaseToken.class)) {
-	    tokenCount++;
-    }
+	  Collection<BaseToken> baseTokens = JCasUtil.select(jCas, BaseToken.class);
+	  tokenCount += baseTokens.size();
 	}
 	
+	private void countSentences(JCas jCas) {
+	  Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
+	  sentenceCount += sentences.size();
+	}
 	private void countRelationTypes(JCas jCas) {
 	  
     for(BinaryTextRelation binaryTextRelation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
       String category = binaryTextRelation.getCategory();
       relationTypes.add(category);
     }
+	}
+	
+	private void countEntities(JCas jCas) {
+	  
+	  Collection<EntityMention> entityMentions = JCasUtil.select(jCas, EntityMention.class);
+	  entityMentionCount += entityMentions.size();
 	}
 }
