@@ -38,7 +38,7 @@ import org.uimafit.pipeline.SimplePipeline;
  * @author dmitriy dligach
  *
  */
-public class GoldAnnotationAnalysis {
+public class GoldAnnotationAnalysisPipeline {
 
   public static class Options extends Options_ImplBase {
 
@@ -57,10 +57,10 @@ public class GoldAnnotationAnalysis {
 		List<File> trainFiles = Arrays.asList(options.inputDirectory.listFiles());
     CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
-    AnalysisEngine relationExtractorConsumer = AnalysisEngineFactory.createPrimitive(
-    		GoldAnnotationStats.class);
+    AnalysisEngine goldAnnotationStatsCalculator = AnalysisEngineFactory.createPrimitive(
+    		GoldAnnotationStatsCalculator.class);
     		
-		SimplePipeline.runPipeline(collectionReader, relationExtractorConsumer);
+		SimplePipeline.runPipeline(collectionReader, goldAnnotationStatsCalculator);
 	}
 	
   private static CollectionReader getCollectionReader(List<File> items) throws Exception {
