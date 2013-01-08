@@ -191,7 +191,14 @@ public class TreeExtractor {
 	}
 	
 	// Find the least common ancestor of two other nodes, or null (top node) if they are in different sentences
-	private static TreebankNode getLCA(TreebankNode t1, TreebankNode t2){
+	public static TreebankNode getLCA(TreebankNode t1, TreebankNode t2){
+		TreebankNode temp = null;
+		if(t2.getBegin() < t1.getBegin()){
+			temp = t1;
+			t1 = t2;
+			t2 = temp;
+		}
+		
 		TreebankNode lca = t2;
 		while(lca != null && lca.getBegin() > t1.getBegin()){
 			lca = lca.getParent();
