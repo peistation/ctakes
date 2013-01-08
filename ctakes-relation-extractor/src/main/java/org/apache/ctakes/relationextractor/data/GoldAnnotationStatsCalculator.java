@@ -19,7 +19,10 @@
 package org.apache.ctakes.relationextractor.data;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
@@ -48,6 +51,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	public int tokenCount;
 	public int sentenceCount;
 	public int entityMentionCount;
+	public int entityMentionPairCount;
 	public Multiset<String> relationTypes;
 	
 	@Override
@@ -56,6 +60,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  tokenCount = 0;
 	  sentenceCount = 0;
 	  entityMentionCount = 0;
+	  entityMentionPairCount = 0;
 	  relationTypes = HashMultiset.create();
 	}
   
@@ -63,11 +68,12 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
 
 	  System.out.println();
-	  System.out.println("token count: " + tokenCount);
-	  System.out.println("sentence count: " + sentenceCount);
-	  System.out.println("entity mention count: " + entityMentionCount);
-	  System.out.println("location_of count: " + relationTypes.count("location_of"));
-	  System.out.println("degree_of count: " + relationTypes.count("degree_of"));
+	  System.out.format("%-30s%d\n", "token count", tokenCount);
+	  System.out.format("%-30s%d\n", "sentence count", sentenceCount);
+	  System.out.format("%-30s%d\n", "entity mention count", entityMentionCount);
+	  System.out.format("%-30s%d\n", "entity mention pair count", entityMentionPairCount);
+	  System.out.format("%-30s%d\n", "location_of count", relationTypes.count("location_of"));
+	  System.out.format("%-30s%d\n", "degree_of count", relationTypes.count("degree_of"));
   }
   
 	@Override
@@ -79,10 +85,11 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     } catch (CASException e) {
       throw new AnalysisEngineProcessException(e);
     }	  
-
+    
     countTokens(jCas); // tokens exist in system view (not in gold)
     countSentences(jCas);
     countEntities(goldView);
+    countEntityMentionPairs(jCas, goldView); // TODO: need gold view?
     countRelationTypes(goldView); 
   }
 	
@@ -96,6 +103,16 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
 	  sentenceCount += sentences.size();
 	}
+	
+  private void countEntityMentionPairs(JCas jCas, JCas goldView) {
+    
+    for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+      EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
+      List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
+      entityMentionPairCount += pairs.size();
+    }
+  }
+	
 	private void countRelationTypes(JCas jCas) {
 	  
     for(BinaryTextRelation binaryTextRelation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
