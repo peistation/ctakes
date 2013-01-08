@@ -3,6 +3,7 @@ package org.apache.ctakes.relationextractor.ae.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.constituency.parser.treekernel.TreeExtractor;
 import org.apache.ctakes.constituency.parser.util.AnnotationTreeUtils;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
@@ -23,8 +24,9 @@ public class FlatTreeFeatureExtractor implements RelationFeaturesExtractor {
 		
 		SimpleTree tree = null;
 		tree = new SimpleTree("BOP");
-		TreebankNode lca = AnnotationTreeUtils.getCommonAncestor(AnnotationTreeUtils.annotationNode(jcas, arg1),
-																   AnnotationTreeUtils.annotationNode(jcas, arg2));
+		TreebankNode lca = TreeExtractor.getLCA(AnnotationTreeUtils.annotationNode(jcas, arg1),
+												AnnotationTreeUtils.annotationNode(jcas, arg2));
+				
 		SimpleTree arg1Tree = new SimpleTree("ARG1");
 		SimpleTree arg2Tree = new SimpleTree("ARG2");
 		
