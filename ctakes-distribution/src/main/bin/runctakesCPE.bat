@@ -24,6 +24,7 @@
 @REM -Dctakes.umlsuser=[username] -Dctakes.umlspw=[password]
 
 @REM Guess CTAKES_HOME if not defined
+SETLOCAL
 set CURRENT_DIR=%cd%
 if not "%CTAKES_HOME%" == "" goto gotHome
 set CTAKES_HOME=%CURRENT_DIR%
@@ -42,3 +43,4 @@ cd %CTAKES_HOME%
 java -cp "%CTAKES_HOME%/lib/*;%CTAKES_HOME%/desc/;%CTAKES_HOME%/resources/" -Dlog4j.configuration=file:/%CTAKES_HOME%/config/log4j.xml -Xms512M -Xmx1024M org.apache.uima.tools.cpm.CpmFrame
 
 :end
+ENDLOCAL
