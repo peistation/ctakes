@@ -58,6 +58,7 @@ import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.textsem.SubjectModifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -74,6 +75,7 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
@@ -82,6 +84,34 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   
   // paramater that should contain the path to text files, with Knowtator XML in a "nephew"
   public static final String PARAM_TEXTURI = "TextURI";
+
+  private static final Map<String, String> knowtatorSubjectValuesMappedToCasValues;
+  static {
+	  knowtatorSubjectValuesMappedToCasValues = Maps.newHashMap();
+	  String [] knowtatorValues = {  // subject_normalization_CU
+			  "patient",
+			  "family_member",
+			  "donor_family_member",
+			  "donor_other",
+			  "other",
+	  };
+
+	  String [] casValues = {
+				CONST.ATTR_SUBJECT_PATIENT,
+				CONST. ATTR_SUBJECT_FAMILY_MEMBER, // = "family_member";
+				CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER, // = "donor_family_member";
+				CONST.ATTR_SUBJECT_DONOR_OTHER, // = "donor_other";
+				CONST.ATTR_SUBJECT_OTHER, // = "other";
+			  
+	  };
+	  
+	  for (int i=0; i<knowtatorValues.length; i++) {
+		  knowtatorSubjectValuesMappedToCasValues.put(knowtatorValues[i], casValues[i]);
+		  
+	  }
+	  
+  }
+  
   // path to knowtator xml files
   public static File textURIDirectory;
 
@@ -107,7 +137,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
    */
   protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
     String textURI = this.getTextURI(jCas).toString();
-    String xmlURI = textURI.replaceAll("Knowtator"+File.separator+"text", "Knowtator_XML") + ".knowtator.xml";
+    String fileSeparator;
+    if (!textURI.contains("Knowtator"+File.separator)) {
+    	fileSeparator = "/";
+    } else {
+    	fileSeparator = File.separator;
+    }
+    String xmlURI = textURI.replaceAll("Knowtator"+fileSeparator+"text", "Knowtator_XML") + ".knowtator.xml";
     try {
       return new URI(xmlURI);
     } catch (URISyntaxException e) {
@@ -549,11 +585,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Person".equals(annotation.type)) {
-        // TODO: unclear where these slots go
         String value = stringSlots.remove("subject_normalization_CU");
+        // TODO: unclear where this slot goes
         String code = stringSlots.remove("associatedCode");
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        if (value!=null) value = knowtatorSubjectValuesMappedToCasValues.get(value);
+        modifier.setSubject(value);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -1011,6 +1049,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     KnowtatorAnnotation negationIndicator = annotationSlots.remove("negation_indicator_CU");
     delayedFeatures.add(new NegationFeature(entityMention, negationIndicator));
     KnowtatorAnnotation subject = annotationSlots.remove("subject_CU");
+    //subject.stringSlots.get("subject_normalization_CU");
     delayedFeatures.add(new SubjectFeature(entityMention, subject));
     KnowtatorAnnotation uncertainty = annotationSlots.remove("uncertainty_indicator_CU");
     delayedFeatures.add(new UncertaintyFeature(entityMention, uncertainty));
@@ -1470,7 +1509,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setSubject(...)
+      Modifier subjectModifier = (Modifier) valueAnnotation;
+      String normalizedSubject = subjectModifier.getSubject();
+      // if (normalizedSubject!=null) LOGGER.error("INFO: subject = " + normalizedSubject); // TODO remove this debug line
+      this.annotation.setSubject(normalizedSubject);
     }
   }
   
