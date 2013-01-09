@@ -1,5 +1,5 @@
 Apache cTAKES
-Copyright 2012 The Apache Software Foundation
+Copyright 2013 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
@@ -19,6 +19,11 @@ Portions of cTAKES were originally developed by
 University of Colorado and are licensed to the Apache Software
 Foundation under the "Software Grant License Agreement".
 Copyright (c) 2012 University of Colorado.
+
+Portions of cTAKES were originally developed by
+The MITRE corporation  and are licensed to the Apache Software
+Foundation under the "Software Grant License Agreement".
+Copyright (c) 2012 The MITRE Corporation.
 
 This product contains hsqldb developed by the HSQL Development Group 
 (http://hsqldb.org), licensed based on the
