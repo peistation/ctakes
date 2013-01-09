@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
@@ -32,6 +33,8 @@ import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.cleartk.classifier.CleartkProcessingException;
+import org.cleartk.classifier.Feature;
 
 /**
  * Identifies Degree_Of relation between entities and modifiers
@@ -63,4 +66,8 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
 	}
 
+  @Override
+  public String classify(List<Feature> features) throws CleartkProcessingException {
+    return this.classifier.classify(features);
+  }
 }

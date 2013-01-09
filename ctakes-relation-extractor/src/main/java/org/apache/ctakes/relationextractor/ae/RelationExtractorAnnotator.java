@@ -32,6 +32,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -92,10 +93,15 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
   }
  
   /**
-   * Selects the relevant mentions/annotations within a sentence for relation identification/extraction
+   * Selects the relevant mentions/annotations within a sentence for relation identification/extraction.
    */
   public abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Sentence sentence);
 
+  /*
+   * Make a prediction given a list of features.
+   */
+  public abstract String classify(List<Feature> features) throws CleartkProcessingException;
+  
   /*
    * Implement the standard UIMA process method.
    */
@@ -156,7 +162,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
 
     		// during classification feed the features to the classifier and create annotations
     		else {
-    			String predictedCategory = this.classifier.classify(features);
+    			String predictedCategory = this.classify(features); 
 
     			// add a relation annotation if a true relation was predicted
     			if (!predictedCategory.equals(NO_RELATION_CATEGORY)) {

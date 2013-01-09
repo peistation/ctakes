@@ -20,26 +20,25 @@ package org.apache.ctakes.relationextractor.ae;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.uimafit.descriptor.ConfigurationParameter;
-import org.uimafit.util.JCasUtil;
 
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
-import org.cleartk.classifier.CleartkProcessingException;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
+import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.util.JCasUtil;
 
 /**
- * Identifies and classifies relations between pairs of named entities
- *
+ * Annotate location_of relation between two entities in sentences containing
+ * exactly two entities (where the entities are of the correct types).
  */
-public class EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class BaselineEntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	public static final String PARAM_CLASSIFY_BOTH_DIRECTIONS = "ClassifyBothDirections";
 
@@ -64,6 +63,7 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 
 		// Create pairings (this will change depending on the classification direction)
 		List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
+		
 		for (int i = 0; i < args.size(); ++i) {
 			EntityMention arg1 = args.get(i);
 			int jStart = this.classifyBothDirections ? 0 : i + 1;
@@ -76,9 +76,48 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 				pairs.add(new IdentifiedAnnotationPair(arg1, arg2));
 			}
 		}
-		return pairs;
-	}
 
+		// return the pairs if there is only a single pair of entities
+		// and the argument types are legitimate for location_of
+		if(pairs.size() == 1) {
+		  if(validateArgumentTypes(pairs.get(0))) {
+		    System.out.println(sentence.getCoveredText());
+		    System.out.println("arg1: " + pairs.get(0).getArg1().getCoveredText());
+		    System.out.println("arg2: " + pairs.get(0).getArg2().getCoveredText());
+		    System.out.println();
+		    return pairs;
+		  }
+		}
+
+		// for all other cases, return no entity pairs
+		return new ArrayList<IdentifiedAnnotationPair>();
+	}
+	
+	/*
+	 * Are entity types of the arguments valid for location_of? 
+	 * The following combinations are allowed:
+	 * 
+	 * location-of(anatomical site/6, disorder/2)
+   * location-of(anatomical site/6, sign/symptom/3)
+   * location-of(anatomical site/6, procedure/5)
+	 */
+	private static boolean validateArgumentTypes(IdentifiedAnnotationPair pair) {
+	  
+    // allowable arg2 types for location_of
+    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
+    
+	  IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be anatomical site)
+	  IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be either disorder, sign/symptom, or procedure)
+	  int type1 = arg1.getTypeID();
+	  int type2 = arg2.getTypeID();
+	  
+	  if(type1 == 6 && okArg2Types.contains(type2)) {
+	    return true;
+	  }
+	  
+	  return false;
+	}
+	
 	@Override
 	protected String getRelationCategory(Map<List<Annotation>, BinaryTextRelation> relationLookup,
 			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
@@ -117,8 +156,7 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 	}
 
   @Override
-  public String classify(List<Feature> features) throws CleartkProcessingException {
-    return this.classifier.classify(features);
+  public String classify(List<Feature> features) {
+    return "location_of";
   }
-
 }
