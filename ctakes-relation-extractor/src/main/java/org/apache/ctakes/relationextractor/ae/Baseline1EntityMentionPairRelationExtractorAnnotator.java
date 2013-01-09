@@ -38,7 +38,7 @@ import org.uimafit.util.JCasUtil;
  * Annotate location_of relation between two entities in sentences containing
  * exactly two entities (where the entities are of the correct types).
  */
-public class BaselineEntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class Baseline1EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	public static final String PARAM_CLASSIFY_BOTH_DIRECTIONS = "ClassifyBothDirections";
 
