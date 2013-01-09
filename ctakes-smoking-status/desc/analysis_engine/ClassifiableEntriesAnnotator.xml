@@ -24,7 +24,7 @@
   <primitive>true</primitive>
   <annotatorImplementationName>org.apache.ctakes.smokingstatus.ae.ClassifiableEntries</annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>ClassigiableEntriesAnnotator</name>
+    <name>ClassifiableEntriesAnnotator</name>
     <description>Converts Sentences to ClassifiableEntries (required by SmokingStatus pipeline) and ultimately to RecordSentence.
 
 Update 1/20: Removed param [String InputDirectory]</description>
@@ -128,7 +128,7 @@ This param is optional.  If not specified, then the classification feature of th
         <name>UimaDescriptorStep1</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:org/apache/ctakes/smokingstatus/analysis_engine/ProductionPostSentenceAggregate_step1.xml</fileUrl>
+          <fileUrl>file:ctakes-smoking-status/desc/analysis_engine/ProductionPostSentenceAggregate_step1.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
@@ -136,7 +136,7 @@ This param is optional.  If not specified, then the classification feature of th
         <name>UimaDescriptorStep2</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:org/apache/ctakes/smokingstatus/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</fileUrl>
+          <fileUrl>file:ctakes-smoking-status/desc/analysis_engine/ProductionPostSentenceAggregate_step2_libsvm.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>
