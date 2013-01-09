@@ -95,5 +95,67 @@
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-dependency-parser</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.ctakesresources</groupId>
+			<artifactId>ctakes-resources-umls2011ab</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
+	<!-- The below is all necessary to unpack the UMLS resources since they 
+		can't be used from the classpath -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>net.sourceforge.ctakesresources</groupId>
+									<artifactId>ctakes-resources-umls2011ab</artifactId>
+									<version>3.1.0</version>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/unpacked</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

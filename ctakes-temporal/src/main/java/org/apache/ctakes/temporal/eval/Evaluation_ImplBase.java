@@ -19,7 +19,6 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -232,28 +231,16 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           "DeleteAction",
           new String[] { "selector=B" }));
       // add UMLS on top of lookup windows
-      String umlsUser = System.getProperty("umls.user");
-      String umlsPassword = System.getProperty("umls.password");
-      if (umlsUser == null || umlsPassword == null) {
-        throw new IllegalArgumentException(
-            "The properties umls.user and umls.password must be set to use the "
-                + "UmlsDictionaryLookupAnnotator. You can set them by provding java with the "
-                + "arguments -Dumls.user=... and -Dumls.password=...");
-      }
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           UmlsDictionaryLookupAnnotator.class,
-          "UMLSAddr",
+          "ctakes.umlsaddr",
           "https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser",
-          "UMLSVendor",
+          "ctakes.umlsvendor",
           "NLM-6515182895",
-          "UMLSUser",
-          umlsUser,
-          "UMLSPW",
-          umlsPassword,
           "LookupDescriptor",
           ExternalResourceFactory.createExternalResourceDescription(
               FileResourceImpl.class,
-              getResourceAsFile(UmlsDictionaryLookupAnnotator.class, "../LookupDesc_Db.xml")),
+              new File("target/unpacked/org/apache/ctakes/dictionary/lookup/LookupDesc_Db.xml").getAbsoluteFile()),
           "DbConnection",
           ExternalResourceFactory.createExternalResourceDescription(
               JdbcConnectionResourceImpl.class,
@@ -261,7 +248,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
               JdbcConnectionResourceImpl.PARAM_DRIVER_CLASS,
               "org.hsqldb.jdbcDriver",
               JdbcConnectionResourceImpl.PARAM_URL,
-              "jdbc:hsqldb:res:/org/apache/ctakes/dictionary/lookup/umls2011ab/umls"),
+              // Should be the following but it's WAY too slow
+              //"jdbc:hsqldb:res:/org/apache/ctakes/dictionary/lookup/umls2011ab/umls"),
+              "jdbc:hsqldb:file:target/unpacked/org/apache/ctakes/dictionary/lookup/umls2011ab/umls"),
           "RxnormIndexReader",
           ExternalResourceFactory.createExternalResourceDescription(
               LuceneIndexReaderResourceImpl.class,
@@ -269,7 +258,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
               "UseMemoryIndex",
               true,
               "IndexDirectory",
-              getResourceAsFile(UmlsDictionaryLookupAnnotator.class, "../rxnorm_index")),
+              new File("target/unpacked/org/apache/ctakes/dictionary/lookup/rxnorm_index").getAbsoluteFile()),
           "OrangeBookIndexReader",
           ExternalResourceFactory.createExternalResourceDescription(
               LuceneIndexReaderResourceImpl.class,
@@ -277,7 +266,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
               "UseMemoryIndex",
               true,
               "IndexDirectory",
-              getResourceAsFile(UmlsDictionaryLookupAnnotator.class, "../OrangeBook"))));
+              new File("target/unpacked/org/apache/ctakes/dictionary/lookup/OrangeBook").getAbsoluteFile())));
     }
 
     // add lvg annotator
@@ -340,7 +329,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           "LvgCmdApi",
           ExternalResourceFactory.createExternalResourceDescription(
               LvgCmdApiResourceImpl.class,
-              getResourceAsFile(LvgAnnotator.class, "../data/config/lvg.properties")));
+              "org/apache/ctakes/lvg/data/config/lvg.properties"));
       aggregateBuilder.add(lvgAnnotator);
     }
 
@@ -354,14 +343,6 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearParserSemanticRoleLabelerAE.class));
     }
     return aggregateBuilder.createAggregateDescription();
-  }
-
-  /**
-   * This is hack to deal with classes that don't handle resources correctly
-   */
-  private static File getResourceAsFile(Class<?> cls, String path) throws URISyntaxException {
-    // this will fail if the resource is not a real File, but the UMLS code assumes that
-    return new File(cls.getResource(path).toURI());
   }
 
   public static class CopyNPChunksToLookupWindowAnnotations extends JCasAnnotator_ImplBase {
