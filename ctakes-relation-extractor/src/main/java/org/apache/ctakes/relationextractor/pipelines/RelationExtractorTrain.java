@@ -124,6 +124,8 @@ public class RelationExtractorTrain {
 	    		additionalParameters,
 	    		trainingArguments,
 	    		false,
+	    		false,
+	    		false,
 	    		false);
 	    
 	    CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);

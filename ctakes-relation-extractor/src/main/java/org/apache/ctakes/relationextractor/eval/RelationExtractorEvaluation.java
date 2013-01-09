@@ -118,6 +118,16 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     public boolean testOnCTakes = false;
 
     @Option(
+        name = "--allow-smaller-system-arguments",
+        usage = "for evaluation, allow system relation arguments to match gold relation arguments that enclose them")
+    public boolean allowSmallerSystemArguments = false;
+
+    @Option(
+        name = "--ignore-impossible-gold-relations",
+        usage = "for evaluation, ignore gold relations that would be impossible to find because there are no corresponding system mentions")
+    public boolean ignoreImpossibleGoldRelations = false;
+
+    @Option(
         name = "--print-errors",
         usage = "print relations that were incorrectly predicted")
     public boolean printErrors = false;
@@ -225,6 +235,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             additionalParameters,
             trainingArguments,
             options.testOnCTakes,
+            options.allowSmallerSystemArguments,
+            options.ignoreImpossibleGoldRelations,
             options.printErrors);
 
         if (options.devDirectory != null) {
@@ -301,6 +313,11 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
    *          Arguments that should be passed to the classifier's train method
    * @param testOnCTakes
    *          During testing, use annotations from cTAKES, not from the gold standard
+   * @param allowSmallerSystemArguments
+   *          During testing, allow system annotations to match gold annotations that enclose them
+   * @param ignoreImpossibleGoldRelations
+   *          During testing, ignore gold relations that would be impossible to find because there
+   *          are no corresponding system mentions
    */
   public RelationExtractorEvaluation(
       File baseDirectory,
@@ -310,6 +327,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Object[] additionalParameters,
       String[] trainingArguments,
       boolean testOnCTakes,
+      boolean allowSmallerSystemArguments,
+      boolean ignoreImpossibleGoldRelations,
       boolean printErrors) {
     super(baseDirectory);
     this.relationCategory = relationCategory;
@@ -318,6 +337,8 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     this.additionalParameters = additionalParameters;
     this.trainingArguments = trainingArguments;
     this.testOnCTakes = testOnCTakes;
+    this.allowSmallerSystemArguments = allowSmallerSystemArguments;
+    this.ignoreImpossibleGoldRelations = ignoreImpossibleGoldRelations;
     this.printErrors = printErrors;
   }
   
@@ -332,6 +353,10 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   private String[] trainingArguments;
   
   private boolean testOnCTakes;
+  
+  private boolean allowSmallerSystemArguments;
+  
+  private boolean ignoreImpossibleGoldRelations;
   
   private boolean printErrors;
 
@@ -403,8 +428,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       builder.add(UIMAFramework.getXMLParser().parseAnalysisEngineDescription(source));
       // remove extraneous entity mentions
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveSmallerEntityMentions.class));
-      // replace entity mentions in the gold view with the cTAKES entity mentions 
-      builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceGoldEntityMentionsAndModifiersWithCTakes.class));
     } else {
       // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
@@ -448,6 +471,74 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Collection<BinaryTextRelation> systemBinaryTextRelations = JCasUtil.select(
           jCas,
           BinaryTextRelation.class);
+      
+      if (this.ignoreImpossibleGoldRelations) {
+        // collect only relations where both arguments have some possible system arguments
+        List<BinaryTextRelation> relations = Lists.newArrayList();
+        for (BinaryTextRelation relation : goldBinaryTextRelations) {
+          boolean hasSystemArgs = true;
+          for (RelationArgument relArg : Lists.newArrayList(relation.getArg1(), relation.getArg2())) {
+            IdentifiedAnnotation goldArg = (IdentifiedAnnotation) relArg.getArgument();
+            Class<? extends IdentifiedAnnotation> goldClass = goldArg.getClass();
+            boolean noSystemArg = JCasUtil.selectCovered(jCas, goldClass, goldArg).isEmpty();
+            hasSystemArgs = hasSystemArgs && !noSystemArg;
+          }
+          if (hasSystemArgs) {
+            relations.add(relation);
+          } else {
+            IdentifiedAnnotation arg1 = (IdentifiedAnnotation) relation.getArg1().getArgument();
+            IdentifiedAnnotation arg2 = (IdentifiedAnnotation) relation.getArg2().getArgument();
+            String messageFormat = "removing relation between %s and %s which is impossible to "
+                + "find with system mentions";
+            String message = String.format(messageFormat, format(arg1), format(arg2));
+            UIMAFramework.getLogger(this.getClass()).log(Level.WARNING, message);
+          }
+        }
+        goldBinaryTextRelations = relations;
+      }
+      
+      if (this.allowSmallerSystemArguments) {
+        // collect all the arguments of the manually annotated relations
+        Set<IdentifiedAnnotation> goldArgs = Sets.newHashSet();
+        for (BinaryTextRelation relation : goldBinaryTextRelations) {
+          for (RelationArgument relArg : Lists.newArrayList(relation.getArg1(), relation.getArg2())) {
+            goldArgs.add((IdentifiedAnnotation) relArg.getArgument());
+          }
+        }
+
+        // map each system argument to the gold argument that encloses it
+        Map<IdentifiedAnnotation, IdentifiedAnnotation> systemToGold = Maps.newHashMap();
+        for (IdentifiedAnnotation goldArg : goldArgs) {
+          Class<? extends IdentifiedAnnotation> goldClass = goldArg.getClass();
+          for (IdentifiedAnnotation systemArg : JCasUtil.selectCovered(jCas, goldClass, goldArg)) {
+            if (systemToGold.containsKey(systemArg)) {
+              throw new IllegalArgumentException(String.format(
+                  "%s contained in both %s and %s",
+                  format(systemArg),
+                  format(goldArg),
+                  format(systemToGold.get(systemArg))));
+            }
+            // only map system arguments to gold arguments if they're not the same span already
+            if (goldArg.getBegin() != systemArg.getBegin() || goldArg.getEnd() != systemArg.getEnd()) {
+              systemToGold.put(systemArg, goldArg);
+            }
+          }
+        }
+        
+        // replace system arguments with gold arguments where necessary/possible
+        for (BinaryTextRelation relation : systemBinaryTextRelations) {
+          for (RelationArgument relArg : Lists.newArrayList(relation.getArg1(), relation.getArg2())) {
+            IdentifiedAnnotation systemArg = (IdentifiedAnnotation) relArg.getArgument();
+            IdentifiedAnnotation matchingGoldArg = systemToGold.get(systemArg);
+            if (matchingGoldArg != null) {
+              String messageFormat = "replacing system argument %s with gold argument %s";
+              String message = String.format(messageFormat, format(systemArg), format(matchingGoldArg));
+              UIMAFramework.getLogger(this.getClass()).log(Level.WARNING, message);
+              relArg.setArgument(matchingGoldArg);
+            }
+          }
+        }
+      }
 
       // update the statistics based on the argument spans of the relation
       stats.add(
@@ -665,7 +756,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       for (BinaryTextRelation relation : relations) {
 
         // attempt to replace the gold RelationArguments with system ones
-        int replacedArgumentCount = 0;
         for (RelationArgument relArg : Arrays.asList(relation.getArg1(), relation.getArg2())) {
           IdentifiedAnnotation goldArg = (IdentifiedAnnotation) relArg.getArgument();
           Class<? extends IdentifiedAnnotation> argClass = goldArg.getClass();
@@ -689,7 +779,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           }
           if (bestFitArg != null) {
             relArg.setArgument(bestFitArg);
-            replacedArgumentCount += 1;
           }
 
           // log a message if we didn't find a perfect match
@@ -703,11 +792,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
             String message = String.format("%s %s; choices: %s", action, format(goldArg), choices);
             this.getContext().getLogger().log(Level.WARNING, message);
           }
-        }
-
-        // if replacements were not found for both arguments, remove the relation
-        if (replacedArgumentCount < 2) {
-          relation.removeFromIndexes();
         }
       }
     }
