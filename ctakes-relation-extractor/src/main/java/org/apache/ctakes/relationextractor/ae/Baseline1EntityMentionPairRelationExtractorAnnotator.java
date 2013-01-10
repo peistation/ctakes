@@ -37,6 +37,8 @@ import org.uimafit.util.JCasUtil;
 /**
  * Annotate location_of relation between two entities in sentences containing
  * exactly two entities (where the entities are of the correct types).
+ * This implementation assumes classifyBothDirections is set to true (i.e.
+ * each pair of entities is considered twice).
  */
 public class Baseline1EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
@@ -77,18 +79,26 @@ public class Baseline1EntityMentionPairRelationExtractorAnnotator extends Relati
 			}
 		}
 
-		// return the pairs if there is only a single pair of entities
-		// and the argument types are legitimate for location_of
-		if(pairs.size() == 1) {
-		  if(validateArgumentTypes(pairs.get(0))) {
-		    System.out.println(sentence.getCoveredText());
-		    System.out.println("arg1: " + pairs.get(0).getArg1().getCoveredText());
-		    System.out.println("arg2: " + pairs.get(0).getArg2().getCoveredText());
-		    System.out.println();
-		    return pairs;
+		// look for sentence with two entities
+		// because each pair of entities is cosidered twice, pairs.size() should be 2.
+		if(pairs.size() == 2) {
+		  // there are two entities in this sentence
+		  // are they of suitable types for location_of?
+		  for(IdentifiedAnnotationPair pair : pairs) {
+		    if(validateArgumentTypes(pair)) {
+	        System.out.println(sentence.getCoveredText());
+	        System.out.println("arg1: " + pair.getArg1().getCoveredText());
+	        System.out.println("arg2: " + pair.getArg2().getCoveredText());
+	        System.out.println();
+	        
+		      List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
+		      result.add(pair);
+		      return result;
+		    }
 		  }
 		}
-
+		
+		
 		// for all other cases, return no entity pairs
 		return new ArrayList<IdentifiedAnnotationPair>();
 	}
