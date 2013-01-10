@@ -32,23 +32,9 @@ BSD license (see LICENSE file).
 This product contains med-facts developed by the MITRE med-facts project,
 licensed under a ASF 2.0 license.
 
-This product contains icons developed by the SVG Icons project 
-(http://sourceforge.net/projects/svgicons), licensed under the 
-BSD license (see LICENSE file).
-
 This product contains jdom developed by the JDOM Project
 (http://www.jdom.org), licensed under a Apache-style license 
 (see LICENSE file).
-
-This product contains junit developed by the junit Project
-(http://www.junit.org), licensed under a CPL 1.0 license 
-(see LICENSE file).
-
-This product contains log4j developed by the log4j Project
-(http://logging.apache.org/log4j), licensed under a ASF 2.0 license.
-
-This product contains lucene developed by the lucene Project
-(http://lucene.apache.org), licensed under a ASF 2.0 license.
 
 This product contains LVG developed by the NLM's Lexical Tools Project
 (http://lexsrv3.nlm.nih.gov/LexSysGroup/Projects/lvg/current/web/index.html),
@@ -58,15 +44,6 @@ This product contains OpenAi developed by the OpenAi Labs Project
 (http://openai.sourceforge.net), licensed based on the 
 BSD license (see LICENSE file).
 
-This product contains OpenNLP developed by the OpenNLP Project
-(http://opennlp.apache.org), licensed under a ASF 2.0 license.
-
-This product contains UIMA developed by the UIMA Project
-(http://uima.apache.org), licensed under a ASF 2.0 license.
-
-This product contains jVinci developed by the UIMA Project
-(http://uima.apache.org), licensed under a ASF 2.0 license.
-
 This product contains xerces developed by the xerces Project
 (http://xerces.apache.org), licensed under a ASF 2.0 license.
 
@@ -74,7 +51,7 @@ This product contains AOP Alliance developed by the AOP Alliance Project
 (http://aopalliance.sourceforge.net), licensed under a 
 Public Domain license (see LICENSE file).
 
-This product contains xerces developed by the xerces Project
+This product contains args4j developed by the args4j Project
 (http://java.net/projects/args4j), licensed under a MIT license 
 (see LICENSE file).
 
