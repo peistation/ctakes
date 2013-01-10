@@ -56,9 +56,10 @@
 				<include>org.apache.ctakes:ctakes-type-system</include>
 				<include>org.apache.ctakes:ctakes-utils</include>
 			</includes>
-			<excludes>
-				<exclude>net.sourceforge.ctakesresources:*</exclude>
-			</excludes>
+			
+            <excludes>
+	        	<exclude>net.sourceforge.ctakesresources:*</exclude>
+	        </excludes>			
 			<unpack>false</unpack>
 			<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveFiltering>true</useTransitiveFiltering>
@@ -111,6 +112,7 @@
 			<directoryMode>755</directoryMode>
 			<includes>
 				<include>README</include>
+				<include>DISCLAIMER</include>				
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -121,7 +123,6 @@
 			<directoryMode>755</directoryMode>
 			<includes>
 				<include>RELEASE_NOTES.html</include>
-				<include>DISCLAIMER</include>
 				<include>LICENSE</include>
 				<include>NOTICE</include>				
 			</includes>
