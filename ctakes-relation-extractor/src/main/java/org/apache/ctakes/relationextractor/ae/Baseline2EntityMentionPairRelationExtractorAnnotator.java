@@ -44,8 +44,9 @@ import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 
 /**
- * Annotate location_of relation between two entities in sentences containing
- * exactly two entities (where the entities are of the correct types).
+ * Annotate location_of relation between two entities in sentences with multiple anatomica sites
+ * and a single legitimate location_of arg2. Use the pair of arguments that are the closest to each other.
+ * This implementation assumes classifyBothDirections = true.
  */
 public class Baseline2EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
@@ -86,15 +87,15 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
 			}
 		}
 
-		// need sentences with a single legitimate arg2 and multiple anatomical sties
+		// look for sentences with one legitimate arg2 and multiple anatomical sties (arg1)
 		int legitimateArg1Count = 0;
 		int legitimateArg2Count = 0;
-		for(IdentifiedAnnotationPair pair : pairs) {
-		  if(pair.getArg1().getTypeID() == 6) {
+		for(EntityMention entityMention : args) {
+		  if(entityMention.getTypeID() == 6) {
 		    legitimateArg1Count++;
 		  }
 		  HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
-		  if(okArg2Types.contains(pair.getArg2().getTypeID())) {
+		  if(okArg2Types.contains(entityMention.getTypeID())) {
 		    legitimateArg2Count++;
 		  }
 		}
@@ -135,6 +136,9 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
     return result;
 	}
 	
+	/* 
+	 * Calculate the distance (in tokens) between two identified annotations.
+	 */
 	private static int getDistance(JCas jCas, IdentifiedAnnotationPair pair)  {
 	  
 	  List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
