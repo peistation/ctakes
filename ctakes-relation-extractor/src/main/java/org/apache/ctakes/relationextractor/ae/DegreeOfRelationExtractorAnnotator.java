@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
