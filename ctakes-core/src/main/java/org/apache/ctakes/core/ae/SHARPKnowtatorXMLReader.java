@@ -57,6 +57,7 @@ import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.GenericModifier;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textsem.SubjectModifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -69,9 +70,12 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Charsets;
@@ -1322,14 +1326,25 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       // TODO: this.annotation.setExacerbatingFactor(...)
     }
   }
-
+  
+  //   <classMention id="xx_Instance_23555">
+  //     <mentionClass id="generic_class">generic_class</mentionClass>
+  //     <hasSlotMention id="xx_Instance_23556" />
+  //   </classMention>
+  //   <booleanSlotMention id="xx_Instance_23556">
+  //     <mentionSlot id="generic_normalization" />
+  //     <booleanSlotMentionValue value="true" />
+  //   </booleanSlotMention>
   private static class GenericFeature extends DelayedFeature<EntityMention> {
     public GenericFeature(EntityMention entityMention, KnowtatorAnnotation value) {
       super(entityMention, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setGeneric(...)
+    	Modifier genericModifier = (Modifier) valueAnnotation;
+        boolean isGeneric = genericModifier.getGeneric();
+        //if (isGeneric!=false) LOGGER.error("INFO: isGeneric = " + isGeneric); // TODO remove this debug line
+        this.annotation.setGeneric(isGeneric);
     }
   }
   
@@ -1511,7 +1526,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     protected void setValue(TOP valueAnnotation) {
       Modifier subjectModifier = (Modifier) valueAnnotation;
       String normalizedSubject = subjectModifier.getSubject();
-      // if (normalizedSubject!=null) LOGGER.error("INFO: subject = " + normalizedSubject); // TODO remove this debug line
+      //if (normalizedSubject!=null) LOGGER.error("INFO: subject = " + normalizedSubject); // TODO remove this debug line
       this.annotation.setSubject(normalizedSubject);
     }
   }
@@ -1528,6 +1543,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   
   /**
    * This main method is only for testing purposes. It runs the reader on Knowtator directories.
+   * Expects directory named "Knowtator" and a sibling directory "Knowtator_XML".
+   * "Knowtator" should have a subdirectory called "text" containing plaintext files
+   * "Knowtator_XML" should have files that end with .knowtator.xml
+   * @see #getKnowtatorURI
    */
   public static void main(String[] args) throws Exception {
     if (args.length == 0) {
@@ -1536,6 +1555,18 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
           SHARPKnowtatorXMLReader.class.getName()));
     }
     AnalysisEngine engine = AnalysisEngineFactory.createPrimitive(SHARPKnowtatorXMLReader.class);
+    
+    /////////////////////////
+    TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
+
+    AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
+            XWriter.class,
+            typeSystemDescription,
+            XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+            "/_/FromCloudSharedDrive/Seed/Seed Corpus/pipeline_output"
+           );
+    /////////////////////////
+    
     for (String knowtatorTextDirectoryPath : args) {
       File knowtatorTextDirectory = new File(knowtatorTextDirectoryPath);
       for (File textFile : knowtatorTextDirectory.listFiles()) {
@@ -1545,6 +1576,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         documentID.setDocumentID(textFile.toURI().toString());
         documentID.addToIndexes();
         engine.process(jCas);
+        xWriter.process(jCas); ///////////////////
       }
     }
 
