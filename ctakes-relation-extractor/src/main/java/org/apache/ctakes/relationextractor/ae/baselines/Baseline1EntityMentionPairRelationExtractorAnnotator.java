@@ -20,12 +20,10 @@ package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -87,7 +85,7 @@ public class Baseline1EntityMentionPairRelationExtractorAnnotator extends Relati
 		  // there are two entities in this sentence
 		  // are they of suitable types for location_of?
 		  for(IdentifiedAnnotationPair pair : pairs) {
-		    if(validateArgumentTypes(pair)) {
+		    if(Utils.validateLocationOfArgumentTypes(pair)) {
 	        System.out.println(sentence.getCoveredText());
 	        System.out.println("arg1: " + pair.getArg1().getCoveredText());
 	        System.out.println("arg2: " + pair.getArg2().getCoveredText());
@@ -104,32 +102,7 @@ public class Baseline1EntityMentionPairRelationExtractorAnnotator extends Relati
 		// for all other cases, return no entity pairs
 		return new ArrayList<IdentifiedAnnotationPair>();
 	}
-	
-	/*
-	 * Are entity types of the arguments valid for location_of? 
-	 * The following combinations are allowed:
-	 * 
-	 * location-of(anatomical site/6, disorder/2)
-   * location-of(anatomical site/6, sign/symptom/3)
-   * location-of(anatomical site/6, procedure/5)
-	 */
-	private static boolean validateArgumentTypes(IdentifiedAnnotationPair pair) {
-	  
-    // allowable arg2 types for location_of
-    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
-    
-	  IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be anatomical site)
-	  IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be either disorder, sign/symptom, or procedure)
-	  int type1 = arg1.getTypeID();
-	  int type2 = arg2.getTypeID();
-	  
-	  if(type1 == 6 && okArg2Types.contains(type2)) {
-	    return true;
-	  }
-	  
-	  return false;
-	}
-	
+		
 	@Override
 	protected String getRelationCategory(Map<List<Annotation>, BinaryTextRelation> relationLookup,
 			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {

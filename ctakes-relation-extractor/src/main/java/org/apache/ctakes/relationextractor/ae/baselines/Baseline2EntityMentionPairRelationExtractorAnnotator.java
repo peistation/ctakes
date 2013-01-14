@@ -108,7 +108,7 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
 		// compute distance between entities for the pairs where entity types are correct
 		HashMap<IdentifiedAnnotationPair, Integer> distanceLookup = new HashMap<IdentifiedAnnotationPair, Integer>();
 		for(IdentifiedAnnotationPair pair : pairs) {
-		  if(validateArgumentTypes(pair)) {
+		  if(Utils.validateLocationOfArgumentTypes(pair)) {
 		    try {
           int distance = getDistance(identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), pair);
           distanceLookup.put(pair, distance);
@@ -145,31 +145,6 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
 	  
 	  List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
 	  return baseTokens.size();
-	}
-	
-	/*
-	 * Are entity types of the arguments valid for location_of? 
-	 * The following combinations are allowed:
-	 * 
-	 * location-of(anatomical site/6, disorder/2)
-   * location-of(anatomical site/6, sign/symptom/3)
-   * location-of(anatomical site/6, procedure/5)
-	 */
-	private static boolean validateArgumentTypes(IdentifiedAnnotationPair pair) {
-	  
-    // allowable arg2 types for location_of
-	  HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
-    
-	  IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be anatomical site)
-	  IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be either disorder, sign/symptom, or procedure)
-	  int type1 = arg1.getTypeID();
-	  int type2 = arg2.getTypeID();
-	  
-	  if(type1 == 6 && okArg2Types.contains(type2)) {
-	    return true;
-	  }
-	  
-	  return false;
 	}
 	
 	@Override
