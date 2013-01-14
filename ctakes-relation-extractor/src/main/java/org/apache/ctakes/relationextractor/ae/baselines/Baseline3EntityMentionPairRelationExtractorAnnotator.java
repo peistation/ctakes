@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.relationextractor.ae;
+package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,10 +24,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -35,12 +40,10 @@ import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
 /**
- * Annotate location_of relation between two entities in sentences containing
- * exactly two entities (where the entities are of the correct types).
- * This implementation assumes classifyBothDirections is set to true (i.e.
- * each pair of entities is considered twice).
+ * Annotate location_of relation between two entities whenever 
+ * they are enclosed within the same noun phrse.
  */
-public class Baseline1EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class Baseline3EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	public static final String PARAM_CLASSIFY_BOTH_DIRECTIONS = "ClassifyBothDirections";
 
@@ -79,28 +82,70 @@ public class Baseline1EntityMentionPairRelationExtractorAnnotator extends Relati
 			}
 		}
 
-		// look for sentence with two entities
-		// because each pair of entities is cosidered twice, pairs.size() should be 2.
-		if(pairs.size() == 2) {
-		  // there are two entities in this sentence
-		  // are they of suitable types for location_of?
-		  for(IdentifiedAnnotationPair pair : pairs) {
-		    if(validateArgumentTypes(pair)) {
-	        System.out.println(sentence.getCoveredText());
-	        System.out.println("arg1: " + pair.getArg1().getCoveredText());
-	        System.out.println("arg2: " + pair.getArg2().getCoveredText());
-	        System.out.println();
-	        
-		      List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
-		      result.add(pair);
-		      return result;
+		// find pairs enclosed inside a noun phrase
+		List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
+		for(IdentifiedAnnotationPair pair : pairs) {
+		  if(validateArgumentTypes(pair)) {
+		    for(TreebankNode nounPhrase : getNounPhrases(identifiedAnnotationView, sentence)) {
+		      if(isEnclosed(pair, nounPhrase)) {
+		        IdentifiedAnnotation arg1 = pair.getArg1();
+		        IdentifiedAnnotation arg2 = pair.getArg2();
+		        result.add(new IdentifiedAnnotationPair(arg1, arg2));
+		        System.out.println("NP: " + nounPhrase.getCoveredText() + ", " + nounPhrase.getBegin() + ", " + nounPhrase.getEnd());
+		        System.out.println("arg1: " + arg1.getCoveredText() + ", " + arg1.getBegin() + ", " + arg1.getEnd());
+		        System.out.println("arg2: " + arg2.getCoveredText() + ", " + arg2.getBegin() + ", " + arg2.getEnd());
+		        System.out.println();
+		        break; // don't check other NPs
+		      }
 		    }
 		  }
 		}
 		
-		
-		// for all other cases, return no entity pairs
-		return new ArrayList<IdentifiedAnnotationPair>();
+		return result;
+	}
+	
+	/*
+	 * Is this pair of entities enclosed inside a noun phrase?
+	 */
+	boolean isEnclosed(IdentifiedAnnotationPair pair, TreebankNode np) {
+	  
+    IdentifiedAnnotation arg1 = pair.getArg1();
+    IdentifiedAnnotation arg2 = pair.getArg2();
+
+    if((np.getBegin() <= arg1.getBegin()) &&
+        (np.getEnd() >= arg1.getEnd()) &&
+        (np.getBegin() <= arg2.getBegin()) &&
+        (np.getEnd() >= arg2.getEnd())) {
+      return true;
+    }
+    
+    return false;
+	}
+	
+	/**
+	 * Get all noun phrases in a sentence.
+	 */
+	List<TreebankNode> getNounPhrases(JCas identifiedAnnotationView, Sentence sentence) {
+	  
+	  List<TreebankNode> nounPhrases = new ArrayList<TreebankNode>();
+	  List<TreebankNode> treebankNodes;
+	  try {
+      treebankNodes = JCasUtil.selectCovered(
+          identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), 
+          TreebankNode.class,
+          sentence);
+    } catch (CASException e) {
+      treebankNodes = new ArrayList<TreebankNode>();
+      System.out.println("couldn't get default sofa");
+    }
+	  
+	  for(TreebankNode treebankNode : treebankNodes) {
+	    if(treebankNode.getNodeType().equals("NP")) {
+	      nounPhrases.add(treebankNode);
+	    }
+	  }
+	  
+	  return nounPhrases;	  
 	}
 	
 	/*

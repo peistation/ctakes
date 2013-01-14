@@ -16,16 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.relationextractor.ae;
+package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -37,11 +41,16 @@ import org.cleartk.classifier.Feature;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
+
 /**
- * Annotate location_of relation between two entities whenever 
- * they are enclosed within the same noun phrse.
+ * Annotate location_of relation between two entities in sentences with multiple anatomica sites
+ * and a single legitimate location_of arg2. Use the pair of arguments that are the closest to each other.
+ * This implementation assumes classifyBothDirections = true.
  */
-public class Baseline3EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class Baseline2EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	public static final String PARAM_CLASSIFY_BOTH_DIRECTIONS = "ClassifyBothDirections";
 
@@ -80,70 +89,62 @@ public class Baseline3EntityMentionPairRelationExtractorAnnotator extends Relati
 			}
 		}
 
-		// find pairs enclosed inside a noun phrase
-		List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
-		for(IdentifiedAnnotationPair pair : pairs) {
-		  if(validateArgumentTypes(pair)) {
-		    for(TreebankNode nounPhrase : getNounPhrases(identifiedAnnotationView, sentence)) {
-		      if(isEnclosed(pair, nounPhrase)) {
-		        IdentifiedAnnotation arg1 = pair.getArg1();
-		        IdentifiedAnnotation arg2 = pair.getArg2();
-		        result.add(new IdentifiedAnnotationPair(arg1, arg2));
-		        System.out.println("NP: " + nounPhrase.getCoveredText() + ", " + nounPhrase.getBegin() + ", " + nounPhrase.getEnd());
-		        System.out.println("arg1: " + arg1.getCoveredText() + ", " + arg1.getBegin() + ", " + arg1.getEnd());
-		        System.out.println("arg2: " + arg2.getCoveredText() + ", " + arg2.getBegin() + ", " + arg2.getEnd());
-		        System.out.println();
-		        break; // don't check other NPs
-		      }
-		    }
+		// look for sentences with one legitimate arg2 and multiple anatomical sties (arg1)
+		int legitimateArg1Count = 0;
+		int legitimateArg2Count = 0;
+		for(EntityMention entityMention : args) {
+		  if(entityMention.getTypeID() == 6) {
+		    legitimateArg1Count++;
+		  }
+		  HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
+		  if(okArg2Types.contains(entityMention.getTypeID())) {
+		    legitimateArg2Count++;
 		  }
 		}
+		if(! (legitimateArg1Count > 1 && legitimateArg2Count == 1)) {
+		  return new ArrayList<IdentifiedAnnotationPair>();
+		}
 		
-		return result;
-	}
-	
-	/*
-	 * Is this pair of entities enclosed inside a noun phrase?
-	 */
-	boolean isEnclosed(IdentifiedAnnotationPair pair, TreebankNode np) {
-	  
-    IdentifiedAnnotation arg1 = pair.getArg1();
-    IdentifiedAnnotation arg2 = pair.getArg2();
+		// compute distance between entities for the pairs where entity types are correct
+		HashMap<IdentifiedAnnotationPair, Integer> distanceLookup = new HashMap<IdentifiedAnnotationPair, Integer>();
+		for(IdentifiedAnnotationPair pair : pairs) {
+		  if(validateArgumentTypes(pair)) {
+		    try {
+          int distance = getDistance(identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), pair);
+          distanceLookup.put(pair, distance);
+        } catch (CASException e) {
+          e.printStackTrace();
+        }
+		  } 
+		}
+		
+		if(distanceLookup.isEmpty()) {
+		  return new ArrayList<IdentifiedAnnotationPair>(); // no pairs with suitable argument types
+		}
+		
+		// find the pair where the distance between entities is the smallest and return it
+    List<IdentifiedAnnotationPair> rankedPairs = new ArrayList<IdentifiedAnnotationPair>(distanceLookup.keySet());
+    Function<IdentifiedAnnotationPair, Integer> getValue = Functions.forMap(distanceLookup);
+    Collections.sort(rankedPairs, Ordering.natural().onResultOf(getValue));
 
-    if((np.getBegin() <= arg1.getBegin()) &&
-        (np.getEnd() >= arg1.getEnd()) &&
-        (np.getBegin() <= arg2.getBegin()) &&
-        (np.getEnd() >= arg2.getEnd())) {
-      return true;
-    }
+    List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
+    result.add(rankedPairs.get(0));
+
+    System.out.println(sentence.getCoveredText());
+    System.out.println("arg1: " + result.get(0).getArg1().getCoveredText());
+    System.out.println("arg2: " + result.get(0).getArg2().getCoveredText());
+    System.out.println();
     
-    return false;
+    return result;
 	}
 	
-	/**
-	 * Get all noun phrases in a sentence.
+	/* 
+	 * Calculate the distance (in tokens) between two identified annotations.
 	 */
-	List<TreebankNode> getNounPhrases(JCas identifiedAnnotationView, Sentence sentence) {
+	private static int getDistance(JCas jCas, IdentifiedAnnotationPair pair)  {
 	  
-	  List<TreebankNode> nounPhrases = new ArrayList<TreebankNode>();
-	  List<TreebankNode> treebankNodes;
-	  try {
-      treebankNodes = JCasUtil.selectCovered(
-          identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), 
-          TreebankNode.class,
-          sentence);
-    } catch (CASException e) {
-      treebankNodes = new ArrayList<TreebankNode>();
-      System.out.println("couldn't get default sofa");
-    }
-	  
-	  for(TreebankNode treebankNode : treebankNodes) {
-	    if(treebankNode.getNodeType().equals("NP")) {
-	      nounPhrases.add(treebankNode);
-	    }
-	  }
-	  
-	  return nounPhrases;	  
+	  List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
+	  return baseTokens.size();
 	}
 	
 	/*
@@ -157,7 +158,7 @@ public class Baseline3EntityMentionPairRelationExtractorAnnotator extends Relati
 	private static boolean validateArgumentTypes(IdentifiedAnnotationPair pair) {
 	  
     // allowable arg2 types for location_of
-    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
+	  HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
     
 	  IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be anatomical site)
 	  IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be either disorder, sign/symptom, or procedure)
