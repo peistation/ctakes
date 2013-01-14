@@ -498,6 +498,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       }
       
       if (this.allowSmallerSystemArguments) {
+
         // collect all the arguments of the manually annotated relations
         Set<IdentifiedAnnotation> goldArgs = Sets.newHashSet();
         for (BinaryTextRelation relation : goldBinaryTextRelations) {
@@ -506,21 +507,57 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
           }
         }
 
-        // map each system argument to the gold argument that encloses it
+        // collect all the arguments of system-predicted relations that don't match some gold argument
+        Set<IdentifiedAnnotation> unmatchedSystemArgs = Sets.newHashSet();
+        for (BinaryTextRelation relation : systemBinaryTextRelations) {
+          for (RelationArgument relArg : Lists.newArrayList(relation.getArg1(), relation.getArg2())) {
+            IdentifiedAnnotation systemArg = (IdentifiedAnnotation) relArg.getArgument();
+            Class<? extends IdentifiedAnnotation> systemClass = systemArg.getClass();
+            boolean matchesSomeGold = false;
+            for (IdentifiedAnnotation goldArg : JCasUtil.selectCovered(goldView, systemClass, systemArg)) {
+              if (goldArg.getBegin() == systemArg.getBegin() && goldArg.getEnd() == systemArg.getEnd()) {
+                matchesSomeGold = true;
+                break;
+              }
+            }
+            if (!matchesSomeGold) {
+              unmatchedSystemArgs.add(systemArg);
+            }
+          }
+        }
+
+        // map each unmatched system argument to the gold argument that encloses it
         Map<IdentifiedAnnotation, IdentifiedAnnotation> systemToGold = Maps.newHashMap();
         for (IdentifiedAnnotation goldArg : goldArgs) {
           Class<? extends IdentifiedAnnotation> goldClass = goldArg.getClass();
           for (IdentifiedAnnotation systemArg : JCasUtil.selectCovered(jCas, goldClass, goldArg)) {
-            if (systemToGold.containsKey(systemArg)) {
-              throw new IllegalArgumentException(String.format(
-                  "%s contained in both %s and %s",
-                  format(systemArg),
-                  format(goldArg),
-                  format(systemToGold.get(systemArg))));
-            }
-            // only map system arguments to gold arguments if they're not the same span already
-            if (goldArg.getBegin() != systemArg.getBegin() || goldArg.getEnd() != systemArg.getEnd()) {
-              systemToGold.put(systemArg, goldArg);
+            if (unmatchedSystemArgs.contains(systemArg)) {
+              
+              // if there's no mapping yet for this system arg, map it to the enclosing gold arg
+              IdentifiedAnnotation oldGoldArg = systemToGold.get(systemArg);
+              if (oldGoldArg == null) {
+                systemToGold.put(systemArg, goldArg);
+              }
+              
+              // if there's already a mapping for this system arg, only re-map it to match the type 
+              else {
+                IdentifiedAnnotation current, other;
+                if (systemArg.getTypeID() == goldArg.getTypeID()) {
+                  systemToGold.put(systemArg, goldArg);
+                  current = goldArg;
+                  other = oldGoldArg;
+                } else {
+                  current = oldGoldArg;
+                  other = goldArg;
+                }
+
+                // issue a warning since this re-mapping procedure is imperfect
+                UIMAFramework.getLogger(this.getClass()).log(Level.WARNING, String.format(
+                    "system argument %s mapped to gold argument %s, but could also be mapped to %s",
+                    format(systemArg),
+                    format(current),
+                    format(other)));
+              }
             }
           }
         }
