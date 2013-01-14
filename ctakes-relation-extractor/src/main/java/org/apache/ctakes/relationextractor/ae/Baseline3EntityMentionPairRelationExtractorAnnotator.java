@@ -38,10 +38,8 @@ import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
 /**
- * Annotate location_of relation between two entities in sentences containing
- * exactly two entities (where the entities are of the correct types).
- * This implementation assumes classifyBothDirections is set to true (i.e.
- * each pair of entities is considered twice).
+ * Annotate location_of relation between two entities whenever 
+ * they are enclosed within the same noun phrse.
  */
 public class Baseline3EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
@@ -91,12 +89,10 @@ public class Baseline3EntityMentionPairRelationExtractorAnnotator extends Relati
 		        IdentifiedAnnotation arg1 = pair.getArg1();
 		        IdentifiedAnnotation arg2 = pair.getArg2();
 		        result.add(new IdentifiedAnnotationPair(arg1, arg2));
-		        
 		        System.out.println("NP: " + nounPhrase.getCoveredText() + ", " + nounPhrase.getBegin() + ", " + nounPhrase.getEnd());
 		        System.out.println("arg1: " + arg1.getCoveredText() + ", " + arg1.getBegin() + ", " + arg1.getEnd());
 		        System.out.println("arg2: " + arg2.getCoveredText() + ", " + arg2.getBegin() + ", " + arg2.getEnd());
 		        System.out.println();
-		        
 		        break; // don't check other NPs
 		      }
 		    }
