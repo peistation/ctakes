@@ -31,9 +31,7 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -84,47 +82,72 @@ public class Baseline3EntityMentionPairRelationExtractorAnnotator extends Relati
 			}
 		}
 
-		List<EntityMention> anatomicalSites = new ArrayList<EntityMention>();
-		for(EntityMention entityMention : args) {
-		  if(entityMention.getTypeID() == 6) {
-		    anatomicalSites.add(entityMention);
+		// find pairs enclosed inside a noun phrase
+		List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
+		for(IdentifiedAnnotationPair pair : pairs) {
+		  if(validateArgumentTypes(pair)) {
+		    for(TreebankNode nounPhrase : getNounPhrases(identifiedAnnotationView, sentence)) {
+		      if(isEnclosed(pair, nounPhrase)) {
+		        IdentifiedAnnotation arg1 = pair.getArg1();
+		        IdentifiedAnnotation arg2 = pair.getArg2();
+		        result.add(new IdentifiedAnnotationPair(arg1, arg2));
+		        
+		        System.out.println("NP: " + nounPhrase.getCoveredText() + ", " + nounPhrase.getBegin() + ", " + nounPhrase.getEnd());
+		        System.out.println("arg1: " + arg1.getCoveredText() + ", " + arg1.getBegin() + ", " + arg1.getEnd());
+		        System.out.println("arg2: " + arg2.getCoveredText() + ", " + arg2.getBegin() + ", " + arg2.getEnd());
+		        System.out.println();
+		        
+		        break; // don't check other NPs
+		      }
+		    }
 		  }
 		}
 		
-		if(anatomicalSites.size() == 0) {
-		  return new ArrayList<IdentifiedAnnotationPair>();
-		}
-		
-		for(EntityMention anatomicalSite : anatomicalSites) {
-		  try {
-        List<TreebankNode> treebankNodes = JCasUtil.selectCovering(
-            identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), 
-            TreebankNode.class, 
-            anatomicalSite.getBegin(), 
-            anatomicalSite.getEnd());
-        for(TreebankNode treebankNode : treebankNodes) {
-          if(treebankNode.getNodeType().equals("NP")) {
-            FSArray fsArray = treebankNode.getChildren();
-            if(fsArray == null) {
-              System.out.println("NULL");
-            } else {
-              for(FeatureStructure featureStructure : fsArray.toArray()) {
-                TreebankNode childNode = (TreebankNode) featureStructure;
-                System.out.println(sentence.getCoveredText());
-                System.out.println("anatomical site: " + anatomicalSite.getCoveredText());
-                System.out.println("child node: " + childNode.getCoveredText());
-                System.out.println();
-              }
-            }
-          }
-        }
-      } catch (CASException e) {
-        e.printStackTrace();
-      }
-		}
+		return result;
+	}
+	
+	/*
+	 * Is this pair of entities enclosed inside a noun phrase?
+	 */
+	boolean isEnclosed(IdentifiedAnnotationPair pair, TreebankNode np) {
+	  
+    IdentifiedAnnotation arg1 = pair.getArg1();
+    IdentifiedAnnotation arg2 = pair.getArg2();
 
-		// for all other cases, return no entity pairs
-		return new ArrayList<IdentifiedAnnotationPair>();
+    if((np.getBegin() <= arg1.getBegin()) &&
+        (np.getEnd() >= arg1.getEnd()) &&
+        (np.getBegin() <= arg2.getBegin()) &&
+        (np.getEnd() >= arg2.getEnd())) {
+      return true;
+    }
+    
+    return false;
+	}
+	
+	/**
+	 * Get all noun phrases in a sentence.
+	 */
+	List<TreebankNode> getNounPhrases(JCas identifiedAnnotationView, Sentence sentence) {
+	  
+	  List<TreebankNode> nounPhrases = new ArrayList<TreebankNode>();
+	  List<TreebankNode> treebankNodes;
+	  try {
+      treebankNodes = JCasUtil.selectCovered(
+          identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), 
+          TreebankNode.class,
+          sentence);
+    } catch (CASException e) {
+      treebankNodes = new ArrayList<TreebankNode>();
+      System.out.println("couldn't get default sofa");
+    }
+	  
+	  for(TreebankNode treebankNode : treebankNodes) {
+	    if(treebankNode.getNodeType().equals("NP")) {
+	      nounPhrases.add(treebankNode);
+	    }
+	  }
+	  
+	  return nounPhrases;	  
 	}
 	
 	/*
