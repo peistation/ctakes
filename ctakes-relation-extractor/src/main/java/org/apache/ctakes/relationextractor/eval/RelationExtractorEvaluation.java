@@ -28,14 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.baselines.Baseline1DegreeOfRelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.relation.RelationArgument;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -79,6 +71,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
+
+import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 
 public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics<String>> {
 
@@ -137,7 +138,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   
   // parameter settings currently optimized for SHARP data
   private static final ParameterSettings BEST_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 1.0f, "radial basis function", 10.0, 0.0010);
-  private static final ParameterSettings BEST_NON_DEGREE_OF_PARAMETERS = new ParameterSettings(true, 1.0f, "radial basis function", 10.0, 0.01);
+  private static final ParameterSettings BEST_NON_DEGREE_OF_PARAMETERS = new ParameterSettings(false, 1.0f, "radial basis function", 10.0, 0.01);
   
   public static void main(String[] args) throws Exception {
     Options options = new Options();
@@ -161,7 +162,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       // determine class for the classifier annotator
       boolean isDegreeOf = relationCategory.equals("degree_of");
       Class<? extends RelationExtractorAnnotator> annotatorClass = isDegreeOf
-          ? Baseline1DegreeOfRelationExtractorAnnotator.class
+          ? DegreeOfRelationExtractorAnnotator.class
           : EntityMentionPairRelationExtractorAnnotator.class;
 
       // determine the type of classifier to be trained
