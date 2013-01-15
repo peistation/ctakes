@@ -1,12 +1,17 @@
 package org.apache.ctakes.relationextractor.ae.baselines;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.uimafit.util.JCasUtil;
 
@@ -66,5 +71,49 @@ public class Utils {
     
     List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
     return baseTokens.size();
+  }
+  
+  /**
+   * Is this pair of entities enclosed inside a noun phrase?
+   */
+  public static boolean isEnclosed(IdentifiedAnnotationPair pair, TreebankNode np) {
+    
+    IdentifiedAnnotation arg1 = pair.getArg1();
+    IdentifiedAnnotation arg2 = pair.getArg2();
+
+    if((np.getBegin() <= arg1.getBegin()) &&
+        (np.getEnd() >= arg1.getEnd()) &&
+        (np.getBegin() <= arg2.getBegin()) &&
+        (np.getEnd() >= arg2.getEnd())) {
+      return true;
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Get all noun phrases in a sentence.
+   */
+  public static List<TreebankNode> getNounPhrases(JCas identifiedAnnotationView, Sentence sentence) {
+    
+    List<TreebankNode> nounPhrases = new ArrayList<TreebankNode>();
+    List<TreebankNode> treebankNodes;
+    try {
+      treebankNodes = JCasUtil.selectCovered(
+          identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), 
+          TreebankNode.class,
+          sentence);
+    } catch (CASException e) {
+      treebankNodes = new ArrayList<TreebankNode>();
+      System.out.println("couldn't get default sofa");
+    }
+    
+    for(TreebankNode treebankNode : treebankNodes) {
+      if(treebankNode.getNodeType().equals("NP")) {
+        nounPhrases.add(treebankNode);
+      }
+    }
+    
+    return nounPhrases;   
   }
 }
