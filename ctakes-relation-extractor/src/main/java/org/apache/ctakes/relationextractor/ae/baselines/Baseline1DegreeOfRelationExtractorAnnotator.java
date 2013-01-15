@@ -36,7 +36,8 @@ import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
 /**
- * 
+ * Annotated degree_of relation in sentences containing a single entity mention
+ * of a valid degree_of type and a single modifier.
  */
 public class Baseline1DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
 

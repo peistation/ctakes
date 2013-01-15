@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -46,7 +44,7 @@ import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 
 /**
- * Annotate location_of relation between two entities in sentences with multiple anatomica sites
+ * Annotate location_of relation between two entities in sentences with multiple anatomical sites
  * and a single legitimate location_of arg2. Use the pair of arguments that are the closest to each other.
  * This implementation assumes classifyBothDirections = true.
  */
@@ -110,10 +108,11 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
 		for(IdentifiedAnnotationPair pair : pairs) {
 		  if(Utils.validateLocationOfArgumentTypes(pair)) {
 		    try {
-          int distance = getDistance(identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), pair);
+          int distance = Utils.getDistance(identifiedAnnotationView.getView(CAS.NAME_DEFAULT_SOFA), pair);
           distanceLookup.put(pair, distance);
         } catch (CASException e) {
-          e.printStackTrace();
+          System.out.println("couldn't get default sofa");
+          break;
         }
 		  } 
 		}
@@ -136,15 +135,6 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
     System.out.println();
     
     return result;
-	}
-	
-	/* 
-	 * Calculate the distance (in tokens) between two identified annotations.
-	 */
-	private static int getDistance(JCas jCas, IdentifiedAnnotationPair pair)  {
-	  
-	  List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
-	  return baseTokens.size();
 	}
 	
 	@Override

@@ -2,9 +2,13 @@ package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.jcas.JCas;
+import org.uimafit.util.JCasUtil;
 
 public class Utils {
 
@@ -37,7 +41,7 @@ public class Utils {
    * Are entity types of the arguments valid for degree_of relation? 
    * The following are the valid combinations:
    * 
-   * degree-of(disorder/2, modifier)
+   * degree-of(disease/disorder/2, modifier)
    * degree-of(sign/symptom/3, modifier)
    */
   public static boolean validateDegreeOfArgumentTypes(IdentifiedAnnotationPair pair) {
@@ -46,14 +50,21 @@ public class Utils {
     HashSet<Integer> okArg1Types = new HashSet<Integer>(Arrays.asList(2, 3));
 
     IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be either disease/disorder or sign/symptom
-    IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be a modifier)
     int type1 = arg1.getTypeID();
-    int type2 = arg2.getTypeID();
 
     if(okArg1Types.contains(type1)) {
-      return true; // assume arg2 is a moddifier
+      return true; // assume arg2 is a modifier
     }
 
     return false;
+  }
+  
+  /** 
+   * Calculate the distance (in tokens) between two identified annotations.
+   */
+  public static int getDistance(JCas jCas, IdentifiedAnnotationPair pair)  {
+    
+    List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
+    return baseTokens.size();
   }
 }
