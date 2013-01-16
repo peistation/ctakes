@@ -173,10 +173,16 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     //Options options = new Options();
     options.parseOptions(args);
     
-    System.err.println("forcing skipping of subject processing!!!");
-    options.runSubject = false;
+//    System.err.println("forcing skipping of subject processing!!!");
+//    options.runSubject = false;
     System.err.println("forcing skipping of generic processing!!!");
     options.runGeneric = false;
+    System.err.println("forcing skipping of polarity processing!!!");
+    options.runPolarity = false;
+    System.err.println("forcing skipping of uncertainty processing!!!");
+    options.runUncertainty = false;
+    System.err.println("forcing skipping of conditional processing!!!");
+    options.runConditional = false;
     printOptionsForDebugging(options);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     //File modelsDir = new File("models/modifier");
@@ -380,7 +386,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       builder.add(zonerAnnotator);
 
       URI mayoSectionRegexFileUri =
-          this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/mayo_sections.xml").toURI();
+          this.getClass().getClassLoader().getResource("org/mitre/medfacts/uima/mayo_sections.xml").toURI();
 //        ExternalResourceDescription mayoSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
 //            SectionRegexConfigurationResource.class, new File(mayoSectionRegexFileUri));
       AnalysisEngineDescription mayoZonerAnnotator =

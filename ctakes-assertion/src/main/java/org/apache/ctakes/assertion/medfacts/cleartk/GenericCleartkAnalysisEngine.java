@@ -18,21 +18,55 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.cleartk.classifier.Instance;
+import java.util.ArrayList;
 
+import org.apache.ctakes.assertion.attributes.features.GenericFeaturesExtractor;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.extractor.ContextExtractor;
 
 public class GenericCleartkAnalysisEngine extends
 		AssertionCleartkAnalysisEngine {
 
+	boolean USE_DEFAULT_EXTRACTORS = false;
+	
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
+		
+//		if (this.isTraining() && this.goldViewName == null) {
+//			throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
+//		}
+		
+//		if (USE_DEFAULT_EXTRACTORS) {
+//			super.initialize(context);
+//		} else {
+			initialize_generic_extractor();
+//		}
+
+	}
+
+	private void initialize_generic_extractor() {
+		
+		if (this.contextFeatureExtractors==null) {
+			this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+		}
+		this.contextFeatureExtractors.add( 
+				new ContextExtractor<IdentifiedAnnotation>(
+						IdentifiedAnnotation.class, new GenericFeaturesExtractor()) );
+				
+	}
+	
 	@Override
 	public void setClassLabel(IdentifiedAnnotation entityMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String subj = entityMention.getSubject();
-	        instance.setOutcome(subj);
+	        String generic = entityMention.getGeneric()? "1":"0";
+	        instance.setOutcome(generic);
 	        this.dataWriter.write(instance);
 	      } else
 	      {

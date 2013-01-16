@@ -102,6 +102,17 @@ public class GoldEntityAndAttributeReader extends JCasAnnotator_ImplBase {
       // map knowtator attribute ids to role-value pairs
       HashMap<String, ArgumentInfo> attrs = XMLReader.getAttributes(document);
 
+
+      System.out.println("What's in attrPtr -- the mention-attribute ids to attributes....");
+      for (Entry<String,ArgumentInfo> e : attrPtr.entrySet()) {
+    	  System.out.println("attrPtr: " + e.getKey() + " with role " + e.getValue().role + " and value " + e.getValue().value);
+      }
+
+      System.out.println("\nWhat's in attrs -- the knowtator attribute ids....");
+      for (Entry<String,ArgumentInfo> e : attrs.entrySet()) {
+    	  System.out.println("attrs: " + e.getKey() + " with role " + e.getValue().role + " and value " + e.getValue().value);
+      }
+      
       // pare down hashmap based on types -- keep only NEs
       HashMap<String, ArrayList<Span>> neMentions = filterToNamedEntitiesOnly(allMentions,entityTypes);
 

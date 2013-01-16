@@ -35,6 +35,7 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 import org.apache.ctakes.assertion.cr.GoldEntityAndAttributeReader;
+import org.apache.ctakes.core.ae.SHARPKnowtatorXMLReader;
 import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
 
 /**
@@ -123,19 +124,26 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 					textDirectory.toString()
 					);
 			
+//			AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+//					GoldEntityAndAttributeReader.class,
+//					typeSystemDescription,
+//					"InputDirectory",
+//					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
+//					xmlDirectory.toString() + "/"
+//					);
 			AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
-					GoldEntityAndAttributeReader.class,
+					SHARPKnowtatorXMLReader.class,
 					typeSystemDescription,
-					"InputDirectory",
+					"TextURI",
 					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
-					xmlDirectory.toString() + "/"
-					);
-
+					textDirectory.toString() + "/"
+			);
+			
 	    AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
 	        XWriter.class,
 	        typeSystemDescription,
 	        XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
-	        //"/Users/m081914/work/sharpattr/assertion/output"
+//	        "/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/data/output",
 	        // "/work/medfacts/sharp/data/2012-10-09_full_data_set/batch02"
 	        //"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/xmi",
 	        xmiDirectory.toString(),

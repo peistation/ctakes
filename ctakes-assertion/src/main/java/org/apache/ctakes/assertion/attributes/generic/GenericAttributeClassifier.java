@@ -64,6 +64,30 @@ public class GenericAttributeClassifier {
 	// currently goes from entityMention to Sentence to SemanticArgument
 	public static Boolean getGeneric(JCas jCas, IdentifiedAnnotation mention) {
 		
+		HashMap<String, Boolean> vfeat = extract(jCas, mention);
+		
+		return classifyWithLogic(vfeat);
+			
+	}
+
+
+	public static Boolean classifyWithLogic(HashMap<String, Boolean> vfeat) {
+		// Logic to identify cases, may be replaced by learned classification
+		int subsumectr = 0;
+		if (vfeat.get(SUBSUMED_CHUNK)) { } //subsumectr++; }
+		if (vfeat.get(SUBSUMED_ANNOT)) { subsumectr++; }
+		if (vfeat.get(POSTCOORD_NMOD)) { subsumectr++; }
+		Boolean subsume_summary = (subsumectr>0);
+		if (vfeat.get(DISCUSSION_DEPPATH) || subsume_summary) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+	public static HashMap<String, Boolean> extract(JCas jCas,
+			Annotation arg) {
 		HashMap<String,Boolean> vfeat = new HashMap<String,Boolean>();
 		for (String feat : FeatureIndex) {
 			vfeat.put(feat, false);
@@ -73,7 +97,7 @@ public class GenericAttributeClassifier {
 		Sentence sEntity = null;
 		Collection<Sentence> sentences = JCasUtil.select(jCas, Sentence.class);
 		for (Sentence s : sentences) {
-			if ( s.getBegin()<=mention.getBegin() && s.getEnd()>=mention.getEnd()) {
+			if ( s.getBegin()<=arg.getBegin() && s.getEnd()>=arg.getEnd()) {
 				sEntity = s;
 				break;
 			}
@@ -85,17 +109,17 @@ public class GenericAttributeClassifier {
 			
 
 			// 2) some other identified annotation subsumes this one?
-			List<IdentifiedAnnotation> lsmentions = JCasUtil.selectPreceding(jCas, IdentifiedAnnotation.class, mention, 5);
-			lsmentions.addAll(JCasUtil.selectFollowing(jCas, IdentifiedAnnotation.class, mention, 5));
+			List<IdentifiedAnnotation> lsmentions = JCasUtil.selectPreceding(jCas, IdentifiedAnnotation.class, arg, 5);
+			lsmentions.addAll(JCasUtil.selectFollowing(jCas, IdentifiedAnnotation.class, arg, 5));
 			for (IdentifiedAnnotation annot : lsmentions) {
-				if ( annot.getBegin()>mention.getBegin()) {
+				if ( annot.getBegin()>arg.getBegin()) {
 					break;
 				} else {
-					if ( annot.getEnd()<mention.getEnd()) {
+					if ( annot.getEnd()<arg.getEnd()) {
 						continue;
 					} else if ( !DependencyUtility.equalCoverage(
 							DependencyUtility.getNominalHeadNode(jCas, annot),
-							DependencyUtility.getNominalHeadNode(jCas, mention)) ) {
+							DependencyUtility.getNominalHeadNode(jCas, arg)) ) {
 						// the case that annot is a superset
 						vfeat.put(SUBSUMED_ANNOT, true);
 					}
@@ -103,17 +127,17 @@ public class GenericAttributeClassifier {
 			}
 			
 			// 3) some chunk subsumes this?
-			List<Chunk> lschunks = JCasUtil.selectPreceding(jCas, Chunk.class, mention, 5);
-			lschunks.addAll(JCasUtil.selectFollowing(jCas, Chunk.class, mention, 5));
+			List<Chunk> lschunks = JCasUtil.selectPreceding(jCas, Chunk.class, arg, 5);
+			lschunks.addAll(JCasUtil.selectFollowing(jCas, Chunk.class, arg, 5));
 			for (Chunk chunk : lschunks) {
-				if ( chunk.getBegin()>mention.getBegin()) {
+				if ( chunk.getBegin()>arg.getBegin()) {
 					break;
 				} else {
-					if ( chunk.getEnd()<mention.getEnd()) {
+					if ( chunk.getEnd()<arg.getEnd()) {
 						continue;
 					} else if ( !DependencyUtility.equalCoverage(
 							DependencyUtility.getNominalHeadNode(jCas, chunk), 
-							DependencyUtility.getNominalHeadNode(jCas, mention)) ) {
+							DependencyUtility.getNominalHeadNode(jCas, arg)) ) {
 						// the case that annot is a superset
 						vfeat.put(SUBSUMED_CHUNK, true);
 					}
@@ -122,7 +146,7 @@ public class GenericAttributeClassifier {
 		}
 		
 		
-		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, mention);
+		List<ConllDependencyNode> depnodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, arg);
 		if (!depnodes.isEmpty()) { 
 			ConllDependencyNode depnode = DependencyUtility.getNominalHeadNode(depnodes);
 
@@ -138,19 +162,7 @@ public class GenericAttributeClassifier {
 				}
 			}
 		}
-		
-		// Logic to identify cases, may be replaced by learned classification
-		int subsumectr = 0;
-		if (vfeat.get(SUBSUMED_CHUNK)) { } //subsumectr++; }
-		if (vfeat.get(SUBSUMED_ANNOT)) { subsumectr++; }
-		if (vfeat.get(POSTCOORD_NMOD)) { subsumectr++; }
-		Boolean subsume_summary = (subsumectr>0);
-		if (vfeat.get(DISCUSSION_DEPPATH) || subsume_summary) {
-			return true;
-		} else {
-			return false;
-		}
-			
+		return vfeat;
 	}
 	
 	

@@ -32,6 +32,7 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 import org.apache.ctakes.assertion.cr.GoldEntityAndAttributeReader;
+import org.apache.ctakes.core.ae.SHARPKnowtatorXMLReader;
 import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
 
 /**
@@ -56,23 +57,35 @@ public class GoldEntityAndAttributeReaderPipeline {
 				FilesInDirectoryCollectionReader.class,
 				typeSystemDescription,
 				"InputDirectory",
-				//"/Users/m081914/work/data/sharp/Seed Corpus/Mayo/UMLS_CEM/ss1_batch04/Knowtator/text"
-				"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/text"
+//				"/Users/m081914/work/data/sharp/Seed_Corpus/Mayo/UMLS_CEM/ss1_batch10/Knowtator/text"
+				"/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/sharp_data/one/Knowtator/text"
+				//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/text"
 				);
 		
-		AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
-				GoldEntityAndAttributeReader.class,
-				typeSystemDescription,
-				"InputDirectory",
-				"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/");
+//		AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+//				GoldEntityAndAttributeReader.class,
+//				typeSystemDescription,
+//				"InputDirectory",
+////				"/Users/m081914/work/data/sharp/Seed_Corpus/Mayo/UMLS_CEM/ss1_batch10/Knowtator XML/");
+//				"/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/sharp_data/one/xml/");
+////				"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/");
 
-    AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
+		AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
+				SHARPKnowtatorXMLReader.class,
+				typeSystemDescription,
+				"KnowtatorURI",
+				"/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/sharp_data/one/Knowtator_XML",
+				"TextURI",
+				"/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/sharp_data/one/Knowtator/text");
+		
+		AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
         XWriter.class,
         typeSystemDescription,
         XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
-        //"/Users/m081914/work/sharpattr/assertion/output"
-        // "/work/medfacts/sharp/data/2012-10-09_full_data_set/batch02"
-        "/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/xmi",
+//        "/Users/m081914/work/data/sharp/Seed_Corpus/Mayo/UMLS_CEM/ss1_batch10/Knowtator XMI/",
+    	"/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/sharp_data/one/Knowtator_XMI/",
+        // "/work/medfacts/sharp/data/2012-10-09_full_data_set/batch02",
+//        "/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/xmi",
         XWriter.PARAM_FILE_NAMER_CLASS_NAME,
         CtakesFileNamer.class.getName()
         );

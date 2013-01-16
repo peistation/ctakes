@@ -18,14 +18,63 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.cleartk.classifier.Instance;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.apache.log4j.Level;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.extractor.ContextExtractor;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
+import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
+import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
+import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
+import org.cleartk.classifier.feature.proliferate.CapitalTypeProliferator;
+import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
+import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
+import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
+import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
+
+import org.apache.ctakes.assertion.attributes.features.SubjectFeaturesExtractor;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class SubjectCleartkAnalysisEngine extends
 		AssertionCleartkAnalysisEngine {
 
+	boolean USE_DEFAULT_EXTRACTORS = false;
+	
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
+
+		if (this.isTraining() && this.goldViewName == null) {
+			throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
+		}
+		
+//		if (USE_DEFAULT_EXTRACTORS) {
+//		} else {
+			initialize_subject_extractor();
+//		}
+
+	}
+
+
+	private void initialize_subject_extractor() {
+		
+		if (this.contextFeatureExtractors==null) {
+			this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+		}
+		this.contextFeatureExtractors.add( 
+				new ContextExtractor<IdentifiedAnnotation>(
+						IdentifiedAnnotation.class, new SubjectFeaturesExtractor()) );
+				
+	}
+	
 	@Override
 	public void setClassLabel(IdentifiedAnnotation entityMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
@@ -34,6 +83,11 @@ public class SubjectCleartkAnalysisEngine extends
 	        String subj = entityMention.getSubject();
 	        instance.setOutcome(subj);
 	        this.dataWriter.write(instance);
+	        logger.log(Level.INFO,  String.format("[%s] expected: ''; actual: ''; features: %s",
+	      		  this.getClass().getSimpleName(),
+	      		  instance.toString()
+	      		  //StringUtils.join(instance.getFeatures(), ", ")
+	      		  ));
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());

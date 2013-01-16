@@ -98,9 +98,9 @@ public abstract class AssertionCleartkAnalysisEngine extends
 	
 	
 //private SimpleFeatureExtractor tokenFeatureExtractor;
-  private List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
-  private List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
-  private List<SimpleFeatureExtractor> entityFeatureExtractors;
+  protected List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
+  protected List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
+  protected List<SimpleFeatureExtractor> entityFeatureExtractors;
   private List<SimpleFeatureExtractor> surroundingFeatureExtractors;
   
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -287,7 +287,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
     	  instance.addAll(extractor.extract(identifiedAnnotationView,  entityMention));
       }
       
-      logger.log(Level.INFO,  String.format("[%s] expected: ''; actual: ''; features: %s",
+      logger.log(Level.DEBUG,  String.format("[%s] expected: ''; actual: ''; features: %s",
     		  this.getClass().getSimpleName(),
     		  instance.toString()
     		  //StringUtils.join(instance.getFeatures(), ", ")
