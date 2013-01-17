@@ -58,6 +58,7 @@ import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.GenericModifier;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textsem.SubjectModifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -1307,13 +1308,15 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
   }
 
-  private static class ConditionalFeature extends DelayedFeature<EntityMention> {
-    public ConditionalFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
+  private static class ConditionalFeature extends DelayedFeature<IdentifiedAnnotation> {
+    public ConditionalFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
+      super(identifiedAnnotation, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setConditional(...)
+      Modifier conditionalModifier = (Modifier) valueAnnotation;
+      boolean conditional = conditionalModifier.getConditional();
+      this.annotation.setConditional(conditional);
     }
   }
 
@@ -1335,9 +1338,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   //     <mentionSlot id="generic_normalization" />
   //     <booleanSlotMentionValue value="true" />
   //   </booleanSlotMention>
-  private static class GenericFeature extends DelayedFeature<EntityMention> {
-    public GenericFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
+  private static class GenericFeature extends DelayedFeature<IdentifiedAnnotation> {
+    public GenericFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
+      super(identifiedAnnotation, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
@@ -1478,13 +1481,15 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
   }
 
-  private static class NegationFeature extends DelayedFeature<EntityMention> {
-    public NegationFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
+  private static class NegationFeature extends DelayedFeature<IdentifiedAnnotation> {
+    public NegationFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
+      super(identifiedAnnotation, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setNegation(...)
+        Modifier negationModifier = (Modifier) valueAnnotation;
+        int negation = negationModifier.getPolarity();
+        this.annotation.setPolarity(negation);
     }
   }
   
@@ -1518,9 +1523,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
   }
   
-  private static class SubjectFeature extends DelayedFeature<EntityMention> {
-    public SubjectFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
+  private static class SubjectFeature extends DelayedFeature<IdentifiedAnnotation> {
+    public SubjectFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
+      super(identifiedAnnotation, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
@@ -1531,13 +1536,15 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
   }
   
-  private static class UncertaintyFeature extends DelayedFeature<EntityMention> {
-    public UncertaintyFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
+  private static class UncertaintyFeature extends DelayedFeature<IdentifiedAnnotation> {
+    public UncertaintyFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
+      super(identifiedAnnotation, value);
     }
     @Override
     protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setUncertainty(...)
+      Modifier uncertaintyModifier = (Modifier) valueAnnotation;
+      int uncertainty = uncertaintyModifier.getUncertainty();
+      this.annotation.setUncertainty(uncertainty);
     }
   }
   
