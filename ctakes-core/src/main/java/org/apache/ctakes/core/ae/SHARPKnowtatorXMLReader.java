@@ -677,7 +677,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("medial_or_lateral".equals(annotation.type)) {
         String value = stringSlots.remove("medial_or_lateral_normalization");
         
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
         BodyLaterality laterality = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
@@ -700,7 +700,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("dorsal_or_ventral".equals(annotation.type)) {
         String value = stringSlots.remove("dorsal_or_ventral_normalization");
         
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
         BodyLaterality laterality = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
@@ -724,7 +724,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String code = stringSlots.remove("associatedCode");
         ProcedureMethod method = new ProcedureMethod(jCas);
         method.setValue(code);
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        ProcedureMethodModifier modifier = new ProcedureMethodModifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.setNormalizedForm(method);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
@@ -733,7 +733,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String code = stringSlots.remove("associatedCode");
         ProcedureDevice device = new ProcedureDevice(jCas);
         device.setValue(code);
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        ProcedureDeviceModifier modifier = new ProcedureDeviceModifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.setNormalizedForm(device);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
