@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.uima.jcas.tcas.Annotation;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -45,6 +47,7 @@ import org.cleartk.classifier.feature.extractor.ContextExtractor;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
@@ -57,19 +60,22 @@ import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
 import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
 import org.cleartk.classifier.opennlp.MaxentDataWriterFactory_ImplBase;
 import org.cleartk.type.test.Token;
+import org.cleartk.classifier.Feature;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.ctakes.assertion.medfacts.cleartk.extractors.SurroundingExtractor;
+
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 
 public abstract class AssertionCleartkAnalysisEngine extends
     CleartkAnnotator<String>
@@ -95,14 +101,30 @@ public abstract class AssertionCleartkAnalysisEngine extends
      defaultValue = "false")
   boolean printErrors;
   
+  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
+		
+	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
+	    	
+	    	ConllDependencyNode head = depNode.getHead();
+	    	if (head == null || head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
+	    		// The head is outside the bounds of the annotation, so this node must be the annotation's head
+	    		return depNode;
+	    	}
+	    }
+	    // Can this happen?
+	    return null;
+	}
+
+  
 	
 	
 //private SimpleFeatureExtractor tokenFeatureExtractor;
   protected List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
   protected List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
+  protected List<CleartkExtractor> tokenCleartkExtractors;
   protected List<SimpleFeatureExtractor> entityFeatureExtractors;
-  private List<SimpleFeatureExtractor> surroundingFeatureExtractors;
   
+  @SuppressWarnings("deprecation")
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
     
@@ -129,54 +151,43 @@ public abstract class AssertionCleartkAnalysisEngine extends
 
     // a list of feature extractors that require the token and the sentence
     this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+    
+    this.tokenCleartkExtractors = new ArrayList<CleartkExtractor>();
+
+    CleartkExtractor tokenExtraction1 = 
+    		new CleartkExtractor(
+    				BaseToken.class, 
+    				new CoveredTextExtractor(),
+    				//new CleartkExtractor.Covered(),
+    				new CleartkExtractor.LastCovered(2),
+    				new CleartkExtractor.Preceding(5),
+    				new CleartkExtractor.Following(4),
+    				new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
+    				new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
+    				);
+    
+    CleartkExtractor posExtraction1 = 
+    		new CleartkExtractor(
+    				BaseToken.class,
+    				new TypePathExtractor(BaseToken.class, "partOfSpeech"),
+    				new CleartkExtractor.LastCovered(2),
+    				new CleartkExtractor.Preceding(3),
+    				new CleartkExtractor.Following(2)
+    				);
+
+    this.tokenCleartkExtractors.add(tokenExtraction1);
+    //this.tokenCleartkExtractors.add(posExtraction1);
+    
     this.contextFeatureExtractors.add(new ContextExtractor<IdentifiedAnnotation>(
         IdentifiedAnnotation.class,
         new CoveredTextExtractor(),
         //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
         new Preceding(2),
         new Following(2)));
-
-    ContextExtractor<BaseToken> tokenContextExtractor1 = new ContextExtractor<BaseToken>( 
-        BaseToken.class, 
-        new SpannedTextExtractor(), 
-        new ContextExtractor.Ngram(new Covered()),
-        
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        //new ContextExtractor.Ngram(new Preceding(1, 2)), 
-        new ContextExtractor.Ngram(new Preceding(3)), 
-        //new ContextExtractor.Ngram(new Preceding(2, 3)), 
-        new ContextExtractor.Ngram(new Following(1)), 
-        new ContextExtractor.Ngram(new Following(2)),
-        //new ContextExtractor.Ngram(new Following(1, 2)),
-        new ContextExtractor.Ngram(new Following(3))
-        //new ContextExtractor.Ngram(new Following(2,3))
-        ); 
-    tokenContextFeatureExtractors = new ArrayList<ContextExtractor<BaseToken>>();
-    tokenContextFeatureExtractors.add(tokenContextExtractor1);
     
-    TypePathExtractor posExtractor = new TypePathExtractor(BaseToken.class, "partOfSpeech");
-    ContextExtractor<BaseToken> extractor2 = new ContextExtractor<BaseToken>( 
-        BaseToken.class, 
-        posExtractor, 
-        new ContextExtractor.Ngram(new Covered()), 
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        new ContextExtractor.Ngram(new Following(1)), 
-        new ContextExtractor.Ngram(new Following(2)) 
-        /*
-        new ContextExtractor.Covered(), 
-        new ContextExtractor.Ngram(new Covered()) 
-        
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        */
-        );
-    tokenContextFeatureExtractors.add(extractor2);
-    
-    this.surroundingFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
-    SimpleFeatureExtractor surround1 = new SurroundingExtractor();
-    this.surroundingFeatureExtractors.add(surround1);
+    // stab at dependency-based features
+    //List<Feature> features = new ArrayList<Feature>();
+    //ConllDependencyNode node1 = findAnnotationHead(jCas, arg1);
 
   }
 
@@ -264,6 +275,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
       }
       //Sentence sentence = sentenceList.iterator().next();
       
+      /*
       if (sentence != null)
       {
         for (ContextExtractor<IdentifiedAnnotation> extractor : this.contextFeatureExtractors) {
@@ -274,24 +286,24 @@ public abstract class AssertionCleartkAnalysisEngine extends
         // TODO extract context features for annotations that don't fall within a sentence
         logger.log(Level.WARN, "FIXME/TODO: generate context features for entities that don't fall within a sentence");
       }
+      */
       
+      /*
       for (ContextExtractor<BaseToken> extractor : this.tokenContextFeatureExtractors) {
-        instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
-      }
+          instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+        }
+        */
+      for (CleartkExtractor extractor : this.tokenCleartkExtractors) {
+          //instance.addAll(extractor.extractWithin(identifiedAnnotationView, entityMention, sentence));
+    	  instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+        }
+
+        
+      /*
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
         instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
       }
-      
-      for (SimpleFeatureExtractor extractor : this.surroundingFeatureExtractors)
-      {
-    	  instance.addAll(extractor.extract(identifiedAnnotationView,  entityMention));
-      }
-      
-      logger.log(Level.DEBUG,  String.format("[%s] expected: ''; actual: ''; features: %s",
-    		  this.getClass().getSimpleName(),
-    		  instance.toString()
-    		  //StringUtils.join(instance.getFeatures(), ", ")
-    		  ));
+      */
       
       setClassLabel(entityMention, instance);
       
