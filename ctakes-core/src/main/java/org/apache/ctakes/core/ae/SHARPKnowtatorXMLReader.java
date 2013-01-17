@@ -557,7 +557,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
               "assuming NE_UNCERTAINTY_PRESENT for \"%s\" with id \"%s\"",
               modifier.getEnd() < 0 ? "<no-span>" : modifier.getCoveredText(),
               annotation.id));
-          modifier.setPolarity(CONST.NE_UNCERTAINTY_PRESENT);
+          modifier.setUncertainty(CONST.NE_UNCERTAINTY_PRESENT);
         } else if (value.equals("indicator_absent")) {
           modifier.setUncertainty(CONST.NE_UNCERTAINTY_ABSENT);
         } else if (value.equals("indicator_present")) {
