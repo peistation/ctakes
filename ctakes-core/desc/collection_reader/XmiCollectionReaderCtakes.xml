@@ -23,7 +23,7 @@
    
 <collectionReaderDescription  xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <implementationName>org.apache.ctakes.assertion.cr.XmiCollectionReaderCtakes</implementationName>
+    <implementationName>org.apache.ctakes.core.cr.XmiCollectionReaderCtakes</implementationName>
     <processingResourceMetaData>
         <name>XMI Collection Reader</name>
         <description>A simple collection reader that reads CASes in XMI format from a directory
