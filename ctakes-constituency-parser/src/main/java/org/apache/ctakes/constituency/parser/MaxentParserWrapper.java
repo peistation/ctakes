@@ -198,7 +198,13 @@ public class MaxentParserWrapper implements ParserWrapper {
 	}
 
 	private void recursivelyCreateStructure(JCas jcas, TreebankNode parent, Parse parse, TopTreebankNode root, Map<Integer,Integer> imap){
-		String[] typeParts = parse.getType().split("-");
+		String[] typeParts;
+		if(parse.getType().startsWith("-")){
+			// check for dash at the start (for escaped types like -RRB- and so forth that cannot take function tags anyways)
+			typeParts = new String[]{parse.getType()};
+		}else{
+			typeParts = parse.getType().split("-");
+		}
 		parent.setNodeType(typeParts[0]);
 		parent.setNodeValue(typeParts[0]);
 		parent.setLeaf(parse.getChildCount() == 0);
