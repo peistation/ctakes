@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
+import org.apache.ctakes.core.util.SHARPKnowtatorXMLDefaults;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.AnatomicalSiteMention;
 import org.apache.ctakes.typesystem.type.refsem.BodyLaterality;
@@ -108,6 +109,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   
   // paramater that should contain the path to text files, with Knowtator XML in a "nephew"
   public static final String PARAM_TEXTURI = "TextURI";
+  public static final String SET_DEFAULTS = "SetDefaults";
 
   private static final Map<String, String> knowtatorSubjectValuesMappedToCasValues;
   static {
@@ -138,6 +140,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   
   // path to knowtator xml files
   public static File textURIDirectory;
+  public static Boolean setDefaults;
 
   /**
    * Get the URI that the text in this class was loaded from
@@ -188,6 +191,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
 	try {
 		textURIDirectory = new File( (String) aContext.getConfigParameterValue(PARAM_TEXTURI) );
+		Boolean sd = (Boolean) aContext.getConfigParameterValue(SET_DEFAULTS);
+		setDefaults = (sd==null)? true : sd;
 	} catch (NullPointerException e) {
 		textURIDirectory = null;
 	}
@@ -610,6 +615,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String code = stringSlots.remove("associatedCode");
         SubjectModifier modifier = new SubjectModifier(jCas, coveringSpan.begin, coveringSpan.end);
         if (value!=null) value = knowtatorSubjectValuesMappedToCasValues.get(value);
+        if (setDefaults) value = SHARPKnowtatorXMLDefaults.getSubject(value);
         modifier.setSubject(value);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
@@ -1073,8 +1079,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     KnowtatorAnnotation negationIndicator = annotationSlots.remove("negation_indicator_CU");
     delayedFeatures.add(new NegationFeature(identifiedAnnotation, negationIndicator));
     KnowtatorAnnotation subject = annotationSlots.remove("subject_CU");
-    //subject.stringSlots.get("subject_normalization_CU");
     delayedFeatures.add(new SubjectFeature(identifiedAnnotation, subject));
+    if (setDefaults && subject==null) { identifiedAnnotation.setSubject(SHARPKnowtatorXMLDefaults.getSubject()); }
     KnowtatorAnnotation uncertainty = annotationSlots.remove("uncertainty_indicator_CU");
     delayedFeatures.add(new UncertaintyFeature(identifiedAnnotation, uncertainty));
 
@@ -1552,6 +1558,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     protected void setValue(TOP valueAnnotation) {
       Modifier subjectModifier = (Modifier) valueAnnotation;
       String normalizedSubject = subjectModifier.getSubject();
+      if (setDefaults) normalizedSubject = SHARPKnowtatorXMLDefaults.getSubject(normalizedSubject);
       //if (normalizedSubject!=null) LOGGER.error("INFO: subject = " + normalizedSubject); // TODO remove this debug line
       this.annotation.setSubject(normalizedSubject);
     }
