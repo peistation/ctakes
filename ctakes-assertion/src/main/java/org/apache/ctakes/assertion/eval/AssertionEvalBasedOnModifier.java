@@ -65,6 +65,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine
 import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
+import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.xwriter.XWriter;
@@ -155,6 +156,11 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
             required = false)
     public boolean runGeneric = true;
         
+    @Option(
+            name = "--cross-validation",
+            usage = "ignore the test set and run n-fold cross-validation. default: n=2",
+            required = false)
+    public Integer crossValidationFolds;
     
   }
   
@@ -175,14 +181,14 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     
 //    System.err.println("forcing skipping of subject processing!!!");
 //    options.runSubject = false;
-    System.err.println("forcing skipping of generic processing!!!");
-    options.runGeneric = false;
-    System.err.println("forcing skipping of polarity processing!!!");
-    options.runPolarity = false;
-    System.err.println("forcing skipping of uncertainty processing!!!");
-    options.runUncertainty = false;
-    System.err.println("forcing skipping of conditional processing!!!");
-    options.runConditional = false;
+//    System.err.println("forcing skipping of generic processing!!!");
+//    options.runGeneric = false;
+//    System.err.println("forcing skipping of polarity processing!!!");
+//    options.runPolarity = false;
+//    System.err.println("forcing skipping of uncertainty processing!!!");
+//    options.runUncertainty = false;
+//    System.err.println("forcing skipping of conditional processing!!!");
+//    options.runConditional = false;
     printOptionsForDebugging(options);
     List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
     //File modelsDir = new File("models/modifier");
@@ -239,9 +245,9 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     
     
     
-    if(options.testDirectory == null) {
+    if(options.testDirectory == null || options.crossValidationFolds != null) {
       // run n-fold cross-validation
-      List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, 2);
+      List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, options.crossValidationFolds);
       //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
       Map<String, AnnotationStatistics> overallStats = new TreeMap<String, AnnotationStatistics>();
       
@@ -284,6 +290,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
 		"training dir: %s%n" +
 	    "test dir: %s%n" + 
 	    "model dir: %s%n" +
+	    "cross-validation: %d%n" +
 	    "run polarity: %b%n" +
 	    "run conditional: %b%n" +
 	    "run uncertainty: %b%n" +
@@ -293,6 +300,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
 	    options.trainDirectory.getAbsolutePath(),
 	    options.testDirectory.getAbsolutePath(),
 	    options.modelsDirectory.getAbsolutePath(),
+	    options.crossValidationFolds,
 	    options.runPolarity,
 	    options.runConditional,
 	    options.runUncertainty,
@@ -364,6 +372,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 //        directory.getPath());
 //    builder.add(assertionDescription);
+    
+    AnalysisEngineDescription documentIdPrinterAnnotator = AnalysisEngineFactory.createPrimitiveDescription(DocumentIdPrinterAnalysisEngine.class);
+    builder.add(documentIdPrinterAnnotator);
     
     AnalysisEngineDescription goldCopierIdentifiedAnnotsAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceIdentifiedAnnotationsSystemToGoldCopier.class);
     builder.add(goldCopierIdentifiedAnnotsAnnotator);

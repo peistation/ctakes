@@ -171,7 +171,11 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     	fileSeparator = File.separator;
     }
     String xmlURI = textURI.replaceAll("Knowtator"+fileSeparator+"text", "Knowtator_XML") + ".knowtator.xml";
+    // check if directory structure doesn't have underscores
     try {
+    	if (!new File(new URI(xmlURI)).exists()) {
+    		xmlURI = textURI.replaceAll("Knowtator"+fileSeparator+"text", "Knowtator%20XML") + ".knowtator.xml";
+    	}
       return new URI(xmlURI);
     } catch (URISyntaxException e) {
       throw new AnalysisEngineProcessException(e);

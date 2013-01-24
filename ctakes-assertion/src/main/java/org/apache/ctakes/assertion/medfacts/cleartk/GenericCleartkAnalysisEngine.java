@@ -71,7 +71,7 @@ public class GenericCleartkAnalysisEngine extends
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        entityMention.setSubject(label);
+	        entityMention.setGeneric("1".equals(label));
 	      }
 	}
 

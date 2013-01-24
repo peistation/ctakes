@@ -92,8 +92,14 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 			
 			File knowtatorDirectory = new File(currentBatchDirectory, "Knowtator");
 			File textDirectory = new File(knowtatorDirectory, "text");
+			// train set uses this naming convention
 			File xmlDirectory = new File(currentBatchDirectory, "Knowtator_XML");
 			File xmiDirectory = new File(currentBatchDirectory, "Knowtator_XMI");
+			// dev and test sets use this naming convention
+			if (!xmlDirectory.exists()) {
+				xmlDirectory = new File(currentBatchDirectory, "Knowtator XML");
+				xmiDirectory = new File(currentBatchDirectory, "Knowtator XMI");
+			}
 			
 			if (!knowtatorDirectory.isDirectory() ||
 					!textDirectory.isDirectory() ||
@@ -138,6 +144,11 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
 					textDirectory.toString() + "/"
 			);
+			
+//			AnalysisEngineDescription sysAnnotator = (AnalysisEngineDescription) AnalysisEngineFactory.createAnalysisEngineFromPath(
+//					"/Users/m081914/work/sharpattr/ctakes/ctakes-clinical-pipeline" +
+//					"/desc/analysis_engine/AttributeClassifierPreprocessor.xml"
+//					);
 			
 	    AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
 	        XWriter.class,
