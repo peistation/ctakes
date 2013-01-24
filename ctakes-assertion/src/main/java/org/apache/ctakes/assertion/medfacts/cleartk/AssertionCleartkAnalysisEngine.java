@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -100,6 +101,17 @@ public abstract class AssertionCleartkAnalysisEngine extends
      description = "Print errors true/false",
      defaultValue = "false")
   boolean printErrors;
+  
+  public static final String PARAM_PROBABILITY_OF_KEEPING_DEFAULT_EXAMPLE = "ProbabilityOfKeepingADefaultExample";
+
+  @ConfigurationParameter(
+      name = PARAM_PROBABILITY_OF_KEEPING_DEFAULT_EXAMPLE,
+      mandatory = false,
+      description = "probability that a default example should be retained for training")
+  protected double probabilityOfKeepingADefaultExample = 1.0;
+  
+  protected Random coin = new Random(0);
+
   
   public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
 		
@@ -203,7 +215,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
       logger.info("processing next doc: " + documentId.getDocumentID());
     } else
     {
-      logger.info("processing next doc (doc id is null)");
+      logger.warn("processing next doc (doc id is null)");
     }
 //    // get gold standard relation instances during testing for error analysis
 //    if (! this.isTraining() && printErrors) {
@@ -217,20 +229,20 @@ public abstract class AssertionCleartkAnalysisEngine extends
 //      //categoryLookup = createCategoryLookup(goldView); 
 //    }
     
-    JCas identifiedAnnotationView, relationView;
+    JCas identifiedAnnotationView;
     if (this.isTraining()) {
       try {
-        identifiedAnnotationView = relationView = jCas.getView(this.goldViewName);
+        identifiedAnnotationView = jCas.getView(this.goldViewName);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
     } else {
-      identifiedAnnotationView = relationView = jCas;
+      identifiedAnnotationView = jCas;
     }
 
 
-    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentenceMap = JCasUtil.indexCovering(identifiedAnnotationView, IdentifiedAnnotation.class, Sentence.class);
-    Map<Sentence, Collection<BaseToken>> tokensCoveredInSentenceMap = JCasUtil.indexCovered(identifiedAnnotationView, Sentence.class, BaseToken.class);
+//    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentenceMap = JCasUtil.indexCovering(identifiedAnnotationView, IdentifiedAnnotation.class, Sentence.class);
+//    Map<Sentence, Collection<BaseToken>> tokensCoveredInSentenceMap = JCasUtil.indexCovered(identifiedAnnotationView, Sentence.class, BaseToken.class);
 
     List<Instance<String>> instances = new ArrayList<Instance<String>>();
     // generate a list of training instances for each sentence in the document
@@ -243,7 +255,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
       }
       if (entityMention.getPolarity() == -1)
       {
-        logger.info(String.format(" - identified annotation: [%d-%d] polarity %d (%s)",
+        logger.debug(String.format(" - identified annotation: [%d-%d] polarity %d (%s)",
             entityMention.getBegin(),
             entityMention.getEnd(),
             entityMention.getPolarity(),
@@ -255,6 +267,8 @@ public abstract class AssertionCleartkAnalysisEngine extends
 //      instance.addAll(tokenFeatureExtractor.extract(jCas, entityMention));
 
       // extract all features that require the token and sentence annotations
+
+      /*** Commented by SWU 01/24/13 -- doesn't seem to be used
       Collection<Sentence> sentenceList = coveringSentenceMap.get(entityMention);
       Sentence sentence = null;
       if (sentenceList == null || sentenceList.isEmpty())
@@ -273,6 +287,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
       {
         sentence = sentenceList.iterator().next();
       }
+      */
       //Sentence sentence = sentenceList.iterator().next();
       
       /*

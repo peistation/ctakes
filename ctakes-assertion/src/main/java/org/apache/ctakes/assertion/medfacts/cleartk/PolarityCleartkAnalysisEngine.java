@@ -31,7 +31,7 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	        instance.setOutcome(polarity);
 	        if ("negated".equals(polarity))
 	        {
-	          logger.info("TRAINING: " + polarity);
+	          logger.debug("TRAINING: " + polarity);
 	        }
 	        this.dataWriter.write(instance);
 	      } else
@@ -40,7 +40,7 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	        int polarity = 1;
 	        if (label!= null && label.equals("present"))
 	        {
-	          polarity = 0;
+	          polarity = 1;
 	        } else if (label != null && label.equals("negated"))
 	        {
 	          polarity = -1;
@@ -48,7 +48,7 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	        entityMention.setPolarity(polarity);
 	        if ("negated".equals(label))
 	        {
-	          logger.info(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityMention.getBegin(), entityMention.getEnd(), entityMention.getClass().getName()));
+	          logger.debug(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityMention.getBegin(), entityMention.getEnd(), entityMention.getClass().getName()));
 	        }
 	      }
 	}

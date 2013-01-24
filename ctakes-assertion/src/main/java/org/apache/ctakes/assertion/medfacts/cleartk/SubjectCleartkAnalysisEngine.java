@@ -82,7 +82,7 @@ public class SubjectCleartkAnalysisEngine extends
 	      {
 	        String subj = entityMention.getSubject();
 	        instance.setOutcome(subj);
-	        logger.log(Level.INFO,  String.format("[%s] expected: ''; actual: ''; features: %s",
+	        logger.log(Level.DEBUG,  String.format("[%s] expected: ''; actual: ''; features: %s",
 		      		  this.getClass().getSimpleName(),
 		      		  instance.toString()
 		      		  //StringUtils.join(instance.getFeatures(), ", ")
@@ -92,7 +92,7 @@ public class SubjectCleartkAnalysisEngine extends
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
 	        entityMention.setSubject(label);
-	        logger.log(Level.INFO, "SUBJECT is being set on an IdentifiedAnnotation: "+label+" "+entityMention.getSubject());
+	        logger.log(Level.DEBUG, "SUBJECT is being set on an IdentifiedAnnotation: "+label+" "+entityMention.getSubject());
 	      }
 	}
 
