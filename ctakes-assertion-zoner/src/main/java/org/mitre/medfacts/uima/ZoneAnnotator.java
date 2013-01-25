@@ -2,8 +2,11 @@ package org.mitre.medfacts.uima;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.ctakes.assertion.zoner.types.Heading;
@@ -47,7 +50,7 @@ public class ZoneAnnotator extends JCasAnnotator_ImplBase {
       name = PARAM_SECTION_REGEX_FILE_URI,
       description = "xml configuration file with zone regular expression values",
       mandatory = true)
-  protected URI sectionRegexFileUri;
+  protected String sectionRegexFileUriString;
 
   protected final Logger logger = Logger.getLogger(ZoneAnnotator.class.getName());
 	
@@ -74,8 +77,19 @@ public class ZoneAnnotator extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 //	  ZonerCliSimplified zonerCli =
 //	      new ZonerCliSimplified(sectionRegexFileUri);
-    ZonerCli zonerCli =
-      new ZonerCli(sectionRegexFileUri);
+    URL sectionRegexFileInClasspathUrl = 
+        getClass().getClassLoader().getResource(sectionRegexFileUriString);
+    URI sectionRegexFileInClasspathUri;
+    try
+    {
+      sectionRegexFileInClasspathUri = sectionRegexFileInClasspathUrl.toURI();
+    } catch (URISyntaxException e1)
+    {
+      logger.log(Level.SEVERE, String.format("section regex file not found [%s]", sectionRegexFileUriString), e1);
+      throw new AnalysisEngineProcessException(e1);
+    }
+	  ZonerCli zonerCli =
+      new ZonerCli(sectionRegexFileInClasspathUri);
     
 		zonerCli.setEntireContents(jcas.getDocumentText());
 		// initialize converter once contents are set

@@ -92,8 +92,10 @@ public class RunZoner
           AnalysisEngineFactory.createPrimitiveDescription(DocumentIdPrinterAnalysisEngine.class);
       builder.add(documentIdPrinter);
     
-      URI generalSectionRegexFileUri =
-        this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/section_regex.xml").toURI();
+      String generalSectionRegexFileUri =
+        "org/mitre/medfacts/zoner/section_regex.xml";
+      //URI generalSectionRegexFileUri =
+      //  this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/section_regex.xml").toURI();
 //      ExternalResourceDescription generalSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
 //          SectionRegexConfigurationResource.class, new File(generalSectionRegexFileUri));
       AnalysisEngineDescription zonerAnnotator =
@@ -103,8 +105,10 @@ public class RunZoner
               );
       builder.add(zonerAnnotator);
 
-      URI mayoSectionRegexFileUri =
-          this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/mayo_sections.xml").toURI();
+      String mayoSectionRegexFileUri =
+          "org/mitre/medfacts/zoner/mayo_sections.xml";
+//      URI mayoSectionRegexFileUri =
+//          this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/mayo_sections.xml").toURI();
 //        ExternalResourceDescription mayoSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
 //            SectionRegexConfigurationResource.class, new File(mayoSectionRegexFileUri));
       AnalysisEngineDescription mayoZonerAnnotator =
