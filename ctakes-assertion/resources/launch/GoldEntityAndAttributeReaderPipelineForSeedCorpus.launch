@@ -8,7 +8,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.ctakes.assertion.pipelines.GoldEntityAndAttributeReaderPipelineForSeedCorpus"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/Mayo/UMLS_CEM"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/work/medfacts/sharp/data/2012-12-10_full_november_seed_corpus/clean_seed_corpus_data/all_batches_UMLS_CEM"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ctakes-assertion"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>

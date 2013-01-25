@@ -22,6 +22,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -179,10 +180,10 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     //Options options = new Options();
     options.parseOptions(args);
     
-//    System.err.println("forcing skipping of subject processing!!!");
-//    options.runSubject = false;
-//    System.err.println("forcing skipping of generic processing!!!");
-//    options.runGeneric = false;
+    System.err.println("forcing skipping of subject processing!!!");
+    options.runSubject = false;
+    System.err.println("forcing skipping of generic processing!!!");
+    options.runGeneric = false;
 //    System.err.println("forcing skipping of polarity processing!!!");
 //    options.runPolarity = false;
 //    System.err.println("forcing skipping of uncertainty processing!!!");
@@ -385,29 +386,34 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
     
-    URI generalSectionRegexFileUri =
-        this.getClass().getClassLoader().getResource("org/mitre/medfacts/zoner/section_regex.xml").toURI();
-//      ExternalResourceDescription generalSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
-//          SectionRegexConfigurationResource.class, new File(generalSectionRegexFileUri));
-      AnalysisEngineDescription zonerAnnotator =
-          AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
-              ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
-              generalSectionRegexFileUri
-              );
-      builder.add(zonerAnnotator);
+    String generalSectionRegexFileUri =
+        "org/mitre/medfacts/zoner/section_regex.xml";
+    AnalysisEngineDescription zonerAnnotator =
+        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+            generalSectionRegexFileUri
+            );
+    builder.add(zonerAnnotator);
 
-      URI mayoSectionRegexFileUri =
-          this.getClass().getClassLoader().getResource("org/mitre/medfacts/uima/mayo_sections.xml").toURI();
-//        ExternalResourceDescription mayoSectionRegexDescription = ExternalResourceFactory.createExternalResourceDescription(
-//            SectionRegexConfigurationResource.class, new File(mayoSectionRegexFileUri));
-      AnalysisEngineDescription mayoZonerAnnotator =
-          AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
-              ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
-              mayoSectionRegexFileUri
-              );
-      builder.add(mayoZonerAnnotator);
+    String mayoSectionRegexFileUri =
+        "org/mitre/medfacts/uima/mayo_sections.xml";
+    AnalysisEngineDescription mayoZonerAnnotator =
+        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+            mayoSectionRegexFileUri
+            );
+    builder.add(mayoZonerAnnotator);
+  
+    URL assertionCuePhraseLookupAnnotatorDescriptorUrl1 = this.getClass().getClassLoader().getResource("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator.xml");
+    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl1 (slashes): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl1));
+    URL assertionCuePhraseLookupAnnotatorDescriptorUrl2 = this.getClass().getClassLoader().getResource("org.apache.ctakes.dictionary.lookup.AssertionCuePhraseDictionaryLookupAnnotator.xml");
+    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl2 (periods): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl2));
+
     
-    
+    AnalysisEngineDescription cuePhraseLookupAnnotator =
+        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
+    builder.add(cuePhraseLookupAnnotator);
+
     if (options.runPolarity)
     {
 	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
@@ -523,6 +529,28 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
+    
+    AnalysisEngineDescription cuePhraseLookupAnnotator =
+        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
+    builder.add(cuePhraseLookupAnnotator);
+    
+    String generalSectionRegexFileUri =
+      "org/mitre/medfacts/zoner/section_regex.xml";
+    AnalysisEngineDescription zonerAnnotator =
+        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+            generalSectionRegexFileUri
+            );
+    builder.add(zonerAnnotator);
+
+    String mayoSectionRegexFileUri =
+      "org/mitre/medfacts/uima/mayo_sections.xml";
+    AnalysisEngineDescription mayoZonerAnnotator =
+        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+            mayoSectionRegexFileUri
+            );
+    builder.add(mayoZonerAnnotator);
     
     if (options.runPolarity)
     {
@@ -651,7 +679,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       
       Collection<IdentifiedAnnotation> goldEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>(); 
       Collection<EntityMention> goldEntities = JCasUtil.select(goldView, EntityMention.class);
-	  goldEntitiesAndEvents.addAll(goldEntities);
+      goldEntitiesAndEvents.addAll(goldEntities);
       Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
       goldEntitiesAndEvents.addAll(goldEvents);
       System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
