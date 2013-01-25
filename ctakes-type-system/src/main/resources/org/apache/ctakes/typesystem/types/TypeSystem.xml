@@ -1517,6 +1517,39 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation</name>
+      <description>A cue phrase indicating potential negation, uncertainty, or conditional</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>id</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>cuePhraseCategory</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>cuePhraseAssertionFamily</name>
+          <description>which assertion family this cue phrase belongs to (negation, uncertainty, or conditional)</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>cuePhraseFirstWord</name>
+          <description>first word of cue phrase</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>cuePhrase</name>
+          <description>cue phrase itself (from lookup list)</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        
+      </features>
+    </typeDescription>
+    <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.EntityMention</name>
       <description>A text string (IdentifiedAnnotation) that refers to an Entity.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
