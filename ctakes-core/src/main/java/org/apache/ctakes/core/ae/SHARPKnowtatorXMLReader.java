@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
+import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.core.util.SHARPKnowtatorXMLDefaults;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.AnatomicalSiteMention;
@@ -193,10 +194,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
 	super.initialize(aContext);
 
-	try {
+  Boolean sd = (Boolean) aContext.getConfigParameterValue(SET_DEFAULTS);
+  setDefaults = (sd==null)? true : sd;
+  try {
 		textURIDirectory = new File( (String) aContext.getConfigParameterValue(PARAM_TEXTURI) );
-		Boolean sd = (Boolean) aContext.getConfigParameterValue(SET_DEFAULTS);
-		setDefaults = (sd==null)? true : sd;
 	} catch (NullPointerException e) {
 		textURIDirectory = null;
 	}
@@ -1602,7 +1603,9 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             XWriter.class,
             typeSystemDescription,
             XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
-	    	"/tmp"
+	    	    "/tmp",
+	    	    XWriter.PARAM_FILE_NAMER_CLASS_NAME,
+	    	    CtakesFileNamer.class.getName()
            );
     /////////////////////////
     
@@ -1615,6 +1618,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         documentID.setDocumentID(textFile.toURI().toString());
         documentID.addToIndexes();
         engine.process(jCas);
+        documentID.setDocumentID(textFile.getName());
         xWriter.process(jCas); ///////////////////
       }
     }
