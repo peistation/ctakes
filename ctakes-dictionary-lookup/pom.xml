@@ -87,6 +87,7 @@
 						</goals>
 						<configuration>
 							<includeArtifactIds>ctakes-resources-umls2011ab</includeArtifactIds>
+              <!-- <includes>**/*</includes> -->
 							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 						</configuration>
 					</execution>
