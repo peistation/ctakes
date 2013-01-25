@@ -253,8 +253,18 @@ public class EventAnnotator extends CleartkAnnotator<String> {
 
         List<Feature> features = new ArrayList<Feature>();
 
+        // features from previous classifications
+        for (int i = nPreviousClassifications; i > 0; --i) {
+          int index = tokenIndex - i;
+          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
+          features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
+        }
+        
         // features from token attributes
         features.addAll(this.tokenFeatureExtractor.extract(jCas, token));
+
+        // features from surrounding tokens
+        features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
 
         // features from surrounding entity, phrase, etc. chunk-labels
         for (ChunkingExtractor extractor : chunkingExtractors) {
@@ -264,16 +274,6 @@ public class EventAnnotator extends CleartkAnnotator<String> {
         // features from semantic roles
         features.addAll(predicateArgumentExtractor.extract(token));
 
-        // features from surrounding tokens
-        features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
-
-        // features from previous classifications
-        for (int i = nPreviousClassifications; i > 0; --i) {
-          int index = tokenIndex - i;
-          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
-          features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
-        }
-        
         // apply feature selection, if necessary
         if (this.featureSelection != null) {
           features = this.featureSelection.transform(features);
