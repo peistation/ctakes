@@ -28,11 +28,16 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	      if (this.isTraining())
 	      {
 	        String polarity = (entityMention.getPolarity() == -1) ? "negated" : "present";
-	        instance.setOutcome(polarity);
+	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("negated".equals(polarity))
 	        {
 	          logger.debug("TRAINING: " + polarity);
 	        }
+	        if ("present".equals(polarity) 
+	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
+	        	return;
+	        }
+	        instance.setOutcome(polarity);
 	        this.dataWriter.write(instance);
 	      } else
 	      {

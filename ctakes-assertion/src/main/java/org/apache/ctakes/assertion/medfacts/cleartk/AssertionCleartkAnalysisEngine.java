@@ -233,7 +233,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
     DocumentID documentId = JCasUtil.selectSingle(jCas, DocumentID.class);
     if (documentId != null)
     {
-      logger.info("processing next doc: " + documentId.getDocumentID());
+      logger.debug("processing next doc: " + documentId.getDocumentID());
     } else
     {
       logger.warn("processing next doc (doc id is null)");

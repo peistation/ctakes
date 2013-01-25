@@ -18,7 +18,9 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
 
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -27,13 +29,26 @@ public class ConditionalCleartkAnalysisEngine extends
 		AssertionCleartkAnalysisEngine {
 
 	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
+		probabilityOfKeepingADefaultExample = 1.0;
+	}
+	
+	@Override
 	public void setClassLabel(IdentifiedAnnotation entityMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
 	        String conditional = (entityMention.getConditional()) ? "conditional" : "nonconditional";
+	        
+	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
+	        if ("nonconditional".equals(conditional) 
+	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
+	        	return;
+	        }
 	        instance.setOutcome(conditional);
 	        this.dataWriter.write(instance);
+
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());

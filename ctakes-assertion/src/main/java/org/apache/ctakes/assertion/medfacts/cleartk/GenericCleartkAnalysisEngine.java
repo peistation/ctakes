@@ -36,7 +36,8 @@ public class GenericCleartkAnalysisEngine extends
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		
+		probabilityOfKeepingADefaultExample = 1.0;
+	
 //		if (this.isTraining() && this.goldViewName == null) {
 //			throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
 //		}
@@ -66,6 +67,12 @@ public class GenericCleartkAnalysisEngine extends
 		if (this.isTraining())
 	      {
 	        String generic = entityMention.getGeneric()? "1":"0";
+
+	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
+	        if ("0".equals(generic) 
+	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
+	        	return;
+	        }
 	        instance.setOutcome(generic);
 	        this.dataWriter.write(instance);
 	      } else

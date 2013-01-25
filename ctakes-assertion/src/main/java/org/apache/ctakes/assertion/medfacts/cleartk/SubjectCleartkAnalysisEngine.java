@@ -51,6 +51,7 @@ public class SubjectCleartkAnalysisEngine extends
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
+		probabilityOfKeepingADefaultExample = 1.0;
 
 		if (this.isTraining() && this.goldViewName == null) {
 			throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
@@ -81,13 +82,19 @@ public class SubjectCleartkAnalysisEngine extends
 		if (this.isTraining())
 	      {
 	        String subj = entityMention.getSubject();
+	        
+	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
+	        if ("patient".equals(subj) 
+	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
+	        	return;
+	        }
 	        instance.setOutcome(subj);
+	        this.dataWriter.write(instance);
 	        logger.log(Level.DEBUG,  String.format("[%s] expected: ''; actual: ''; features: %s",
 		      		  this.getClass().getSimpleName(),
 		      		  instance.toString()
 		      		  //StringUtils.join(instance.getFeatures(), ", ")
 		      		  ));
-	        this.dataWriter.write(instance);
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
