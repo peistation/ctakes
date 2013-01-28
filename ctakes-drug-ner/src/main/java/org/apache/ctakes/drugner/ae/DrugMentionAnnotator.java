@@ -387,7 +387,11 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			// if (d!=null) d.addToIndexes(); // don't need to be able to get these directly from the AnnotationIndex
 			if (d!=null) medicationMention.setStartDate(d);
 		}
-
+		// Add fix CTAKE-129 Populate the Drug NER named entity confidence attribute 
+		if (fromAnnotation.getConfidence() != 0.0 ) {
+			medicationMention.setConfidence(fromAnnotation.getConfidence());
+		}
+			
 		// There currently is no endDate in DrugMentionAnnotation 
 		//if (fromAnnotation.getEndDate()!=null) {
 		//	
@@ -730,7 +734,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
         Iterator chkNE = namedE.iterator();
         Iterator newNE = wordTokenList.iterator();
         boolean neFound = false;
-        MedicationEventMention ne = null;
+      //  MedicationEventMention ne = null;
         WordToken we = null;
         Object mt = (Object)  measurementTokenItr.next();
         if (mt instanceof  StrengthUnitToken) {
