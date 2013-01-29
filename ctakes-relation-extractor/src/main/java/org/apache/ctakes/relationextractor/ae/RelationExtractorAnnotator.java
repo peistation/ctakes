@@ -25,19 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceInitializationException;
-import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.CleartkProcessingException;
-import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.Instance;
-import org.uimafit.descriptor.ConfigurationParameter;
-import org.uimafit.util.JCasUtil;
-
 import org.apache.ctakes.relationextractor.ae.features.DependencyPathFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.DependencyTreeFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.NamedEntityFeaturesExtractor;
@@ -47,22 +34,23 @@ import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor
 import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.CleartkProcessingException;
+import org.cleartk.classifier.Feature;
+import org.cleartk.classifier.Instance;
+import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.util.JCasUtil;
 
 import com.google.common.collect.Lists;
 
 public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String> {
 
   public static final String NO_RELATION_CATEGORY = "-NONE-";
-
-  public static final String PARAM_GOLD_VIEW_NAME = "GoldViewName";
-
-  @ConfigurationParameter(
-      name = PARAM_GOLD_VIEW_NAME,
-      mandatory = false,
-      description = "view containing the manual relation annotations; needed for training")
-  protected String goldViewName;
 
   public static final String PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE = "ProbabilityOfKeepingANegativeExample";
 
@@ -92,14 +80,6 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
         new DependencyPathFeaturesExtractor()
         );
   }
-
-  @Override
-  public void initialize(UimaContext context) throws ResourceInitializationException {
-    super.initialize(context);
-    if (this.isTraining() && this.goldViewName == null) {
-      throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");
-    }
-  }
  
   /**
    * Selects the relevant mentions/annotations within a sentence for relation identification/extraction.
@@ -111,17 +91,6 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    */
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
-    // during training, pull entity and relation annotations from the manual annotation view
-  	JCas identifiedAnnotationView, relationView;
-    if (this.isTraining()) {
-      try {
-        identifiedAnnotationView = relationView = jCas.getView(this.goldViewName);
-      } catch (CASException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-    } else {
-      identifiedAnnotationView = relationView = jCas;
-    }
 
     // lookup from pair of annotations to binary text relation
     // note: assumes that there will be at most one relation per pair
@@ -129,7 +98,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
     if (this.isTraining()) {
       relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
-      for (BinaryTextRelation relation : JCasUtil.select(relationView, BinaryTextRelation.class)) {
+      for (BinaryTextRelation relation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
         Annotation arg1 = relation.getArg1().getArgument();
         Annotation arg2 = relation.getArg2().getArgument();
         // The key is a list of args so we can do bi-directional lookup
@@ -141,7 +110,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
 
     	// collect all relevant relation arguments from the sentence
-    	List<IdentifiedAnnotationPair> candidatePairs = this.getCandidateRelationArgumentPairs(identifiedAnnotationView, sentence);
+    	List<IdentifiedAnnotationPair> candidatePairs = this.getCandidateRelationArgumentPairs(jCas, sentence);
 
     	// walk through the pairs of annotations
     	for (IdentifiedAnnotationPair pair : candidatePairs) {
@@ -186,15 +155,15 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     				}
 
     				// add the relation to the CAS
-    				RelationArgument relArg1 = new RelationArgument(relationView);
+    				RelationArgument relArg1 = new RelationArgument(jCas);
     				relArg1.setArgument(arg1);
     				relArg1.setRole("Argument");
     				relArg1.addToIndexes();
-    				RelationArgument relArg2 = new RelationArgument(relationView);
+    				RelationArgument relArg2 = new RelationArgument(jCas);
     				relArg2.setArgument(arg2);
     				relArg2.setRole("Related_to");
     				relArg2.addToIndexes();
-    				BinaryTextRelation relation = new BinaryTextRelation(relationView);
+    				BinaryTextRelation relation = new BinaryTextRelation(jCas);
     				relation.setArg1(relArg1);
     				relation.setArg2(relArg2);
     				relation.setCategory(predictedCategory);

@@ -385,16 +385,14 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
         RemoveOtherRelations.PARAM_RELATION_CATEGORY,
         this.relationCategory),
         CAS.NAME_DEFAULT_SOFA, GOLD_VIEW_NAME);
-    // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+    // remove cTAKES entity mentions and modifiers in the system view and copy in the gold relations
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveCTakesMentionsAndCopyGoldRelations.class));
     // add the relation extractor, configured for training mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
         this.classifierAnnotatorClass,
         this.additionalParameters);
     ConfigurationParameterFactory.addConfigurationParameters(
         classifierAnnotator,
-        RelationExtractorAnnotator.PARAM_GOLD_VIEW_NAME,
-        RelationExtractorEvaluation.GOLD_VIEW_NAME,
         DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
         this.dataWriterClass,
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -430,7 +428,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveSmallerEntityMentions.class));
     } else {
       // replace cTAKES entity mentions and modifiers in the system view with the gold annotations
-      builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesEntityMentionsAndModifiersWithGold.class));
+      builder.add(AnalysisEngineFactory.createPrimitiveDescription(ReplaceCTakesMentionsWithGoldMentions.class));
     }
     // add the relation extractor, configured for classification mode
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
@@ -715,11 +713,60 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
   }
 
   /**
+   * Annotator that removes cTAKES mentions in the system view and copies relations from the gold
+   * view to the system view
+   */
+  public static class RemoveCTakesMentionsAndCopyGoldRelations extends
+      JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas goldView, systemView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+      
+      // remove cTAKES EntityMentions and Modifiers from system view
+      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
+      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
+      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
+      for (IdentifiedAnnotation cTakesMention : cTakesMentions) {
+        cTakesMention.removeFromIndexes();
+      }
+
+      // copy gold EntityMentions and Modifiers to the system view
+      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
+      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
+      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
+      CasCopier copier = new CasCopier(goldView.getCas(), systemView.getCas());
+      Feature sofaFeature = jCas.getTypeSystem().getFeatureByFullName(CAS.FEATURE_FULL_NAME_SOFA);
+      for (IdentifiedAnnotation goldMention : goldMentions) {
+        Annotation copy = (Annotation) copier.copyFs(goldMention);
+        copy.setFeatureValue(sofaFeature, systemView.getSofa());
+        copy.addToIndexes();
+      }
+
+      // copy gold relations to the system view
+      for (BinaryTextRelation goldRelation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
+        BinaryTextRelation relation = (BinaryTextRelation) copier.copyFs(goldRelation);
+        relation.addToIndexes(systemView);
+        for (RelationArgument relArg : Lists.newArrayList(relation.getArg1(), relation.getArg2())) {
+          relArg.addToIndexes(systemView);
+          // relArg.getArgument() should have been added to indexes with mentions above
+        }
+      }
+    }
+  }
+
+  /**
    * Annotator that removes cTAKES EntityMentions and Modifiers from the system view, and copies
    * over the manually annotated EntityMentions and Modifiers from the gold view.
    * 
    */
-  public static class ReplaceCTakesEntityMentionsAndModifiersWithGold extends
+  public static class ReplaceCTakesMentionsWithGoldMentions extends
       JCasAnnotator_ImplBase {
 
     @Override
@@ -754,86 +801,6 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     }
   }
 
-  public static class ReplaceGoldEntityMentionsAndModifiersWithCTakes extends
-      JCasAnnotator_ImplBase {
-
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-      JCas goldView, systemView;
-      try {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
-        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
-      } catch (CASException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-
-      // remove manual EntityMentions and Modifiers from gold view
-      List<IdentifiedAnnotation> goldMentions = new ArrayList<IdentifiedAnnotation>();
-      goldMentions.addAll(JCasUtil.select(goldView, EntityMention.class));
-      goldMentions.addAll(JCasUtil.select(goldView, Modifier.class));
-      for (IdentifiedAnnotation goldMention : goldMentions) {
-        goldMention.removeFromIndexes();
-      }
-
-      // copy cTAKES EntityMentions and Modifiers to gold view
-      List<IdentifiedAnnotation> cTakesMentions = new ArrayList<IdentifiedAnnotation>();
-      cTakesMentions.addAll(JCasUtil.select(systemView, EntityMention.class));
-      cTakesMentions.addAll(JCasUtil.select(systemView, Modifier.class));
-      CasCopier copier = new CasCopier(systemView.getCas(), goldView.getCas());
-      for (IdentifiedAnnotation cTakesMention : cTakesMentions) {
-        Annotation copy = (Annotation) copier.copyFs(cTakesMention);
-        Feature sofaFeature = copy.getType().getFeatureByBaseName("sofa");
-        copy.setFeatureValue(sofaFeature, goldView.getSofa());
-        copy.addToIndexes();
-      }
-
-      // replace gold EntityMentions and Modifiers in relations with cTAKES ones
-      List<BinaryTextRelation> relations = new ArrayList<BinaryTextRelation>();
-      relations.addAll(JCasUtil.select(goldView, BinaryTextRelation.class));
-      for (BinaryTextRelation relation : relations) {
-
-        // attempt to replace the gold RelationArguments with system ones
-        for (RelationArgument relArg : Arrays.asList(relation.getArg1(), relation.getArg2())) {
-          IdentifiedAnnotation goldArg = (IdentifiedAnnotation) relArg.getArgument();
-          Class<? extends IdentifiedAnnotation> argClass = goldArg.getClass();
-
-          // find all annotations covered by the gold argument and of the same class (these should
-          // be the ones copied over from the cTAKES output earlier)
-          List<? extends IdentifiedAnnotation> systemArgs = JCasUtil.selectCovered(
-              goldView,
-              argClass,
-              goldArg);
-
-          // find the largest covered annotation that has the same type
-          IdentifiedAnnotation bestFitArg = null;
-          int maxSize = 0;
-          for (IdentifiedAnnotation systemArg : systemArgs) {
-            int size = systemArg.getEnd() - systemArg.getBegin();
-            if (size >= maxSize && goldArg.getTypeID() == systemArg.getTypeID()) {
-              maxSize = size;
-              bestFitArg = systemArg;
-            }
-          }
-          if (bestFitArg != null) {
-            relArg.setArgument(bestFitArg);
-          }
-
-          // log a message if we didn't find a perfect match
-          if (maxSize != goldArg.getEnd() - goldArg.getBegin()) {
-            List<String> choices = new ArrayList<String>();
-            for (IdentifiedAnnotation systemArg : systemArgs) {
-              choices.add(format(systemArg));
-            }
-            String actionFormat = bestFitArg == null ? "dropping" : "using %s instead of";
-            String action = String.format(actionFormat, format(bestFitArg));
-            String message = String.format("%s %s; choices: %s", action, format(goldArg), choices);
-            this.getContext().getLogger().log(Level.WARNING, message);
-          }
-        }
-      }
-    }
-  }
-  
   static String format(IdentifiedAnnotation a) {
     return a == null ? null : String.format("\"%s\"(type=%d)", a.getCoveredText(), a.getTypeID());
   }
