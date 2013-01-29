@@ -22,14 +22,18 @@ import java.io.File;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
 import org.apache.ctakes.temporal.ae.EventTimeRelationAnnotator;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.TOP;
@@ -37,6 +41,7 @@ import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.pipeline.JCasIterable;
@@ -45,6 +50,7 @@ import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lexicalscope.jewel.cli.CliFactory;
 
 public class EvaluationOfTemporalRelations extends
@@ -87,6 +93,7 @@ public class EvaluationOfTemporalRelations extends
     AggregateBuilder aggregateBuilder = new AggregateBuilder();
     aggregateBuilder.add(this.getPreprocessorTrainDescription());
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveNonTLINKRelations.class));
+    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveCrossSentenceRelations.class));
     aggregateBuilder.add(EventTimeRelationAnnotator.createDataWriterDescription(
         LIBSVMStringOutcomeDataWriter.class,
         directory,
@@ -104,6 +111,10 @@ public class EvaluationOfTemporalRelations extends
         AnalysisEngineFactory.createPrimitiveDescription(RemoveNonTLINKRelations.class),
         CAS.NAME_DEFAULT_SOFA,
         GOLD_VIEW_NAME);
+    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+        RemoveCrossSentenceRelations.class,
+        RemoveCrossSentenceRelations.PARAM_RELATION_VIEW,
+        GOLD_VIEW_NAME));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveRelations.class));
     aggregateBuilder.add(EventTimeRelationAnnotator.createAnnotatorDescription(directory));
 
@@ -136,6 +147,50 @@ public class EvaluationOfTemporalRelations extends
           jCas,
           BinaryTextRelation.class))) {
         if (!relation.getCategory().startsWith("TLINK")) {
+          relation.getArg1().removeFromIndexes();
+          relation.getArg2().removeFromIndexes();
+          relation.removeFromIndexes();
+        }
+      }
+    }
+  }
+
+  public static class RemoveCrossSentenceRelations extends JCasAnnotator_ImplBase {
+
+    public static final String PARAM_RELATION_VIEW = "RelationView";
+
+    @ConfigurationParameter(name = PARAM_RELATION_VIEW)
+    private String relationViewName = CAS.NAME_DEFAULT_SOFA;
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas relationView;
+      try {
+        relationView = jCas.getView(this.relationViewName);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+
+      // map events and times to the sentences that contain them
+      Map<IdentifiedAnnotation, Integer> sentenceIndex = Maps.newHashMap();
+      int index = -1;
+      for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+        ++index;
+        for (EventMention event : JCasUtil.selectCovered(relationView, EventMention.class, sentence)) {
+          sentenceIndex.put(event, index);
+        }
+        for (TimeMention time : JCasUtil.selectCovered(relationView, TimeMention.class, sentence)) {
+          sentenceIndex.put(time, index);
+        }
+      }
+
+      // remove any relations that are in different sentences.
+      for (BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(
+          relationView,
+          BinaryTextRelation.class))) {
+        Integer sent1 = sentenceIndex.get(relation.getArg1().getArgument());
+        Integer sent2 = sentenceIndex.get(relation.getArg2().getArgument());
+        if (sent1 == null || sent2 == null || !sent1.equals(sent2)) {
           relation.getArg1().removeFromIndexes();
           relation.getArg2().removeFromIndexes();
           relation.removeFromIndexes();
