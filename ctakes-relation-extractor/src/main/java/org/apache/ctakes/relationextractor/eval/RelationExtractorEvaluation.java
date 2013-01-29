@@ -908,21 +908,7 @@ public class RelationExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     }
 
     public HashableArguments(BinaryTextRelation relation) {
-      this(getArg1(relation), getArg2(relation));
-    }
-
-    // HACK: arg1 is not always arg1 because of bugs in the reader
-    private static Annotation getArg1(BinaryTextRelation rel) {
-      RelationArgument arg1 = rel.getArg1();
-      return arg1.getRole().equals("Argument") ? arg1.getArgument() : rel.getArg2().getArgument();
-    }
-
-    // HACK: arg2 is not always arg2 because of bugs in the reader
-    private static Annotation getArg2(BinaryTextRelation rel) {
-      RelationArgument arg2 = rel.getArg2();
-      return arg2.getRole().equals("Related_to")
-          ? arg2.getArgument()
-          : rel.getArg1().getArgument();
+      this(relation.getArg1().getArgument(), relation.getArg2().getArgument());
     }
 
     @Override
