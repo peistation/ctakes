@@ -50,6 +50,8 @@ import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
+import com.google.common.collect.Lists;
+
 public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String> {
 
   public static final String NO_RELATION_CATEGORY = "-NONE-";
@@ -72,17 +74,24 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
   
   protected Random coin = new Random(0);
 
+  private List<RelationFeaturesExtractor> featureExtractors = this.getFeatureExtractors();
+  
   /**
-   * The list of feature extractors used by the classifier.
+   * Defines the list of feature extractors used by the classifier.
+   * Subclasses may override this method to provide a different set of feature extractors. 
+   * 
+   * @return The list of feature extractors to use.
    */
-  protected List<RelationFeaturesExtractor> featureExtractors = Arrays.<RelationFeaturesExtractor> asList(
-      new TokenFeaturesExtractor(),
-      new PartOfSpeechFeaturesExtractor(),
-      new PhraseChunkingExtractor(),
-      new NamedEntityFeaturesExtractor(),
-      new DependencyTreeFeaturesExtractor(),
-      new DependencyPathFeaturesExtractor()
-      );
+  protected List<RelationFeaturesExtractor> getFeatureExtractors() {
+    return Lists.newArrayList(
+        new TokenFeaturesExtractor(),
+        new PartOfSpeechFeaturesExtractor(),
+        new PhraseChunkingExtractor(),
+        new NamedEntityFeaturesExtractor(),
+        new DependencyTreeFeaturesExtractor(),
+        new DependencyPathFeaturesExtractor()
+        );
+  }
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
