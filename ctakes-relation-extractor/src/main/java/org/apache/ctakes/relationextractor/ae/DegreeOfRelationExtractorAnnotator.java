@@ -19,21 +19,13 @@
 package org.apache.ctakes.relationextractor.ae;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.uimafit.util.JCasUtil;
-
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
-import org.cleartk.classifier.CleartkProcessingException;
-import org.cleartk.classifier.Feature;
+import org.apache.uima.jcas.JCas;
+import org.uimafit.util.JCasUtil;
 
 /**
  * Identifies Degree_Of relation between entities and modifiers
@@ -56,17 +48,4 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 		}
 		return pairs;
 	}
-
-	@Override
-	protected String getRelationCategory(
-			Map<List<Annotation>, BinaryTextRelation> relationLookup,
-			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
-		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
-		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
-	}
-
-  @Override
-  public String classify(List<Feature> features) throws CleartkProcessingException {
-    return this.classifier.classify(features);
-  }
 }

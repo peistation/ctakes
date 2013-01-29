@@ -19,39 +19,29 @@
 package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
-import org.uimafit.util.JCasUtil;
 
 /**
  * Annotated degree_of relation in sentences containing a single entity mention
  * of a valid degree_of type and a single modifier.
  */
-public class Baseline1DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class Baseline1DegreeOfRelationExtractorAnnotator extends DegreeOfRelationExtractorAnnotator {
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
 			JCas identifiedAnnotationView, Sentence sentence) {
-		
-		List<EntityMention> entities = JCasUtil.selectCovered(identifiedAnnotationView, EntityMention.class, sentence);
-		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
+	  List<IdentifiedAnnotationPair> pairs = super.getCandidateRelationArgumentPairs(identifiedAnnotationView, sentence);
 		
 		// look for sentences with one entity and one modifier
     List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
-		if((entities.size() == 1) && (modifiers.size() == 1)) {
-		  IdentifiedAnnotationPair pair = new IdentifiedAnnotationPair(entities.get(0), modifiers.get(0));
+		if (pairs.size() == 1) {
+		  IdentifiedAnnotationPair pair = pairs.get(0);
 		  if(Utils.validateDegreeOfArgumentTypes(pair)) {
 		    System.out.println(sentence.getCoveredText());
 		    System.out.println("arg1: " + pair.getArg1().getCoveredText());
@@ -62,14 +52,6 @@ public class Baseline1DegreeOfRelationExtractorAnnotator extends RelationExtract
 		}
 				
 		return result;
-	}
-
-	@Override
-	protected String getRelationCategory(
-			Map<List<Annotation>, BinaryTextRelation> relationLookup,
-			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
-		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
-		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
 	}
 
   @Override

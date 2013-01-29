@@ -19,22 +19,17 @@
 package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
@@ -104,16 +99,6 @@ public class Baseline2DegreeOfRelationExtractorAnnotator extends RelationExtract
     System.out.println();
     
     return result;
-	}
-	
-	
-
-	@Override
-	protected String getRelationCategory(
-			Map<List<Annotation>, BinaryTextRelation> relationLookup,
-			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
-		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
-		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
 	}
 
   @Override

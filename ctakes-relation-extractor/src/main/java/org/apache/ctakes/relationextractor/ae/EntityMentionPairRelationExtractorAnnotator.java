@@ -23,17 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.uimafit.descriptor.ConfigurationParameter;
-import org.uimafit.util.JCasUtil;
-
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
-import org.cleartk.classifier.CleartkProcessingException;
-import org.cleartk.classifier.Feature;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.util.JCasUtil;
 
 /**
  * Identifies and classifies relations between pairs of named entities
@@ -115,10 +112,4 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 		}
 		return category;
 	}
-
-  @Override
-  public String classify(List<Feature> features) throws CleartkProcessingException {
-    return this.classifier.classify(features);
-  }
-
 }

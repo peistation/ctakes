@@ -19,42 +19,24 @@
 package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.cleartk.classifier.CleartkProcessingException;
-import org.cleartk.classifier.Feature;
-import org.uimafit.util.JCasUtil;
 
 /**
- * Annotate location_of relation between two entities whenever 
+ * Annotate degree_of relation between two entities whenever 
  * they are enclosed within the same noun phrse.
  */
-public class Baseline3DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class Baseline3DegreeOfRelationExtractorAnnotator extends DegreeOfRelationExtractorAnnotator {
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
 			JCas identifiedAnnotationView, Sentence sentence) {
-		
-		List<EntityMention> entities = JCasUtil.selectCovered(identifiedAnnotationView, EntityMention.class, sentence);
-		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
-		
-		List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
-		for (EntityMention entity : entities) {
-			for (Modifier modifier : modifiers) {
-				pairs.add(new IdentifiedAnnotationPair(entity, modifier));
-			}
-		}
+		List<IdentifiedAnnotationPair> pairs = super.getCandidateRelationArgumentPairs(identifiedAnnotationView, sentence);
 		
     // find pairs enclosed inside a noun phrase
     List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
@@ -77,17 +59,4 @@ public class Baseline3DegreeOfRelationExtractorAnnotator extends RelationExtract
     
     return result;
 	}
-
-	@Override
-	protected String getRelationCategory(
-			Map<List<Annotation>, BinaryTextRelation> relationLookup,
-			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
-		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
-		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
-	}
-
-  @Override
-  public String classify(List<Feature> features) throws CleartkProcessingException {
-    return this.classifier.classify(features);
-  }
 }

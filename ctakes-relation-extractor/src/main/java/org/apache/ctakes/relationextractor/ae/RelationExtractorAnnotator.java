@@ -95,13 +95,8 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
   /**
    * Selects the relevant mentions/annotations within a sentence for relation identification/extraction.
    */
-  public abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Sentence sentence);
+  protected abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Sentence sentence);
 
-  /*
-   * Make a prediction given a list of features.
-   */
-  public abstract String classify(List<Feature> features) throws CleartkProcessingException;
-  
   /*
    * Implement the standard UIMA process method.
    */
@@ -124,7 +119,13 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     Map<List<Annotation>, BinaryTextRelation> relationLookup;
     relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
     if (this.isTraining()) {
-    	relationLookup = createRelationLookup(relationView);
+      relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
+      for (BinaryTextRelation relation : JCasUtil.select(relationView, BinaryTextRelation.class)) {
+        Annotation arg1 = relation.getArg1().getArgument();
+        Annotation arg2 = relation.getArg2().getArgument();
+        // The key is a list of args so we can do bi-directional lookup
+        relationLookup.put(Arrays.asList(arg1, arg2), relation);
+      }
     }
 
     // walk through each sentence in the text
@@ -203,34 +204,33 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    * @return If this category should not be processed for training return <i>null</i>
    *         otherwise it returns the label sent to the datawriter
    */
-  protected abstract String getRelationCategory(Map<List<Annotation>, BinaryTextRelation> relationLookup,
-		  IdentifiedAnnotation arg1, IdentifiedAnnotation arg2);
-
-  /**
-   * Creates a lookup map between lists of arguments and their relation
-   * This map does not key in simply on a HashableArgument because 
-   * @param relationView
-   * @return
-   */
-  private static Map<List<Annotation>, BinaryTextRelation> createRelationLookup(
-		  JCas relationView) {
-	  Map<List<Annotation>, BinaryTextRelation> relationLookup;
-	  relationLookup = new HashMap<List<Annotation>, BinaryTextRelation>();
-	  for (BinaryTextRelation relation : JCasUtil.select(relationView, BinaryTextRelation.class)) {
-		  Annotation arg1, arg2;
-		  if (relation.getArg1().getRole().equals("Argument")) {
-			  arg1 = relation.getArg1().getArgument();
-			  arg2 = relation.getArg2().getArgument();
-		  } else {
-			  arg2 = relation.getArg1().getArgument();
-			  arg1 = relation.getArg2().getArgument();
-		  }
-		  // The key is a list of args so we can do bi-directional lookup
-		  relationLookup.put(Arrays.asList(arg1, arg2), relation);
-	  }
-	  return relationLookup;
+  protected String getRelationCategory(Map<List<Annotation>, BinaryTextRelation> relationLookup,
+		  IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
+    BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
+    String category;
+    if (relation != null) {
+      category = relation.getCategory();
+    } else if (coin.nextDouble() <= this.probabilityOfKeepingANegativeExample) {
+      category = NO_RELATION_CATEGORY;
+    } else {
+      category = null;
+    }
+    return category;
   }
 
+  /**
+   * Predict an outcome given a set of features.
+   * By default, this simply delegates to the object's <code>classifier</code>.
+   * Subclasses may override this method to implement more complex classification procedures. 
+   * 
+   * @param features The features to be classified.
+   * @return The predicted outcome (label) for the features.
+   */
+  protected String classify(List<Feature> features) throws CleartkProcessingException {
+    return this.classifier.classify(features);
+  }
+
+  
   public static class IdentifiedAnnotationPair {
 	  
 	 private final IdentifiedAnnotation arg1;
