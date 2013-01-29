@@ -25,4 +25,6 @@ The MITRE corporation  and are licensed to the Apache Software
 Foundation under the "Software Grant License Agreement".
 Copyright (c) 2012 The MITRE Corporation.
 
-Please see the NOTICE file within each module for the other notices.
+This product contains parts of LVG developed by the NLM's Lexical Tools Project
+(http://lexsrv3.nlm.nih.gov/LexSysGroup/Projects/lvg/current/web/index.html),
+licensed under the terms and conditions (see LICENSE file).
