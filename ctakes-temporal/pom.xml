@@ -96,6 +96,10 @@
 			<artifactId>ctakes-dependency-parser</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-relation-extractor</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>net.sourceforge.ctakesresources</groupId>
 			<artifactId>ctakes-resources-umls2011ab</artifactId>
 			<version>3.1.0</version>
