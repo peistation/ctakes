@@ -179,8 +179,12 @@ public abstract class AssertionCleartkAnalysisEngine extends
     				new CleartkExtractor.LastCovered(2),
     				new CleartkExtractor.Preceding(5),
     				new CleartkExtractor.Following(4),
-    				new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
-    				new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
+    				new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
+    				new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
     				);
     
     CleartkExtractor posExtraction1 = 
@@ -218,6 +222,10 @@ public abstract class AssertionCleartkAnalysisEngine extends
     cuePhraseInWindowExtractor = new CleartkExtractor(
           AssertionCuePhraseAnnotation.class,
           baseExtractorCuePhraseCategory,
+          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
+          new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
+          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
+          new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
           new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
           new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
           );
@@ -374,8 +382,8 @@ public abstract class AssertionCleartkAnalysisEngine extends
     if (zoneList == null || zoneList.isEmpty())
     {
       //return null;
-      logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() early END (no zones)");
-      new ArrayList<Feature>();
+      //logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() early END (no zones)");
+      return new ArrayList<Feature>();
     } else
     {
       logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() found zones and adding zone features");
