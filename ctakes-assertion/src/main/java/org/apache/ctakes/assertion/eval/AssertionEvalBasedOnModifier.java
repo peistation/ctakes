@@ -222,7 +222,9 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
         evaluationOutputDirectory,
         annotationTypes,
         annotatorClass,
-        dataWriterFactoryClass
+        dataWriterFactoryClass,
+        "100",
+        "2"
         );
     /*
         ,
@@ -299,7 +301,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
 	    "run generic: %b%n" +
 	    "%n%n",
 	    options.trainDirectory.getAbsolutePath(),
-	    options.testDirectory.getAbsolutePath(),
+	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
 	    options.modelsDirectory.getAbsolutePath(),
 	    options.crossValidationFolds,
 	    options.runPolarity,
@@ -506,13 +508,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     SimplePipeline.runPipeline(collectionReader,  builder.createAggregateDescription());
     
-    HideOutput hider = new HideOutput();
+    //HideOutput hider = new HideOutput();
     for (String currentAssertionAttribute : annotationTypes)
     {
     	File currentDirectory = new File(directory, currentAssertionAttribute);
     	JarClassifierBuilder.trainAndPackage(currentDirectory, trainingArguments);
     }
-    hider.restoreOutput();
+    //hider.restoreOutput();
   }
 
   @Override
