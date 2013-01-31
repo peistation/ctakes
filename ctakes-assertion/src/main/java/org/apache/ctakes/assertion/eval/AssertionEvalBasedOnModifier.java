@@ -67,6 +67,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngin
 import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
 import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
+import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.xwriter.XWriter;
@@ -628,7 +629,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	            XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
 	            evaluationOutputDirectory,
 	            XWriter.PARAM_XML_SCHEME_NAME,
-	            XWriter.XMI);
+	            XWriter.XMI,
+	            XWriter.PARAM_FILE_NAMER_CLASS_NAME,
+	            CtakesFileNamer.class.getName());
         builder.add(xwriter);
     }
     
