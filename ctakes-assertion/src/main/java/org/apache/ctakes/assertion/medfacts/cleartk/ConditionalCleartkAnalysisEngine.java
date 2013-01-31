@@ -31,7 +31,7 @@ public class ConditionalCleartkAnalysisEngine extends
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		probabilityOfKeepingADefaultExample = 1.0;
+		probabilityOfKeepingADefaultExample = 0.1;
 	}
 	
 	@Override

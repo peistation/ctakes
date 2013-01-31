@@ -19,6 +19,7 @@
 package org.apache.ctakes.assertion.eval;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -59,6 +61,7 @@ import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.mitre.medfacts.uima.ZoneAnnotator;
+import org.apache.ctakes.assertion.medfacts.AssertionAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
 import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
@@ -164,6 +167,17 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
             required = false)
     public Integer crossValidationFolds;
     
+    @Option(
+            name = "--test-only",
+            usage = "do not train a model, use the one specified in --models-dir",
+            required = false)
+    public boolean testOnly = false;
+
+    @Option(
+            name = "--no-cleartk",
+            usage = "run the version of the assertion module released with cTAKES 2.5",
+            required = false)
+    public boolean noCleartk = false;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -181,10 +195,10 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     //Options options = new Options();
     options.parseOptions(args);
     
-    System.err.println("forcing skipping of subject processing!!!");
-    options.runSubject = false;
-    System.err.println("forcing skipping of generic processing!!!");
-    options.runGeneric = false;
+//    System.err.println("forcing skipping of subject processing!!!");
+//    options.runSubject = false;
+//    System.err.println("forcing skipping of generic processing!!!");
+//    options.runGeneric = false;
 //    System.err.println("forcing skipping of polarity processing!!!");
 //    options.runPolarity = false;
 //    System.err.println("forcing skipping of uncertainty processing!!!");
@@ -275,16 +289,17 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
       // train on the entire training set and evaluate on the test set
       List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
       
-      CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
-      evaluation.train(trainCollectionReader, modelsDir);
-      
+      if (!options.testOnly) {
+    	  CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
+    	  evaluation.train(trainCollectionReader, modelsDir);
+      }
       CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
       Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
       
       AssertionEvalBasedOnModifier.printScore(stats,  modelsDir.getAbsolutePath());
     }
     
-    System.out.println("Finished.");
+    System.out.println("Finished assertion module.");
     
   }
   
@@ -533,93 +548,12 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     AnalysisEngineDescription assertionAttributeClearerAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceAnnotationsSystemAssertionClearer.class);
     builder.add(assertionAttributeClearerAnnotator);
     
-    AnalysisEngineDescription cuePhraseLookupAnnotator =
-        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
-    builder.add(cuePhraseLookupAnnotator);
-    
-    String generalSectionRegexFileUri =
-      "org/mitre/medfacts/zoner/section_regex.xml";
-    AnalysisEngineDescription zonerAnnotator =
-        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
-            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
-            generalSectionRegexFileUri
-            );
-    builder.add(zonerAnnotator);
+    if ( options.noCleartk ) {
+    	addExternalAttributeAnnotatorsToAggregate(builder);
+    } else {
+    	addCleartkAttributeAnnotatorsToAggregate(directory, builder);
+    }
 
-    String mayoSectionRegexFileUri =
-      "org/mitre/medfacts/uima/mayo_sections.xml";
-    AnalysisEngineDescription mayoZonerAnnotator =
-        AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
-            ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
-            mayoSectionRegexFileUri
-            );
-    builder.add(mayoZonerAnnotator);
-    
-    if (options.runPolarity)
-    {
-	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        polarityAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(new File(directory, "polarity"), "model.jar").getPath()
-	        );
-	    builder.add(polarityAnnotator);
-    }
-    
-    if (options.runConditional)
-    {
-	    AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        conditionalAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(new File(directory, "conditional"), "model.jar").getPath()
-	        );
-	    builder.add(conditionalAnnotator);
-    }
-    
-    if (options.runUncertainty)
-    {
-	    AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        uncertaintyAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(new File(directory, "uncertainty"), "model.jar").getPath()
-	        );
-	    builder.add(uncertaintyAnnotator);
-    }
-    
-    if (options.runSubject)
-    {
-	    AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        subjectAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(new File(directory, "subject"), "model.jar").getPath()
-	        );
-	    builder.add(subjectAnnotator);
-    }
-    
-    if (options.runGeneric)
-    {
-	    AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        genericAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(new File(directory, "generic"), "model.jar").getPath()
-	        );
-	    builder.add(genericAnnotator);
-    }
-    
     if (evaluationOutputDirectory != null)
     {
         AnalysisEngineDescription xwriter =
@@ -687,14 +621,14 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       goldEntitiesAndEvents.addAll(goldEntities);
       Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
       goldEntitiesAndEvents.addAll(goldEvents);
-      System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
+//      System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
       
       Collection<IdentifiedAnnotation> systemEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>();
       Collection<EntityMention> systemEntities = JCasUtil.select(jCas, EntityMention.class);
       systemEntitiesAndEvents.addAll(systemEntities);
       Collection<EventMention> systemEvents = JCasUtil.select(jCas, EventMention.class);
       systemEntitiesAndEvents.addAll(systemEvents);
-      System.out.format("system entities: %d%nsystem events: %d%n%n", systemEntities.size(), systemEvents.size());
+//      System.out.format("system entities: %d%nsystem events: %d%n%n", systemEntities.size(), systemEvents.size());
       
       if (options.runPolarity)
       {
@@ -735,6 +669,134 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     return map;
   }
+
+private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
+		throws UIMAException, IOException {
+	// RUN ALL THE OLD (non-ClearTK) CLASSIFIERS
+	AnalysisEngineDescription oldAssertionAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/assertionAnalysisEngine"); 
+	ConfigurationParameterFactory.addConfigurationParameters(
+			oldAssertionAnnotator,
+			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+	);
+	builder.add(oldAssertionAnnotator);
+
+	AnalysisEngineDescription oldConversionAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/conceptConverterAnalysisEngine"); 
+	ConfigurationParameterFactory.addConfigurationParameters(
+			oldConversionAnnotator,
+			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+	);
+	builder.add(oldConversionAnnotator);
+
+//	AnalysisEngineDescription oldSubjectAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/SubjectAttributeAnalysisEngine"); 
+//	ConfigurationParameterFactory.addConfigurationParameters(
+//			oldSubjectAnnotator,
+//			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+//			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+//	);
+//	builder.add(oldSubjectAnnotator);
+
+	AnalysisEngineDescription oldGenericAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/GenericAttributeAnalysisEngine"); 
+	ConfigurationParameterFactory.addConfigurationParameters(
+			oldGenericAnnotator,
+			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+	);
+	builder.add(oldGenericAnnotator);
+}
+
+private void addCleartkAttributeAnnotatorsToAggregate(File directory,
+		AggregateBuilder builder) throws UIMAException, IOException,
+		ResourceInitializationException {
+	AnalysisEngineDescription cuePhraseLookupAnnotator =
+		AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
+	builder.add(cuePhraseLookupAnnotator);
+
+	String generalSectionRegexFileUri =
+		"org/mitre/medfacts/zoner/section_regex.xml";
+	AnalysisEngineDescription zonerAnnotator =
+		AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+				ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+				generalSectionRegexFileUri
+		);
+	builder.add(zonerAnnotator);
+
+	String mayoSectionRegexFileUri =
+		"org/mitre/medfacts/uima/mayo_sections.xml";
+	AnalysisEngineDescription mayoZonerAnnotator =
+		AnalysisEngineFactory.createPrimitiveDescription(ZoneAnnotator.class,
+				ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
+				mayoSectionRegexFileUri
+		);
+	builder.add(mayoZonerAnnotator);
+
+	// RUN THE CLEARTK CLASSIFIERS
+	if (options.runPolarity)
+	{
+		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				polarityAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "polarity"), "model.jar").getPath()
+		);
+		builder.add(polarityAnnotator);
+	}
+
+	if (options.runConditional)
+	{
+		AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				conditionalAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "conditional"), "model.jar").getPath()
+		);
+		builder.add(conditionalAnnotator);
+	}
+
+	if (options.runUncertainty)
+	{
+		AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				uncertaintyAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "uncertainty"), "model.jar").getPath()
+		);
+		builder.add(uncertaintyAnnotator);
+	}
+
+	if (options.runSubject)
+	{
+		AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				subjectAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "subject"), "model.jar").getPath()
+		);
+		builder.add(subjectAnnotator);
+	}
+
+	if (options.runGeneric)
+	{
+		AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				genericAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "generic"), "model.jar").getPath()
+		);
+		builder.add(genericAnnotator);
+	}
+}
 
   public static final String GOLD_VIEW_NAME = "GoldView";
 

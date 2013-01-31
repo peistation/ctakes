@@ -36,7 +36,7 @@ public class GenericCleartkAnalysisEngine extends
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		probabilityOfKeepingADefaultExample = 1.0;
+		probabilityOfKeepingADefaultExample = 0.1;
 	
 //		if (this.isTraining() && this.goldViewName == null) {
 //			throw new IllegalArgumentException(PARAM_GOLD_VIEW_NAME + " must be defined during training");

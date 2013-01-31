@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier;
 import org.apache.ctakes.dependency.parser.util.DependencyPath;
 import org.apache.ctakes.dependency.parser.util.DependencyUtility;
 import org.apache.ctakes.typesystem.type.constants.CONST;
@@ -37,6 +38,7 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Predicate;
 import org.apache.ctakes.typesystem.type.textsem.SemanticArgument;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.log4j.Logger;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
@@ -64,6 +66,8 @@ public class SubjectAttributeClassifier {
 	public static final String OTHER_DEPTOK = "other_depsrl";
 	public static final String OTHER_OR = "other_or";
     public static ArrayList<String> FeatureIndex = new ArrayList<String>();
+    private static Logger logger = Logger.getLogger(SubjectAttributeClassifier.class); 
+
     static{
             FeatureIndex.add(DONOR_TOKEN);
             FeatureIndex.add(DONOR_SRLARG);
@@ -110,8 +114,15 @@ public class SubjectAttributeClassifier {
 				break;
 			}
 		}
-//		if (sEntity==null)
-//			return null;
+		
+		// if there is no sentence, then all these features are null!
+		if (sEntity==null) {
+//			for ( String feat : FeatureIndex ) {
+//				vfeat.put(feat, null);
+//			}
+//			return vfeat;
+			return null;
+		}
 				
 		// get any SRL arguments
 		List<SemanticArgument> args = JCasUtil.selectCovered(jCas, SemanticArgument.class, sEntity);
@@ -198,6 +209,13 @@ public class SubjectAttributeClassifier {
 	
 	
 	public static String classifyWithLogic(HashMap<String, Boolean> vfeat) {
+		
+		if (vfeat==null) {
+			// if missing values, use default subject value
+			logger.warn("Subject attribute classifier missing feature values, defaulting to 'patient'");
+			return CONST.ATTR_SUBJECT_PATIENT;
+		}
+
 		Boolean donor_summary = new Boolean(vfeat.get(DONOR_TOKEN) || vfeat.get(DONOR_DEPPATH) || 
 				vfeat.get(DONOR_DEPTOK) || vfeat.get(DONOR_SRLARG));
 		Boolean family_summary = new Boolean(                         vfeat.get(FAMILY_DEPPATH) || 
@@ -207,7 +225,7 @@ public class SubjectAttributeClassifier {
 		vfeat.put(DONOR_OR, donor_summary);
 		vfeat.put(FAMILY_OR, family_summary);
 		vfeat.put(OTHER_OR, other_summary);
-		
+
 		if (vfeat.get(DONOR_OR) && vfeat.get(FAMILY_OR)) {
 			return CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER;
 		} else if (vfeat.get(DONOR_OR) && !vfeat.get(FAMILY_OR)) {
@@ -219,6 +237,7 @@ public class SubjectAttributeClassifier {
 		} else {
 			return CONST.ATTR_SUBJECT_PATIENT;
 		}
+
 	}
 
 

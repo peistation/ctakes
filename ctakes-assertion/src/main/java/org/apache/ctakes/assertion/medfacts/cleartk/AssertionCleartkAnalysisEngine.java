@@ -386,15 +386,15 @@ public abstract class AssertionCleartkAnalysisEngine extends
       return new ArrayList<Feature>();
     } else
     {
-      logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() found zones and adding zone features");
+      logger.debug("AssertionCleartkAnalysisEngine.extractZoneFeatures() found zones and adding zone features");
     }
     
     ArrayList<Feature> featureList = new ArrayList<Feature>();
     for (Zone zone : zoneList)
     {
       Feature currentFeature = new Feature("zone", zone.getLabel());
-      logger.info(String.format("zone: %s", zone.getLabel()));
-      logger.info(String.format("zone feature: %s", currentFeature.toString()));
+      logger.debug(String.format("zone: %s", zone.getLabel()));
+      logger.debug(String.format("zone feature: %s", currentFeature.toString()));
       featureList.add(currentFeature);
     }
     

@@ -20,9 +20,18 @@ package org.apache.ctakes.assertion.medfacts.cleartk;
 
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.cleartk.classifier.Instance;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.resource.ResourceInitializationException;
+
 
 public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngine {
+
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
+		probabilityOfKeepingADefaultExample = 0.1;
+	}
 
 	public void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException {
 	      if (this.isTraining())
