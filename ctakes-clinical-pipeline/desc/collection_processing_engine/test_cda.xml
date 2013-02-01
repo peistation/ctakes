@@ -23,7 +23,7 @@
     <collectionReader>
         <collectionIterator>
             <descriptor>
-                <import location="../../coredesc/collection_reader/FilesInDirectoryCollectionReader.xml"/>
+                <import location="../../ctakes-core/collection_reader/FilesInDirectoryCollectionReader.xml"/>
             </descriptor>
             <configurationParameterSettings>
                 <nameValuePair>
@@ -50,7 +50,7 @@
         </casProcessor>
         <casProcessor deployment="integrated" name="Write CAS to XML file">
             <descriptor>
-                <import location="../../coredesc/cas_consumer/FileWriterCasConsumer.xml"/>
+                <import location="../../ctakes-core/cas_consumer/FileWriterCasConsumer.xml"/>
             </descriptor>
             <deploymentParameters/>
             <errorHandling>
