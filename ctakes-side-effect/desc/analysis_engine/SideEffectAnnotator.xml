@@ -211,7 +211,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import location="../type_system/SideEffectTypeSystem.xml"/>
+        <import name="org.apache.ctakes.sideeffect.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
