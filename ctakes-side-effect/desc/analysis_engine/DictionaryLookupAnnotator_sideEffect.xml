@@ -179,7 +179,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/drug_index</string>
+                  <string>org/apache/ctakes/dictionary/lookup/drug_index</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
@@ -218,7 +218,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/OrangeBook</string>
+                  <string>org/apache/ctakes/dictionary/lookup/OrangeBook</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>
