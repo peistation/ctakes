@@ -102,7 +102,7 @@
       <nameValuePair>
         <name>ChunkCreatorClass</name>
         <value>
-          <string>edu.mayo.bmi.uima.chunker.PhraseTypeChunkCreator</string>
+          <string>org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
