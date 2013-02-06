@@ -19,12 +19,14 @@
 package org.apache.ctakes.dictionary.lookup.ae;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
 import org.apache.ctakes.dictionary.lookup.algorithms.LookupAlgorithm;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 
 
 /**
@@ -67,6 +69,17 @@ public interface LookupInitializer
     public Iterator getLookupWindowIterator(JCas jcas)
             throws AnnotatorInitializationException;
 
+    /**
+     * Gets a list of tokens that we promise to return in sorted order that are constrained by the
+     * input annotation.  Puts the onus for sorting performance on the implementing methods since a sort is
+     * implicitly required at some point.
+     * @param jcas
+     * @param annotation
+     * @return List over tokens that are in the window specified.
+     * @throws AnnotatorInitializationException
+     */
+    public List getSortedLookupTokens(JCas jcas, Annotation annotation) throws AnnotatorInitializationException;
+    
     /**
      * Gets the LookupAlgorithm to be used to perform the lookup operations.
      * Properties specified from the descriptor will be passed in to customize

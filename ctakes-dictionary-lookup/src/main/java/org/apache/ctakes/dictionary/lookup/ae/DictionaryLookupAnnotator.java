@@ -115,10 +115,8 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 				while (windowItr.hasNext()) {
 
 					Annotation window = (Annotation) windowItr.next();
-					List lookupTokensInWindow = constrainToWindow(
-							window,
-							lInit.getLookupTokenIterator(jcas));
-
+					List lookupTokensInWindow = lInit.getSortedLookupTokens(jcas, window);
+											
 					Map ctxMap = lInit.getContextMap(
 							jcas,
 							window.getBegin(),

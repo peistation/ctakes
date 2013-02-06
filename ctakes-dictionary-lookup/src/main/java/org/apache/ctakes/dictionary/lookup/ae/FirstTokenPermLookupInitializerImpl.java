@@ -251,4 +251,48 @@ public class FirstTokenPermLookupInitializerImpl implements LookupInitializer
 		}
 		return list;
 	}
+
+	@Override
+	public List getSortedLookupTokens(JCas jcas, Annotation covering) {
+		List ltList = new ArrayList();
+
+		List<BaseToken> inputList = org.uimafit.util.JCasUtil.selectCovered(jcas, BaseToken.class, covering);
+		for(BaseToken bta : inputList)
+		{
+			if (!((bta instanceof NewlineToken)
+					|| (bta instanceof PunctuationToken)
+					|| (bta instanceof ContractionToken)
+					|| (bta instanceof SymbolToken)))
+			{
+				LookupToken lt = new LookupAnnotationToJCasAdapter(bta);
+
+				// POS exclusion logic for first word lookup
+				if (isTagExcluded(bta.getPartOfSpeech()))
+				{
+					lt.addStringAttribute(
+							FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP,
+							"false");
+				}
+				else
+				{
+					lt.addStringAttribute(
+							FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP,
+							"true");
+				}
+
+				if (bta instanceof WordToken)
+				{
+					WordToken wta = (WordToken) bta;
+					String canonicalForm = wta.getCanonicalForm();
+					if (canonicalForm != null)
+					{
+						lt.addStringAttribute(CANONICAL_VARIANT_ATTR, canonicalForm);
+					}
+				}
+
+				ltList.add(lt);
+			}
+		}
+		return ltList;		
+	}
 }

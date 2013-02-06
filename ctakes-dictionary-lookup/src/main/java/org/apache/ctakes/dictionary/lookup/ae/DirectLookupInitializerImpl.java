@@ -29,6 +29,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 
 
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
@@ -44,6 +45,7 @@ import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.uimafit.util.JCasUtil;
 
 /**
  * @author Mayo Clinic
@@ -114,5 +116,38 @@ public class DirectLookupInitializerImpl implements LookupInitializer
 	{
 		// not used for direct pass through algorithm, return empty map
 		return new HashMap();
+	}
+
+	@Override
+	public List getSortedLookupTokens(JCas jcas, Annotation annotation) throws AnnotatorInitializationException {
+		List ltList = new ArrayList();
+
+		List<BaseToken> inList = JCasUtil.selectCovered(jcas, BaseToken.class, annotation);
+		
+		for(BaseToken bta : inList)
+		{
+			if (!((bta instanceof NewlineToken)
+					|| (bta instanceof PunctuationToken)
+					|| (bta instanceof ContractionToken)
+					|| (bta instanceof SymbolToken)))
+			{
+				LookupToken lt = new LookupAnnotationToJCasAdapter(bta);
+
+				if (bta instanceof WordToken)
+				{
+					WordToken wta = (WordToken) bta;
+					String canonicalForm = wta.getCanonicalForm();
+					if (canonicalForm != null)
+					{
+						lt.addStringAttribute(
+								CANONICAL_VARIANT_ATTR,
+								canonicalForm);
+					}
+				}
+
+				ltList.add(lt);
+			}
+		}
+		return ltList;
 	}
 }
