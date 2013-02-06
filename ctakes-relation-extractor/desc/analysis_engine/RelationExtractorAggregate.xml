@@ -2145,7 +2145,7 @@ Equivalent to cTAKES: org.apache.ctakes.typesystem.type.Properties</description>
                         <nameValuePair>
                             <name>org.cleartk.classifier.jar.GenericJarClassifierFactory.classifierJarPath</name>
                             <value>
-                                <string>resources/org/apache/ctakes/relationextractor/models/resources/models/em_pair/model.jar</string>
+                                <string>resources/org/apache/ctakes/relationextractor/models/em_pair/model.jar</string>
                             </value>
                         </nameValuePair>
                         <nameValuePair>
