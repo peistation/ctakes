@@ -71,7 +71,7 @@ public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
     if (!matcher.matches()) {
       throw new IllegalArgumentException("Unrecognized subdirectory naming: " + subDir);
     }
-    subDir = String.format("gold_docset%d_xml", Integer.parseInt(matcher.group(1)));
+    subDir = String.format("gold_revised_xml_docset%02d", Integer.parseInt(matcher.group(1)));
     String fileName = file.getName() + ".knowtator.xml";
     return new File(new File(this.knowtatorXMLDirectory, subDir), fileName).toURI();
   }
