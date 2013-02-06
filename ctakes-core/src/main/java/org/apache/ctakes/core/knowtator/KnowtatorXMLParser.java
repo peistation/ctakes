@@ -163,7 +163,7 @@ public class KnowtatorXMLParser {
     final Element child = element.getChild(cname);
     if (child == null) {
       String xml = this.xmlOutputter.outputString(element);
-      LOGGER.warning(String.format("no %s for %s", cname, xml));
+      LOGGER.warning(String.format("no child <%s> for %s", cname, xml));
     }
     return new Option<Element>(child);
   }
@@ -172,7 +172,7 @@ public class KnowtatorXMLParser {
     final String value = element.getAttributeValue(attname);
     if (value == null) {
       String xml = this.xmlOutputter.outputString(element);
-      LOGGER.warning(String.format("no %s for %s", attname, xml));
+      LOGGER.warning(String.format("no attribute %s for %s", attname, xml));
     }
     return new Option<String>(value);
   }
@@ -198,7 +198,7 @@ public class KnowtatorXMLParser {
   }
 
   private static class Option<T> implements Iterable<T> {
-    private T value;
+    T value;
 
     public Option(T value) {
       this.value = value;
