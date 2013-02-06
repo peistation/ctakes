@@ -47,8 +47,8 @@
     <typeSystemDescription>
       <imports>
         <import location="type-system/VecInst.xml"/>
-        <import location="type-system/CorefTypes.xml"/>
-        <import location="../../ctakes-core/src/main/java/org/apache/ctakes/ctakes-core/type/DocumentID.xml"/>
+        <import name="org.apache.ctakes.coreference.types.TypeSystem"/>
+        <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
