@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier.ReferenceAnnotationsSystemAssertionClearer;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier.ReferenceIdentifiedAnnotationsSystemToGoldCopier;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier.ReferenceSupportingAnnotationsSystemToGoldCopier;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.ReferenceAnnotationsSystemAssertionClearer;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.ReferenceIdentifiedAnnotationsSystemToGoldCopier;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.ReferenceSupportingAnnotationsSystemToGoldCopier;
 import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -91,7 +91,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         polarityAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         this.dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -103,7 +103,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         conditionalAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         this.dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -115,7 +115,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         uncertaintyAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         this.dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -127,7 +127,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         subjectAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         this.dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -139,7 +139,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         genericAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         this.dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -192,7 +192,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         polarityAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(new File(directory, "polarity"), "model.jar").getPath()
         );
@@ -202,7 +202,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         conditionalAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(new File(directory, "conditional"), "model.jar").getPath()
         );
@@ -212,7 +212,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         uncertaintyAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(new File(directory, "uncertainty"), "model.jar").getPath()
         );
@@ -222,7 +222,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         subjectAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(new File(directory, "subject"), "model.jar").getPath()
         );
@@ -232,7 +232,7 @@ public class CreateAssertionDescriptor
     ConfigurationParameterFactory.addConfigurationParameters(
         genericAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(new File(directory, "generic"), "model.jar").getPath()
         );

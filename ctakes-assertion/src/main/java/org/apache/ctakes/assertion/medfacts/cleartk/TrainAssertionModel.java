@@ -29,9 +29,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier.ReferenceAnnotationsSystemAssertionClearer;
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier.ReferenceIdentifiedAnnotationsSystemToGoldCopier;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.ReferenceAnnotationsSystemAssertionClearer;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.ReferenceIdentifiedAnnotationsSystemToGoldCopier;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 
@@ -298,7 +298,7 @@ public class TrainAssertionModel {
     ConfigurationParameterFactory.addConfigurationParameters(
         trainingAssertionAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
         dataWriterFactoryClass.getName(),
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -357,7 +357,7 @@ public class TrainAssertionModel {
     ConfigurationParameterFactory.addConfigurationParameters(
         decodingAssertionAnnotator,
         AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+        AssertionEvaluation.GOLD_VIEW_NAME,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(modelOutputDirectory, "model.jar").getPath()
         );

@@ -69,6 +69,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine
 import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.pipelines.GoldEntityAndAttributeReaderPipelineForSeedCorpus;
 import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
 import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
@@ -101,23 +102,29 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
-public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
+public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
   
-  private static Logger logger = Logger.getLogger(AssertionEvalBasedOnModifier.class); 
+  private static Logger logger = Logger.getLogger(AssertionEvaluation.class); 
 
   public static class Options extends Options_ImplBase {
     @Option(
         name = "--train-dir",
-        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
+        usage = "specify the directory containing the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
         required = true)
     public File trainDirectory;
     
     @Option(
         name = "--test-dir",
-        usage = "specify the directory contraining the XMI testing files (for example, /NLP/Corpus/Relations/mipacq/xmi/test)",
+        usage = "specify the directory containing the XMI testing files (for example, /NLP/Corpus/Relations/mipacq/xmi/test)",
         required = false)
     public File testDirectory;
     
+    @Option(
+            name = "--dev-dir",
+            usage = "if running --preprocess, store the XMI development files here",
+            required = false)
+        public File devDirectory;
+
     @Option(
         name = "--models-dir",
         usage = "specify the directory where the models will be placed",
@@ -168,10 +175,22 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     public Integer crossValidationFolds;
     
     @Option(
+            name = "--train-only",
+            usage = "do not test a model, build one from xmi output and store in --models-dir",
+            required = false)
+    public boolean trainOnly = false;
+
+    @Option(
             name = "--test-only",
             usage = "do not train a model, use the one specified in --models-dir",
             required = false)
     public boolean testOnly = false;
+
+    @Option(
+            name = "--preprocess-only",
+            usage = "run preprocessing pipeline on a SHARP-style corpus, specify root directory",
+            required = false)
+    public File preprocessDir;
 
     @Option(
             name = "--no-cleartk",
@@ -188,8 +207,9 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
   
   private File evaluationOutputDirectory;
 
-  
-  protected static Options options = new Options();
+  private String sharpCorpusDirectory;
+
+protected static Options options = new Options();
   
   public static void main(String[] args) throws Exception {
     //Options options = new Options();
@@ -232,7 +252,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     if (options.runSubject) { annotationTypes.add("subject"); }
     if (options.runGeneric) { annotationTypes.add("generic"); }
     
-    AssertionEvalBasedOnModifier evaluation = new AssertionEvalBasedOnModifier(
+    AssertionEvaluation evaluation = new AssertionEvaluation(
         modelsDir,
         evaluationOutputDirectory,
         annotationTypes,
@@ -241,29 +261,14 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
         "100",
         "2"
         );
-    /*
-        ,
-        "-t",
-        "0",
-        "-c",
-        "1000");
-        */
-
-//    List<AnnotationStatistics> foldStats = evaluation.crossValidation(trainFiles, 2);
-//    //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
-//    //AnnotationStatistics overallStats = new AnnotationStatistics();
-//    //overallStats.addAll(foldStats);
-//    AnnotationStatistics overallStats = new AnnotationStatistics();
-//    for (AnnotationStatistics singleFoldStats : foldStats)
-//    {
-//    	overallStats.addAll(singleFoldStats);
-//    }
-//    System.err.println("Overall:");
-//    System.err.println(overallStats);
     
+    // if preprocessing, don't do anything else
+    if(options.preprocessDir!=null ) {
+    	preprocess(options.preprocessDir);
+    }
     
-    
-    if(options.testDirectory == null || options.crossValidationFolds != null) {
+    // run cross-validation
+    else if(options.testDirectory == null || options.crossValidationFolds != null) {
       // run n-fold cross-validation
       List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, options.crossValidationFolds);
       //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
@@ -283,9 +288,12 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
     	  }
       }
       
-      AssertionEvalBasedOnModifier.printScore(overallStats,  "CROSS FOLD OVERALL");
+      AssertionEvaluation.printScore(overallStats,  "CROSS FOLD OVERALL");
       
-    } else {
+    } 
+    
+    // run on test set
+    else {
       // train on the entire training set and evaluate on the test set
       List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
       
@@ -296,7 +304,7 @@ public class AssertionEvalBasedOnModifier extends Evaluation_ImplBase<File, Map<
       CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
       Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
       
-      AssertionEvalBasedOnModifier.printScore(stats,  modelsDir.getAbsolutePath());
+      AssertionEvaluation.printScore(stats,  modelsDir.getAbsolutePath());
     }
     
     System.out.println("Finished assertion module.");
@@ -345,7 +353,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 
   private String[] trainingArguments;
 
-  public AssertionEvalBasedOnModifier(
+  public AssertionEvaluation(
       File modelDirectory,
       File evaluationOutputDirectory,
       ArrayList<String> annotationTypes,
@@ -378,6 +386,12 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
         paths);
   }
 
+  public static void preprocess(File preprocessDir ) throws ResourceInitializationException, UIMAException, IOException {
+//	  File devDirectory = new File(options.trainDirectory.getParentFile() + File.separator + "dev");
+	  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readSharpUmlsCem(
+			  preprocessDir, options.trainDirectory, options.testDirectory, options.devDirectory);
+  }
+  
   @Override
   public void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder builder = new AggregateBuilder();
@@ -438,7 +452,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    ConfigurationParameterFactory.addConfigurationParameters(
 	        polarityAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        AssertionEvaluation.GOLD_VIEW_NAME,
 	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 	        this.dataWriterFactoryClass.getName(),
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -453,7 +467,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    ConfigurationParameterFactory.addConfigurationParameters(
 	        conditionalAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        AssertionEvaluation.GOLD_VIEW_NAME,
 	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 	        this.dataWriterFactoryClass.getName(),
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -468,7 +482,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    ConfigurationParameterFactory.addConfigurationParameters(
 	        uncertaintyAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        AssertionEvaluation.GOLD_VIEW_NAME,
 	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 	        this.dataWriterFactoryClass.getName(),
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -483,7 +497,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    ConfigurationParameterFactory.addConfigurationParameters(
 	        subjectAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+	        AssertionEvaluation.GOLD_VIEW_NAME,
 	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 	        this.dataWriterFactoryClass.getName(),
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -498,7 +512,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 		ConfigurationParameterFactory.addConfigurationParameters(
 		    genericAnnotator,
 		    AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-		    AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+		    AssertionEvaluation.GOLD_VIEW_NAME,
 		    CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 		    this.dataWriterFactoryClass.getName(),
 		    DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
@@ -677,7 +691,7 @@ private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
 	ConfigurationParameterFactory.addConfigurationParameters(
 			oldAssertionAnnotator,
 			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+			AssertionEvaluation.GOLD_VIEW_NAME
 	);
 	builder.add(oldAssertionAnnotator);
 
@@ -685,7 +699,7 @@ private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
 	ConfigurationParameterFactory.addConfigurationParameters(
 			oldConversionAnnotator,
 			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+			AssertionEvaluation.GOLD_VIEW_NAME
 	);
 	builder.add(oldConversionAnnotator);
 
@@ -701,7 +715,7 @@ private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
 	ConfigurationParameterFactory.addConfigurationParameters(
 			oldGenericAnnotator,
 			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
+			AssertionEvaluation.GOLD_VIEW_NAME
 	);
 	builder.add(oldGenericAnnotator);
 }
@@ -738,7 +752,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		ConfigurationParameterFactory.addConfigurationParameters(
 				polarityAnnotator,
 				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
 				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 				new File(new File(directory, "polarity"), "model.jar").getPath()
 		);
@@ -751,7 +765,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		ConfigurationParameterFactory.addConfigurationParameters(
 				conditionalAnnotator,
 				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
 				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 				new File(new File(directory, "conditional"), "model.jar").getPath()
 		);
@@ -764,7 +778,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		ConfigurationParameterFactory.addConfigurationParameters(
 				uncertaintyAnnotator,
 				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
 				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 				new File(new File(directory, "uncertainty"), "model.jar").getPath()
 		);
@@ -777,7 +791,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		ConfigurationParameterFactory.addConfigurationParameters(
 				subjectAnnotator,
 				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
 				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 				new File(new File(directory, "subject"), "model.jar").getPath()
 		);
@@ -790,7 +804,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		ConfigurationParameterFactory.addConfigurationParameters(
 				genericAnnotator,
 				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvalBasedOnModifier.GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
 				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
 				new File(new File(directory, "generic"), "model.jar").getPath()
 		);

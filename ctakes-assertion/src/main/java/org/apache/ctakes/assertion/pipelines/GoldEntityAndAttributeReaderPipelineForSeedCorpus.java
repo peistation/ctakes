@@ -27,8 +27,10 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.uimafit.component.xwriter.XWriter;
+import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
@@ -63,8 +65,20 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 		
 		String parentDirectoryString = args[0];
 		//String parentDirectoryString = "/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/Seattle Group Health/UMLS_CEM";
-		logger.info("parent directory: " + parentDirectoryString);
+
 		File parentDirectory = new File(parentDirectoryString);
+		readSharpUmlsCem(parentDirectory);
+		
+	}
+
+	public static void readSharpUmlsCem(File parentDirectory) throws ResourceInitializationException, UIMAException, IOException {
+		readSharpUmlsCem(parentDirectory, null, null, null);
+	}
+	
+	public static void readSharpUmlsCem(File parentDirectory, File trainDirectory, File testDirectory, File devDirectory)
+			throws ResourceInitializationException, UIMAException, IOException {
+//		logger.info("parent directory: " + parentDirectoryString);
+//		File parentDirectory = new File(parentDirectoryString);
 		if (!parentDirectory.exists())
 		{
 			logger.fatal("parent directory does not exist! exiting!");
@@ -121,22 +135,16 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 					// (found in ctakes-type-system/src/main/resources)
 				TypeSystemDescriptionFactory.createTypeSystemDescription();
 			
+			AggregateBuilder aggregate = new AggregateBuilder();
+			
 			CollectionReaderDescription collectionReader = CollectionReaderFactory.createDescription(
 					FilesInDirectoryCollectionReader.class,
 					typeSystemDescription,
 					"InputDirectory",
-					//"/Users/m081914/work/data/sharp/Seed Corpus/Mayo/UMLS_CEM/ss1_batch04/Knowtator/text"
-					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/text"
 					textDirectory.toString()
 					);
 			
-//			AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
-//					GoldEntityAndAttributeReader.class,
-//					typeSystemDescription,
-//					"InputDirectory",
-//					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
-//					xmlDirectory.toString() + "/"
-//					);
+			// read the UMLS_CEM data from Knowtator
 			AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
 					SHARPKnowtatorXMLReader.class,
 					typeSystemDescription,
@@ -144,28 +152,59 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
 					textDirectory.toString() + "/"
 			);
+			aggregate.add(goldAnnotator);
+
+			// write just the XMI version of what's in Knowtator UMLS_CEM
+			AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
+					XWriter.class,
+					typeSystemDescription,
+					XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+					xmiDirectory.toString(),
+					XWriter.PARAM_FILE_NAMER_CLASS_NAME,
+					CtakesFileNamer.class.getName()
+			);
+			aggregate.add(xWriter);
+
+			// fill in other values that are necessary for preprocessing
+			AnalysisEngineDescription preprocessAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription(
+					"desc/analysis_engine/AttributeDiscoveryPreprocessor"
+					);
+			aggregate.add(preprocessAnnotator);
 			
-//			AnalysisEngineDescription sysAnnotator = (AnalysisEngineDescription) AnalysisEngineFactory.createAnalysisEngineFromPath(
-//					"/Users/m081914/work/sharpattr/ctakes/ctakes-clinical-pipeline" +
-//					"/desc/analysis_engine/AttributeClassifierPreprocessor.xml"
-//					);
-			
-	    AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
-	        XWriter.class,
-	        typeSystemDescription,
-	        XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
-//	        "/Users/m081914/work/sharpattr/ctakes/ctakes-assertion/data/output",
-	        // "/work/medfacts/sharp/data/2012-10-09_full_data_set/batch02"
-	        //"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/xmi",
-	        xmiDirectory.toString(),
-	        XWriter.PARAM_FILE_NAMER_CLASS_NAME,
-	        CtakesFileNamer.class.getName()
-	        );
-	    
-			SimplePipeline.runPipeline(collectionReader, goldAnnotator, xWriter);
+			if (trainDirectory!=null && testDirectory!=null && devDirectory!=null) {
+				File subcorpusDirectory;
+				switch (SharpCorpusSplit.split(currentBatchDirectory)) {
+				case TRAIN: 
+					subcorpusDirectory = trainDirectory;
+					break;
+				case TEST:
+					subcorpusDirectory = testDirectory;
+					break;
+				case DEV:
+					subcorpusDirectory = devDirectory;
+					break;
+				case CROSSVAL:
+					subcorpusDirectory = trainDirectory;
+					break;
+				default:
+					subcorpusDirectory = trainDirectory;
+					break;
+				}
+				AnalysisEngineDescription xWriter2 = AnalysisEngineFactory.createPrimitiveDescription(
+						XWriter.class,
+						typeSystemDescription,
+						XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+						subcorpusDirectory,
+						XWriter.PARAM_FILE_NAMER_CLASS_NAME,
+						CtakesFileNamer.class.getName()
+				);
+				aggregate.add(xWriter2);
+//				SimplePipeline.runPipeline(collectionReader, goldAnnotator, xWriter, xWriter2);
+			}
+
+			SimplePipeline.runPipeline(collectionReader, aggregate.createAggregateDescription());
 		}
-		
+
 		logger.info("Finished!");
-		
 	}
 }

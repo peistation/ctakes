@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.ctakes.assertion.eval.AssertionEvalBasedOnModifier;
+import org.apache.ctakes.assertion.eval.AssertionEvaluation;
 import org.apache.ctakes.dependency.parser.util.DependencyPath;
 import org.apache.ctakes.dependency.parser.util.DependencyUtility;
 import org.apache.ctakes.typesystem.type.constants.CONST;

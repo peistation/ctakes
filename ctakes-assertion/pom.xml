@@ -221,6 +221,18 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-lvg</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-context-tokenizer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-chunker</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
