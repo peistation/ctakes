@@ -54,5 +54,4 @@ public class CommandLineParserUtil {
 			System.out.println(parse.getTreebankParse());
 		}
 	}
-
 }

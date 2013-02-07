@@ -18,10 +18,11 @@
  */
 package org.apache.ctakes.constituency.parser;
 
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 
 public interface ParserWrapper {
 	public String getParseString(FSIterator tokens);
-	public void createAnnotations(JCas jcas);
+	public void createAnnotations(JCas jcas) throws AnalysisEngineProcessException;
 }
