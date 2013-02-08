@@ -530,10 +530,16 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, eventMention);
 
       } else if ("DOCTIME".equals(annotation.type)) {
-        // TODO
+        // TODO: how do we specify that this is the document creation time?
+        TimeMention timeMention = new TimeMention(jCas, coveringSpan.begin, coveringSpan.end);
+        timeMention.addToIndexes();
+        idAnnotationMap.put(annotation.id, timeMention);
 
       } else if ("SECTIONTIME".equals(annotation.type)) {
-        // TODO
+        // TODO: how do we specify that this is a section time?
+        TimeMention timeMention = new TimeMention(jCas, coveringSpan.begin, coveringSpan.end);
+        timeMention.addToIndexes();
+        idAnnotationMap.put(annotation.id, timeMention);
 
       } else if ("TIMEX3".equals(annotation.type)) {
         String timexClass = stringSlots.remove("class");
