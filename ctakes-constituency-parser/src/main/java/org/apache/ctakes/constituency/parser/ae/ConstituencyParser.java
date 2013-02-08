@@ -33,17 +33,23 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 public class ConstituencyParser extends JCasAnnotator_ImplBase {
 	public static final String PARAM_MODELFILE = "modelFilename";
+	public static final String defaultModel = "org/apache/ctakes/constituency/parser/models/sharpacq-1.5.bin";
+	
 	ParserWrapper parser = null;
 	Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Override
 	public void initialize(UimaContext aContext)
 			throws ResourceInitializationException {
 		super.initialize(aContext);
 		String modelFileOrDirname = (String) aContext.getConfigParameterValue(PARAM_MODELFILE);
+		if(modelFileOrDirname == null){
+			modelFileOrDirname = defaultModel;
+		}
 		try {
-					logger.info("Initializing parser...");
-					parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
+			logger.info("Initializing parser...");
+			
+			parser = new MaxentParserWrapper(FileLocator.locateFile(modelFileOrDirname).getAbsolutePath());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.error("Error reading parser model file/directory: " + e.getMessage());
@@ -53,6 +59,6 @@ public class ConstituencyParser extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-			parser.createAnnotations(jcas);
+		parser.createAnnotations(jcas);
 	}
 }

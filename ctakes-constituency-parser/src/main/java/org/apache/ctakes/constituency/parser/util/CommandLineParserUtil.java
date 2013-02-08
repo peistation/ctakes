@@ -21,13 +21,20 @@ package org.apache.ctakes.constituency.parser.util;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.ctakes.constituency.parser.ae.ConstituencyParser;
+import org.apache.ctakes.core.ae.SentenceDetector;
+import org.apache.ctakes.core.ae.SimpleSegmentAnnotator;
+import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
+import org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.ExternalResourceFactory;
 import org.uimafit.factory.JCasFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
@@ -42,7 +49,18 @@ public class CommandLineParserUtil {
 	public static void main(String[] args) throws UIMAException, IOException {
 		TypeSystemDescription types = TypeSystemDescriptionFactory.createTypeSystemDescription();
 		
-		AnalysisEngine ae = AnalysisEngineFactory.createAnalysisEngineFromPath("desc/analysis_engine/AggregateParsingProcessor.xml");
+//		AnalysisEngine ae = AnalysisEngineFactory.createAnalysisEngineFromPath("desc/analysis_engine/AggregateParsingProcessor.xml");
+		AggregateBuilder builder = new AggregateBuilder();
+		builder.add(AnalysisEngineFactory.createPrimitiveDescription(SimpleSegmentAnnotator.class));
+		builder.add(AnalysisEngineFactory.createPrimitiveDescription(SentenceDetector.class,
+				"MaxentModel",
+		        ExternalResourceFactory.createExternalResourceDescription(
+		                SuffixMaxentModelResourceImpl.class,
+		                SentenceDetector.class.getResource("../sentdetect/sdmed.mod"))));
+		builder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
+		builder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
+		
+		AnalysisEngine ae = builder.createAggregate();
 		
 		Scanner scanner = new Scanner(System.in);
 		while(scanner.hasNextLine()){

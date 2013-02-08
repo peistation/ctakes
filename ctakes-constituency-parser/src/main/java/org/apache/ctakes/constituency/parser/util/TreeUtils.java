@@ -171,10 +171,10 @@ public class TreeUtils {
 	}
 
 	public static TopTreebankNode buildAlignedTree(JCas jcas, Parse parse, Sentence sent) throws AnalysisEngineProcessException {
-		TopTreebankNode root = new TopTreebankNode(jcas, sent.getBegin(), sent.getEnd());
 		FSArray termArray = TreeUtils.getTerminals(jcas, sent);
 		
 		StringBuffer parseBuff = new StringBuffer();
+		parse.show(parseBuff);
 		
 		TopTreebankNode top = new TopTreebankNode(jcas, sent.getBegin(), sent.getEnd());
 		top.setTreebankParse(parseBuff.toString());
@@ -182,7 +182,7 @@ public class TreeUtils {
 		top.setParent(null);
 		if(parse != null) recursivelyCreateStructure(jcas, top, parse, top);
 	
-		return root;
+		return top;
 	}
 	
 	public static FSArray getTerminals(JCas jcas, Sentence sent){
