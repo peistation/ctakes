@@ -23,14 +23,14 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
+import org.apache.ctakes.coreference.type.Markable;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 //import org.apache.ctakes.typesystem.type.NamedEntity;
-import org.apache.ctakes.coreference.type.Markable;
 
 public class AttributeCalculator {
 
@@ -90,15 +90,14 @@ public class AttributeCalculator {
 		TreebankNode node = MarkableTreeUtils.markableNode(jcas, m.getBegin(), m.getEnd());
 		if(node == null) return basicNumber(m);
 		try{
-			TreebankNode wordNode = MarkableTreeUtils.getHead(node);
-			TreebankNode posNode = wordNode.getParent();
-			String pos = posNode.getNodeType();
+			TerminalTreebankNode termNode = MarkableTreeUtils.getHead(node);
+			String pos = termNode.getNodeType();
 			if(pos.equals("NN") || pos.equals("NNP")) return "S";
 			else if(pos.equals("NNS") || pos.equals("NNPS")) return "P";
 			else{
 				// obviously there are many other pronouns but we don't cover personal pronouns and so 
 				// these are all we need.
-				String word = wordNode.getCoveredText();
+				String word = termNode.getCoveredText();
 				if(word.equalsIgnoreCase("it")) return "S";
 				else if(word.equalsIgnoreCase("its")) return "S";
 				else if(word.equalsIgnoreCase("they")) return "P";

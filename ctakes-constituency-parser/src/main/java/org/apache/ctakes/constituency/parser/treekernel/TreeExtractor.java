@@ -179,7 +179,9 @@ public class TreeExtractor {
 
 	private static SimpleTree buildSimpleClonePET(TreebankNode lca, TreebankNode t1, TreebankNode t2){
 		SimpleTree t = new SimpleTree(lca.getNodeType());
-		if(!(lca instanceof TerminalTreebankNode)){
+		if(lca instanceof TerminalTreebankNode){
+			t.addChild(new SimpleTree(lca.getNodeValue()));
+		}else{
 			for(int i = 0; i < lca.getChildren().size(); i++){
 				TreebankNode tn = lca.getChildren(i);
 				if(tn.getEnd() > t1.getBegin() && tn.getBegin() < t2.getEnd()){
@@ -200,7 +202,7 @@ public class TreeExtractor {
 		}
 		
 		TreebankNode lca = t2;
-		while(lca != null && lca.getBegin() > t1.getBegin()){
+		while(lca != null && (lca.getBegin() > t1.getBegin() || lca.getEnd() < t1.getEnd())){
 			lca = lca.getParent();
 		}
 		return lca;
@@ -287,7 +289,6 @@ public class TreeExtractor {
 
 	public static SimpleTree getSurroundingTree(TreebankNode node){
 		SimpleTree tree = null;
-		TreebankNode top = node;
 		while(node.getParent() != null){
 			node = node.getParent();
 		}
@@ -297,7 +298,9 @@ public class TreeExtractor {
 
 	public static SimpleTree getSimpleClone(TreebankNode node) {
 		SimpleTree t = new SimpleTree(node.getNodeType());
-		if(!(node instanceof TerminalTreebankNode)){
+		if(node instanceof TerminalTreebankNode){
+			t.addChild(new SimpleTree(node.getNodeValue()));
+		}else{
 			for(int i = 0; i < node.getChildren().size(); i++){
 				t.addChild(getSimpleClone(node.getChildren(i)));
 			}

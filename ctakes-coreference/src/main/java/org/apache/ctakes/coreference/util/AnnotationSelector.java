@@ -117,8 +117,8 @@ public class AnnotationSelector {
 			HashSet<String> modalAdj, HashSet<String> cogved, HashSet<String> othervb) {
 		if (!ttn.getCoveredText().equalsIgnoreCase("it")) return false;
 
-		if (ttn.getParent().getNodeType().equals("PRP")) {
-			TreebankNode tn = ttn.getParent().getParent();
+		if (ttn.getNodeType().equals("PRP")) {
+			TreebankNode tn = ttn.getParent();
 			while (tn.getNodeType().startsWith("NP"))
 				tn = tn.getParent();
 			if (tn.getNodeType().equals("S")) {
@@ -171,7 +171,7 @@ public class AnnotationSelector {
 	}
 
 	private static boolean isBe (TreebankNode n) {
-		String phCat = n.getNodeValue();
+		String phCat = n.getNodeType();
 		String txt = n.getCoveredText();
 		if ((phCat.equals("VB") ||
 				phCat.equals("VBZ") ||

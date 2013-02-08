@@ -206,20 +206,19 @@ public class TreeUtils {
 			if(w instanceof PunctuationToken){
 				String tokStr = w.getCoveredText();
 				if(tokStr.equals("(") || tokStr.equals("[")){
-					ttn.setNodeType("-LRB-");
+					ttn.setNodeValue("-LRB-");
 				}else if(tokStr.equals(")") || tokStr.equals("]")){
-					ttn.setNodeType("-RRB-");
+					ttn.setNodeValue("-RRB-");
 				}else if(tokStr.equals("{")){
-					ttn.setNodeType("-LCB-");
+					ttn.setNodeValue("-LCB-");
 				}else if(tokStr.equals("}")){
-					ttn.setNodeType("-RCB-");
+					ttn.setNodeValue("-RCB-");
 				}else{
-					ttn.setNodeType(w.getCoveredText());
+					ttn.setNodeValue(w.getCoveredText());
 				}
 			}else{
-				ttn.setNodeType(w.getCoveredText());
+				ttn.setNodeValue(w.getCoveredText());
 			}
-			ttn.setNodeValue(ttn.getNodeType());
 			ttn.addToIndexes();
 			terms.set(i, ttn);
 		}
@@ -233,7 +232,7 @@ public class TreeUtils {
 		
 		for(int i = 0; i < termArray.size(); i++){
 			TerminalTreebankNode ttn = (TerminalTreebankNode) termArray.get(i);
-			String word = ttn.getNodeType();
+			String word = ttn.getNodeValue();
 			word = word.replaceAll("\\s", "");
 			if(i == 0) offset = ttn.getBegin();
 			else if(word.length() == 0) continue;
@@ -253,7 +252,7 @@ public class TreeUtils {
 			typeParts = parse.getType().split("-");
 		}
 		parent.setNodeType(typeParts[0]);
-		parent.setNodeValue(typeParts[0]);
+		parent.setNodeValue(null);
 		parent.setLeaf(parse.getChildCount() == 0);
 		StringArray tags = new StringArray(jcas, typeParts.length-1);
 		for(int i = 1; i < typeParts.length; i++){
@@ -267,7 +266,13 @@ public class TreeUtils {
 		
 		for(int i = 0; i < subtrees.length; i++){
 			Parse subtree = subtrees[i];
-			if(subtree.getChildCount() > 0){
+			if(subtree.getChildCount() == 1 && subtree.getChildren()[0].getChildCount() == 0){
+				// pre-terminal case - now we can set the type (POS tag) and point the parent in the right direction
+				TerminalTreebankNode term = root.getTerminals(subtree.getHeadIndex());
+				term.setNodeType(subtree.getType());
+				children.set(i,term);
+				term.setParent(parent);				
+			}else{
 				try{
 					TreebankNode child = new TreebankNode(jcas);
 					child.setParent(parent);
@@ -277,10 +282,6 @@ public class TreeUtils {
 					System.err.println("MaxentParserWrapper Error: " + e);
 					throw new AnalysisEngineProcessException();
 				}
-			}else{
-				TerminalTreebankNode term = root.getTerminals(subtree.getHeadIndex());
-				children.set(i,term);
-				term.setParent(parent);
 			}
 		}
 		// after we've built up all the children we can fill in the span of the parent.
@@ -288,6 +289,15 @@ public class TreeUtils {
 		parent.setEnd(((TreebankNode)children.get(subtrees.length-1)).getEnd());
 		parent.setChildren(children);
 //		parent.addToIndexes();
+	}
+
+	public static void replaceChild(TreebankNode parent, TreebankNode oldTree,
+			TreebankNode newTree) {
+		for(int i = 0; i < parent.getChildren().size(); i++){
+			if(parent.getChildren(i) == oldTree){
+				parent.setChildren(i, newTree);
+			}
+		}
 	}
 }
 

@@ -73,6 +73,7 @@ public class AnnotationTreeUtils {
 			}
 		}
 		copy.setNodeType(orig.getNodeType());
+		copy.setNodeValue(orig.getNodeValue());
 		copy.setBegin(orig.getBegin());
 		copy.setEnd(orig.getEnd());
 		return copy;
@@ -144,7 +145,8 @@ public class AnnotationTreeUtils {
 		do{
 			lastTree = tree;
 			// only continue downward traversal if we are not at a POS node...
-			if(tree.getChildren().size() > 1 || tree.getChildren(0).getChildren() != null){
+//			if(tree.getChildren().size() > 1 || tree.getChildren(0).getChildren() != null){
+			if(tree.getLeaf()){
 				for(int i = 0; i < tree.getChildren().size(); i++){
 					TreebankNode child = tree.getChildren(i);
 					if(child.getBegin() <= arg1.getBegin() && child.getEnd() >= arg1.getEnd()){
@@ -162,13 +164,18 @@ public class AnnotationTreeUtils {
 			}
 			// matches a node in tree, just insert one above it
 			newTree = new TreebankNode(jcas, tree.getBegin(), tree.getEnd());
-			newTree.setNodeType(tree.getNodeType());
-			newTree.setChildren(tree.getChildren());
-			newTree.setParent(tree);
-			tree.setNodeType(nodeType);
-			tree.setChildren(new FSArray(jcas, 1));
-			tree.setChildren(0,newTree);
-			newTree = tree;
+			newTree.setNodeType(nodeType);
+			newTree.setChildren(new FSArray(jcas, 1));
+			newTree.setChildren(0, tree);
+			newTree.setParent(tree.getParent());
+			TreeUtils.replaceChild(tree.getParent(), tree, newTree);
+//			newTree.setNodeType(tree.getNodeType());
+//			newTree.setChildren(tree.getChildren());
+//			newTree.setParent(tree);
+//			tree.setNodeType(nodeType);
+//			tree.setChildren(new FSArray(jcas, 1));
+//			tree.setChildren(0,newTree);
+//			newTree = tree;
 		}else{
 			// mismatch
 
@@ -208,13 +215,18 @@ public class AnnotationTreeUtils {
 			}else{
 				// just put above here...
 				newTree = new TreebankNode(jcas, tree.getBegin(), tree.getEnd());
-				newTree.setNodeType(tree.getNodeType());
-				newTree.setChildren(tree.getChildren());
-				newTree.setParent(tree);
-				tree.setNodeType(nodeType);
-				tree.setChildren(new FSArray(jcas, 1));
-				tree.setChildren(0,newTree);
-				newTree = tree;
+				newTree.setNodeType(nodeType);
+				newTree.setChildren(new FSArray(jcas, 1));
+				newTree.setChildren(0, tree);
+				newTree.setParent(tree.getParent());
+				TreeUtils.replaceChild(tree.getParent(), tree, newTree);
+//				newTree.setNodeType(tree.getNodeType());
+//				newTree.setChildren(tree.getChildren());
+//				newTree.setParent(tree);
+//				tree.setNodeType(nodeType);
+//				tree.setChildren(new FSArray(jcas, 1));
+//				tree.setChildren(0,newTree);
+//				newTree = tree;
 			}
 		}
 		return newTree;
@@ -232,7 +244,6 @@ public class AnnotationTreeUtils {
 				continue;
 			}else if(child.getBegin() > annot.getEnd()){
 				// child is to the right of annotation completely -- remove it and all to the right
-				// TODO
 				FSArray newChildren = new FSArray(jcas, i);
 				for(int j = 0; j < i; j++){
 					newChildren.set(j, node.getChildren(j));
@@ -244,6 +255,72 @@ public class AnnotationTreeUtils {
 			}
 		}
 	}
+
+	public static void removeLeftOfAnnotation(JCas jcas, TreebankNode node, Annotation annot) {
+		if(node.getEnd() <= annot.getBegin() || node.getLeaf()) return;
+
+		// go through tree and create a list of children that are overalpping or to the right of the concept node:
+		for(int i = 0; i < node.getChildren().size(); i++){
+			TreebankNode child = node.getChildren(i);
+			if(child.getEnd() < annot.getBegin()){
+				// ignore for now but this will be removed later
+				continue;
+			}else if(child.getEnd() > annot.getBegin()){
+				// if it has substructure to the left of the concept we have to recurse
+				if(child.getBegin() < annot.getBegin()){
+					removeLeftOfAnnotation(jcas, child, annot);
+				}
+				
+				if(i > 0){
+					// if we're leaving some out we need to rebuild the whole children array
+					// now create a child array of children partially or completely to the right
+					FSArray newChildren = new FSArray(jcas, node.getChildren().size()-i);
+					for(int j = i; j < node.getChildren().size(); j++){
+						newChildren.set(j-i, node.getChildren(j));
+					}
+					node.setChildren(newChildren);
+				}
+				break;
+			}
+		}
+	}
+
+	public static TreebankNode getCommonAncestor(TreebankNode node1,
+			TreebankNode node2) {
+		// check for easy cases:
+		// 1 - an argument is null
+		if(node1 == null || node2 == null){
+			return null;
+		}
+		
+		// 1 - one completely dominates the other...
+		if(dominates(node1, node2)){
+			return node1;
+		}else if(dominates(node2, node1)){
+			return node2;
+		}
+		
+		// they were entered in the wrong order...
+		TreebankNode temp;
+		if(node1.getBegin() > node2.getBegin()){
+			temp = node1;
+			node1 = node2;
+			node2 = temp;
+		}
+		
+		TreebankNode ancestor = node2;
+		
+		while(true){
+			if(ancestor == null || ancestor.getBegin() <= node1.getBegin()){
+				break;
+			}
+			ancestor = ancestor.getParent();
+		}
+		
+		return ancestor;
+	}
 	
-	
+	public static final boolean dominates(TreebankNode node1, TreebankNode node2){
+		return(node1.getBegin() <= node2.getBegin() && node1.getEnd() >= node2.getEnd());
+	}
 }

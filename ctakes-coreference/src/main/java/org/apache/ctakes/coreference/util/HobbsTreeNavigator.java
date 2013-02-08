@@ -56,9 +56,12 @@ public class HobbsTreeNavigator {
 			for(int i = 0; i < cur.getChildren().size(); i++){
 				TreebankNode n = cur.getChildren(i);
 				if(n == node) break;
-				if(!(n instanceof TerminalTreebankNode)){
-					q.add(cur.getChildren(i));
-				}
+				// BEFORE: did this because terminal node was word.  Now terminal is POS tag, which can go here,
+				// shouldn't need special case to avoid adding terminals...
+//				if(!(n instanceof TerminalTreebankNode)){
+//					q.add(n);
+//				}
+				q.add(n);
 				if(path.contains(n)) break;
 			}
 		}
