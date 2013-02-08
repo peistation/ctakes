@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.ctakes.chunker.ae.Chunker;
 import org.apache.ctakes.chunker.ae.DefaultChunkCreator;
@@ -29,7 +31,6 @@ import org.apache.ctakes.chunker.ae.adjuster.ChunkAdjuster;
 import org.apache.ctakes.contexttokenizer.ae.ContextDependentTokenizerAnnotator;
 import org.apache.ctakes.core.ae.OverlapAnnotator;
 import org.apache.ctakes.core.ae.SentenceDetector;
-import org.apache.ctakes.core.ae.SimpleSegmentAnnotator;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
 import org.apache.ctakes.core.resource.FileResourceImpl;
 import org.apache.ctakes.core.resource.JdbcConnectionResourceImpl;
@@ -45,6 +46,7 @@ import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -162,7 +164,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
         break;
     }
     // identify segments
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(SimpleSegmentAnnotator.class));
+    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(SegmentsFromBracketedSectionTagsAnnotator.class));
     // identify sentences
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
         SentenceDetector.class,
@@ -363,6 +365,23 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     public void process(JCas jCas) throws AnalysisEngineProcessException {
       for (EntityMention mention : Lists.newArrayList(JCasUtil.select(jCas, EntityMention.class))) {
         mention.removeFromIndexes();
+      }
+    }
+  }
+  
+  // replace this with SimpleSegmentWithTagsAnnotator if that code ever gets fixed
+  public static class SegmentsFromBracketedSectionTagsAnnotator extends JCasAnnotator_ImplBase {
+    private static Pattern SECTION_PATTERN = Pattern.compile("(\\[start section id=\"?(.*?)\"?\\]).*?(\\[end section id=\"?(.*?)\"?\\])", Pattern.DOTALL);
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      Matcher matcher = SECTION_PATTERN.matcher(jCas.getDocumentText());
+      while (matcher.find()) {
+        Segment segment = new Segment(jCas);
+        segment.setBegin(matcher.start() + matcher.group(1).length());
+        segment.setEnd(matcher.end() - matcher.group(3).length());
+        segment.setId(matcher.group(2));
+        segment.addToIndexes();
       }
     }
   }

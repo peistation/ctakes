@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -50,7 +51,7 @@ import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
-public class TimeAnnotator extends CleartkAnnotator<String> {
+public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 
   public static AnalysisEngineDescription createDataWriterDescription(
       Class<? extends DataWriter<String>> dataWriterClass,
@@ -105,9 +106,9 @@ public class TimeAnnotator extends CleartkAnnotator<String> {
   }
 
   @Override
-  public void process(JCas jCas) throws AnalysisEngineProcessException {
+  public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
     // classify tokens within each sentence
-    for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+    for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
       List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
 
       // during training, the list of all outcomes for the tokens

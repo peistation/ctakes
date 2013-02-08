@@ -36,6 +36,7 @@ import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -66,7 +67,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class EventAnnotator extends CleartkAnnotator<String> {
+public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
 
   public static final String PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE = "ProbabilityOfKeepingANegativeExample";
 
@@ -198,7 +199,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
   }
 
   @Override
-  public void process(JCas jCas) throws AnalysisEngineProcessException {
+  public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
     PredicateArgumentExtractor predicateArgumentExtractor = new PredicateArgumentExtractor(jCas);
 
     Random rand = new Random();
@@ -207,7 +208,7 @@ public class EventAnnotator extends CleartkAnnotator<String> {
     SMOTEplus smote = new SMOTEplus((int)Math.ceil(this.smoteNumOfNeighbors));
         
     // classify tokens within each sentence
-    for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+    for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
       List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
 
       // during training, the list of all outcomes for the tokens
