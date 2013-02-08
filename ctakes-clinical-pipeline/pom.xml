@@ -113,27 +113,6 @@
 							<!-- System lib dependencies is causing a world of pain. Remove these 
 								when they're uploaded to Maven Central -->
 							<dependency>
-								<groupId>net.sourceforge.openai</groupId>
-								<artifactId>fsm</artifactId>
-								<version>0.1a</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/OpenAI_FSM.jar</systemPath>
-							</dependency>
-							<dependency>
-								<groupId>findstruct</groupId>
-								<artifactId>findstruct</artifactId>
-								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/FindStructAPI.jar</systemPath>
-							</dependency>
-							<dependency>
-								<groupId>sqlWrapper</groupId>
-								<artifactId>sqlWrapper</artifactId>
-								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/SQLWrapper.jar</systemPath>
-							</dependency>
-							<dependency>
 								<groupId>org.mitre.medfacts</groupId>
 								<artifactId>medfacts-i2b2</artifactId>
 								<version>1.2</version>
@@ -211,27 +190,6 @@
 						<dependencies>
 							<!-- System lib dependencies is causing a world of pain. Remove these 
 								when they're uploaded to Maven Central -->
-							<dependency>
-								<groupId>net.sourceforge.openai</groupId>
-								<artifactId>fsm</artifactId>
-								<version>0.1a</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/OpenAI_FSM.jar</systemPath>
-							</dependency>
-							<dependency>
-								<groupId>findstruct</groupId>
-								<artifactId>findstruct</artifactId>
-								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/FindStructAPI.jar</systemPath>
-							</dependency>
-							<dependency>
-								<groupId>sqlWrapper</groupId>
-								<artifactId>sqlWrapper</artifactId>
-								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-core/lib/SQLWrapper.jar</systemPath>
-							</dependency>
 							<dependency>
 								<groupId>org.mitre.medfacts</groupId>
 								<artifactId>medfacts-i2b2</artifactId>

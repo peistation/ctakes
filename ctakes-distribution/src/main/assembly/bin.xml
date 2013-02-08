@@ -73,17 +73,6 @@
 		<fileSet>
 			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
 				these once they are in Maven Central -->
-			<directory>../ctakes-core/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>OpenAI_FSM.jar</include>
-				<include>FindStructAPI.jar</include>
-				<include>SQLWrapper.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
-				these once they are in Maven Central -->
 			<directory>../ctakes-assertion/lib</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>

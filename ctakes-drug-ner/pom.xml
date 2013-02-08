@@ -80,11 +80,8 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.openai</groupId>
-			<artifactId>fsm</artifactId>
-			<version>0.1a</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../ctakes-core/lib/OpenAI_FSM.jar</systemPath>
-		</dependency>
+			<artifactId>openaifsm</artifactId>
+		</dependency>	
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-chunker</artifactId>

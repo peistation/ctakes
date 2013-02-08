@@ -396,7 +396,26 @@
 				<artifactId>spring-core</artifactId>
 				<version>3.1.2.RELEASE</version>
 			</dependency>
-
+			<dependency>
+				<groupId>edu.mit.findstruct</groupId>
+				<artifactId>structmulti</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>edu.mit.findstruct</groupId>
+				<artifactId>findstructapi</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.armbrust-file-utils</groupId>
+				<artifactId>sqlwrapper</artifactId>
+				<version>0.0.1</version>
+			</dependency>	
+			<dependency>
+				<groupId>net.sourceforge.openai</groupId>
+				<artifactId>openaifsm</artifactId>
+				<version>0.0.1</version>
+			</dependency>										
 		</dependencies>
 	</dependencyManagement>
 	<build>
