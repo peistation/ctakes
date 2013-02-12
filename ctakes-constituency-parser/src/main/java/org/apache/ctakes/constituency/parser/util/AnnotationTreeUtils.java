@@ -146,7 +146,7 @@ public class AnnotationTreeUtils {
 			lastTree = tree;
 			// only continue downward traversal if we are not at a POS node...
 //			if(tree.getChildren().size() > 1 || tree.getChildren(0).getChildren() != null){
-			if(tree.getLeaf()){
+			if(!tree.getLeaf()){
 				for(int i = 0; i < tree.getChildren().size(); i++){
 					TreebankNode child = tree.getChildren(i);
 					if(child.getBegin() <= arg1.getBegin() && child.getEnd() >= arg1.getEnd()){
@@ -169,6 +169,7 @@ public class AnnotationTreeUtils {
 			newTree.setChildren(0, tree);
 			newTree.setParent(tree.getParent());
 			TreeUtils.replaceChild(tree.getParent(), tree, newTree);
+			tree.setParent(newTree);
 //			newTree.setNodeType(tree.getNodeType());
 //			newTree.setChildren(tree.getChildren());
 //			newTree.setParent(tree);
@@ -181,16 +182,22 @@ public class AnnotationTreeUtils {
 
 			int startChild = -1;
 			int endChild = -1;
-			for(int i = 0; i < tree.getChildren().size(); i++){
-				if(startChild == -1){
-					if(tree.getChildren(i).getBegin() == arg1.getBegin()){
-						startChild = i;
+			
+			if(!tree.getLeaf()){
+				// it can happen that the tree here is a terminal (pos tag:word) and thus has no children, in the case that the gold
+				// standard entities are tokenized correctly and the tokenizer is wrong. With automatic tokens and entities this shouldn't happen.
+				for(int i = 0; i < tree.getChildren().size(); i++){
+					if(startChild == -1){
+						if(tree.getChildren(i).getBegin() == arg1.getBegin()){
+							startChild = i;
+						}
+					}else if(tree.getChildren(i).getEnd() == arg1.getEnd()){
+						endChild = i;
+						break;
 					}
-				}else if(tree.getChildren(i).getEnd() == arg1.getEnd()){
-					endChild = i;
-					break;
 				}
 			}
+			
 			// here is where we insert if possible
 			if(startChild >= 0 && endChild >= 0){
 				newTree = new TreebankNode(jcas, tree.getChildren(startChild).getBegin(), tree.getChildren(endChild).getEnd());
@@ -220,6 +227,7 @@ public class AnnotationTreeUtils {
 				newTree.setChildren(0, tree);
 				newTree.setParent(tree.getParent());
 				TreeUtils.replaceChild(tree.getParent(), tree, newTree);
+				tree.setParent(newTree);
 //				newTree.setNodeType(tree.getNodeType());
 //				newTree.setChildren(tree.getChildren());
 //				newTree.setParent(tree);

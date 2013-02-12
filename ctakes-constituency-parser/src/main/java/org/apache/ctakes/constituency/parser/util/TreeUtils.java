@@ -219,7 +219,7 @@ public class TreeUtils {
 			}else{
 				ttn.setNodeValue(w.getCoveredText());
 			}
-			ttn.addToIndexes();
+//			ttn.addToIndexes();
 			terms.set(i, ttn);
 		}
 		
@@ -271,13 +271,15 @@ public class TreeUtils {
 				TerminalTreebankNode term = root.getTerminals(subtree.getHeadIndex());
 				term.setNodeType(subtree.getType());
 				children.set(i,term);
-				term.setParent(parent);				
+				term.setParent(parent);
+				term.addToIndexes();
 			}else{
 				try{
 					TreebankNode child = new TreebankNode(jcas);
 					child.setParent(parent);
 					children.set(i, child);
 					recursivelyCreateStructure(jcas, child, subtree, root);
+					child.addToIndexes();
 				}catch(NullPointerException e){
 					System.err.println("MaxentParserWrapper Error: " + e);
 					throw new AnalysisEngineProcessException();
@@ -293,9 +295,12 @@ public class TreeUtils {
 
 	public static void replaceChild(TreebankNode parent, TreebankNode oldTree,
 			TreebankNode newTree) {
-		for(int i = 0; i < parent.getChildren().size(); i++){
-			if(parent.getChildren(i) == oldTree){
-				parent.setChildren(i, newTree);
+		// if parent is null that means we're already at the top -- no pointers to fix.
+		if(parent != null){
+			for(int i = 0; i < parent.getChildren().size(); i++){
+				if(parent.getChildren(i) == oldTree){
+					parent.setChildren(i, newTree);
+				}
 			}
 		}
 	}
