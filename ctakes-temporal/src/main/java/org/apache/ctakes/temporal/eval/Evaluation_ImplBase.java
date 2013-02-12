@@ -127,7 +127,10 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     for (Integer set : patientSets) {
       File setTextDirectory = new File(this.rawTextDirectory, "doc" + set);
       for (File file : setTextDirectory.listFiles()) {
-        files.add(file);
+        // skip hidden files like .svn
+        if(! file.isHidden()) {
+          files.add(file);
+        }
       }
     }
     return UriCollectionReader.getCollectionReaderFromFiles(files);
