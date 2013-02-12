@@ -54,6 +54,7 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);

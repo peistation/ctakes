@@ -47,6 +47,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-time-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);

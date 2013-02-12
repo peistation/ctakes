@@ -64,6 +64,7 @@ public class EvaluationOfTemporalRelations extends
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
   }

@@ -55,6 +55,7 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-event-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);

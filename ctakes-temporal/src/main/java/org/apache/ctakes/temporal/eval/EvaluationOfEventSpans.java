@@ -67,6 +67,7 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
         options.getProbabilityOfKeepingANegativeExample(),
         options.getFeatureSelectionThreshold(),
         options.getSMOTENeighborNumber());
+    evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);

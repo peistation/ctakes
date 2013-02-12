@@ -63,6 +63,7 @@ public class EvaluationOfEventProperties extends
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     Map<String, AnnotationStatistics<String>> stats = evaluation.trainAndTest(trainItems, devItems);
     for (String name : PROPERTY_NAMES) {
       System.err.println("====================");
