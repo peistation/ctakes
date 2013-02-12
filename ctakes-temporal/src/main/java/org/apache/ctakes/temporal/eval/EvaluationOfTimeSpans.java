@@ -20,7 +20,6 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -33,7 +32,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
-import org.uimafit.util.JCasUtil;
 
 import com.lexicalscope.jewel.cli.CliFactory;
 
@@ -47,7 +45,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     EvaluationOfTimeSpans evaluation = new EvaluationOfTimeSpans(
         new File("target/eval/time-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory());
+        options.getKnowtatorXMLDirectory(),
+        options.getXMIDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-time-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
@@ -56,12 +55,9 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   public EvaluationOfTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
+      File knowtatorXMLDirectory,
+      File xmiDirectory) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, TimeMention.class);
   }
 
   @Override
@@ -83,11 +79,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 
   @Override
   protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, TimeMention.class);
+    return selectExact(jCas, TimeMention.class);
   }
 
   @Override
   protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, TimeMention.class);
+    return selectExact(jCas, TimeMention.class);
   }
 }

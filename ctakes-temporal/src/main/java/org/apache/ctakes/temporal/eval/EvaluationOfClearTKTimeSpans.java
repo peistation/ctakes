@@ -20,7 +20,6 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -47,30 +46,25 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    List<Integer> patientSets = options.getPatients().getList();
+    List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
         new File("target/eval/cleartk-time-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory());
+        options.getKnowtatorXMLDirectory(),
+        options.getXMIDirectory());
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(
-        options.getPatients().getList(),
-        4);
-    for (AnnotationStatistics<String> stats : foldStats) {
-      System.err.println(stats);
-    }
-    System.err.println("OVERALL");
-    System.err.println(AnnotationStatistics.addAll(foldStats));
+    AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+    System.err.println(stats);
   }
 
   public EvaluationOfClearTKTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        EnumSet.noneOf(AnnotatorType.class));
+      File knowtatorXMLDirectory,
+      File xmiDirectory) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, TimeMention.class);
   }
 
   @Override

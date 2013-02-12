@@ -50,7 +50,6 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
     Evaluation_ImplBase<AnnotationStatistics<String>> {
 
   private final Logger logger = Logger.getLogger(this.getClass().getName());
-
   public void setLogging(Level level, File outputFile) throws IOException {
     if (!outputFile.getParentFile().exists()) {
       outputFile.getParentFile().mkdirs();
@@ -66,14 +65,18 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
     this.logger.addHandler(handler);
   }
 
+  private Class<? extends Annotation> annotationClass;
+
   public EvaluationOfAnnotationSpans_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      Set<AnnotatorType> annotatorFlags) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, annotatorFlags);
+      File xmiDirectory,
+      Class<? extends Annotation> annotationClass) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
+    this.annotationClass = annotationClass;
   }
-
+  
   protected abstract AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException;
 
@@ -81,8 +84,8 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
 
   @Override
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTrainDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
+    aggregateBuilder.add(CopyFromGold.getDescription(this.annotationClass));
     aggregateBuilder.add(this.getDataWriterDescription(directory));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
     this.trainAndPackage(directory);
@@ -98,8 +101,7 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
   @Override
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTestDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
     aggregateBuilder.add(this.getAnnotatorDescription(directory));
 
     AnnotationStatistics<String> stats = new AnnotationStatistics<String>();

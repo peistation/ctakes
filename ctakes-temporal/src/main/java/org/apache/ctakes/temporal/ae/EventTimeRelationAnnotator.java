@@ -68,8 +68,11 @@ public class EventTimeRelationAnnotator extends RelationExtractorAnnotator {
       Sentence sentence) {
     List<IdentifiedAnnotationPair> pairs = Lists.newArrayList();
     for (EventMention event : JCasUtil.selectCovered(jCas, EventMention.class, sentence)) {
-      for (TimeMention time : JCasUtil.selectCovered(jCas, TimeMention.class, sentence)) {
-        pairs.add(new IdentifiedAnnotationPair(event, time));
+      // ignore subclasses like Procedure and Disease/Disorder
+      if (event.getClass().equals(EventMention.class)) {
+        for (TimeMention time : JCasUtil.selectCovered(jCas, TimeMention.class, sentence)) {
+          pairs.add(new IdentifiedAnnotationPair(event, time));
+        }
       }
     }
     return pairs;

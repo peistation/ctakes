@@ -20,7 +20,6 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,6 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.TOP;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
@@ -64,7 +62,8 @@ public class EvaluationOfTemporalRelations extends
     EvaluationOfTemporalRelations evaluation = new EvaluationOfTemporalRelations(
         new File("target/eval/temporal-relations"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory());
+        options.getKnowtatorXMLDirectory(),
+        options.getXMIDirectory());
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
   }
@@ -72,26 +71,15 @@ public class EvaluationOfTemporalRelations extends
   public EvaluationOfTemporalRelations(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
-  }
-
-  @Override
-  protected List<Class<? extends TOP>> getAnnotationClassesThatShouldBeGoldAtTestTime() {
-    List<Class<? extends TOP>> result = super.getAnnotationClassesThatShouldBeGoldAtTestTime();
-    result.add(EventMention.class);
-    result.add(TimeMention.class);
-    return result;
+      File knowtatorXMLDirectory,
+      File xmiDirectory) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
   }
 
   @Override
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTrainDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
+    aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class, TimeMention.class, BinaryTextRelation.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveNonTLINKRelations.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveCrossSentenceRelations.class));
     aggregateBuilder.add(EventTimeRelationAnnotator.createDataWriterDescription(
@@ -105,8 +93,8 @@ public class EvaluationOfTemporalRelations extends
   @Override
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTestDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
+    aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class, TimeMention.class));
     aggregateBuilder.add(
         AnalysisEngineFactory.createPrimitiveDescription(RemoveNonTLINKRelations.class),
         CAS.NAME_DEFAULT_SOFA,

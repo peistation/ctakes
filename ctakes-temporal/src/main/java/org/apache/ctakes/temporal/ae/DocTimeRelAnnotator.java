@@ -89,15 +89,15 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
     for (EventMention eventMention : JCasUtil.select(jCas, EventMention.class)) {
-      List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
-      if (this.isTraining()) {
-        String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
-        this.dataWriter.write(new Instance<String>(outcome, features));
-      } else {
-    	if (eventMention.getEvent() != null){
-    		String outcome = this.classifier.classify(features);
-    		eventMention.getEvent().getProperties().setDocTimeRel(outcome);
-    	}
+      if (eventMention.getEvent() != null) {
+        List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
+        if (this.isTraining()) {
+          String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
+          this.dataWriter.write(new Instance<String>(outcome, features));
+        } else {
+          String outcome = this.classifier.classify(features);
+          eventMention.getEvent().getProperties().setDocTimeRel(outcome);
+        }
       }
     }
   }

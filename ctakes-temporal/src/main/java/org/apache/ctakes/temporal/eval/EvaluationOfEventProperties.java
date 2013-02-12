@@ -21,7 +21,6 @@ package org.apache.ctakes.temporal.eval;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.TOP;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
@@ -57,57 +55,35 @@ public class EvaluationOfEventProperties extends
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    List<Integer> patientSets = options.getPatients().getList();
+    List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     EvaluationOfEventProperties evaluation = new EvaluationOfEventProperties(
         new File("target/eval/event-properties"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory());
-    List<Map<String, AnnotationStatistics<String>>> foldStats = evaluation.crossValidation(
-        options.getPatients().getList(), 4);
-    Map<String, AnnotationStatistics<String>> overallStats = new HashMap<String, AnnotationStatistics<String>>();
-    for (String name : PROPERTY_NAMES) {
-      overallStats.put(name, new AnnotationStatistics<String>());
-    }
-    for (Map<String, AnnotationStatistics<String>> propertyStats : foldStats) {
-      for (String key : propertyStats.keySet()) {
-        overallStats.get(key).addAll(propertyStats.get(key));
-      }
-    }
+        options.getKnowtatorXMLDirectory(),
+        options.getXMIDirectory());
+    Map<String, AnnotationStatistics<String>> stats = evaluation.trainAndTest(trainItems, devItems);
     for (String name : PROPERTY_NAMES) {
       System.err.println("====================");
       System.err.println(name);
-      for (int i = 0; i < foldStats.size(); ++i) {
-        System.err.println("--------------------");
-        System.err.println("Fold " + i);
-        System.err.println(foldStats.get(i).get(name));
-      }
       System.err.println("--------------------");
-      System.err.println("Overall");
-      System.err.println(overallStats.get(name));
+      System.err.println(stats.get(name));
     }
   }
 
   public EvaluationOfEventProperties(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        EnumSet.of(AnnotatorType.PART_OF_SPEECH_TAGS));
-  }
-
-  @Override
-  protected List<Class<? extends TOP>> getAnnotationClassesThatShouldBeGoldAtTestTime() {
-    List<Class<? extends TOP>> result = super.getAnnotationClassesThatShouldBeGoldAtTestTime();
-    result.add(EventMention.class);
-    return result;
+      File knowtatorXMLDirectory,
+      File xmiDirectory) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
   }
 
   @Override
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTrainDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
+    aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createDataWriterDescription(
         LIBSVMStringOutcomeDataWriter.class,
         directory));
@@ -119,8 +95,8 @@ public class EvaluationOfEventProperties extends
   protected Map<String, AnnotationStatistics<String>> test(
       CollectionReader collectionReader,
       File directory) throws Exception {
-    AggregateBuilder aggregateBuilder = new AggregateBuilder();
-    aggregateBuilder.add(this.getPreprocessorTestDescription());
+    AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
+    aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearEventProperties.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createAnnotatorDescription(directory));
 
@@ -136,8 +112,8 @@ public class EvaluationOfEventProperties extends
     for (JCas jCas : new JCasIterable(collectionReader, aggregateBuilder.createAggregate())) {
       JCas goldView = jCas.getView(GOLD_VIEW_NAME);
       JCas systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
-      Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
-      Collection<EventMention> systemEvents = JCasUtil.select(systemView, EventMention.class);
+      Collection<EventMention> goldEvents = selectExact(goldView, EventMention.class);
+      Collection<EventMention> systemEvents = selectExact(systemView, EventMention.class);
       for (String name : PROPERTY_NAMES) {
         statsMap.get(name).add(
             goldEvents,

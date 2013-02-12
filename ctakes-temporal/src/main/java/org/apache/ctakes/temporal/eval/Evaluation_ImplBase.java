@@ -19,9 +19,11 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,21 +49,34 @@ import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.impl.XmiCasDeserializer;
+import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.TOP;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.CasCopier;
+import org.apache.uima.util.XMLSerializer;
+import org.cleartk.util.ViewURIUtil;
 import org.cleartk.util.ae.UriToDocumentTextAnnotator;
 import org.cleartk.util.cr.UriCollectionReader;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.ViewCreatorAnnotator;
 import org.uimafit.component.ViewTextCopierAnnotator;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ExternalResourceFactory;
 import org.uimafit.util.JCasUtil;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 import com.lexicalscope.jewel.cli.Option;
@@ -69,11 +84,7 @@ import com.lexicalscope.jewel.cli.Option;
 public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     org.cleartk.eval.Evaluation_ImplBase<Integer, STATISTICS_TYPE> {
 
-  public enum AnnotatorType {
-    PART_OF_SPEECH_TAGS, UMLS_NAMED_ENTITIES, LEXICAL_VARIANTS, CHUNKS, DEPENDENCIES, SEMANTIC_ROLES
-  }
-
-  protected final String GOLD_VIEW_NAME = "GoldView";
+  public static final String GOLD_VIEW_NAME = "GoldView";
 
   static interface Options {
 
@@ -83,6 +94,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option(longName = "xml")
     public File getKnowtatorXMLDirectory();
 
+    @Option(longName = "xmi")
+    public File getXMIDirectory();
+
     @Option(longName = "patients")
     public CommandLine.IntegerRanges getPatients();
   }
@@ -90,18 +104,21 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   protected File rawTextDirectory;
 
   protected File knowtatorXMLDirectory;
-
-  private Set<AnnotatorType> annotatorFlags;
+  
+  protected File xmiDirectory;
+  
+  private boolean xmiExists;
 
   public Evaluation_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      Set<AnnotatorType> annotatorFlags) {
+      File xmiDirectory) {
     super(baseDirectory);
     this.rawTextDirectory = rawTextDirectory;
     this.knowtatorXMLDirectory = knowtatorXMLDirectory;
-    this.annotatorFlags = annotatorFlags;
+    this.xmiDirectory = xmiDirectory;
+    this.xmiExists = this.xmiDirectory.exists();
   }
 
   @Override
@@ -116,69 +133,52 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     return UriCollectionReader.getCollectionReaderFromFiles(files);
   }
 
-  protected AnalysisEngineDescription getPreprocessorTrainDescription() throws Exception {
-    return this.getPreprocessorDescription(PipelineType.TRAIN);
-  }
-
-  protected AnalysisEngineDescription getPreprocessorTestDescription() throws Exception {
-    return this.getPreprocessorDescription(PipelineType.TEST);
-  }
-
-  protected List<Class<? extends TOP>> getAnnotationClassesThatShouldBeGoldAtTestTime() {
-    return new ArrayList<Class<? extends TOP>>();
-  }
-
-  private static enum PipelineType {
-    TRAIN, TEST
-  }
-
-  private AnalysisEngineDescription getPreprocessorDescription(PipelineType pipelineType)
+  protected AggregateBuilder getPreprocessorAggregateBuilder()
       throws Exception {
     AggregateBuilder aggregateBuilder = new AggregateBuilder();
     aggregateBuilder.add(UriToDocumentTextAnnotator.getDescription());
-    switch (pipelineType) {
-      case TRAIN:
-        aggregateBuilder.add(THYMEKnowtatorXMLReader.getDescription(this.knowtatorXMLDirectory));
-        break;
-      case TEST:
-        aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
-            ViewCreatorAnnotator.class,
-            ViewCreatorAnnotator.PARAM_VIEW_NAME,
-            GOLD_VIEW_NAME));
-        aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
-            ViewTextCopierAnnotator.class,
-            ViewTextCopierAnnotator.PARAM_SOURCE_VIEW_NAME,
-            CAS.NAME_DEFAULT_SOFA,
-            ViewTextCopierAnnotator.PARAM_DESTINATION_VIEW_NAME,
-            GOLD_VIEW_NAME));
-        aggregateBuilder.add(
-            THYMEKnowtatorXMLReader.getDescription(this.knowtatorXMLDirectory),
-            CAS.NAME_DEFAULT_SOFA,
-            GOLD_VIEW_NAME);
-        for (Class<? extends TOP> annotationClass : this.getAnnotationClassesThatShouldBeGoldAtTestTime()) {
-          aggregateBuilder.add(AnnotationCopier.getDescription(
-              GOLD_VIEW_NAME,
-              CAS.NAME_DEFAULT_SOFA,
-              annotationClass));
-        }
-        break;
-    }
-    // identify segments
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(SegmentsFromBracketedSectionTagsAnnotator.class));
-    // identify sentences
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
-        SentenceDetector.class,
-        "MaxentModel",
-        ExternalResourceFactory.createExternalResourceDescription(
-            SuffixMaxentModelResourceImpl.class,
-            SentenceDetector.class.getResource("../sentdetect/sdmed.mod"))));
-    // identify tokens
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
-    // merge some tokens
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ContextDependentTokenizerAnnotator.class));
 
-    // identify part-of-speech tags if requested
-    if (this.annotatorFlags.contains(AnnotatorType.PART_OF_SPEECH_TAGS)) {
+    if (this.xmiExists) {
+      
+      // read the XMI from the directory
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+          XMIReader.class,
+          XMIReader.PARAM_XMI_DIRECTORY,
+          this.xmiDirectory));
+
+    } else {
+
+      // read manual annotations into gold view
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+          ViewCreatorAnnotator.class,
+          ViewCreatorAnnotator.PARAM_VIEW_NAME,
+          GOLD_VIEW_NAME));
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+          ViewTextCopierAnnotator.class,
+          ViewTextCopierAnnotator.PARAM_SOURCE_VIEW_NAME,
+          CAS.NAME_DEFAULT_SOFA,
+          ViewTextCopierAnnotator.PARAM_DESTINATION_VIEW_NAME,
+          GOLD_VIEW_NAME));
+      aggregateBuilder.add(
+          THYMEKnowtatorXMLReader.getDescription(this.knowtatorXMLDirectory),
+          CAS.NAME_DEFAULT_SOFA,
+          GOLD_VIEW_NAME);
+
+      // identify segments
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(SegmentsFromBracketedSectionTagsAnnotator.class));
+      // identify sentences
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+          SentenceDetector.class,
+          "MaxentModel",
+          ExternalResourceFactory.createExternalResourceDescription(
+              SuffixMaxentModelResourceImpl.class,
+              SentenceDetector.class.getResource("../sentdetect/sdmed.mod"))));
+      // identify tokens
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
+      // merge some tokens
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ContextDependentTokenizerAnnotator.class));
+  
+      // identify part-of-speech tags
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           POSTagger.class,
           POSTagger.POS_MODEL_FILE_PARAM,
@@ -187,9 +187,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           "org/apache/ctakes/postagger/models/tag.dictionary.txt",
           POSTagger.CASE_SENSITIVE_PARAM,
           true));
-    }
-    
-    if (this.annotatorFlags.contains(AnnotatorType.CHUNKS)) {
+      
       // identify chunks
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           Chunker.class,
@@ -197,12 +195,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           Chunker.class.getResource("../models/chunk-model.claims-1.5.zip").toURI().getPath(),
           Chunker.CHUNKER_CREATOR_CLASS_PARAM,
           DefaultChunkCreator.class));
-    }
+  
+      // identify UMLS named entities
 
-    // identify UMLS named entities if requested
-    if (this.annotatorFlags.contains(AnnotatorType.UMLS_NAMED_ENTITIES)) {
-      // remove gold mentions if they're there (we'll add cTAKES mentions later instead)
-      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(EntityMentionRemover.class));
       // adjust NP in NP NP to span both
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
           ChunkAdjuster.class,
@@ -269,10 +264,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
               true,
               "IndexDirectory",
               new File("target/unpacked/org/apache/ctakes/dictionary/lookup/OrangeBook").getAbsoluteFile())));
-    }
-
-    // add lvg annotator
-    if (this.annotatorFlags.contains(AnnotatorType.LEXICAL_VARIANTS)) {
+  
+      // add lvg annotator
       String[] XeroxTreebankMap = {
           "adj|JJ",
           "adv|RB",
@@ -331,20 +324,32 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           "LvgCmdApi",
           ExternalResourceFactory.createExternalResourceDescription(
               LvgCmdApiResourceImpl.class,
-              "org/apache/ctakes/lvg/data/config/lvg.properties"));
+              new File(LvgCmdApiResourceImpl.class.getResource("/org/apache/ctakes/lvg/data/config/lvg.properties").toURI())));
       aggregateBuilder.add(lvgAnnotator);
-    }
-
-    // add dependency parser
-    if (this.annotatorFlags.contains(AnnotatorType.DEPENDENCIES)) {
+  
+      // add dependency parser
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearParserDependencyParserAE.class));
-    }
-
-    // add semantic role labeler
-    if (this.annotatorFlags.contains(AnnotatorType.SEMANTIC_ROLES)) {
+  
+      // add semantic role labeler
       aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearParserSemanticRoleLabelerAE.class));
+      
+      // write out the CAS after all the above annotations 
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
+          XMIWriter.class,
+          XMIWriter.PARAM_XMI_DIRECTORY,
+          this.xmiDirectory));
     }
-    return aggregateBuilder.createAggregateDescription();
+    return aggregateBuilder;
+  }
+  
+  public static <T extends TOP> List<T> selectExact(JCas jCas, Class<T> annotationClass) {
+    List<T> annotations = Lists.newArrayList();
+    for (T annotation : JCasUtil.select(jCas, annotationClass)) {
+      if (annotation.getClass().equals(annotationClass)) {
+        annotations.add(annotation);
+      }
+    }
+    return annotations;
   }
 
   public static class CopyNPChunksToLookupWindowAnnotations extends JCasAnnotator_ImplBase {
@@ -382,6 +387,102 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
         segment.setEnd(matcher.end() - matcher.group(3).length());
         segment.setId(matcher.group(2));
         segment.addToIndexes();
+      }
+    }
+  }
+  
+  public static class XMIWriter extends JCasAnnotator_ImplBase {
+    
+    public static final String PARAM_XMI_DIRECTORY = "XMIDirectory";
+    @ConfigurationParameter(name = PARAM_XMI_DIRECTORY, mandatory = true)
+    private File xmiDirectory;
+
+    @Override
+    public void initialize(UimaContext context) throws ResourceInitializationException {
+      super.initialize(context);
+      if (!this.xmiDirectory.exists()) {
+        this.xmiDirectory.mkdirs();
+      }
+    }
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      String fileName = new File(ViewURIUtil.getURI(jCas).getPath()).getName();
+      File xmiFile = new File(this.xmiDirectory, fileName + ".xmi");
+      try {
+        FileOutputStream outputStream = new FileOutputStream(xmiFile);
+        try {
+          XmiCasSerializer serializer = new XmiCasSerializer(jCas.getTypeSystem());
+          ContentHandler handler = new XMLSerializer(outputStream, false).getContentHandler();
+          serializer.serialize(jCas.getCas(), handler);
+        } finally {
+          outputStream.close();
+        }
+      } catch (SAXException e) {
+        throw new AnalysisEngineProcessException(e);
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    }
+  }
+
+  public static class XMIReader extends JCasAnnotator_ImplBase {
+    
+    public static final String PARAM_XMI_DIRECTORY = "XMIDirectory";
+    @ConfigurationParameter(name = PARAM_XMI_DIRECTORY, mandatory = true)
+    private File xmiDirectory;
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      String fileName = new File(ViewURIUtil.getURI(jCas).getPath()).getName();
+      File xmiFile = new File(this.xmiDirectory, fileName + ".xmi");
+      try {
+        FileInputStream inputStream = new FileInputStream(xmiFile);
+        try {
+          XmiCasDeserializer.deserialize(inputStream, jCas.getCas());
+        } finally {
+          inputStream.close();
+        }
+      } catch (SAXException e) {
+        throw new AnalysisEngineProcessException(e);
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    }
+  }
+  
+  public static class CopyFromGold extends JCasAnnotator_ImplBase {
+    
+    public static AnalysisEngineDescription getDescription(Class<?> ... classes) throws ResourceInitializationException {
+      return AnalysisEngineFactory.createPrimitiveDescription(
+          CopyFromGold.class,
+          CopyFromGold.PARAM_ANNOTATION_CLASSES,
+          classes);
+    }
+    
+    public static final String PARAM_ANNOTATION_CLASSES = "AnnotationClasses";
+    @ConfigurationParameter(name = PARAM_ANNOTATION_CLASSES, mandatory = true)
+    private Class<? extends TOP>[] annotationClasses;
+    
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas goldView, systemView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+      CasCopier copier = new CasCopier(goldView.getCas(), systemView.getCas());
+      Feature sofaFeature = jCas.getTypeSystem().getFeatureByFullName(CAS.FEATURE_FULL_NAME_SOFA);
+      for (Class<? extends TOP> annotationClass : this.annotationClasses) {
+        for (TOP annotation : JCasUtil.select(goldView, annotationClass)) {
+          TOP copy = (TOP) copier.copyFs(annotation);
+          if (copy instanceof Annotation) {
+            copy.setFeatureValue(sofaFeature, systemView.getSofa());
+          }
+          copy.addToIndexes(systemView);
+        }
       }
     }
   }
