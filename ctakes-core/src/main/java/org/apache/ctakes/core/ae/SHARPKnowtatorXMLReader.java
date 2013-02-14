@@ -71,11 +71,13 @@ import org.apache.ctakes.typesystem.type.textsem.HistoryOfModifier;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.LabEstimatedModifier;
 import org.apache.ctakes.typesystem.type.textsem.LabInterpretationModifier;
+import org.apache.ctakes.typesystem.type.textsem.LabMention;
 import org.apache.ctakes.typesystem.type.textsem.LabReferenceRangeModifier;
 import org.apache.ctakes.typesystem.type.textsem.LabValueModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationAllergyModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationDosageModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationDurationModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.ctakes.typesystem.type.textsem.MedicationFormModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationFrequencyModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationRouteModifier;
@@ -100,12 +102,10 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Charsets;
@@ -260,8 +260,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     // create a CAS object for each annotation
     Map<String, TOP> idAnnotationMap = new HashMap<String, TOP>();
     List<DelayedRelation> delayedRelations = new ArrayList<DelayedRelation>();
-    List<DelayedFeature<?>> delayedFeatures = new ArrayList<DelayedFeature<?>>();
-    for (KnowtatorAnnotation annotation : annotations) {
+    List<DelayedFeature> delayedFeatures = new ArrayList<DelayedFeature>();
+    for (final KnowtatorAnnotation annotation : annotations) {
 
       // copy the slots so we can remove them as we use them
       Map<String, String> stringSlots = new HashMap<String, String>(annotation.stringSlots);
@@ -290,10 +290,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       }
 
       if ("Anatomical_site".equals(annotation.type)) {
-        AnatomicalSiteMention entityMention = new AnatomicalSiteMention(jCas, coveringSpan.begin, coveringSpan.end);
+        final AnatomicalSiteMention mention = new AnatomicalSiteMention(jCas, coveringSpan.begin, coveringSpan.end);
         addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_ANATOMICAL_SITE,
             stringSlots,
@@ -302,17 +302,32 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation bodyLaterality = annotationSlots.remove("body_laterality");
-        delayedFeatures.add(new BodyLateralityFeature(entityMention, bodyLaterality));
+        delayedFeatures.add(new DelayedFeature(bodyLaterality) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodyLaterality((BodyLateralityModifier) value);
+          }
+        });
         KnowtatorAnnotation bodyLocation = annotationSlots.remove("body_location");
-        delayedFeatures.add(new BodyLocationFeature(entityMention, bodyLocation));
+        delayedFeatures.add(new DelayedFeature(bodyLocation) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we set a body location on a AnatomicalSiteMention?
+          }
+        });
         KnowtatorAnnotation bodySide = annotationSlots.remove("body_side");
-        delayedFeatures.add(new BodySideFeature(entityMention, bodySide));
+        delayedFeatures.add(new DelayedFeature(bodySide) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodySide((BodySideModifier) value);
+          }
+        });
 
       } else if ("Clinical_attribute".equals(annotation.type)) {
-        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
-        addEntityMentionFeatures(
+        EntityMention mention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
             stringSlots,
@@ -322,10 +337,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             delayedFeatures);
 
       } else if ("Devices".equals(annotation.type)) {
-        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
-        addEntityMentionFeatures(
+        EntityMention mention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
             stringSlots,
@@ -335,10 +350,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             delayedFeatures);
 
       } else if ("Disease_Disorder".equals(annotation.type)) {
-        DiseaseDisorderMention diseaseDisorderMention = new DiseaseDisorderMention(jCas, coveringSpan.begin, coveringSpan.end);
+        final DiseaseDisorderMention mention = new DiseaseDisorderMention(jCas, coveringSpan.begin, coveringSpan.end);
         addIdentifiedAnnotationFeatures(
             annotation,
-            diseaseDisorderMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_DISORDER,
             stringSlots,
@@ -347,27 +362,77 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation alleviatingFactor = annotationSlots.remove("alleviating_factor");
-        delayedFeatures.add(new AlleviatingFactorFeature(diseaseDisorderMention, alleviatingFactor));
+        delayedFeatures.add(new DelayedFeature(alleviatingFactor) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get an ElementRelation here?
+          }
+        });
         KnowtatorAnnotation signOrSymptom = annotationSlots.remove("associated_sign_or_symptom");
-        delayedFeatures.add(new AssociatedSignOrSymptomFeature(diseaseDisorderMention, signOrSymptom));
+        delayedFeatures.add(new DelayedFeature(signOrSymptom) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get a ManifestationOf here?
+          }
+        });
         KnowtatorAnnotation bodyLaterality = annotationSlots.remove("body_laterality");
-        delayedFeatures.add(new BodyLateralityFeature(diseaseDisorderMention, bodyLaterality));
+        delayedFeatures.add(new DelayedFeature(bodyLaterality) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodyLaterality((BodyLateralityModifier) value);
+          }
+        });
         KnowtatorAnnotation bodyLocation = annotationSlots.remove("body_location");
-        delayedFeatures.add(new BodyLocationFeature(diseaseDisorderMention, bodyLocation));
+        delayedFeatures.add(new DelayedFeature(bodyLocation) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get a LocationOf here?
+          }
+        });
         KnowtatorAnnotation bodySide = annotationSlots.remove("body_side");
-        delayedFeatures.add(new BodySideFeature(diseaseDisorderMention, bodySide));
-        KnowtatorAnnotation course = annotationSlots.remove("course");
-        delayedFeatures.add(new CourseFeature(diseaseDisorderMention, course));
+        delayedFeatures.add(new DelayedFeature(bodySide) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodySide((BodySideModifier) value);
+          }
+        });
+        final KnowtatorAnnotation course = annotationSlots.remove("course");
+        delayedFeatures.add(new DelayedFeature(course) {
+          @Override
+          protected void setValue(TOP value) {
+            BinaryTextRelation relation = (BinaryTextRelation) value;
+            try {
+              mention.setCourse((CourseModifier) relation.getArg2().getArgument());
+            } catch (ClassCastException e) {
+              LOGGER.error(String.format(
+                  "Expected CourseModifier for \"course\" of %s with id \"%s\", found %s with id \"%s\"",
+                  annotation.type,
+                  annotation.id,
+                  relation.getArg2().getArgument().getClass().getSimpleName(),
+                  course.id));
+            }
+          }
+        });
         KnowtatorAnnotation exacerbatingFactor = annotationSlots.remove("exacerbating_factor");
-        delayedFeatures.add(new ExacerbatingFactorFeature(diseaseDisorderMention, exacerbatingFactor));
+        delayedFeatures.add(new DelayedFeature(exacerbatingFactor) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get an ElementRelation here?
+          }
+        });
         KnowtatorAnnotation severity = annotationSlots.remove("severity");
-        delayedFeatures.add(new SeverityFeature(diseaseDisorderMention, severity));
+        delayedFeatures.add(new DelayedFeature(severity) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we set a severity on a DiseaseDisorderMention?
+          }
+        });
 
       } else if ("Lab".equals(annotation.type)) {
-        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
-        addEntityMentionFeatures(
+        final LabMention mention = new LabMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
             stringSlots,
@@ -376,17 +441,33 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation ordinal = annotationSlots.remove("ordinal_interpretation");
-        delayedFeatures.add(new LabOrdinalFeature(entityMention, ordinal));
+        delayedFeatures.add(new DelayedFeature(ordinal) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get a DegreeOf here?
+          }
+        });
         KnowtatorAnnotation referenceRange = annotationSlots.remove("reference_range_narrative");
-        delayedFeatures.add(new LabReferenceRangeFeature(entityMention, referenceRange));
-        KnowtatorAnnotation value = annotationSlots.remove("lab_value");
-        delayedFeatures.add(new LabValueFeature(entityMention, value));
+        delayedFeatures.add(new DelayedFeature(referenceRange) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setReferenceRangeNarrative((LabReferenceRangeModifier) value);
+          }
+        });
+        KnowtatorAnnotation labValue = annotationSlots.remove("lab_value");
+        delayedFeatures.add(new DelayedFeature(labValue) {
+          @Override
+          protected void setValue(TOP value) {
+            BinaryTextRelation relation = (BinaryTextRelation) value;
+            mention.setLabValue((LabValueModifier) relation.getArg2().getArgument());
+          }
+        });
 
       } else if ("Medications/Drugs".equals(annotation.type)) {
-        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
-        addEntityMentionFeatures(
+        final MedicationEventMention mention = new MedicationEventMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_DRUG,
             stringSlots,
@@ -395,29 +476,81 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation allergy = annotationSlots.remove("allergy_indicator");
-        delayedFeatures.add(new MedicationAllergyFeature(entityMention, allergy));
+        delayedFeatures.add(new DelayedFeature(allergy) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: where is the allergy set?
+          }
+        });
         KnowtatorAnnotation changeStatus = annotationSlots.remove("change_status_model");
-        delayedFeatures.add(new MedicationDurationFeature(entityMention, changeStatus));
+        delayedFeatures.add(new DelayedFeature(changeStatus) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationStatusChange expect an Attribute, not a Modifier?
+            // mention.setMedicationStatusChange((MedicationStatusChangeModifier) value);
+          }
+        });
         KnowtatorAnnotation dosage = annotationSlots.remove("dosage_model");
-        delayedFeatures.add(new MedicationDosageFeature(entityMention, dosage));
+        delayedFeatures.add(new DelayedFeature(dosage) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationDosage expect an Attribute, not a Modifier?
+            // mention.setMedicationDosage((MedicationDosageModifier) value);
+          }
+        });
         KnowtatorAnnotation duration = annotationSlots.remove("duration_model");
-        delayedFeatures.add(new MedicationStatusChangeFeature(entityMention, duration));
+        delayedFeatures.add(new DelayedFeature(duration) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationDuration expect an Attribute, not a Modifier?
+            // mention.setMedicationDuration((MedicationDurationModifier) value);
+          }
+        });
         KnowtatorAnnotation form = annotationSlots.remove("form_model");
-        delayedFeatures.add(new MedicationFormFeature(entityMention, form));
+        delayedFeatures.add(new DelayedFeature(form) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationForm expect an Attribute, not a Modifier?
+            // mention.setMedicationForm((MedicationFormModifier) value);
+          }
+        });
         KnowtatorAnnotation frequency = annotationSlots.remove("frequency_model");
-        delayedFeatures.add(new MedicationFrequencyFeature(entityMention, frequency));
+        delayedFeatures.add(new DelayedFeature(frequency) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationFrequency expect an Attribute, not a Modifier?
+            // mention.setMedicationFrequency((MedicationFrequencyModifier) value);
+          }
+        });
         KnowtatorAnnotation route = annotationSlots.remove("route_model");
-        delayedFeatures.add(new MedicationRouteFeature(entityMention, route));
+        delayedFeatures.add(new DelayedFeature(route) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationRoute expect an Attribute, not a Modifier?
+            // mention.setMedicationRoute((MedicationRouteModifier) value);
+          }
+        });
         KnowtatorAnnotation startDate = annotationSlots.remove("start_date");
-        delayedFeatures.add(new MedicationStartDateFeature(entityMention, startDate));
+        delayedFeatures.add(new DelayedFeature(startDate) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: where is the start date set?
+          }
+        });
         KnowtatorAnnotation strength = annotationSlots.remove("strength_model");
-        delayedFeatures.add(new MedicationStrengthFeature(entityMention, strength));
+        delayedFeatures.add(new DelayedFeature(strength) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: why does setMedicationStrength expect an Attribute, not a Modifier?
+            // mention.setMedicationStrength((MedicationStrengthModifier) value);
+          }
+        });
 
       } else if ("Phenomena".equals(annotation.type)) {
-        EntityMention entityMention = new EntityMention(jCas, coveringSpan.begin, coveringSpan.end);
-        addEntityMentionFeatures(
+        EventMention mention = new EventMention(jCas, coveringSpan.begin, coveringSpan.end);
+        addIdentifiedAnnotationFeatures(
             annotation,
-            entityMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
             stringSlots,
@@ -427,10 +560,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             delayedFeatures);
 
       } else if ("Procedure".equals(annotation.type)) {
-        ProcedureMention procedureMention = new ProcedureMention(jCas, coveringSpan.begin, coveringSpan.end);
+        final ProcedureMention mention = new ProcedureMention(jCas, coveringSpan.begin, coveringSpan.end);
         addIdentifiedAnnotationFeatures(
             annotation,
-            procedureMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_PROCEDURE,
             stringSlots,
@@ -439,21 +572,46 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation bodyLaterality = annotationSlots.remove("body_laterality");
-        delayedFeatures.add(new BodyLateralityFeature(procedureMention, bodyLaterality));
+        delayedFeatures.add(new DelayedFeature(bodyLaterality) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodyLaterality((BodyLateralityModifier) value);
+          }
+        });
         KnowtatorAnnotation bodyLocation = annotationSlots.remove("body_location");
-        delayedFeatures.add(new BodyLocationFeature(procedureMention, bodyLocation));
+        delayedFeatures.add(new DelayedFeature(bodyLocation) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get a LocationOf here?
+          }
+        });
         KnowtatorAnnotation bodySide = annotationSlots.remove("body_side");
-        delayedFeatures.add(new BodySideFeature(procedureMention, bodySide));
+        delayedFeatures.add(new DelayedFeature(bodySide) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodySide((BodySideModifier) value);
+          }
+        });
         KnowtatorAnnotation device = annotationSlots.remove("device");
-        delayedFeatures.add(new ProcedureDeviceFeature(procedureMention, device));
+        delayedFeatures.add(new DelayedFeature(device) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: where do we set the device?
+          }
+        });
         KnowtatorAnnotation method = annotationSlots.remove("method");
-        delayedFeatures.add(new ProcedureMethodFeature(procedureMention, method));
+        delayedFeatures.add(new DelayedFeature(method) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setMethod((ProcedureMethodModifier) value);
+          }
+        });
 
       } else if ("Sign_symptom".equals(annotation.type)) {
-        SignSymptomMention signSymptomMention = new SignSymptomMention(jCas, coveringSpan.begin, coveringSpan.end);
+        final SignSymptomMention mention = new SignSymptomMention(jCas, coveringSpan.begin, coveringSpan.end);
         addIdentifiedAnnotationFeatures(
             annotation,
-            signSymptomMention,
+            mention,
             jCas,
             CONST.NE_TYPE_ID_FINDING,
             stringSlots,
@@ -462,19 +620,65 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             idAnnotationMap,
             delayedFeatures);
         KnowtatorAnnotation alleviatingFactor = annotationSlots.remove("alleviating_factor");
-        delayedFeatures.add(new AlleviatingFactorFeature(signSymptomMention, alleviatingFactor));
+        delayedFeatures.add(new DelayedFeature(alleviatingFactor) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get an ElementRelation here?
+          }
+        });
         KnowtatorAnnotation bodyLaterality = annotationSlots.remove("body_laterality");
-        delayedFeatures.add(new BodyLateralityFeature(signSymptomMention, bodyLaterality));
+        delayedFeatures.add(new DelayedFeature(bodyLaterality) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodyLaterality((BodyLateralityModifier) value);
+          }
+        });
         KnowtatorAnnotation bodyLocation = annotationSlots.remove("body_location");
-        delayedFeatures.add(new BodyLocationFeature(signSymptomMention, bodyLocation));
+        delayedFeatures.add(new DelayedFeature(bodyLocation) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get a LocationOf here?
+          }
+        });
         KnowtatorAnnotation bodySide = annotationSlots.remove("body_side");
-        delayedFeatures.add(new BodySideFeature(signSymptomMention, bodySide));
-        KnowtatorAnnotation course = annotationSlots.remove("course");
-        delayedFeatures.add(new CourseFeature(signSymptomMention, course));
+        delayedFeatures.add(new DelayedFeature(bodySide) {
+          @Override
+          protected void setValue(TOP value) {
+            mention.setBodySide((BodySideModifier) value);
+          }
+        });
+        final KnowtatorAnnotation course = annotationSlots.remove("course");
+        delayedFeatures.add(new DelayedFeature(course) {
+          @Override
+          protected void setValue(TOP value) {
+            BinaryTextRelation relation = (BinaryTextRelation) value;
+            try {
+              mention.setCourse((CourseModifier) relation.getArg2().getArgument());
+            } catch (ClassCastException e) {
+              LOGGER.error(String.format(
+                  "Expected CourseModifier for \"course\" of %s with id \"%s\", found %s with id \"%s\"",
+                  annotation.type,
+                  annotation.id,
+                  relation.getArg2().getArgument().getClass().getSimpleName(),
+                  course.id));
+            }
+          }
+        });
         KnowtatorAnnotation exacerbatingFactor = annotationSlots.remove("exacerbating_factor");
-        delayedFeatures.add(new ExacerbatingFactorFeature(signSymptomMention, exacerbatingFactor));
+        delayedFeatures.add(new DelayedFeature(exacerbatingFactor) {
+          @Override
+          protected void setValue(TOP value) {
+            // TODO: how do we get an ElementRelation here?
+          }
+        });
         KnowtatorAnnotation severity = annotationSlots.remove("severity");
-        delayedFeatures.add(new SeverityFeature(signSymptomMention, severity));
+        delayedFeatures.add(new DelayedFeature(severity) {
+          @Override
+          protected void setValue(TOP value) {
+            BinaryTextRelation relation = (BinaryTextRelation) value;
+            mention.setSeverity(((SeverityModifier) relation.getArg2().getArgument()).getValue());
+          }
+        });
 
       } else if ("EVENT".equals(annotation.type)) {
 
@@ -611,7 +815,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       } else if ("Person".equals(annotation.type)) {
         String value = stringSlots.remove("subject_normalization_CU");
-        // TODO: unclear where this slot goes
+        // TODO: where does this code go?
         String code = stringSlots.remove("associatedCode");
         SubjectModifier modifier = new SubjectModifier(jCas, coveringSpan.begin, coveringSpan.end);
         if (value!=null) value = knowtatorSubjectValuesMappedToCasValues.get(value);
@@ -621,7 +825,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("historyOf_indicator_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
+        // TODO: where does this normalization go?
         String value = stringSlots.remove("historyOf_normalization");
         HistoryOfModifier modifier = new HistoryOfModifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.addToIndexes();
@@ -796,7 +1000,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         // already handled in "Value" above
 
       } else if ("allergy_indicator_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
+        // TODO: where does this code go?
         String code = stringSlots.remove("allergy_indicator_normalization");
         MedicationAllergyModifier modifier = new MedicationAllergyModifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.addToIndexes();
@@ -1033,58 +1237,77 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
 
     // all mentions should be added, so add features that required other annotations
-    for (DelayedFeature<?> delayedFeature : delayedFeatures) {
+    for (DelayedFeature delayedFeature : delayedFeatures) {
       delayedFeature.setValueFrom(idAnnotationMap);
     }
   }
 
-  private static void addEntityMentionFeatures(
-      KnowtatorAnnotation annotation,
-      EntityMention entityMention,
-      JCas jCas,
-      int typeID,
-      Map<String, String> stringSlots,
-      Map<String, Boolean> booleanSlots,
-      Map<String, KnowtatorAnnotation> annotationSlots,
-      Map<String, TOP> idAnnotationMap,
-      List<DelayedFeature<?>> delayedFeatures) {
-    addIdentifiedAnnotationFeatures(annotation, entityMention, jCas, typeID, stringSlots, booleanSlots, annotationSlots, idAnnotationMap, delayedFeatures);
-  }
-
   private static void addIdentifiedAnnotationFeatures(
       KnowtatorAnnotation annotation,
-      IdentifiedAnnotation identifiedAnnotation,
+      final IdentifiedAnnotation mention,
       JCas jCas,
       int typeID,
       Map<String, String> stringSlots,
       Map<String, Boolean> booleanSlots,
       Map<String, KnowtatorAnnotation> annotationSlots,
       Map<String, TOP> idAnnotationMap,
-      List<DelayedFeature<?>> delayedFeatures) {
-    identifiedAnnotation.setTypeID(typeID);
-    identifiedAnnotation.setConfidence(1.0f);
-    identifiedAnnotation.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
+      List<DelayedFeature> delayedFeatures) {
+    mention.setTypeID(typeID);
+    mention.setConfidence(1.0f);
+    mention.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_GOLD_ANNOTATION);
 
     // convert negation to an integer
     Boolean negation = booleanSlots.remove("Negation");
-    identifiedAnnotation.setPolarity(negation == null
+    mention.setPolarity(negation == null
         ? CONST.NE_POLARITY_NEGATION_ABSENT
         : negation == true ? CONST.NE_POLARITY_NEGATION_PRESENT : CONST.NE_POLARITY_NEGATION_ABSENT);
 
     // add features for conditional, generic, etc.
     KnowtatorAnnotation conditional = annotationSlots.remove("conditional_CU");
-    delayedFeatures.add(new ConditionalFeature(identifiedAnnotation, conditional));
+    delayedFeatures.add(new DelayedFeature(conditional) {
+      @Override
+      protected void setValue(TOP value) {
+        mention.setConditional(((ConditionalModifier) value).getConditional());
+      }
+    });
     KnowtatorAnnotation generic = annotationSlots.remove("generic_CU");
-    delayedFeatures.add(new GenericFeature(identifiedAnnotation, generic));
+    delayedFeatures.add(new DelayedFeature(generic) {
+      @Override
+      protected void setValue(TOP value) {
+        mention.setGeneric(((GenericModifier) value).getGeneric());
+      }
+    });
     KnowtatorAnnotation historyOf = annotationSlots.remove("historyOf_CU");
-    delayedFeatures.add(new HistoryOfFeature(identifiedAnnotation, historyOf));
+    delayedFeatures.add(new DelayedFeature(historyOf) {
+      @Override
+      protected void setValue(TOP value) {
+        HistoryOfModifier modifier = (HistoryOfModifier) value;
+        // TODO: where do we set the history of?
+      }
+    });
     KnowtatorAnnotation negationIndicator = annotationSlots.remove("negation_indicator_CU");
-    delayedFeatures.add(new NegationFeature(identifiedAnnotation, negationIndicator));
+    delayedFeatures.add(new DelayedFeature(negationIndicator) {
+      @Override
+      protected void setValue(TOP value) {
+        mention.setPolarity(((PolarityModifier) value).getPolarity());
+      }
+    });
     KnowtatorAnnotation subject = annotationSlots.remove("subject_CU");
-    delayedFeatures.add(new SubjectFeature(identifiedAnnotation, subject));
-    if (setDefaults && subject==null) { identifiedAnnotation.setSubject(SHARPKnowtatorXMLDefaults.getSubject()); }
+    delayedFeatures.add(new DelayedFeature(subject) {
+      @Override
+      protected void setValue(TOP value) {
+        String normalizedSubject = ((SubjectModifier) value).getSubject(); 
+        if (setDefaults) normalizedSubject = SHARPKnowtatorXMLDefaults.getSubject(normalizedSubject);
+        mention.setSubject(normalizedSubject);
+      }
+    });
     KnowtatorAnnotation uncertainty = annotationSlots.remove("uncertainty_indicator_CU");
-    delayedFeatures.add(new UncertaintyFeature(identifiedAnnotation, uncertainty));
+    delayedFeatures.add(new DelayedFeature(uncertainty) {
+      @Override
+      protected void setValue(TOP value) {
+        mention.setUncertainty(((UncertaintyModifier) value).getUncertainty());
+      }
+    });
 
     // convert status as necessary
     String status = stringSlots.remove("Status");
@@ -1106,7 +1329,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       code = stringSlots.remove("associatedCode");
     }
     OntologyConcept ontologyConcept;
-    if (identifiedAnnotation.getTypeID() == CONST.NE_TYPE_ID_DRUG) {
+    if (mention.getTypeID() == CONST.NE_TYPE_ID_DRUG) {
       ontologyConcept = new OntologyConcept(jCas);
       ontologyConcept.setCode(code);
     } else {
@@ -1115,12 +1338,12 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       ontologyConcept = umlsConcept;
     }
     ontologyConcept.addToIndexes();
-    identifiedAnnotation.setOntologyConceptArr(new FSArray(jCas, 1));
-    identifiedAnnotation.setOntologyConceptArr(0, ontologyConcept);
+    mention.setOntologyConceptArr(new FSArray(jCas, 1));
+    mention.setOntologyConceptArr(0, ontologyConcept);
 
     // add entity mention to CAS
-    identifiedAnnotation.addToIndexes();
-    idAnnotationMap.put(annotation.id, identifiedAnnotation);
+    mention.addToIndexes();
+    idAnnotationMap.put(annotation.id, mention);
   }
 
   private static class DelayedRelation {
@@ -1249,13 +1472,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     }
   }
 
-  private static abstract class DelayedFeature<ANNOTATION_TYPE extends TOP> {
-    protected ANNOTATION_TYPE annotation;
-
+  private static abstract class DelayedFeature {
     private String featureValueID;
 
-    public DelayedFeature(ANNOTATION_TYPE annotation, KnowtatorAnnotation featureValue) {
-      this.annotation = annotation;
+    public DelayedFeature(KnowtatorAnnotation featureValue) {
       this.featureValueID = featureValue == null ? null : featureValue.id;
     }
 
@@ -1264,318 +1484,15 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         TOP valueAnnotation = idAnnotationMap.get(this.featureValueID);
         if (valueAnnotation == null) {
           LOGGER.warn(String.format(
-              "%s found no annotation %s",
-              this.getClass().getSimpleName(),
+              "unable to set feature; found no annotation for %s",
               this.featureValueID));
+        } else {
+          this.setValue(valueAnnotation);
         }
-        this.setValue(valueAnnotation);
       }
     }
 
-    protected abstract void setValue(TOP valueAnnotation);
-  }
-  
-  // TODO: this feature needs to be set to a relation 
-  private static class AlleviatingFactorFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public AlleviatingFactorFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setAlleviatingFactor(...)
-    }
-  }
-
-  // TODO: this feature needs to be set to a relation 
-  private static class AssociatedSignOrSymptomFeature extends DelayedFeature<DiseaseDisorderMention> {
-    public AssociatedSignOrSymptomFeature(DiseaseDisorderMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setSignOrSymptom(...)
-    }
-  }
-  
-  private static class BodySideFeature extends DelayedFeature<IdentifiedAnnotation> {
-	    public BodySideFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-	      super(identifiedAnnotation, value);
-	    }
-	    @Override
-	    protected void setValue(TOP valueAnnotation) {
-	      // TODO: this.annotation.setBodySide(...)
-	    }
-	  }
-
-  private static class BodyLateralityFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public BodyLateralityFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setBodyLaterality(...)
-    }
-  }
-  
-  private static class BodyLocationFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public BodyLocationFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setBodyLocation(...)
-    }
-  }
-  
-  private static class CourseFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public CourseFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setCourse(...)
-    }
-  }
-
-  private static class ConditionalFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public ConditionalFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      Modifier conditionalModifier = (Modifier) valueAnnotation;
-      boolean conditional = conditionalModifier.getConditional();
-      this.annotation.setConditional(conditional);
-    }
-  }
-
-  private static class ExacerbatingFactorFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public ExacerbatingFactorFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setExacerbatingFactor(...)
-    }
-  }
-  
-  //   <classMention id="xx_Instance_23555">
-  //     <mentionClass id="generic_class">generic_class</mentionClass>
-  //     <hasSlotMention id="xx_Instance_23556" />
-  //   </classMention>
-  //   <booleanSlotMention id="xx_Instance_23556">
-  //     <mentionSlot id="generic_normalization" />
-  //     <booleanSlotMentionValue value="true" />
-  //   </booleanSlotMention>
-  private static class GenericFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public GenericFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-    	Modifier genericModifier = (Modifier) valueAnnotation;
-        boolean isGeneric = genericModifier.getGeneric();
-        //if (isGeneric!=false) LOGGER.error("INFO: isGeneric = " + isGeneric); // TODO remove this debug line
-        this.annotation.setGeneric(isGeneric);
-    }
-  }
-  
-  private static class HistoryOfFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public HistoryOfFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setHistoryOf(...)
-    }
-  }
-  
-  private static class LabOrdinalFeature extends DelayedFeature<EntityMention> {
-    public LabOrdinalFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setLabOrdinal(...)
-    }
-  }
-  
-  private static class LabReferenceRangeFeature extends DelayedFeature<EntityMention> {
-    public LabReferenceRangeFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setLabReferenceRange(...)
-    }
-  }
-  
-  private static class LabValueFeature extends DelayedFeature<EntityMention> {
-    public LabValueFeature(EntityMention entityMention, KnowtatorAnnotation value) {
-      super(entityMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setLabValue(...)
-    }
-  }
-  
-  private static class MedicationAllergyFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationAllergyFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setAllergy(...)
-    }
-  }
-
-  private static class MedicationDosageFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationDosageFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setDosage(...)
-    }
-  }
-
-  private static class MedicationDurationFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationDurationFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setDuration(...)
-    }
-  }
-
-  private static class MedicationFormFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationFormFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setMedicationForm(...)
-    }
-  }
-  
-  private static class MedicationFrequencyFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationFrequencyFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setFrequency(...)
-    }
-  }
-  
-  private static class MedicationRouteFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationRouteFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setRoute(...)
-    }
-  }
-  
-  private static class MedicationStartDateFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationStartDateFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setStartDate(...)
-    }
-  }
-  
-  private static class MedicationStatusChangeFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationStatusChangeFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setMedicationStatusChange(...)
-    }
-  }
-  
-  private static class MedicationStrengthFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public MedicationStrengthFeature(IdentifiedAnnotation medicationMention, KnowtatorAnnotation value) {
-      super(medicationMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setMedicationStrength(...)
-    }
-  }
-
-  private static class NegationFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public NegationFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-        Modifier negationModifier = (Modifier) valueAnnotation;
-        int negation = negationModifier.getPolarity();
-        this.annotation.setPolarity(negation);
-    }
-  }
-  
-  private static class ProcedureDeviceFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public ProcedureDeviceFeature(IdentifiedAnnotation procedureMention, KnowtatorAnnotation value) {
-      super(procedureMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setProcedureDevice(...)
-    }
-  }
-  
-  private static class ProcedureMethodFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public ProcedureMethodFeature(IdentifiedAnnotation procedureMention, KnowtatorAnnotation value) {
-      super(procedureMention, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setProcedureMethod(...)
-    }
-  }
-  
-  private static class SeverityFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public SeverityFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      // TODO: this.annotation.setSeverity(...)
-    }
-  }
-  
-  private static class SubjectFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public SubjectFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      Modifier subjectModifier = (Modifier) valueAnnotation;
-      String normalizedSubject = subjectModifier.getSubject();
-      if (setDefaults) normalizedSubject = SHARPKnowtatorXMLDefaults.getSubject(normalizedSubject);
-      //if (normalizedSubject!=null) LOGGER.error("INFO: subject = " + normalizedSubject); // TODO remove this debug line
-      this.annotation.setSubject(normalizedSubject);
-    }
-  }
-  
-  private static class UncertaintyFeature extends DelayedFeature<IdentifiedAnnotation> {
-    public UncertaintyFeature(IdentifiedAnnotation identifiedAnnotation, KnowtatorAnnotation value) {
-      super(identifiedAnnotation, value);
-    }
-    @Override
-    protected void setValue(TOP valueAnnotation) {
-      Modifier uncertaintyModifier = (Modifier) valueAnnotation;
-      int uncertainty = uncertaintyModifier.getUncertainty();
-      this.annotation.setUncertainty(uncertainty);
-    }
+    protected abstract void setValue(TOP value);
   }
   
   /**
@@ -1594,8 +1511,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     AnalysisEngine engine = AnalysisEngineFactory.createPrimitive(SHARPKnowtatorXMLReader.class);
     
     /////////////////////////
-    TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
-
     AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
             XWriter.class,
             XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
