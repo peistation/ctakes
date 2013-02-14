@@ -979,7 +979,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("estimated_flag_indicator".equals(annotation.type)) {
         boolean value = booleanSlots.remove("estimated_normalization");
         LabEstimatedModifier modifier = new LabEstimatedModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setIndicated(value); // TODO: check that estimated == indicatesd
+        modifier.setIndicated(value);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
