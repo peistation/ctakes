@@ -35,14 +35,13 @@ import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
 import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.core.util.SHARPKnowtatorXMLDefaults;
 import org.apache.ctakes.typesystem.type.constants.CONST;
-import org.apache.ctakes.typesystem.type.refsem.AnatomicalSiteMention;
 import org.apache.ctakes.typesystem.type.refsem.BodyLaterality;
 import org.apache.ctakes.typesystem.type.refsem.BodySide;
 import org.apache.ctakes.typesystem.type.refsem.Course;
 import org.apache.ctakes.typesystem.type.refsem.Date;
-import org.apache.ctakes.typesystem.type.refsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.refsem.Event;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
+import org.apache.ctakes.typesystem.type.refsem.LabReferenceRange;
 import org.apache.ctakes.typesystem.type.refsem.LabValue;
 import org.apache.ctakes.typesystem.type.refsem.MedicationDosage;
 import org.apache.ctakes.typesystem.type.refsem.MedicationDuration;
@@ -53,39 +52,48 @@ import org.apache.ctakes.typesystem.type.refsem.MedicationStatusChange;
 import org.apache.ctakes.typesystem.type.refsem.MedicationStrength;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.refsem.ProcedureDevice;
-import org.apache.ctakes.typesystem.type.refsem.ProcedureMention;
 import org.apache.ctakes.typesystem.type.refsem.ProcedureMethod;
 import org.apache.ctakes.typesystem.type.refsem.Severity;
-import org.apache.ctakes.typesystem.type.refsem.SignSymptomMention;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention;
 import org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier;
 import org.apache.ctakes.typesystem.type.textsem.BodySideModifier;
 import org.apache.ctakes.typesystem.type.textsem.ConditionalModifier;
 import org.apache.ctakes.typesystem.type.textsem.CourseModifier;
+import org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.GenericModifier;
 import org.apache.ctakes.typesystem.type.textsem.HistoryOfModifier;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.LabEstimatedModifier;
+import org.apache.ctakes.typesystem.type.textsem.LabInterpretationModifier;
+import org.apache.ctakes.typesystem.type.textsem.LabReferenceRangeModifier;
+import org.apache.ctakes.typesystem.type.textsem.LabValueModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationAllergyModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationDosageModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationDurationModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationFormModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationFrequencyModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationRouteModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationStatusChangeModifier;
 import org.apache.ctakes.typesystem.type.textsem.MedicationStrengthModifier;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textsem.PolarityModifier;
 import org.apache.ctakes.typesystem.type.textsem.ProcedureDeviceModifier;
+import org.apache.ctakes.typesystem.type.textsem.ProcedureMention;
 import org.apache.ctakes.typesystem.type.textsem.ProcedureMethodModifier;
 import org.apache.ctakes.typesystem.type.textsem.SeverityModifier;
+import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
 import org.apache.ctakes.typesystem.type.textsem.SubjectModifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textsem.UncertaintyModifier;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
@@ -205,6 +213,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
+    String text = jCas.getDocumentText();
     URI textURI = this.getTextURI(jCas);
     LOGGER.info("processing " + textURI);
 
@@ -600,26 +609,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("severity_class".equals(annotation.type)) {
-        Severity severity = new Severity(jCas);
-        severity.setValue(stringSlots.remove("severity_normalization"));
-        severity.addToIndexes();
-        SeverityModifier modifier = new SeverityModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS);
-        modifier.setNormalizedForm(severity);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("course_class".equals(annotation.type)) {
-        Course course = new Course(jCas);
-        course.setValue(stringSlots.remove("course_normalization"));
-        course.addToIndexes();
-        CourseModifier modifier = new CourseModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_COURSE_CLASS);
-        modifier.setNormalizedForm(course);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
       } else if ("Person".equals(annotation.type)) {
         String value = stringSlots.remove("subject_normalization_CU");
         // TODO: unclear where this slot goes
@@ -628,15 +617,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         if (value!=null) value = knowtatorSubjectValuesMappedToCasValues.get(value);
         if (setDefaults) value = SHARPKnowtatorXMLDefaults.getSubject(value);
         modifier.setSubject(value);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("body_side_class".equals(annotation.type)) {
-        BodySide bodySide = new BodySide(jCas);
-        bodySide.setValue(stringSlots.remove("body_side_normalization"));
-        bodySide.addToIndexes();
-        BodySideModifier modifier = new BodySideModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(bodySide);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -650,7 +630,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("distal_or_proximal".equals(annotation.type)) {
         String value = stringSlots.remove("distal_or_proximal_normalization");
         BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        BodyLaterality laterality = new BodyLaterality(jCas);
+        BodyLaterality attribute = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
               "assuming \"%s\" for \"%s\" with id \"%s\"",
@@ -663,16 +643,17 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             !value.equals(CONST.ATTR_BODYLATERALITY_UNMARKED)) {
           throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
         }
-        laterality.setValue(value);
-        laterality.addToIndexes();
-        modifier.setNormalizedForm(laterality);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("superior_or_inferior".equals(annotation.type)) {
         String value = stringSlots.remove("superior_or_inferior_normalization");
         BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        BodyLaterality laterality = new BodyLaterality(jCas);
+        BodyLaterality attribute = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
               "assuming \"%s\" for \"%s\" with id \"%s\"",
@@ -685,9 +666,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             !value.equals(CONST.ATTR_BODYLATERALITY_INFERIOR)) {
           throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
         }
-        laterality.setValue(value);
-        laterality.addToIndexes();
-        modifier.setNormalizedForm(laterality);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -695,7 +677,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String value = stringSlots.remove("medial_or_lateral_normalization");
         
         BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        BodyLaterality laterality = new BodyLaterality(jCas);
+        BodyLaterality attribute = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
               "assuming \"%s\" for \"%s\" with id \"%s\"",
@@ -708,9 +690,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             !value.equals(CONST.ATTR_BODYLATERALITY_LATERAL)) {
           throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
         }
-        laterality.setValue(value);
-        laterality.addToIndexes();
-        modifier.setNormalizedForm(laterality);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -718,7 +701,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String value = stringSlots.remove("dorsal_or_ventral_normalization");
         
         BodyLateralityModifier modifier = new BodyLateralityModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        BodyLaterality laterality = new BodyLaterality(jCas);
+        BodyLaterality attribute = new BodyLaterality(jCas);
         if (value == null) {
           LOGGER.warn(String.format(
               "assuming \"%s\" for \"%s\" with id \"%s\"",
@@ -731,191 +714,232 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             !value.equals(CONST.ATTR_BODYLATERALITY_VENTRAL)) {
           throw new UnsupportedOperationException("Invalid BodyLaterality: " + value);
         }
-        laterality.setValue(value);
-        laterality.addToIndexes();
-        modifier.setNormalizedForm(laterality);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("method_class".equals(annotation.type)) {
-        String code = stringSlots.remove("associatedCode");
-        ProcedureMethod method = new ProcedureMethod(jCas);
-        method.setValue(code);
-        ProcedureMethodModifier modifier = new ProcedureMethodModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(method);
+      } else if ("body_side_class".equals(annotation.type)) {
+        BodySide attribute = new BodySide(jCas);
+        attribute.setValue(stringSlots.remove("body_side_normalization"));
+        attribute.addToIndexes();
+        BodySideModifier modifier = new BodySideModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("device_class".equals(annotation.type)) {
-        String code = stringSlots.remove("associatedCode");
-        ProcedureDevice device = new ProcedureDevice(jCas);
-        device.setValue(code);
-        ProcedureDeviceModifier modifier = new ProcedureDeviceModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(device);
+      } else if ("course_class".equals(annotation.type)) {
+        Course attribute = new Course(jCas);
+        attribute.setValue(stringSlots.remove("course_normalization"));
+        attribute.addToIndexes();
+        CourseModifier modifier = new CourseModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_COURSE_CLASS);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("allergy_indicator_class".equals(annotation.type)) {
-        // TODO: unclear where this slot goes
-        String code = stringSlots.remove("allergy_indicator_normalization");
-        // TODO: this is based on relationship, not on Modifier
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+      } else if ("estimated_flag_indicator".equals(annotation.type)) {
+        boolean value = booleanSlots.remove("estimated_normalization");
+        LabEstimatedModifier modifier = new LabEstimatedModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setIndicated(value); // TODO: check that estimated == indicatesd
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("Route".equals(annotation.type)) {
-        String value = stringSlots.remove("route_values");
-        MedicationRoute route = new MedicationRoute(jCas);
-        route.setValue(value);
-        route.addToIndexes();
-        
-        MedicationRouteModifier modifier = new MedicationRouteModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(route);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-        
-      } else if ("Form".equals(annotation.type)) {
-        String value = stringSlots.remove("form_values");
-        MedicationForm form = new MedicationForm(jCas);
-        form.setValue(value);
-        form.addToIndexes();
-        MedicationFormModifier modifier = new MedicationFormModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(form);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-        
-      } else if ("Strength".equals(annotation.type)) {
-        KnowtatorAnnotation unit = annotationSlots.remove("strength_unit");
-        KnowtatorAnnotation number = annotationSlots.remove("strength_number");
-        MedicationStrength strength = new MedicationStrength(jCas);
-        strength.addToIndexes();
-        delayedFeatures.add(new DelayedFeature<MedicationStrength>(strength, unit) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setUnit(...)
-          }
-        });
-        delayedFeatures.add(new DelayedFeature<MedicationStrength>(strength, number) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setNumber(...)
-          }
-        });
-        // TODO: incorporate strength number and unit here
-        MedicationStrengthModifier modifier = new MedicationStrengthModifier(jCas, coveringSpan.begin, coveringSpan.end);
+      } else if ("lab_interpretation_indicator".equals(annotation.type)) {
+        String value = stringSlots.remove("lab_interpretation_normalization");
+        LabInterpretationModifier modifier = new LabInterpretationModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_LAB_INTERPRETATION_INDICATOR);
+        modifier.setValue(value);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("Strength number".equals(annotation.type)) {
-        // TODO: move to MedicationStrengthModifier
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Strength unit".equals(annotation.type)) {
-        // TODO: move to MedicationStrengthModifier
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Frequency".equals(annotation.type)) {
-        KnowtatorAnnotation unit = annotationSlots.remove("frequency_unit");
-        KnowtatorAnnotation number = annotationSlots.remove("frequency_number");
-        MedicationFrequency frequency = new MedicationFrequency(jCas);
-        frequency.addToIndexes();
-        delayedFeatures.add(new DelayedFeature<MedicationFrequency>(frequency, unit) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setUnit(...)
-          }
-        });
-        delayedFeatures.add(new DelayedFeature<MedicationFrequency>(frequency, number) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setNumber(...)
-          }
-        });
-        MedicationFrequencyModifier modifier = new MedicationFrequencyModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(frequency);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Frequency number".equals(annotation.type)) {
-        String number = stringSlots.remove("frequency_number_normalization");
-        MedicationFrequency frequency = new MedicationFrequency(jCas);
-        frequency.setNumber(number);
-        frequency.addToIndexes();
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(frequency);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Frequency unit".equals(annotation.type)) {
-        String unit = stringSlots.remove("frequency_unit_values");
-        MedicationFrequency frequency = new MedicationFrequency(jCas);
-        frequency.setUnit(unit);
-        frequency.addToIndexes();
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(frequency);
+      } else if ("reference_range".equals(annotation.type)) {
+        LabReferenceRange attribute = new LabReferenceRange(jCas);
+        // TODO: set value (from where?)
+        attribute.addToIndexes();
+        LabReferenceRangeModifier modifier = new LabReferenceRangeModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Value".equals(annotation.type)) {
         KnowtatorAnnotation unit = annotationSlots.remove("value_unit");
         KnowtatorAnnotation number = annotationSlots.remove("value_number");
-        LabValue labValue = new LabValue(jCas);
-        labValue.addToIndexes();
-        delayedFeatures.add(new DelayedFeature<LabValue>(labValue, unit) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setUnit(...)
-          }
-        });
-        delayedFeatures.add(new DelayedFeature<LabValue>(labValue, number) {
-          @Override
-          protected void setValue(TOP valueAnnotation) {
-            // TODO: this.annotation.setNumber(...)
-          }
-        });
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(labValue);
+        LabValue attribute = new LabValue(jCas);
+        if (unit != null) {
+          KnowtatorAnnotation.Span unitSpan = unit.getCoveringSpan();
+          String unitString = text.substring(unitSpan.begin, unitSpan.end);
+          attribute.setUnit(unitString);
+        }
+        if (number != null) {
+          KnowtatorAnnotation.Span numberSpan = number.getCoveringSpan();
+          String numberString = text.substring(numberSpan.begin, numberSpan.end);
+          attribute.setNumber(numberString);
+        }
+        attribute.addToIndexes();
+        LabValueModifier modifier = new LabValueModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setUnit(attribute.getUnit());
+        modifier.setNumber(attribute.getNumber());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("Value number".equals(annotation.type)) {
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
+        // already handled in "Value" above
 
       } else if ("Value unit".equals(annotation.type)) {
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+        // already handled in "Value" above
+
+      } else if ("allergy_indicator_class".equals(annotation.type)) {
+        // TODO: unclear where this slot goes
+        String code = stringSlots.remove("allergy_indicator_normalization");
+        MedicationAllergyModifier modifier = new MedicationAllergyModifier(jCas, coveringSpan.begin, coveringSpan.end);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("lab_interpretation_indicator".equals(annotation.type)) {
-        // TODO: unclear where the slot value goes
-        String value = stringSlots.remove("lab_interpretation_normalization");
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_LAB_INTERPRETATION_INDICATOR);
+      } else if ("Dosage".equals(annotation.type)) {
+        String value = stringSlots.remove("dosage_values");
+        MedicationDosage attribute = new MedicationDosage(jCas);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        MedicationDosageModifier modifier = new MedicationDosageModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("estimated_flag_indicator".equals(annotation.type)) {
-        // TODO: unclear where the slot value goes
-        boolean value = booleanSlots.remove("estimated_normalization");
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+      } else if ("Duration".equals(annotation.type)) {
+        String value = stringSlots.remove("duration_values");
+        MedicationDuration attribute = new MedicationDuration(jCas);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        MedicationDurationModifier modifier = new MedicationDurationModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("reference_range".equals(annotation.type)) {
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
+      } else if ("Form".equals(annotation.type)) {
+        String value = stringSlots.remove("form_values");
+        MedicationForm attribute = new MedicationForm(jCas);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        MedicationFormModifier modifier = new MedicationFormModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+        
+      } else if ("Frequency".equals(annotation.type)) {
+        KnowtatorAnnotation unit = annotationSlots.remove("frequency_unit");
+        KnowtatorAnnotation number = annotationSlots.remove("frequency_number");
+        MedicationFrequency attribute = new MedicationFrequency(jCas);
+        if (unit != null) {
+          String unitString = unit.stringSlots.get("frequency_unit_values");
+          attribute.setUnit(unitString);
+        }
+        if (number != null) {
+          String numberString = number.stringSlots.get("frequency_number_normalization");
+          attribute.setNumber(numberString);
+        }
+        attribute.addToIndexes();
+        MedicationFrequencyModifier modifier = new MedicationFrequencyModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setUnit(attribute.getUnit());
+        modifier.setNumber(attribute.getNumber());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("Frequency number".equals(annotation.type)) {
+        // already handled in "Frequency" above
+        stringSlots.remove("frequency_number_normalization");
+
+      } else if ("Frequency unit".equals(annotation.type)) {
+        // already handled in "Frequency" above
+        stringSlots.remove("frequency_unit_values");
+
+      } else if ("Route".equals(annotation.type)) {
+        String value = stringSlots.remove("route_values");
+        MedicationRoute attribute = new MedicationRoute(jCas);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        MedicationRouteModifier modifier = new MedicationRouteModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+        
+      } else if ("Status change".equals(annotation.type)) {
+        String value = stringSlots.remove("change_status_value");
+        MedicationStatusChange attribute = new MedicationStatusChange(jCas);
+        attribute.setValue(value);
+        attribute.addToIndexes();
+        MedicationStatusChangeModifier modifier = new MedicationStatusChangeModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("Strength".equals(annotation.type)) {
+        KnowtatorAnnotation unit = annotationSlots.remove("strength_unit");
+        KnowtatorAnnotation number = annotationSlots.remove("strength_number");
+        MedicationStrength attribute = new MedicationStrength(jCas);
+        if (unit != null) {
+          KnowtatorAnnotation.Span unitSpan = unit.getCoveringSpan();
+          String unitString = text.substring(unitSpan.begin, unitSpan.end);
+          attribute.setUnit(unitString);
+        }
+        if (number != null) {
+          KnowtatorAnnotation.Span numberSpan = number.getCoveringSpan();
+          String numberString = text.substring(numberSpan.begin, numberSpan.end);
+          attribute.setNumber(numberString);
+        }
+        attribute.addToIndexes();
+        MedicationStrengthModifier modifier = new MedicationStrengthModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setUnit(attribute.getUnit());
+        modifier.setNumber(attribute.getNumber());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("Strength number".equals(annotation.type)) {
+        // already handled in "Strength" above
+
+      } else if ("Strength unit".equals(annotation.type)) {
+        // already handled in "Strength" above
+
+      } else if ("device_class".equals(annotation.type)) {
+        String code = stringSlots.remove("associatedCode");
+        ProcedureDevice attribute = new ProcedureDevice(jCas);
+        attribute.setValue(code);
+        ProcedureDeviceModifier modifier = new ProcedureDeviceModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("method_class".equals(annotation.type)) {
+        String code = stringSlots.remove("associatedCode");
+        ProcedureMethod attribute = new ProcedureMethod(jCas);
+        attribute.setValue(code);
+        ProcedureMethodModifier modifier = new ProcedureMethodModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
+        modifier.addToIndexes();
+        idAnnotationMap.put(annotation.id, modifier);
+
+      } else if ("severity_class".equals(annotation.type)) {
+        Severity attribute = new Severity(jCas);
+        attribute.setValue(stringSlots.remove("severity_normalization"));
+        attribute.addToIndexes();
+        SeverityModifier modifier = new SeverityModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        modifier.setTypeID(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS);
+        modifier.setNormalizedForm(attribute);
+        modifier.setValue(attribute.getValue());
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -929,39 +953,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         date.addToIndexes();
         // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
         Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Status change".equals(annotation.type)) {
-        String value = stringSlots.remove("change_status_value");
-        MedicationStatusChange statusChange = new MedicationStatusChange(jCas);
-        statusChange.setValue(value);
-        statusChange.addToIndexes();
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(statusChange);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Duration".equals(annotation.type)) {
-        String value = stringSlots.remove("duration_values");
-        MedicationDuration duration = new MedicationDuration(jCas);
-        duration.setValue(value);
-        duration.addToIndexes();
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(duration);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Dosage".equals(annotation.type)) {
-        String value = stringSlots.remove("dosage_values");
-        MedicationDosage dosage = new MedicationDosage(jCas);
-        dosage.setValue(value);
-        dosage.addToIndexes();
-        // TODO: set the modifier type (or use an appropriate Modifier sub-type?)
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.setNormalizedForm(dosage);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -1607,7 +1598,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
     AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
             XWriter.class,
-            typeSystemDescription,
             XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
 	    	    "/tmp",
 	    	    XWriter.PARAM_FILE_NAMER_CLASS_NAME,
