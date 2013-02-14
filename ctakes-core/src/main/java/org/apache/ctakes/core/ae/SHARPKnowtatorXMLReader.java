@@ -1030,9 +1030,20 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         // already handled in "Value" above
 
       } else if ("allergy_indicator_class".equals(annotation.type)) {
-        // TODO: where does this code go?
-        String code = stringSlots.remove("allergy_indicator_normalization");
+        String value = stringSlots.remove("allergy_indicator_normalization");
         MedicationAllergyModifier modifier = new MedicationAllergyModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        if (null == value) {
+          modifier.setIndicated(false);
+        } else if ("indicator_present".equals(value)) {
+          modifier.setIndicated(true);
+        } else if ("indicator_absent".equals(value)) {
+          modifier.setIndicated(false);
+        } else {
+          LOGGER.error(String.format(
+              "unrecognized allergy-indicator value \"%s\" on annotation with id \"%s\"",
+              value,
+              annotation.id));
+        }
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
