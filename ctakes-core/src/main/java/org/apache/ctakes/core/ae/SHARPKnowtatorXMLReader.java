@@ -825,9 +825,20 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, modifier);
 
       } else if ("historyOf_indicator_class".equals(annotation.type)) {
-        // TODO: where does this normalization go?
         String value = stringSlots.remove("historyOf_normalization");
         HistoryOfModifier modifier = new HistoryOfModifier(jCas, coveringSpan.begin, coveringSpan.end);
+        if (null == value) {
+          modifier.setIndicated(false);
+        } else if ("historyOf_present".equals(value)) {
+          modifier.setIndicated(true);
+        } else if ("historyOf_absent".equals(value)) {
+          modifier.setIndicated(false);
+        } else {
+          LOGGER.error(String.format(
+              "unrecognized history-of value \"%s\" on annotation with id \"%s\"",
+              value,
+              annotation.id));
+        }
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -1530,7 +1541,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         documentID.addToIndexes();
         engine.process(jCas);
         documentID.setDocumentID(textFile.getName());
-        xWriter.process(jCas); ///////////////////
+        //xWriter.process(jCas); ///////////////////
       }
     }
 
