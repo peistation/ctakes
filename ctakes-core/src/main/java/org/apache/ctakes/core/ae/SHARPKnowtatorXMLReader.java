@@ -815,10 +815,29 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       } else if ("Person".equals(annotation.type)) {
         String value = stringSlots.remove("subject_normalization_CU");
-        // TODO: where does this code go?
+        if (value != null) {
+          value = knowtatorSubjectValuesMappedToCasValues.get(value);
+        }
         String code = stringSlots.remove("associatedCode");
+        if (code != null) {
+          if ("C0030705".equals(code)) {
+            if (value == null) {
+              value = CONST.ATTR_SUBJECT_PATIENT;
+            } else if (!CONST.ATTR_SUBJECT_PATIENT.equals(value)) {
+              LOGGER.error(String.format(
+                  "subject value \"%s\" and code \"%s\" are inconsistent for annotation with id \"%s\"",
+                  value,
+                  code,
+                  annotation.id));
+            }
+          } else {
+            LOGGER.error(String.format(
+                "unrecognized code \"%s\" for annotation with id \"%s\"",
+                code,
+                annotation.id));
+          }
+        }
         SubjectModifier modifier = new SubjectModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        if (value!=null) value = knowtatorSubjectValuesMappedToCasValues.get(value);
         if (setDefaults) value = SHARPKnowtatorXMLDefaults.getSubject(value);
         modifier.setSubject(value);
         modifier.addToIndexes();
