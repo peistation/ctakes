@@ -45,6 +45,9 @@ public class CONST {
 	public static final int NE_UNCERTAINTY_PRESENT = 1;
 	public static final int NE_UNCERTAINTY_ABSENT = 0;
 	
+	public static final int NE_HISTORY_OF_PRESENT = 1;
+	public static final int NE_HISTORY_OF_ABSENT = 0;	
+	
 	public static final boolean NE_GENERIC_TRUE = true;
 	public static final boolean NE_GENERIC_FALSE = false;
 

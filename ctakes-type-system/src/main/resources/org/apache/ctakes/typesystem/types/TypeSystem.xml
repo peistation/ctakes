@@ -898,6 +898,11 @@ More qualifying information on how the procedure was done.</description>
           <description/>
           <rangeTypeName>uima.cas.Integer</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>historyOf</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -1546,7 +1551,6 @@ More qualifying information on how the procedure was done.</description>
           <description>cue phrase itself (from lookup list)</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
-        
       </features>
     </typeDescription>
     <typeDescription>
@@ -1998,9 +2002,6 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-
-    <!-- ADDED MANUALLY BY STEPHEN: ATTRIBUTE CONVERSION TO MODIFIER -->
-
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationRouteModifier</name>
       <description>Means by which the medication was taken or administered.  Value set includes Topical, Enteral_Oral, Parenteral_Intravenous, Other, undetermined, etc.</description>
@@ -2210,8 +2211,6 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-
-    <!-- ADDED MANUALLY BY STEPHEN: INDICATOR ADDITIONS TO MODIFIER -->
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.PolarityModifier</name>
       <description>Used to indicate that a procedure or assertion did not occur or does not exist. If indicated, negation is present and polarity should be -1.  If not indicated, negation is not present and polarity should be +1 by default.</description>
@@ -2272,7 +2271,6 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.HistoryOfModifier</name>
       <description>An indication of explicit mentioning of a past history. The indicator captures only very explicit mentions of historicity.</description>
@@ -2285,8 +2283,6 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-
-    <!-- MANUALLY ADDED BY STEPHEN: CEM-SPECIFIC INDICATORS (NOT GENERAL) -->
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.LabInterpretationModifier</name>
       <description>Test result interpretations organized in a valued list e.g., "rare cells seen" or "few cells seen" in urinalysis, now combined with very_abnormal and abnormal.</description>
@@ -2323,10 +2319,8 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-
-    <!-- ADDED MANUALLY BY STEPHEN: NEW ENTITY AND EVENT MENTIONS --> 
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.AnatomicalSiteMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention</name>
       <description>A text string that refers to a (AnatomicalSite) Entity.  A body part or area, corresponding to the UMLS semantic group of Anatomy.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EntityMention</supertypeName>
       <features>
@@ -2343,7 +2337,7 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.MedicationMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.MedicationMention</name>
       <description>A text string that refers to a (Medication) Event.  This is an Event from the UMLS semantic group of Chemicals and Drugs, pruned by RxNORM source.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
@@ -2400,7 +2394,7 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.ProcedureMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.ProcedureMention</name>
       <description>A text string that refers to a (Procedure) Event.  This is from the UMLS semantic group of Procedures (except that Laboratory procedures are separate).  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
@@ -2452,7 +2446,7 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.SignSymptomMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.SignSymptomMention</name>
       <description>A text string that refers to a (SignSymptom) Event.  This is from the UMLS semantic group of Sign or Symtom.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
@@ -2514,7 +2508,7 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.DiseaseDisorderMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention</name>
       <description>A text string that refers to a (DiseaseDisorder) Event.  This is from the UMLS semantic group of Disorders (except that Sign and Symptom types are separate).  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
@@ -2576,7 +2570,7 @@ More qualifying information on how the procedure was done.</description>
       </features>
     </typeDescription>
     <typeDescription>
-      <name>org.apache.ctakes.typesystem.type.refsem.LabMention</name>
+      <name>org.apache.ctakes.typesystem.type.textsem.LabMention</name>
       <description>A text string that refers to a (Lab) Event.  This is from the UMLS semantic group of Laboratory Procedures.  Based on generic Clinical Element Models (CEMs)</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
@@ -2607,10 +2601,5 @@ More qualifying information on how the procedure was done.</description>
         </featureDescription>
       </features>
     </typeDescription>
-   
-
   </types>
 </typeSystemDescription>
-
-<!--  LocalWords:  apache
- -->
