@@ -16,33 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.dictionary.lookup.strtable;
+package org.apache.ctakes.dictionary.lookup;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
+ *
  * @author Mayo Clinic
  */
-final public class StringTableRow {
+public abstract class AbstractBaseDictionary implements Dictionary {
 
-   final private Map<String, String> iv_fieldMap = new HashMap<String, String>();
+    private Set<String> _metaFieldNames = new HashSet<String>();
 
-   public Set<String> getNames() {
-      return iv_fieldMap.keySet();
-   }
+   /**
+    * TODO - get rid of the using class iterators and use Collection foreach
+    * @return iterator of all metaField names
+    */
+    protected Iterator getMetaFieldNames() {
+        return _metaFieldNames.iterator();
+    }
 
-   public Collection<String> getValues() {
-      return iv_fieldMap.values();
-   }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+    public void retainMetaData( final String metaFieldName )  {
+    	_metaFieldNames.add( metaFieldName );
+    }
 
-   public void addField( final String fieldName, final String fieldValue ) {
-      iv_fieldMap.put( fieldName, fieldValue );
-   }
-
-   public String getFieldValue( final String fieldName ) {
-      return iv_fieldMap.get( fieldName );
-   }
 }

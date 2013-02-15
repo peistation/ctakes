@@ -59,8 +59,6 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 
 	private Set iv_lookupSpecSet = new HashSet();
 
-	private Comparator iv_lookupTokenComparator = new LookupTokenComparator();
-
 	// used to prevent duplicate hits
 	// key = hit begin,end key (java.lang.String)
 	// val = Set of MetaDataHit objects
@@ -139,7 +137,7 @@ public class DictionaryLookupAnnotator extends JCasAnnotator_ImplBase
 			Map ctxMap) throws Exception
 	{
 		// sort the lookup tokens
-		Collections.sort(lookupTokenList, iv_lookupTokenComparator);
+		Collections.sort(lookupTokenList, LookupTokenComparator.getInstance() );
 
 		// perform lookup
 		Collection lookupHitCol = null;

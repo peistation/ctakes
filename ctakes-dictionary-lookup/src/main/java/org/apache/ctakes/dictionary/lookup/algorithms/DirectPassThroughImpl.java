@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.ctakes.dictionary.lookup.phrasebuilder.PhraseBuilder;
+import org.apache.ctakes.dictionary.lookup.vo.LookupAnnotation;
 import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
 
@@ -53,12 +54,17 @@ public class DirectPassThroughImpl implements LookupAlgorithm
         iv_phrBuilder = phraseBuilder;
     }
 
-    public Collection lookup(List ltList, Map ctxMap) throws Exception
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+    public Collection<LookupHit> lookup(final List<LookupToken> lookupTokenList,
+                                        final Map<String,List<LookupAnnotation>> contextMap) throws Exception
     {
         List lhList = new ArrayList();
-        for (int tokenIdx = 0; tokenIdx < ltList.size(); tokenIdx++)
+        for (int tokenIdx = 0; tokenIdx < lookupTokenList.size(); tokenIdx++)
         {
-            LookupToken lt = (LookupToken) ltList.get(tokenIdx);
+            LookupToken lt = (LookupToken) lookupTokenList.get(tokenIdx);
 
             List singleLtList = new ArrayList();
             singleLtList.add(lt);

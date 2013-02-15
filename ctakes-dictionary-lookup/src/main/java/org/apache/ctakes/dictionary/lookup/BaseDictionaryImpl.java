@@ -26,7 +26,11 @@ import java.util.Set;
 /**
  *
  * @author Mayo Clinic
+ * @deprecated Use {@link AbstractBaseDictionary}
  */
+// Renamed AbstractBaseDictionary as this is not a full implementation. - 12/24/2012 SPF
+// Added types and removed redundant method declaration - 12/24/2012 SPF
+@Deprecated
 public abstract class BaseDictionaryImpl implements Dictionary
 {
     private Set iv_metaFieldNames = new HashSet();
@@ -43,7 +47,7 @@ public abstract class BaseDictionaryImpl implements Dictionary
 
     public abstract boolean contains(String text) throws DictionaryException;
 
-    public abstract Collection getEntries(String str)
+    public abstract Collection<MetaDataHit> getEntries(String str)
         throws DictionaryException;
 
 }

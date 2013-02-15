@@ -18,6 +18,10 @@
  */
 package org.apache.ctakes.dictionary.lookup.algorithms;
 
+import org.apache.ctakes.dictionary.lookup.vo.LookupAnnotation;
+import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
+import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +45,6 @@ public interface LookupAlgorithm
      * @return Collection of LookupHits.
      * @throws Exception
      */
-    public Collection lookup(List lookupTokenList, Map contextMap)
-            throws Exception;
+    public Collection<LookupHit> lookup( List<LookupToken> lookupTokenList,
+                                         Map<String,List<LookupAnnotation>> contextMap) throws Exception;
 }

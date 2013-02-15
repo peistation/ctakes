@@ -18,16 +18,6 @@
  */
 package org.apache.ctakes.dictionary.lookup.algorithms;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.ctakes.dictionary.lookup.phrasebuilder.PhraseBuilder;
@@ -36,670 +26,529 @@ import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
 import org.apache.log4j.Logger;
 
+import java.util.*;
+
 
 /**
  * <b>OVERVIEW: </b> Each LookupToken is fed into a "first token" Dictionary. A
  * hit indicates an anchor and the window around this anchor is based on
  * context. This hit also contains all the presentations from the Dictionary
  * where the "first token" is contained.
- * 
+ * <p/>
  * The window is determined by finding the largest overlapping context window
  * annotation. Permutations of LookupTokens found within this window are used to
  * match against the presentations found earlier. If context window annotations
  * are not provided, a fixed window is used based on the specified max
  * permutation level.
- * 
+ * <p/>
  * <b>OPTIONAL CONTEXT: </b> context window annotations
- * 
+ *
  * @author Mayo Clinic
  */
-public class FirstTokenPermutationImpl implements LookupAlgorithm
-{
-    // LOG4J logger based on class name
-    private Logger iv_logger = Logger.getLogger(getClass().getName());
+public class FirstTokenPermutationImpl implements LookupAlgorithm {
+   // LOG4J logger based on class name
+   final private Logger iv_logger = Logger.getLogger( getClass().getName() );
 
-    /**
-     * Key value for context map. Value is expected to be a List of
-     * LookupAnnotation objects in sorted order.
-     */
-    public static final String CTX_KEY_WINDOW_ANNOTATIONS = "WINDOW_ANNOTATIONS";
+   /**
+    * Key value for context map. Value is expected to be a List of
+    * LookupAnnotation objects in sorted order.
+    */
+   public static final String CTX_KEY_WINDOW_ANNOTATIONS = "WINDOW_ANNOTATIONS";
 
-    /**
-     * Key value for LookupToken attribute. Value is expected to be either TRUE
-     * or FALSE. This indicates whether to use this token for a "first token"
-     * lookup or not. This is optional.
-     */
-    public static final String LT_KEY_USE_FOR_LOOKUP = "USE_FOR_LOOKUP";
+   /**
+    * Key value for LookupToken attribute. Value is expected to be either TRUE
+    * or FALSE. This indicates whether to use this token for a "first token"
+    * lookup or not. This is optional.
+    */
+   public static final String LT_KEY_USE_FOR_LOOKUP = "USE_FOR_LOOKUP";
 
-    private DictionaryEngine iv_firstTokenDictEngine;
-    private PhraseBuilder iv_phrBuilder;
+   final private DictionaryEngine iv_firstTokenDictEngine;
+   final private PhraseBuilder iv_phrBuilder;
 
-    private int iv_maxPermutationLevel;
-    // key = level Integer, value = Permutation list
-    private Map iv_permCacheMap = new HashMap();
+   final private int iv_maxPermutationLevel;
+   // key = level Integer, value = Permutation list
+   final private Map<Integer, List<List<Integer>>> iv_permCacheMap;
 
-    private String[] iv_textMetaFieldNames;
+   private String[] iv_textMetaFieldNames;
 
-    /**
-     * Constructor
-     * 
-     * @param firstTokenDictEngine
-     *            Dictionary that is indexed against first tokens.
-     * @param phraseBuilder
-     *            Builds phrases to match against Dictionary.
-     * @param textMetaFieldNames
-     *            MetaFieldNames used to extract presentations.
-     * @param maxPermutationLevel
-     *            Max permutation Level allowed.
-     */
-    public FirstTokenPermutationImpl(DictionaryEngine firstTokenDictEngine,
-            PhraseBuilder phraseBuilder, String textMetaFieldNames[],
-            int maxPermutationLevel)
-    {
-        iv_firstTokenDictEngine = firstTokenDictEngine;
-        iv_phrBuilder = phraseBuilder;
-        iv_textMetaFieldNames = textMetaFieldNames;
+   /**
+    * Constructor
+    *
+    * @param firstTokenDictEngine Dictionary that is indexed against first tokens.
+    * @param phraseBuilder        Builds phrases to match against Dictionary.
+    * @param textMetaFieldNames   MetaFieldNames used to extract presentations.
+    * @param maxPermutationLevel  Max permutation Level allowed.
+    */
+   public FirstTokenPermutationImpl( final DictionaryEngine firstTokenDictEngine,
+                                     final PhraseBuilder phraseBuilder,
+                                     final String textMetaFieldNames[],
+                                     final int maxPermutationLevel ) {
+      iv_firstTokenDictEngine = firstTokenDictEngine;
+      iv_phrBuilder = phraseBuilder;
+      iv_textMetaFieldNames = textMetaFieldNames;
 
-        iv_maxPermutationLevel = maxPermutationLevel;
-        for (int i = 0; i <= maxPermutationLevel; i++)
-        {
-            Integer level = new Integer(i);
-            List permList = PermutationUtil.getPermutationList(i);
-            iv_permCacheMap.put(level, permList);
-        }
-    }
+      iv_maxPermutationLevel = maxPermutationLevel;
+      iv_permCacheMap = new HashMap<Integer, List<List<Integer>>>( maxPermutationLevel );
+      for ( int i = 0; i <= maxPermutationLevel; i++ ) {
+         final List<List<Integer>> permList = PermutationUtil.getPermutationList( i );
+         iv_permCacheMap.put( i, permList );
+      }
+   }
 
-    /**
-     * Implementation of algorithm.
-     */
-    public Collection lookup(List ltList, Map ctxMap) throws Exception
-    {
-        // setup optional window context data
-        boolean useWindowAnnots = false;
-        List wAnnotList = getWindowAnnotations(ctxMap);
-        if (wAnnotList.size() > 0)
-        {
-            useWindowAnnots = true;
-        }
-        Map wStartOffsetMap = getStartOffsetMap(wAnnotList, true);
-        Map wEndOffsetMap = getEndOffsetMap(wAnnotList, true);
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<LookupHit> lookup( final List<LookupToken> lookupTokenList,
+                                        final Map<String, List<LookupAnnotation>> contextMap ) throws Exception {
+      // setup optional window context data
+      final List<LookupAnnotation> windowAnnotations = getWindowAnnotations( contextMap );
+      final boolean useWindowAnnots = !windowAnnotations.isEmpty();
+      // map of all the annotation start indices as keys and the annotations with those indices as values
+      final Map<Integer, List<LookupAnnotation>> wStartOffsetMap = getMultipleStartOffsetMap( windowAnnotations );
+      // map of all the annotation end indices as keys and the annotations with those indices as values
+      final Map<Integer, List<LookupAnnotation>> wEndOffsetMap = getMultipleEndOffsetMap( windowAnnotations );
+      // map of all lookupTokens and their index within the lookupTokenList.  Faster for fetching than List.indexOf(..)
+      final Map<LookupToken, Integer> ltListIndexMap = getListIndexMap( lookupTokenList );
+      // map of all the token start indices as keys and the tokens with those indices as values
+      final Map<Integer, List<LookupToken>> ltStartOffsetMap = getMultipleStartOffsetMap( lookupTokenList );
+      // map of all the token end indices as keys and the tokens with those indices as values
+      final Map<Integer, List<LookupToken>> ltEndOffsetMap = getMultipleEndOffsetMap( lookupTokenList );
 
-        Map ltListIndexMap = getListIndexMap(ltList);
-        Map ltStartOffsetMap = getStartOffsetMap(ltList, true);
-        Map ltEndOffsetMap = getEndOffsetMap(ltList, true);
-
-        List lhList = new ArrayList();
-        for (int ltIdx = 0; ltIdx < ltList.size(); ltIdx++)
-        {
-            LookupToken lt = (LookupToken) ltList.get(ltIdx);
-
-            Boolean useForLookup = Boolean.valueOf(lt.getStringAttribute(LT_KEY_USE_FOR_LOOKUP));
-
-            if ((useForLookup == null) || (useForLookup.booleanValue()))
-            {
-                Collection mdhCol = getFirstTokenHits(lt);
-
-                if ((mdhCol != null) && (mdhCol.size() > 0))
-                {
-                    int wEndOffset = -1;
-                    if (useWindowAnnots)
-                    {
-                        // get the largest overlapping window annotation
-                        LookupAnnotation wAnnot = getLargestWindowAnnotation(
-                                ltIdx,
-                                lt,
-                                ltStartOffsetMap,
-                                ltEndOffsetMap,
-                                ltListIndexMap,
-                                wStartOffsetMap,
-                                wEndOffsetMap);
-                        if (wAnnot != null)
-                        {
-                            wEndOffset = wAnnot.getEndOffset();
-                        }
-                    }
-                    if (wEndOffset == -1)
-                    {
-                        iv_logger.debug("Window size set to max perm level.");
-                        wEndOffset = getFixedWindowEndOffset(ltIdx, lt, ltList);
-                    }
-
-                    List endLookupTokenList = getLookupTokenList(
-                            wEndOffset,
-                            ltEndOffsetMap,
-                            false);
-                    LookupToken endLookupToken = (LookupToken) endLookupTokenList.get(endLookupTokenList.size() - 1);
-
-                    int startTokenIdx = ltIdx;
-                    int endTokenIdx = ((Integer) ltListIndexMap.get(endLookupToken)).intValue();
-
-                    // list of LookupToken objects bound by the window
-                    List wLookupTokenList = ltList.subList(
-                            startTokenIdx,
-                            endTokenIdx + 1);
-
-                    // use permutation algorithm to find any hits inside the window
-                    Collection lhCol = getLookupHits(
-                            mdhCol,
-                            wLookupTokenList,
-                            new Integer(ltIdx - startTokenIdx));
-
-                    lhList.addAll(lhCol);
-                }
+      final List<LookupHit> lookupHits = new ArrayList<LookupHit>();
+      for ( int currentIndex = 0; currentIndex < lookupTokenList.size(); currentIndex++ ) {
+         final LookupToken lookupToken = lookupTokenList.get( currentIndex );
+         // TODO a bug?  Program flow is possibly not performing as expected.
+         // Boolean valueOf() always returns true or false.  If passed a null parameter it returns false.
+         // two lines down a -null return- is treated the same way as true... are we expecting to
+         // perform a certain way if the attribute does not exist, that being the same behavior
+         // as for the attribute being true?  If so, then this is a bug.
+         // I have left the original code, and refactored to use the actual original behavior,
+         // not the original (possible) expected behavior.  12-26-2012 SPF
+         //         Boolean useForLookup = Boolean.valueOf( lookupToken.getStringAttribute( LT_KEY_USE_FOR_LOOKUP ) );
+         //         if ( (useForLookup == null) || (useForLookup.booleanValue()) ) {
+         final String useForLookupString = lookupToken.getStringAttribute( LT_KEY_USE_FOR_LOOKUP );
+         final boolean useForLookup = Boolean.valueOf( useForLookupString );
+         if ( !useForLookup ) {
+            continue;
+         }
+         final Collection<MetaDataHit> firstTokenHits = getFirstTokenHits( lookupToken );
+         if ( firstTokenHits == null || firstTokenHits.isEmpty() ) {
+            continue;
+         }
+         int wEndOffset = -1;
+         if ( useWindowAnnots ) {
+            // get the largest overlapping window annotation
+            final LookupAnnotation windowAnnotation = getLargestWindowAnnotation( currentIndex, lookupToken,
+                                                                                 ltStartOffsetMap, ltEndOffsetMap,
+                                                                                 ltListIndexMap,
+                                                                                 wStartOffsetMap, wEndOffsetMap );
+            if ( windowAnnotation != null ) {
+               wEndOffset = windowAnnotation.getEndOffset();
             }
-        }
+         }
+         if ( wEndOffset == -1 ) {
+            iv_logger.debug( "Window size set to max perm level." );
+            wEndOffset = getFixedWindowEndOffset( currentIndex, lookupToken, lookupTokenList );
+         }
+         final List<LookupToken> endLookupTokenList = getLookupTokenList( wEndOffset, ltEndOffsetMap, false );
+         if ( endLookupTokenList.isEmpty() ) {
+            iv_logger.debug( "Invalid window:" + currentIndex + "," + wEndOffset );
+            continue;
+         }
+         final LookupToken endLookupToken = endLookupTokenList.get( endLookupTokenList.size() - 1 );
+         final int startTokenIndex = currentIndex;
+         final int endTokenIndex = ltListIndexMap.get( endLookupToken );
+         // list of LookupToken objects bound by the window
+         final List<LookupToken> wLookupTokenList = lookupTokenList.subList( startTokenIndex, endTokenIndex + 1 );
+         // use permutation algorithm to find any hits inside the window
+         // Note: currentIndex - startTokenIndex is always = 0. What was the intention?  12-26-2012 SPF
+         final Collection<LookupHit> lhCol = getLookupHits( firstTokenHits, wLookupTokenList,
+                                                            currentIndex - startTokenIndex );
+         lookupHits.addAll( lhCol );
+      }
+      return lookupHits;
+   }
 
-        return lhList;
-    }
-
-    private Collection getLookupHits(
-            Collection mdhCol,
-            List wLookupTokenList,
-            Integer firstTokenIndex) throws Exception
-    {
-        if ((wLookupTokenList.size() - 1) > iv_maxPermutationLevel)
-        {
-            iv_logger.debug("Beyond permutation cache size.");
-            return new ArrayList();
-        }
-
-        // build a list of index values (excludes index of first token)
-        List idxList = new ArrayList();
-        for (int i = 0; i < wLookupTokenList.size(); i++)
-        {
-            if (i != firstTokenIndex.intValue())
-            {
-                idxList.add(new Integer(i));
+   private Map<String,Set<MetaDataHit>> getNamedMetaDataHits( final Collection<MetaDataHit> firstTokenHits ) {
+      final Map<String,Set<MetaDataHit>> namedMetaDataHits = new HashMap<String,Set<MetaDataHit>>();
+      for ( MetaDataHit firstTokenHit : firstTokenHits ) {
+         for ( String name : iv_textMetaFieldNames ) {
+            String text = firstTokenHit.getMetaFieldValue( name );
+            if ( text != null ) {
+               text = text.toLowerCase();
+               Set<MetaDataHit> mdhSet = namedMetaDataHits.get( text );
+               if ( mdhSet == null ) {
+                  mdhSet = new HashSet<MetaDataHit>();
+               }
+               mdhSet.add( firstTokenHit );
+               namedMetaDataHits.put( text, mdhSet );
+            } else {
+               if ( iv_logger.isDebugEnabled() ) {
+                  iv_logger.debug( "MetaField " + name + " contains no data." );
+               }
             }
-        }
+         }
+      }
+      return namedMetaDataHits;
+   }
 
-        Collection permCol = (Collection) iv_permCacheMap.get(new Integer(
-                idxList.size()));
+   private Collection<LookupHit> getLookupHits( final Collection<MetaDataHit> firstTokenHits,
+                                                final List<LookupToken> wLookupTokenList,
+                                                final int firstTokenIndex ) throws Exception {
+      if ( wLookupTokenList.size() - 1 > iv_maxPermutationLevel ) {
+         iv_logger.debug( "Beyond permutation cache size." );
+         return Collections.emptyList();
+      }
+      final Map<String,Set<MetaDataHit>> namedMetaDataHits = getNamedMetaDataHits( firstTokenHits );
 
-        List lhList = new ArrayList();
-
-        Map mdhMap = new HashMap();
-        Iterator mdhItr = mdhCol.iterator();
-        while (mdhItr.hasNext())
-        {
-            MetaDataHit mdh = (MetaDataHit) mdhItr.next();
-            for (int i = 0; i < iv_textMetaFieldNames.length; i++)
-            {
-                String text = mdh.getMetaFieldValue(iv_textMetaFieldNames[i]);
-                if (text != null)
-                {
-                    text = text.toLowerCase();
-                    Set mdhSet = (Set) mdhMap.get(text);
-                    if (mdhSet == null)
-                    {
-                        mdhSet = new HashSet();
-                    }
-                    mdhSet.add(mdh);
-                    mdhMap.put(text, mdhSet);
-                }
-                else
-                {
-                    if (iv_logger.isDebugEnabled())
-                    {
-                        iv_logger.debug("MetaField "
-                                + iv_textMetaFieldNames[i]
-                                + " contains no data.");
-                    }
-                }
+      final List<LookupHit> lookupHits = new ArrayList<LookupHit>();
+      final LookupToken firstWordLookupToken = wLookupTokenList.get( firstTokenIndex );
+      int permutationIndex = wLookupTokenList.size();
+      if ( firstTokenIndex < wLookupTokenList.size() && permutationIndex > 0 ) {
+         permutationIndex--;
+      }
+      final List<List<Integer>> permutationList = iv_permCacheMap.get( permutationIndex );
+      for ( List<Integer> permutations : permutationList ) {
+         // convert permutation idx back into LookupTokens
+         final List<LookupToken> tempLookupTokens = new ArrayList<LookupToken>();
+         for ( Integer idx : permutations ) {
+            if ( idx <= firstTokenIndex ) {
+               idx--;
             }
-        }
+            final LookupToken lookupToken = wLookupTokenList.get( idx );
+            tempLookupTokens.add( lookupToken );
+         }
 
-        LookupToken firstWordLookupToken = (LookupToken) wLookupTokenList.get(firstTokenIndex.intValue());
+         final List<LookupToken> singleTokenList = Arrays.asList( firstWordLookupToken );
+         final String[] firstWordPhrases = iv_phrBuilder.getPhrases( singleTokenList );
+         final String[] lookupTokenPhrases = iv_phrBuilder.getPhrases( tempLookupTokens );
+         for ( String lookupTokenPhrase : lookupTokenPhrases ) {
+            // perform trim() and toLowerCase() here instead of repeating in each inner loop
+            lookupTokenPhrase = lookupTokenPhrase.toLowerCase();
+            for ( String firstWordPhrase : firstWordPhrases ) {
+               // perform trim() and toLowerCase() here so it isn't done for the whole concatenated string
+               firstWordPhrase = firstWordPhrase.toLowerCase();
+               final StringBuilder phraseSB = new StringBuilder();
+               phraseSB.append( firstWordPhrase ).append( ' ' ).append( lookupTokenPhrase );
+               final String fullPhrase = phraseSB.toString().trim();
+               final Set<MetaDataHit> mdhSet = namedMetaDataHits.get( fullPhrase );
+               if ( mdhSet == null ) {
+                  continue;
+               }
+               for ( MetaDataHit mdh : mdhSet ) {
+                  // figure out start and end offsets -- does List permutations change per iteration?
+                  // TODO Why is this not extracted?  Why sort for every (inner inner) iteration ?
+                  Collections.sort( permutations );
 
-        Iterator permItr = permCol.iterator();
-        while (permItr.hasNext())
-        {
-            // convert permutation idx back into LookupTokens
-            List tempList = new ArrayList();
-            List permutation = (List) permItr.next();
-            Iterator idxItr = permutation.iterator();
-            while (idxItr.hasNext())
-            {
-                int idx = ((Integer) idxItr.next()).intValue();
-                if (idx <= firstTokenIndex.intValue())
-                {
-                    idx--;
-                }
-                LookupToken lt = (LookupToken) wLookupTokenList.get(idx);
-                tempList.add(lt);
+                  int startOffset;
+                  if ( !permutations.isEmpty() ) {
+                     int firstIdx = permutations.get( 0 );
+                     if ( firstIdx <= firstTokenIndex ) {
+                        firstIdx--;
+                     }
+                     final LookupToken lt = wLookupTokenList.get( firstIdx );
+                     if ( lt.getStartOffset() < firstWordLookupToken.getStartOffset() ) {
+                        startOffset = lt.getStartOffset();
+                     } else {
+                        startOffset = firstWordLookupToken.getStartOffset();
+                     }
+                  } else {
+                     startOffset = firstWordLookupToken.getStartOffset();
+                  }
+
+                  int endOffset;
+                  if ( !permutations.isEmpty() ) {
+                     int lastIdx = permutations.get( permutations.size() - 1 );
+                     if ( lastIdx <= firstTokenIndex ) {
+                        lastIdx--;
+                     }
+                     final LookupToken lt = wLookupTokenList.get( lastIdx );
+                     if ( lt.getEndOffset() > firstWordLookupToken.getEndOffset() ) {
+                        endOffset = lt.getEndOffset();
+                     } else {
+                        endOffset = firstWordLookupToken.getEndOffset();
+                     }
+                  } else {
+                     endOffset = firstWordLookupToken.getEndOffset();
+                  }
+
+                  final LookupHit lh = new LookupHit( mdh, startOffset, endOffset );
+                  lookupHits.add( lh );
+               }
             }
+         }
+      }
+      return lookupHits;
+   }
 
-            List singleTokenList = new ArrayList();
-            singleTokenList.add(firstWordLookupToken);
-            String[] fwPerms = iv_phrBuilder.getPhrases(singleTokenList);
+   /**
+    * Extracts the list of LookupAnnotation objects representing noun phrases
+    * from the context map.
+    *
+    * @param contextMap Map where key=Impl specific String object and value=List of
+    *                   LookupAnnotation objects
+    * @return list of window annotations or empty list if null
+    */
+   private List<LookupAnnotation> getWindowAnnotations( final Map<String, List<LookupAnnotation>> contextMap ) {
+      final List<LookupAnnotation> list = contextMap.get( CTX_KEY_WINDOW_ANNOTATIONS );
+      if ( list == null || list.isEmpty() ) {
+         iv_logger.debug( "No context window annotations." );
+         return Collections.emptyList();
+      }
+      return list;
+   }
 
-            String[] phrArr = iv_phrBuilder.getPhrases(tempList);
-            for (int i = 0; i < phrArr.length; i++)
-            {
-                for (int fwPermIdx = 0; fwPermIdx < fwPerms.length; fwPermIdx++)
-                {
-                    StringBuffer phraseSB = new StringBuffer();
-                    phraseSB.append(fwPerms[fwPermIdx]);
-                    phraseSB.append(' ');
-                    phraseSB.append(phrArr[i]);
-                    String phrase = phraseSB.toString().trim().toLowerCase();
-                    Set mdhSet = (Set) mdhMap.get(phrase);
-                    if (mdhSet != null)
-                    {
-                        Iterator mdhIterator = mdhSet.iterator();
-                        while (mdhIterator.hasNext())
-                        {
-                            MetaDataHit mdh = (MetaDataHit) mdhIterator.next();
-                            // figure out start and end offsets
-                            Collections.sort(permutation);
+   /**
+    * Determines the number of ListTokens are contained within the specified
+    * start and end offsets;
+    *
+    * @param ltStartOffsetMap -
+    * @param ltEndOffsetMap   -
+    * @param ltListIndexMap   -
+    * @param startOffset      -
+    * @param endOffset        -
+    * @return                 -
+    */
+   private int getNumberOfListTokens( final Map<Integer, List<LookupToken>> ltStartOffsetMap,
+                                      final Map<Integer, List<LookupToken>> ltEndOffsetMap,
+                                      final Map<LookupToken, Integer> ltListIndexMap,
+                                      final int startOffset, final int endOffset ) {
+      final List<LookupToken> startLookupTokenList = getLookupTokenList( startOffset, ltStartOffsetMap, true );
+      final List<LookupToken> endLookupTokenList = getLookupTokenList( endOffset, ltEndOffsetMap, false );
 
-                            int startOffset;
-                            if (permutation.size() > 0)
-                            {
-                                int firstIdx = ((Integer) permutation.get(0)).intValue();
-                                if (firstIdx <= firstTokenIndex.intValue())
-                                {
-                                    firstIdx--;
-                                }
-                                LookupToken lt = (LookupToken) wLookupTokenList.get(firstIdx);
-                                if (lt.getStartOffset() < firstWordLookupToken.getStartOffset())
-                                {
-                                    startOffset = lt.getStartOffset();
-                                }
-                                else
-                                {
-                                    startOffset = firstWordLookupToken.getStartOffset();
-                                }
-                            }
-                            else
-                            {
-                                startOffset = firstWordLookupToken.getStartOffset();
-                            }
+      if ( startLookupTokenList.isEmpty() || endLookupTokenList.isEmpty() ) {
+         iv_logger.debug( "Invalid window:" + startOffset + "," + endOffset );
+         return -1;
+      }
+      final LookupToken startLookupToken = startLookupTokenList.get( 0 );
+      final Integer startIdx = ltListIndexMap.get( startLookupToken );
 
-                            int endOffset;
-                            if (permutation.size() > 0)
-                            {
-                                int lastIdx = ((Integer) permutation.get(permutation.size() - 1)).intValue();
-                                if (lastIdx <= firstTokenIndex.intValue())
-                                {
-                                    lastIdx--;
-                                }
-                                LookupToken lt = (LookupToken) wLookupTokenList.get(lastIdx);
-                                if (lt.getEndOffset() > firstWordLookupToken.getEndOffset())
-                                {
-                                    endOffset = lt.getEndOffset();
-                                }
-                                else
-                                {
-                                    endOffset = firstWordLookupToken.getEndOffset();
-                                }
-                            }
-                            else
-                            {
-                                endOffset = firstWordLookupToken.getEndOffset();
-                            }
+      final LookupToken endLookupToken = endLookupTokenList.get( endLookupTokenList.size() - 1 );
+      final Integer endIdx = ltListIndexMap.get( endLookupToken );
 
-                            LookupHit lh = new LookupHit(
-                                    mdh,
-                                    startOffset,
-                                    endOffset);
+      return endIdx - startIdx + 1;
+   }
 
-                            lhList.add(lh);
-                        }
-                    }
-                }
+   /**
+    * Attempts to get a list of LookupToken objects at the specified offset. If
+    * there are none, this method attempts to try nearby offsets based on the
+    * traversal direction.
+    *
+    * @param offset -
+    * @param ltOffsetMap -
+    * @param traverseRight -
+    * @return list of lookup tokens in window, never null
+    */
+   private List<LookupToken> getLookupTokenList( final int offset,
+                                                 final Map<Integer, List<LookupToken>> ltOffsetMap,
+                                                 final boolean traverseRight ) {
+      // first attempt the original offset, which will be the case most of the time
+      List<LookupToken> lookupTokenList = ltOffsetMap.get( offset );
+      if ( lookupTokenList != null ) {
+         return lookupTokenList;
+      }
+      // otherwise traverse some nearby offsets and attempt to find a token
+      // TODO hardcoded max offset window is 10 char
+      final int offsetWindow = 10;
+      if ( traverseRight ) {
+         final int max = offset + offsetWindow;
+         for ( int i = offset; i <= max; i++ ) {
+            lookupTokenList = ltOffsetMap.get( i );
+            if ( lookupTokenList != null ) {
+               return lookupTokenList;
             }
-        }
-        return lhList;
-    }
-
-    /**
-     * Extracts the list of LookupAnnotation objects representing noun phrases
-     * from the context map.
-     * 
-     * @param contextMap
-     * @return
-     */
-    private List getWindowAnnotations(Map contextMap)
-    {
-        List list = (List) contextMap.get(CTX_KEY_WINDOW_ANNOTATIONS);
-        if ((list == null) || (list.size() == 0))
-        {
-            iv_logger.debug("No context window annotations.");
-            return new ArrayList();
-        }
-        return list;
-    }
-
-    /**
-     * Determines the number of ListTokens are contained within the specified
-     * start and end offsets;
-     * 
-     * @param ltStartOffsetMap
-     * @param ltEndOffsetMap
-     * @param ltListIndexMap
-     * @param startOffset
-     * @param endOffset
-     * @return
-     */
-    private int getNumberOfListTokens(
-            Map ltStartOffsetMap,
-            Map ltEndOffsetMap,
-            Map ltListIndexMap,
-            int startOffset,
-            int endOffset)
-    {
-        List startLookupTokenList = getLookupTokenList(
-                startOffset,
-                ltStartOffsetMap,
-                true);
-        List endLookupTokenList = getLookupTokenList(
-                endOffset,
-                ltEndOffsetMap,
-                false);
-
-        if ((startLookupTokenList == null) || (endLookupTokenList == null))
-        {
-            iv_logger.debug("Invalid window:" + startOffset + "," + endOffset);
-            return -1;
-        }
-        LookupToken startLookupToken = (LookupToken) startLookupTokenList.get(0);
-        Integer startIdx = (Integer) ltListIndexMap.get(startLookupToken);
-
-        LookupToken endLookupToken = (LookupToken) endLookupTokenList.get(endLookupTokenList.size() - 1);
-        Integer endIdx = (Integer) ltListIndexMap.get(endLookupToken);
-
-        return endIdx.intValue() - startIdx.intValue() + 1;
-    }
-
-    /**
-     * Attempts to get a list of LookupToken objects at the specified offset. If
-     * there are none, this method attempts to try nearby offsets based on the
-     * traversal direction.
-     * 
-     * @param offset
-     * @param ltOffsetMap
-     * @param traverseRight
-     * @return
-     */
-    private List getLookupTokenList(
-            int offset,
-            Map ltOffsetMap,
-            boolean traverseRight)
-    {
-        // first attempt the original offset, which will be the case most of the
-        // time
-        List lookupTokenList = (List) ltOffsetMap.get(new Integer(offset));
-        if (lookupTokenList != null)
-        {
-            return lookupTokenList;
-        }
-        else
-        {
-            // otherwise traverse some nearby offsets and attempt to find a
-            // token
-
-            // TODO hardcoded max offset window is 10 char
-            final int offsetWindow = 10;
-
-            // build list of offsets to try
-            List offsetList = new ArrayList();
-            if (traverseRight)
-            {
-                int max = offset + offsetWindow;
-                for (int i = offset; i <= max; i++)
-                {
-                    offsetList.add(new Integer(i));
-                }
+         }
+      } else {
+         final int min = offset - offsetWindow;
+         for ( int i = offset; i >= min; i-- ) {
+            lookupTokenList = ltOffsetMap.get( i );
+            if ( lookupTokenList != null ) {
+               return lookupTokenList;
             }
-            else
-            {
-                int min = offset - offsetWindow;
-                for (int i = offset; i >= min; i--)
-                {
-                    offsetList.add(new Integer(i));
-                }
+         }
+      }
+      // no tokens in window - return an empty list, not null
+      return Collections.emptyList();
+   }
+
+   /**
+    * Determines the largest overlapping window annotation for the specified
+    * LookupToken.
+    */
+   private LookupAnnotation getLargestWindowAnnotation( final int tokenIdx, final LookupToken lt,
+                                                        final Map<Integer, List<LookupToken>> ltStartOffsetMap,
+                                                        final Map<Integer, List<LookupToken>> ltEndOffsetMap,
+                                                        final Map<LookupToken, Integer> ltListIndexMap,
+                                                        final Map<Integer, List<LookupAnnotation>> wStartOffsetMap,
+                                                        final Map<Integer, List<LookupAnnotation>> wEndOffsetMap ) {
+      final Set<LookupAnnotation> startCandidateSet = new HashSet<LookupAnnotation>();
+      final Set<LookupAnnotation> endCandidateSet = new HashSet<LookupAnnotation>();
+
+      for ( Map.Entry<Integer, List<LookupAnnotation>> entry : wStartOffsetMap.entrySet() ) {
+         final Integer startOffset = entry.getKey();
+         if ( startOffset <= lt.getStartOffset() ) {
+            startCandidateSet.addAll( entry.getValue() );
+         }
+      }
+      for ( Map.Entry<Integer, List<LookupAnnotation>> entry : wEndOffsetMap.entrySet() ) {
+         final Integer endOffset = entry.getKey();
+         if ( endOffset >= lt.getEndOffset() ) {
+            endCandidateSet.addAll( entry.getValue() );
+         }
+      }
+      // union to get window annotations that are overlapping with LookupToken
+      startCandidateSet.retainAll( endCandidateSet );
+
+      // find largest overlapping window annotation
+      LookupAnnotation largestWindowAnnot = null;
+      for ( LookupAnnotation tempLookupAnnot : startCandidateSet ) {
+         if ( largestWindowAnnot == null || tempLookupAnnot.getLength() > largestWindowAnnot.getLength() ) {
+            // now see if we can handle the size of this window (permutation wise)
+            final int ltCount = getNumberOfListTokens( ltStartOffsetMap, ltEndOffsetMap, ltListIndexMap,
+                                                       tempLookupAnnot.getStartOffset(),
+                                                       tempLookupAnnot.getEndOffset() );
+
+            if ( ltCount <= iv_maxPermutationLevel && ltCount > 0 ) {
+               largestWindowAnnot = tempLookupAnnot;
+            } else if ( iv_logger.isDebugEnabled() ) {
+               iv_logger.debug( "Window size of " + ltCount
+                                + " exceeds the max permutation level of " + iv_maxPermutationLevel + "." );
             }
+         }
+      }
+      return largestWindowAnnot;
+   }
 
-            Iterator offsetItr = offsetList.iterator();
-            while (offsetItr.hasNext())
-            {
-                Integer tempOffset = (Integer) offsetItr.next();
-                lookupTokenList = (List) ltOffsetMap.get(tempOffset);
-                if (lookupTokenList != null)
-                {
-                    return lookupTokenList;
-                }
-            }
-        }
-        // no tokens in window
-        return null;
-    }
+   private int getFixedWindowEndOffset( final int tokenIdx, final LookupToken lt, final List<LookupToken> ltList ) {
+      // This iterates to the last index, then returns the last valid offset.
+      // If we were performing max() this might be understandable ...
+      //      int fixedEndOffset = 0;
+      //      for ( int i = tokenIdx; (i < tokenIdx + iv_maxPermutationLevel)
+      //            && (i < ltList.size()); i++ ) {
+      //         LookupToken tempLookupToken = (LookupToken) ltList.get( i );
+      //         if ( tempLookupToken != null ) {
+      //            fixedEndOffset = tempLookupToken.getEndOffset();
+      //         }
+      //      }
+      //      return fixedEndOffset;
 
-    /**
-     * Determines the largest overlapping window annotation for the specified
-     * LookupToken.
-     * 
-     * @param lt
-     * @param wStartOffsetMap
-     * @param wEndOffsetMap
-     * @return
-     */
-    private LookupAnnotation getLargestWindowAnnotation(
-            int tokenIdx,
-            LookupToken lt,
-            Map ltStartOffsetMap,
-            Map ltEndOffsetMap,
-            Map ltListIndexMap,
-            Map wStartOffsetMap,
-            Map wEndOffsetMap)
-    {
-        Set startCandidateSet = new HashSet();
-        Set endCandidateSet = new HashSet();
+      // Go backward and return the first valid end offset ...
+      final int count = Math.min( tokenIdx + iv_maxPermutationLevel, ltList.size() );
+      if ( count <= 0 ) {
+         return 0;
+      }
+      for ( int i = count - 1; i >= 0; i-- ) {
+         final LookupToken tempLookupToken = ltList.get( i );
+         if ( tempLookupToken != null ) {
+            return tempLookupToken.getEndOffset();
+         }
+      }
+      return 0;
+   }
 
-        Iterator startItr = wStartOffsetMap.keySet().iterator();
-        while (startItr.hasNext())
-        {
-            Integer startOffset = (Integer) startItr.next();
-            if (startOffset.intValue() <= lt.getStartOffset())
-            {
-                List wAnnotList = (List) wStartOffsetMap.get(startOffset);
-                startCandidateSet.addAll(wAnnotList);
-            }
-        }
+   /**
+    * Creates a map that binds an object from a list to its index position.
+    *
+    * @param list -
+    * @return -
+    */
+   static private Map<LookupToken, Integer> getListIndexMap( final List<LookupToken> list ) {
+      final Map<LookupToken, Integer> m = new HashMap<LookupToken, Integer>( list.size() );
+      for ( int i = 0; i < list.size(); i++ ) {
+         m.put( list.get( i ), i );
+      }
+      return m;
+   }
 
-        Iterator endItr = wEndOffsetMap.keySet().iterator();
-        while (endItr.hasNext())
-        {
-            Integer endOffset = (Integer) endItr.next();
-            if (endOffset.intValue() >= lt.getEndOffset())
-            {
-                List wAnnotList = (List) wEndOffsetMap.get(endOffset);
-                endCandidateSet.addAll(wAnnotList);
-            }
-        }
+   /**
+    * Creates a map that uses the start offset to index the LookupAnnotation objects.
+    *
+    * @param lookupAnnotList -
+    * @return map of integers and lookup annotations
+    */
+   static private <T extends LookupAnnotation> Map<Integer, T> getSingleStartOffsetMap( final List<T> lookupAnnotList ) {
+      final Map<Integer, T> m = new HashMap<Integer, T>();
+      for ( T lookupAnnotation : lookupAnnotList ) {
+         final Integer key = lookupAnnotation.getStartOffset();
+         m.put( key, lookupAnnotation );
+      }
+      return m;
+   }
 
-        // union to get window annotations that are overlapping with LookupToken
-        startCandidateSet.retainAll(endCandidateSet);
+   /**
+    * Creates a map that uses the start offset to index the LookupAnnotation objects.
+    *
+    * @param lookupAnnotList -
+    * @return map of integers and lookup annotation lists
+    */
+   static private <T extends LookupAnnotation> Map<Integer, List<T>> getMultipleStartOffsetMap( final List<T> lookupAnnotList ) {
+      final Map<Integer, List<T>> m = new HashMap<Integer, List<T>>();
+      for ( T lookupAnnotation : lookupAnnotList ) {
+         final Integer key = lookupAnnotation.getStartOffset();
+         List<T> list = m.get( key );
+         if ( list == null ) {
+            list = new ArrayList<T>();
+         }
+         list.add( lookupAnnotation );
+         m.put( key, list );
+      }
+      return m;
+   }
 
-        // find largest overlapping window annotation
-        LookupAnnotation largestWindowAnnot = null;
-        Iterator laItr = startCandidateSet.iterator();
-        while (laItr.hasNext())
-        {
-            LookupAnnotation tempLookupAnnot = (LookupAnnotation) laItr.next();
-            if ((largestWindowAnnot == null)
-                    || (tempLookupAnnot.getLength() > largestWindowAnnot.getLength()))
-            {
-                // now see if we can handle the size of this window (permutation
-                // wise)
-                int ltCount = getNumberOfListTokens(
-                        ltStartOffsetMap,
-                        ltEndOffsetMap,
-                        ltListIndexMap,
-                        tempLookupAnnot.getStartOffset(),
-                        tempLookupAnnot.getEndOffset());
+   /**
+    * Creates a map that uses the end offset to index the LookupAnnotation objects.
+    *
+    * @param lookupAnnotList -
+    * @return map of integers and lookup annotations
+    */
+   static private <T extends LookupAnnotation> Map<Integer, T> getSingleEndOffsetMap( final List<T> lookupAnnotList ) {
+      final Map<Integer, T> m = new HashMap<Integer, T>();
+      for ( T lookupAnnotation : lookupAnnotList ) {
+         final Integer key = lookupAnnotation.getEndOffset();
+         m.put( key, lookupAnnotation );
+      }
+      return m;
+   }
 
-                if ((ltCount <= iv_maxPermutationLevel) && (ltCount > 0))
-                {
-                    largestWindowAnnot = tempLookupAnnot;
-                }
-                else
-                {
-                    if (iv_logger.isDebugEnabled())
-                    {
-                        iv_logger.debug("Window size of "
-                                + ltCount
-                                + " exceeds the max permutation level of "
-                                + iv_maxPermutationLevel
-                                + ".");
-                    }
-                }
-            }
-        }
+   /**
+    * Creates a map that uses the end offset to index the LookupAnnotation objects.
+    *
+    * @param lookupAnnotList -
+    * @return map of integers and lookup annotation lists
+    */
+   static private <T extends LookupAnnotation> Map<Integer, List<T>> getMultipleEndOffsetMap( final List<T> lookupAnnotList ) {
+      final Map<Integer, List<T>> m = new HashMap<Integer, List<T>>();
+      for ( T lookupAnnotation : lookupAnnotList ) {
+         final Integer key = lookupAnnotation.getEndOffset();
+         List<T> list = m.get( key );
+         if ( list == null ) {
+            list = new ArrayList<T>();
+         }
+         list.add( lookupAnnotation );
+         m.put( key, list );
+      }
+      return m;
+   }
 
-        return largestWindowAnnot;
-    }
 
-    private int getFixedWindowEndOffset(
-            int tokenIdx,
-            LookupToken lt,
-            List ltList)
-    {
-        int fixedEndOffset = 0;
-
-        for (int i = tokenIdx; (i < tokenIdx + iv_maxPermutationLevel)
-                && (i < ltList.size()); i++)
-        {
-            LookupToken tempLookupToken = (LookupToken) ltList.get(i);
-            if (tempLookupToken != null)
-            {
-                fixedEndOffset = tempLookupToken.getEndOffset();
-            }
-        }
-        return fixedEndOffset;
-    }
-
-    /**
-     * Creates a map that binds an object from a list to its index position.
-     * 
-     * @param list
-     * @return
-     */
-    private Map getListIndexMap(List list)
-    {
-        Map m = new HashMap();
-
-        for (int i = 0; i < list.size(); i++)
-        {
-            Integer index = new Integer(i);
-            m.put(list.get(i), index);
-        }
-
-        return m;
-    }
-
-    /**
-     * Creates a map that uses the start offset to index the LookupAnnotation
-     * objects. If multiple LookupAnnotations can exist at the same start
-     * offset, then hasMultiples=true and the values with be a List of
-     * LookupAnnotation objects at that offset.
-     * 
-     * @param lookupAnnotList
-     * @param hasMultiples
-     * @return
-     */
-    private Map getStartOffsetMap(List lookupAnnotList, boolean hasMultiples)
-    {
-        Map m = new HashMap();
-
-        Iterator laItr = lookupAnnotList.iterator();
-        while (laItr.hasNext())
-        {
-            LookupAnnotation la = (LookupAnnotation) laItr.next();
-            Integer key = new Integer(la.getStartOffset());
-            if (hasMultiples)
-            {
-                List list = (List) m.get(key);
-                if (list == null)
-                {
-                    list = new ArrayList();
-                }
-                list.add(la);
-                m.put(key, list);
-            }
-            else
-            {
-                m.put(key, la);
-            }
-        }
-
-        return m;
-    }
-
-    /**
-     * Creates a map that uses the end offset to index the LookupAnnotation
-     * objects. If multiple LookupAnnotations can exist at the end start offset,
-     * then hasMultiples=true and the values with be a List of LookupAnnotation
-     * objects at that offset.
-     * 
-     * @param lookupAnnotList
-     * @param hasMultiples
-     * @return
-     */
-    private Map getEndOffsetMap(List lookupAnnotList, boolean hasMultiples)
-    {
-        Map m = new HashMap();
-
-        Iterator laItr = lookupAnnotList.iterator();
-        while (laItr.hasNext())
-        {
-            LookupAnnotation la = (LookupAnnotation) laItr.next();
-            Integer key = new Integer(la.getEndOffset());
-            if (hasMultiples)
-            {
-                List list = (List) m.get(key);
-                if (list == null)
-                {
-                    list = new ArrayList();
-                }
-                list.add(la);
-                m.put(key, list);
-            }
-            else
-            {
-                m.put(key, la);
-            }
-        }
-
-        return m;
-    }
-
-    /**
-     * Gets the hits for the specified LookupToken. This uses the first token Dictionary.
-     * 
-     * @param firstLookupToken
-     * @return
-     * @throws Exception
-     */
-    private Collection getFirstTokenHits(LookupToken firstLookupToken)
-            throws Exception
-    {
-        List singleLtList = new ArrayList();
-        singleLtList.add(firstLookupToken);
-
-        String[] phrases = iv_phrBuilder.getPhrases(singleLtList);
-
-        Collection mdhCol = new ArrayList();
-        for (int i = 0; i < phrases.length; i++)
-        {
-            Collection curMdhCol = iv_firstTokenDictEngine.metaLookup(phrases[i]);
-
-            if (curMdhCol.size() > 0)
-            {
-                mdhCol.addAll(curMdhCol);
-            }
-        }
-        return mdhCol;
-    }
+   /**
+    * Gets the hits for the specified LookupToken. This uses the first token Dictionary.
+    *
+    * @param firstLookupToken -
+    * @return -
+    * @throws Exception
+    */
+   private Collection<MetaDataHit> getFirstTokenHits( final LookupToken firstLookupToken ) throws Exception {
+      final List<LookupToken> singleTokenList = Arrays.asList( firstLookupToken );
+      final String[] phrases = iv_phrBuilder.getPhrases( singleTokenList );
+      final List<MetaDataHit> metaDataHits = new ArrayList<MetaDataHit>();
+      for ( String phrase : phrases ) {
+         final Collection<MetaDataHit> phraseMetaDataHits = iv_firstTokenDictEngine.metaLookup( phrase );
+         if ( !phraseMetaDataHits.isEmpty() ) {
+            metaDataHits.addAll( phraseMetaDataHits );
+         }
+      }
+      return metaDataHits;
+   }
 }

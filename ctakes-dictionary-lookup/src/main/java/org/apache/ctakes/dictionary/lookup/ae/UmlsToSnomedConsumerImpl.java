@@ -18,273 +18,236 @@
  */
 package org.apache.ctakes.dictionary.lookup.ae;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
+import org.apache.ctakes.dictionary.lookup.DictionaryException;
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
-
-import org.apache.ctakes.dictionary.lookup.DictionaryException;
-import org.apache.ctakes.dictionary.lookup.MetaDataHit;
-import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
-import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.constants.CONST;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
- * Implementation that takes UMLS dictionary lookup hits and stores as NamedEntity 
+ * Implementation that takes UMLS dictionary lookup hits and stores as NamedEntity
  * objects only the ones that have a SNOMED synonym.
- * Override abstract method <code>getSnomedCodes</code> and implement 
- * looking up the CUI->SNOMED mappings 
- * 
+ * Override abstract method <code>getSnomedCodes</code> and implement
+ * looking up the CUI->SNOMED mappings
+ *
  * @author Mayo Clinic
  */
 public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl implements
-		LookupConsumer
-{
+                                                                              LookupConsumer {
 
-	private final String CUI_MF_PRP_KEY = "cuiMetaField";
-	private final String TUI_MF_PRP_KEY = "tuiMetaField";
+   static private final String CUI_MF_PRP_KEY = "cuiMetaField";
+   static private final String TUI_MF_PRP_KEY = "tuiMetaField";
 
-	private final String CODING_SCHEME_PRP_KEY = "codingScheme";
+   static private final String CODING_SCHEME_PRP_KEY = "codingScheme";
 
-	private final String ANT_SITE_TUIS_PRP_KEY = "anatomicalSiteTuis";
-	private final String PROCEDURE_TUIS_PRP_KEY = "procedureTuis";
-	private final String DISORDER_TUIS_PRP_KEY = "disorderTuis";
-	private final String FINDING_TUIS_PRP_KEY = "findingTuis";
+   static private final String MEDICATION_TUIS_PRP_KEY = "medicationTuis";
+   static private final String ANT_SITE_TUIS_PRP_KEY = "anatomicalSiteTuis";
+   static private final String PROCEDURE_TUIS_PRP_KEY = "procedureTuis";
+   static private final String DISORDER_TUIS_PRP_KEY = "disorderTuis";
+   static private final String FINDING_TUIS_PRP_KEY = "findingTuis";
 
-	private Set antSiteTuiSet = new HashSet();
-	private Set procedureTuiSet = new HashSet();
-	private Set disorderTuiSet = new HashSet();
-	private Set findingTuiSet = new HashSet();
-	private Set validTuiSet = new HashSet();
-	
-	protected Properties props;
+   private Set<String> _medicationSet = new HashSet<String>();
+   private Set<String> _antSiteTuiSet = new HashSet<String>();
+   private Set<String> _procedureTuiSet = new HashSet<String>();
+   private Set<String> _disorderTuiSet = new HashSet<String>();
+   private Set<String> _findingTuiSet = new HashSet<String>();
+   private Set<String> _validTuiSet = new HashSet<String>();
 
-	
-	public UmlsToSnomedConsumerImpl(UimaContext aCtx, Properties properties)
-			throws Exception
-	{
-		// TODO property validation could be done here
-		props = properties;
+   protected Properties props;
 
-		antSiteTuiSet = loadList(props.getProperty(ANT_SITE_TUIS_PRP_KEY));
-		procedureTuiSet = loadList(props.getProperty(PROCEDURE_TUIS_PRP_KEY));
-		disorderTuiSet = loadList(props.getProperty(DISORDER_TUIS_PRP_KEY));
-		findingTuiSet = loadList(props.getProperty(FINDING_TUIS_PRP_KEY));
 
-		validTuiSet.addAll(antSiteTuiSet);
-		validTuiSet.addAll(procedureTuiSet);
-		validTuiSet.addAll(disorderTuiSet);
-		validTuiSet.addAll(findingTuiSet);
-	}
+   public UmlsToSnomedConsumerImpl( final UimaContext aCtx, final Properties properties ) throws Exception {
+      // TODO property validation could be done here
+      props = properties;
 
-	
-	/**
-	 * Searches for the Snomed codes that are synonyms of the UMLS concept with CUI <code>umlsCode</code>
-	 * 
-	 * @param umlsCode
-	 * @return Set of SNOMED codes for the given UMLS CUI.
-	 * @throws SQLException, DictionaryException
-	 */
-	protected abstract Set getSnomedCodes(String umlsCode) throws SQLException, DictionaryException;
-	
+      _medicationSet = loadList( props.getProperty( MEDICATION_TUIS_PRP_KEY ) ); // 1
+      _antSiteTuiSet = loadList( props.getProperty( ANT_SITE_TUIS_PRP_KEY ) );   // 6
+      _procedureTuiSet = loadList( props.getProperty( PROCEDURE_TUIS_PRP_KEY ) );// 5
+      _disorderTuiSet = loadList( props.getProperty( DISORDER_TUIS_PRP_KEY ) );  // 2
+      _findingTuiSet = loadList( props.getProperty( FINDING_TUIS_PRP_KEY ) );    // 3  aka sign/symptom
 
-	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnalysisEngineProcessException
-	{
-		try
-		{
+      _validTuiSet.addAll( _medicationSet );
+      _validTuiSet.addAll( _antSiteTuiSet );
+      _validTuiSet.addAll( _procedureTuiSet );
+      _validTuiSet.addAll( _disorderTuiSet );
+      _validTuiSet.addAll( _findingTuiSet );
+   }
 
-			Iterator hitsByOffsetItr = organizeByOffset(lhItr);
-			while (hitsByOffsetItr.hasNext())
-			{
-				Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
 
-				// Iterate over the LookupHit objects and group Snomed codes by NE type
-				// For each NE type for which there is a hit, get all the Snomed codes
-				// that map to the given CUI.
+   /**
+    * Searches for the Snomed codes that are synonyms of the UMLS concept with CUI <code>umlsCode</code>
+    *
+    * @param umlsCode                                   -
+    * @return Set of SNOMED codes for the given UMLS CUI.
+    * @throws SQLException, DictionaryException
+    */
+   protected abstract Set<String> getSnomedCodes( final String umlsCode ) throws SQLException, DictionaryException;
 
-				// Use key "cui,tui" to avoid duplicates at this offset
-				Set cuiTuiSet = new HashSet();
 
-				// key = type of named entity (java.lang.Integer)
-				// val = set of UmlsConcept objects (java.util.Set)
-				Map conceptMap = new HashMap();
-				
-				Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
-				int neBegin = -1;
-				int neEnd = -1;
-				while (lhAtOffsetItr.hasNext())
-				{
-					LookupHit lh = (LookupHit) lhAtOffsetItr.next();
-					neBegin = lh.getStartOffset();
-					neEnd = lh.getEndOffset();
+   public void consumeHits( final JCas jcas, final Iterator lhItr ) throws AnalysisEngineProcessException {
+      try {
+         final String cuiPropKey = props.getProperty( CUI_MF_PRP_KEY );
+         final String tuiPropKey = props.getProperty( TUI_MF_PRP_KEY );
+         final Iterator hitsByOffsetItr = organizeByOffset( lhItr );
+         while ( hitsByOffsetItr.hasNext() ) {
+            final Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
 
-					MetaDataHit mdh = lh.getDictMetaDataHit();
-					String cui = mdh.getMetaFieldValue(props.getProperty(CUI_MF_PRP_KEY));
-					String tui = mdh.getMetaFieldValue(props.getProperty(TUI_MF_PRP_KEY));
-										
-					//String text = lh.getDictMetaDataHit().getMetaFieldValue("text");
-					if (validTuiSet.contains(tui)) 
-					{
-						String cuiTuiKey = getUniqueKey(cui, tui);
-						if (!cuiTuiSet.contains(cuiTuiKey))
-						{
-							cuiTuiSet.add(cuiTuiKey);
-							Set snomedCodeSet = getSnomedCodes(cui);
-							if (snomedCodeSet.size() > 0)
-							{
-								Integer neType = new Integer(getNamedEntityType(tui));
-								Set conceptSet;
-								if (conceptMap.containsKey(neType)) {
-									conceptSet = (Set) conceptMap.get(neType);
-								}
-								else {
-									conceptSet = new HashSet();
-								}
+            // Iterate over the LookupHit objects and group Snomed codes by NE type
+            // For each NE type for which there is a hit, get all the Snomed codes
+            // that map to the given CUI.
 
-								Collection conceptCol = createConceptCol(
-										jcas,
-										cui,
-										tui,
-										snomedCodeSet);
-								conceptSet.addAll(conceptCol);
+            // Use key "cui,tui" to avoid duplicates at this offset
+            final Set<String> cuiTuiSet = new HashSet<String>();
 
-								conceptMap.put(neType, conceptSet);
-							}
-						}
-					}
-				}
+            // key = type of named entity (java.lang.Integer)
+            // val = set of UmlsConcept objects (java.util.Set)
+            final Map<Integer,Set<UmlsConcept>> conceptMap = new HashMap<Integer,Set<UmlsConcept>>();
 
-				Iterator neTypeItr = conceptMap.keySet().iterator();
-				while (neTypeItr.hasNext())
-				{
-					Integer neType = (Integer) neTypeItr.next();
-					Set conceptSet = (Set) conceptMap.get(neType);
+            final Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
+            int neBegin = -1;
+            int neEnd = -1;
+            while ( lhAtOffsetItr.hasNext() ) {
+               final LookupHit lh = (LookupHit) lhAtOffsetItr.next();
+               neBegin = lh.getStartOffset();
+               neEnd = lh.getEndOffset();
 
-					// Skip updating CAS if all Concepts for this type were filtered out
-					// for this span.
-					if (conceptSet.size() > 0) {
-						FSArray conceptArr = new FSArray(jcas, conceptSet.size());
-						int arrIdx = 0;
-						Iterator conceptItr = conceptSet.iterator();
-						while (conceptItr.hasNext())
-						{
-							UmlsConcept uc = (UmlsConcept) conceptItr.next();
-							conceptArr.set(arrIdx, uc);
-							arrIdx++;
-						}
+               final MetaDataHit mdh = lh.getDictMetaDataHit();
+               final String cui = mdh.getMetaFieldValue( cuiPropKey );
+               final String tui = mdh.getMetaFieldValue( tuiPropKey );
 
-						IdentifiedAnnotation neAnnot;
-						if (neType.intValue() == CONST.NE_TYPE_ID_DRUG) {
-							neAnnot = new MedicationEventMention(jcas);	
-						} else {
-							neAnnot = new EntityMention(jcas);	
-						
-						}
+               //String text = lh.getDictMetaDataHit().getMetaFieldValue("text");
+               if ( !_validTuiSet.contains( tui ) ) {
+                  continue;
+               }
+               final String cuiTuiKey = getUniqueKey( cui, tui );
+               if ( cuiTuiSet.contains( cuiTuiKey ) ) {
+                  continue;
+               }
+               cuiTuiSet.add( cuiTuiKey );
+               final Set<String> snomedCodeSet = getSnomedCodes( cui );
+               if ( !snomedCodeSet.isEmpty() ) {
+                  final Integer neType = getNamedEntityType( tui );
+                  Set<UmlsConcept> conceptSet;
+                  if ( conceptMap.containsKey( neType ) ) {
+                     conceptSet = conceptMap.get( neType );
+                  } else {
+                     conceptSet = new HashSet<UmlsConcept>();
+                  }
+                  final Collection<UmlsConcept> conceptCol = createConceptCol( jcas, cui, tui, snomedCodeSet );
+                  conceptSet.addAll( conceptCol );
+                  conceptMap.put( neType, conceptSet );
+               }
+            }
 
-						neAnnot.setTypeID(neType.intValue());
-						neAnnot.setBegin(neBegin);
-						neAnnot.setEnd(neEnd);
-						neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
-						neAnnot.setOntologyConceptArr(conceptArr);
-						neAnnot.addToIndexes();
-					}
-					
-				}
-			}
-		}
-		catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
-		}
-	}
+            final Collection<Integer> conceptKeys = conceptMap.keySet();
+            for ( Integer conceptKey : conceptKeys ) {
+               final Set<UmlsConcept> conceptSet = conceptMap.get( conceptKey );
 
-	private int getNamedEntityType(String tui) throws Exception
-	{
-		if (disorderTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_DISORDER;
-		}
-		else if (findingTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_FINDING;
-		}
-		else if (antSiteTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
-		}
-		else if (procedureTuiSet.contains(tui)) {
-			return CONST.NE_TYPE_ID_PROCEDURE;
-		}
-		else {
-			throw new Exception("TUI is not part of valid named entity types: "
-					+ tui);
-		}
-	}
+               // Skip updating CAS if all Concepts for this type were filtered out
+               // for this span.
+               if ( !conceptSet.isEmpty() ) {
+                  FSArray conceptArr = new FSArray( jcas, conceptSet.size() );
+                  int arrIdx = 0;
+                  for ( UmlsConcept umlsConcept : conceptSet ) {
+                     conceptArr.set( arrIdx, umlsConcept );
+                     arrIdx++;
+                  }
 
-	/**
-	 * For each SNOMED code, create a corresponding JCas UmlsConcept object and
-	 * store in a Collection.
-	 * 
-	 * @param jcas
-	 * @param snomedCodesCol
-	 * @return
-	 */
-	private Collection createConceptCol(JCas jcas, String cui, String tui,
-			Collection snomedCodesCol)
-	{
-		List conceptList = new ArrayList();
-		Iterator codeItr = snomedCodesCol.iterator();
-		while (codeItr.hasNext())
-		{
-			String snomedCode = (String) codeItr.next();
-			UmlsConcept uc = new UmlsConcept(jcas);
-			uc.setCode(snomedCode);
-			uc.setCodingScheme(props.getProperty(CODING_SCHEME_PRP_KEY));
-			uc.setCui(cui);
-			uc.setTui(tui);
-			conceptList.add(uc);
-		}
-		return conceptList;
-	}
+                  IdentifiedAnnotation neAnnot;
+                  if ( conceptKey == CONST.NE_TYPE_ID_DRUG ) {
+                     neAnnot = new MedicationEventMention( jcas );
+                  } else {
+                     neAnnot = new EntityMention( jcas );
+                  }
+                  neAnnot.setTypeID( conceptKey );
+                  neAnnot.setBegin( neBegin );
+                  neAnnot.setEnd( neEnd );
+                  neAnnot.setDiscoveryTechnique( CONST.NE_DISCOVERY_TECH_DICT_LOOKUP );
+                  neAnnot.setOntologyConceptArr( conceptArr );
+                  neAnnot.addToIndexes();
+               }
+            }
+         }
+      } catch ( Exception e ) {
+         throw new AnalysisEngineProcessException( e );
+      }
+   }
 
-	private String getUniqueKey(String cui, String tui)
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append(cui);
-		sb.append(':');
-		sb.append(tui);
-		return sb.toString();
-	}
+   private int getNamedEntityType( final String tui ) throws IllegalArgumentException {
+      if ( _medicationSet.contains( tui ) ) {
+         return CONST.NE_TYPE_ID_DRUG;
+      } else if ( _disorderTuiSet.contains( tui ) ) {
+         return CONST.NE_TYPE_ID_DISORDER;
+      } else if ( _findingTuiSet.contains( tui ) ) {
+         return CONST.NE_TYPE_ID_FINDING;
+      } else if ( _antSiteTuiSet.contains( tui ) ) {
+         return CONST.NE_TYPE_ID_ANATOMICAL_SITE;
+      } else if ( _procedureTuiSet.contains( tui ) ) {
+         return CONST.NE_TYPE_ID_PROCEDURE;
+      } else {
+         throw new IllegalArgumentException( "TUI is not part of valid named entity types: " + tui );
+      }
+   }
 
-	/**
-	 * Load a comma delimited list
-	 * @param delimitedString
-	 * @return
-	 */
-	private Set loadList(String delimitedString)
-	{
-		String[] stringArr = delimitedString.split(",");
-		Set stringSet = new HashSet();
-		for (int i = 0; i < stringArr.length; i++)
-		{
-			String s = stringArr[i].trim();
-			if (s.length() > 0)
-			{
-				stringSet.add(s);
-			}
-		}
-		return stringSet;
-	}
+   /**
+    * For each SNOMED code, create a corresponding JCas UmlsConcept object and
+    * store in a Collection.
+    *
+    * @param jcas -
+    * @param snomedCodesCol -
+    * @return -
+    */
+   private Collection<UmlsConcept> createConceptCol( final JCas jcas, final String cui, final String tui,
+                                        final Collection<String> snomedCodesCol ) {
+      final String codingSchemeKey = props.getProperty( CODING_SCHEME_PRP_KEY );
+      final List<UmlsConcept> conceptList = new ArrayList<UmlsConcept>();
+      for ( String snomedCode : snomedCodesCol ) {
+         final UmlsConcept uc = new UmlsConcept( jcas );
+         uc.setCode( snomedCode );
+         uc.setCodingScheme( codingSchemeKey );
+         uc.setCui( cui );
+         uc.setTui( tui );
+         conceptList.add( uc );
+      }
+      return conceptList;
+   }
+
+   private String getUniqueKey( final String cui, final String tui ) {
+      final StringBuilder sb = new StringBuilder();
+      sb.append( cui );
+      sb.append( ':' );
+      sb.append( tui );
+      return sb.toString();
+   }
+
+   /**
+    * Load a comma delimited list
+    *
+    * @param delimitedString -
+    * @return -
+    */
+   private Set<String> loadList( final String delimitedString ) {
+      if ( delimitedString == null || delimitedString.isEmpty() ) {
+         return Collections.emptySet();
+      }
+      final String[] stringArray = delimitedString.split( "," );
+      final Set<String> stringSet = new HashSet<String>();
+      for ( String text : stringArray ) {
+         final String trimText = text.trim();
+         if ( !trimText.isEmpty() ) {
+            stringSet.add( trimText );
+         }
+      }
+      return stringSet;
+   }
 }

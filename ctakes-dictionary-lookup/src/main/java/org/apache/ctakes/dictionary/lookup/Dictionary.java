@@ -47,5 +47,5 @@ public interface Dictionary
      * @return Collection of MetaDataHit objects.
      * @throws DictionaryException
      */
-    public Collection getEntries(String text) throws DictionaryException;
+    public Collection<MetaDataHit> getEntries(String text) throws DictionaryException;
 }

@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
 import org.apache.ctakes.dictionary.lookup.algorithms.LookupAlgorithm;
+import org.apache.ctakes.dictionary.lookup.vo.LookupAnnotation;
+import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
 import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -52,7 +54,7 @@ public interface LookupInitializer
      * @return Iterator over LookupToken objects.
      * @throws AnnotatorInitializationException
      */
-    public Iterator getLookupTokenIterator(JCas jcas)
+    public Iterator<LookupToken> getLookupTokenIterator(JCas jcas)
             throws AnnotatorInitializationException;
 
     /**
@@ -66,7 +68,7 @@ public interface LookupInitializer
      *         representing a window.
      * @throws AnnotatorInitializationException
      */
-    public Iterator getLookupWindowIterator(JCas jcas)
+    public Iterator<Annotation> getLookupWindowIterator(JCas jcas)
             throws AnnotatorInitializationException;
 
     /**
@@ -78,7 +80,7 @@ public interface LookupInitializer
      * @return List over tokens that are in the window specified.
      * @throws AnnotatorInitializationException
      */
-    public List getSortedLookupTokens(JCas jcas, Annotation annotation) throws AnnotatorInitializationException;
+    public List<LookupToken> getSortedLookupTokens(JCas jcas, Annotation annotation) throws AnnotatorInitializationException;
     
     /**
      * Gets the LookupAlgorithm to be used to perform the lookup operations.
@@ -101,6 +103,6 @@ public interface LookupInitializer
      * @param windowEnd
      * @return
      */
-    public Map getContextMap(JCas jcas, int windowBegin, int windowEnd)
+    public Map<String,List<LookupAnnotation>> getContextMap(JCas jcas, int windowBegin, int windowEnd)
             throws AnnotatorInitializationException;
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.ctakes.dictionary.lookup.filter;
 
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+
 import java.util.Collection;
 
 /**
@@ -36,5 +38,5 @@ public interface CollectionFilter
      * @param metaDataHitCol
      * @throws FilterException
      */
-    public Collection applyFilter(Collection metaDataHitCol) throws FilterException;    
+    public Collection<MetaDataHit> applyFilter(Collection<MetaDataHit> metaDataHitCol) throws FilterException;
 }
