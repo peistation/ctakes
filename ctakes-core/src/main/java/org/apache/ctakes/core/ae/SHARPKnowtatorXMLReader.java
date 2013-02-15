@@ -743,23 +743,23 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         idAnnotationMap.put(annotation.id, eventMention);
 
       } else if ("DOCTIME".equals(annotation.type)) {
-        // TODO: how do we specify that this is the document creation time?
         TimeMention timeMention = new TimeMention(jCas, coveringSpan.begin, coveringSpan.end);
+        timeMention.setTimeClass(annotation.type);
         timeMention.addToIndexes();
         idAnnotationMap.put(annotation.id, timeMention);
 
       } else if ("SECTIONTIME".equals(annotation.type)) {
-        // TODO: how do we specify that this is a section time?
         TimeMention timeMention = new TimeMention(jCas, coveringSpan.begin, coveringSpan.end);
+        timeMention.setTimeClass(annotation.type);
         timeMention.addToIndexes();
         idAnnotationMap.put(annotation.id, timeMention);
 
       } else if ("TIMEX3".equals(annotation.type)) {
         String timexClass = stringSlots.remove("class");
         TimeMention timeMention = new TimeMention(jCas, coveringSpan.begin, coveringSpan.end);
+        timeMention.setTimeClass(timexClass);
         timeMention.addToIndexes();
         idAnnotationMap.put(annotation.id, timeMention);
-        // TODO
         
       } else if ("conditional_class".equals(annotation.type)) {
         Boolean value = booleanSlots.remove("conditional_normalization");
