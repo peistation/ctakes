@@ -1201,30 +1201,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
-      } else if ("Attributes_lab".equals(annotation.type)) {
-        // TODO: what does this even mean?
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Temporal".equals(annotation.type)) {
-        // TODO: what does this even mean?
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if (":THING".equals(annotation.type)) {
-        // TODO: what does this even mean?
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
-      } else if ("Entities".equals(annotation.type)) {
-        // TODO: what does this even mean?
-        Modifier modifier = new Modifier(jCas, coveringSpan.begin, coveringSpan.end);
-        modifier.addToIndexes();
-        idAnnotationMap.put(annotation.id, modifier);
-
       } else if (eventRelationTypes.contains(annotation.type)) {
         // store the ALINK information for later, once all annotations are in the CAS
         DelayedRelation relation = new DelayedRelation();
@@ -1248,10 +1224,10 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         delayedRelations.add(relation);
 
       } else {
-        throw new UnsupportedOperationException(String.format(
-            "unrecognized type '%s' in %s",
+        LOGGER.error(String.format(
+            "unrecognized type '%s' for annotation with id \"%s\"",
             annotation.type,
-            knowtatorURI));
+            annotation.id));
       }
 
       // make sure all slots have been consumed
