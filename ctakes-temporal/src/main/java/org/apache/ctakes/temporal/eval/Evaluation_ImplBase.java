@@ -106,6 +106,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
     @Option(longName = "patients")
     public CommandLine.IntegerRanges getPatients();
+    
+    @Option(longName = "print-errors", defaultValue="false")
+    public boolean getPrintErrors();
   }
 
   protected File rawTextDirectory;
@@ -116,6 +119,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   private boolean xmiExists;
 
+  protected boolean printErrors;
+  
   public Evaluation_ImplBase(
       File baseDirectory,
       File rawTextDirectory,

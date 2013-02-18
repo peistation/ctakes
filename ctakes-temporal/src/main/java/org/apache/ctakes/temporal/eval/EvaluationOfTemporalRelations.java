@@ -20,8 +20,10 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
 import org.apache.ctakes.temporal.ae.EventTimeRelationAnnotator;
@@ -49,6 +51,7 @@ import org.uimafit.util.JCasUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.lexicalscope.jewel.cli.CliFactory;
 
 public class EvaluationOfTemporalRelations extends
@@ -63,7 +66,8 @@ public class EvaluationOfTemporalRelations extends
         new File("target/eval/temporal-relations"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
-        options.getXMIDirectory());
+        options.getXMIDirectory(),
+        options.getPrintErrors());
     evaluation.prepareXMIsFor(patientSets);
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
@@ -73,8 +77,10 @@ public class EvaluationOfTemporalRelations extends
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      File xmiDirectory) {
+      File xmiDirectory,
+      boolean printErrors) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
+    this.printErrors = printErrors;
   }
 
   @Override
@@ -88,7 +94,7 @@ public class EvaluationOfTemporalRelations extends
         directory,
         1.0));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
-    JarClassifierBuilder.trainAndPackage(directory, "-c", "1000");
+    JarClassifierBuilder.trainAndPackage(directory, "-t", "2", "-d", "2", "-c", "10");
   }
 
   @Override
@@ -125,8 +131,52 @@ public class EvaluationOfTemporalRelations extends
           systemView,
           BinaryTextRelation.class);
       stats.add(goldRelations, systemRelations, getSpan, getOutcome);
+      
+      if(this.printErrors){
+    	  Map<HashableArguments, BinaryTextRelation> goldMap = Maps.newHashMap();
+    	  for (BinaryTextRelation relation : goldRelations) {
+    		  goldMap.put(new HashableArguments(relation), relation);
+    	  }
+    	  Map<HashableArguments, BinaryTextRelation> systemMap = Maps.newHashMap();
+    	  for (BinaryTextRelation relation : systemRelations) {
+    		  systemMap.put(new HashableArguments(relation), relation);
+    	  }
+    	  Set<HashableArguments> all = Sets.union(goldMap.keySet(), systemMap.keySet());
+    	  List<HashableArguments> sorted = Lists.newArrayList(all);
+    	  Collections.sort(sorted);
+    	  for (HashableArguments key : sorted) {
+    		  BinaryTextRelation goldRelation = goldMap.get(key);
+    		  BinaryTextRelation systemRelation = systemMap.get(key);
+    		  if (goldRelation == null) {
+    			  System.out.println("System added: " + formatRelation(systemRelation));
+    		  } else if (systemRelation == null) {
+    			  System.out.println("System dropped: " + formatRelation(goldRelation));
+    		  } else if (!systemRelation.getCategory().equals(goldRelation.getCategory())) {
+    			  String label = systemRelation.getCategory();
+    			  System.out.printf("System labeled %s for %s\n", label, formatRelation(systemRelation));
+    		  }
+    	  }
+      }
     }
     return stats;
+  }
+
+  private static String formatRelation(BinaryTextRelation relation) {
+	  IdentifiedAnnotation arg1 = (IdentifiedAnnotation)relation.getArg1().getArgument();
+	  IdentifiedAnnotation arg2 = (IdentifiedAnnotation)relation.getArg2().getArgument();
+	  String text = arg1.getCAS().getDocumentText();
+	  int begin = Math.min(arg1.getBegin(), arg2.getBegin());
+	  int end = Math.max(arg1.getBegin(), arg2.getBegin());
+	  begin = Math.max(0, begin - 50);
+	  end = Math.min(text.length(), end + 50);
+	  return String.format(
+			  "%s(%s(type=%d), %s(type=%d)) in ...%s...",
+			  relation.getCategory(),
+			  arg1.getCoveredText(),
+			  arg1.getTypeID(),
+			  arg2.getCoveredText(),
+			  arg2.getTypeID(),
+			  text.substring(begin, end).replaceAll("[\r\n]", " "));
   }
 
   public static class RemoveNonTLINKRelations extends JCasAnnotator_ImplBase {
