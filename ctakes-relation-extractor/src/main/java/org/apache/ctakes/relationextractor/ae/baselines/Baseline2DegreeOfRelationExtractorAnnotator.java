@@ -54,12 +54,9 @@ public class Baseline2DegreeOfRelationExtractorAnnotator extends RelationExtract
 		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
 		
     // look for sentences with multiple modifiers/arg2s and a single entity/arg1
-		if(! (modifiers.size() > 1 && entities.size() == 1)) {
+		if(! (modifiers.size() >= 1 && entities.size() == 1)) {
 		  return new ArrayList<IdentifiedAnnotationPair>();
 		}
-		
-		// TODO: it seems like we never get here
-		//       i.e. no sentences with multiple modifiers and a single entity
 		
 		List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
 		for (EntityMention entity : entities) {

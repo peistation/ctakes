@@ -77,7 +77,7 @@ public class Baseline2EntityMentionPairRelationExtractorAnnotator extends Relati
 		    legitimateArg2Count++;
 		  }
 		}
-		if(! (legitimateArg1Count > 1 && legitimateArg2Count == 1)) {
+		if(! (legitimateArg1Count >= 1 && legitimateArg2Count == 1)) {
 		  return new ArrayList<IdentifiedAnnotationPair>();
 		}
 		
