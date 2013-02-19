@@ -66,7 +66,8 @@ public class SystemTemporalRelationPrinter extends
         new File("target/eval/temporal-relations"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
-        options.getXMIDirectory());
+        options.getXMIDirectory(),
+        options.getPrintErrors());
 
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
     System.err.println(stats);
@@ -76,8 +77,9 @@ public class SystemTemporalRelationPrinter extends
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
+      File xmiDirectory,
+      boolean printErrors) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, printErrors);
   }
 
   @Override
