@@ -138,35 +138,35 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
     public File evaluationOutputDirectory;
         
     @Option(
-            name = "--run-polarity",
-            usage = "specify whether polarity processing should be run (true or false). default: true",
+            name = "--ignore-polarity",
+            usage = "specify whether polarity processing should be ignored (true or false). default: false",
             required = false)
-    public boolean runPolarity = true;
+    public boolean ignorePolarity = false; // note that this is reversed from the "ignore" statement
         
     @Option(
-            name = "--run-conditional",
-            usage = "specify whether conditional processing should be run (true or false). default: true",
+            name = "--ignore-conditional",
+            usage = "specify whether conditional processing should be ignored (true or false). default: false",
             required = false)
-    public boolean runConditional = true;
+    public boolean ignoreConditional = false;
         
     @Option(
-            name = "--run-uncertainty",
-            usage = "specify whether uncertainty processing should be run (true or false). default: true",
+            name = "--ignore-uncertainty",
+            usage = "specify whether uncertainty processing should be ignored (true or false). default: false",
             required = false)
-    public boolean runUncertainty = true;
+    public boolean ignoreUncertainty = false;
         
     @Option(
-            name = "--run-subject",
-            usage = "specify whether subject processing should be run (true or false). default: true",
+            name = "--ignore-subject",
+            usage = "specify whether subject processing should be ignored (true or false). default: false",
             required = false,
             handler=BooleanOptionHandler.class)
-    public boolean runSubject = true;
+    public boolean ignoreSubject = false;
         
     @Option(
-            name = "--run-generic",
-            usage = "specify whether generic processing should be run (true or false). default: true",
+            name = "--ignore-generic",
+            usage = "specify whether generic processing should be ignored (true or false). default: false",
             required = false)
-    public boolean runGeneric = true;
+    public boolean ignoreGeneric = false;
         
     @Option(
             name = "--cross-validation",
@@ -246,11 +246,11 @@ protected static Options options = new Options();
 
     //String [] annotationTypes = { "polarity", "conditional", "uncertainty", "subject", "generic" };
     ArrayList<String> annotationTypes = new ArrayList<String>();
-    if (options.runPolarity) { annotationTypes.add("polarity"); }
-    if (options.runConditional) { annotationTypes.add("conditional"); }
-    if (options.runUncertainty) { annotationTypes.add("uncertainty"); }
-    if (options.runSubject) { annotationTypes.add("subject"); }
-    if (options.runGeneric) { annotationTypes.add("generic"); }
+    if (!options.ignorePolarity) { annotationTypes.add("polarity"); }
+    if (!options.ignoreConditional) { annotationTypes.add("conditional"); }
+    if (!options.ignoreUncertainty) { annotationTypes.add("uncertainty"); }
+    if (!options.ignoreSubject) { annotationTypes.add("subject"); }
+    if (!options.ignoreGeneric) { annotationTypes.add("generic"); }
     
     AssertionEvaluation evaluation = new AssertionEvaluation(
         modelsDir,
@@ -318,21 +318,21 @@ protected static Options options = new Options();
 	    "test dir: %s%n" + 
 	    "model dir: %s%n" +
 	    "cross-validation: %d%n" +
-	    "run polarity: %b%n" +
-	    "run conditional: %b%n" +
-	    "run uncertainty: %b%n" +
-	    "run subject: %b%n" +
-	    "run generic: %b%n" +
+	    "ignore polarity: %b%n" +
+	    "ignore conditional: %b%n" +
+	    "ignore uncertainty: %b%n" +
+	    "ignore subject: %b%n" +
+	    "ignore generic: %b%n" +
 	    "%n%n",
 	    options.trainDirectory.getAbsolutePath(),
 	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
 	    options.modelsDirectory.getAbsolutePath(),
 	    options.crossValidationFolds,
-	    options.runPolarity,
-	    options.runConditional,
-	    options.runUncertainty,
-	    options.runSubject,
-	    options.runGeneric
+	    options.ignorePolarity,
+	    options.ignoreConditional,
+	    options.ignoreUncertainty,
+	    options.ignoreSubject,
+	    options.ignoreGeneric
 	    );
   }
 
@@ -446,7 +446,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
         AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
     builder.add(cuePhraseLookupAnnotator);
 
-    if (options.runPolarity)
+    if (!options.ignorePolarity)
     {
 	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 	    ConfigurationParameterFactory.addConfigurationParameters(
@@ -461,7 +461,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    builder.add(polarityAnnotator);
     }
 
-    if (options.runConditional)
+    if (!options.ignoreConditional)
     {
 	    AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 	    ConfigurationParameterFactory.addConfigurationParameters(
@@ -476,7 +476,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    builder.add(conditionalAnnotator);
     }
 
-    if (options.runUncertainty)
+    if (!options.ignoreUncertainty)
     {
 	    AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 	    ConfigurationParameterFactory.addConfigurationParameters(
@@ -491,7 +491,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    builder.add(uncertaintyAnnotator);
     }
 
-    if (options.runSubject)
+    if (!options.ignoreSubject)
     {
 	    AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 	    ConfigurationParameterFactory.addConfigurationParameters(
@@ -506,7 +506,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    builder.add(subjectAnnotator);
     }
 
-    if (options.runGeneric)
+    if (!options.ignoreGeneric)
     {
 		AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(
@@ -594,27 +594,27 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     AnnotationStatistics genericStats = new AnnotationStatistics();
     
     Map<String, AnnotationStatistics> map = new TreeMap<String, AnnotationStatistics>(); 
-    if (options.runPolarity)
+    if (!options.ignorePolarity)
     {
       map.put("polarity",  polarityStats);
     }
 
-    if (options.runConditional)
+    if (!options.ignoreConditional)
     {
       map.put("conditional",  conditionalStats);
     }
 
-    if (options.runUncertainty)
+    if (!options.ignoreUncertainty)
     {
       map.put("uncertainty",  uncertaintyStats);
     }
 
-    if (options.runSubject)
+    if (!options.ignoreSubject)
     {
       map.put("subject", subjectStats);
     }
 
-    if (options.runGeneric)
+    if (!options.ignoreGeneric)
     {
       map.put("generic", genericStats);
     }
@@ -644,35 +644,35 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       systemEntitiesAndEvents.addAll(systemEvents);
 //      System.out.format("system entities: %d%nsystem events: %d%n%n", systemEntities.size(), systemEvents.size());
       
-      if (options.runPolarity)
+      if (!options.ignorePolarity)
       {
 	      polarityStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
       }
 
-      if (options.runConditional)
+      if (!options.ignoreConditional)
       {
 	      conditionalStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("conditional"));
       }
 
-      if (options.runUncertainty)
+      if (!options.ignoreUncertainty)
       {
 	      uncertaintyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
       }
 
-      if (options.runSubject)
+      if (!options.ignoreSubject)
       {
 	      subjectStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("subject"));
       }
 
-      if (options.runGeneric)
+      if (!options.ignoreGeneric)
       {
 	      genericStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
@@ -746,7 +746,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 	builder.add(mayoZonerAnnotator);
 
 	// RUN THE CLEARTK CLASSIFIERS
-	if (options.runPolarity)
+	if (!options.ignorePolarity)
 	{
 		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(
@@ -759,7 +759,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		builder.add(polarityAnnotator);
 	}
 
-	if (options.runConditional)
+	if (!options.ignoreConditional)
 	{
 		AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(
@@ -772,7 +772,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		builder.add(conditionalAnnotator);
 	}
 
-	if (options.runUncertainty)
+	if (!options.ignoreUncertainty)
 	{
 		AnalysisEngineDescription uncertaintyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(UncertaintyCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(
@@ -785,7 +785,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		builder.add(uncertaintyAnnotator);
 	}
 
-	if (options.runSubject)
+	if (!options.ignoreSubject)
 	{
 		AnalysisEngineDescription subjectAnnotator = AnalysisEngineFactory.createPrimitiveDescription(SubjectCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(
@@ -798,7 +798,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		builder.add(subjectAnnotator);
 	}
 
-	if (options.runGeneric)
+	if (!options.ignoreGeneric)
 	{
 		AnalysisEngineDescription genericAnnotator = AnalysisEngineFactory.createPrimitiveDescription(GenericCleartkAnalysisEngine.class); //,  this.additionalParamemters);
 		ConfigurationParameterFactory.addConfigurationParameters(

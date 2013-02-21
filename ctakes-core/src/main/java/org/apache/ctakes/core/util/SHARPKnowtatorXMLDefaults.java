@@ -25,6 +25,10 @@ public class SHARPKnowtatorXMLDefaults {
 		return CONST.ATTR_SUBJECT_PATIENT;
 	}
 
+	public static int getHistoryOf() {
+		return CONST.NE_HISTORY_OF_ABSENT;
+	}
+
 //	public static String getSubject(Map<String, KnowtatorAnnotation> annotationSlots) {
 //		if (annotationSlots.get("subject_CU")==null) {
 //			return CONST.ATTR_SUBJECT_PATIENT;

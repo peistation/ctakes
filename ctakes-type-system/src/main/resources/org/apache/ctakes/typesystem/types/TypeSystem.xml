@@ -1519,6 +1519,11 @@ More qualifying information on how the procedure was done.</description>
           <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>historyOf</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>

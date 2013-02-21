@@ -847,11 +847,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String value = stringSlots.remove("historyOf_normalization");
         HistoryOfModifier modifier = new HistoryOfModifier(jCas, coveringSpan.begin, coveringSpan.end);
         if (null == value) {
-          modifier.setIndicated(false);
+          if (setDefaults) modifier.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf());
         } else if ("historyOf_present".equals(value)) {
-          modifier.setIndicated(true);
+          modifier.setHistoryOf(CONST.NE_HISTORY_OF_PRESENT);
         } else if ("historyOf_absent".equals(value)) {
-          modifier.setIndicated(false);
+          modifier.setHistoryOf(CONST.NE_HISTORY_OF_ABSENT);
+        } else if (setDefaults) {
+          modifier.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf());
         } else {
           LOGGER.error(String.format(
               "unrecognized history-of value \"%s\" on annotation with id \"%s\"",
@@ -1295,11 +1297,11 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       }
     });
     KnowtatorAnnotation historyOf = annotationSlots.remove("historyOf_CU");
+//    if (setDefaults && historyOf==null) { mention.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf()); }
     delayedFeatures.add(new DelayedFeature(historyOf) {
       @Override
       protected void setValue(TOP value) {
-        HistoryOfModifier modifier = (HistoryOfModifier) value;
-        // TODO: where do we set the history of?
+        mention.setHistoryOf(((HistoryOfModifier) value).getHistoryOf());
       }
     });
     KnowtatorAnnotation negationIndicator = annotationSlots.remove("negation_indicator_CU");
@@ -1310,6 +1312,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       }
     });
     KnowtatorAnnotation subject = annotationSlots.remove("subject_CU");
+    if (setDefaults && subject==null) { mention.setSubject(SHARPKnowtatorXMLDefaults.getSubject()); }
     delayedFeatures.add(new DelayedFeature(subject) {
       @Override
       protected void setValue(TOP value) {
