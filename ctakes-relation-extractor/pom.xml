@@ -160,10 +160,6 @@
 		<artifactId>ctakes-dictionary-lookup</artifactId>
 	</dependency>
 	<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-clinical-pipeline</artifactId>
-	</dependency>
-	<dependency>
 		<groupId>edu.mit</groupId>
 		<artifactId>jwi</artifactId>
 		<version>2.2.3</version>
