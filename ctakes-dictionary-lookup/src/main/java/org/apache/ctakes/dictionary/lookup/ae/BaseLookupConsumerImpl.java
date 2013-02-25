@@ -18,68 +18,71 @@
  */
 package org.apache.ctakes.dictionary.lookup.ae;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 
+import java.util.*;
+
 
 /**
  * Provides some base functionality for subclasses.
- * 
+ *
  * @author Mayo Clinic
- * 
  */
-public abstract class BaseLookupConsumerImpl implements LookupConsumer
-{
-	/**
-	 * Organizes the LookupHit objects by begin and end offsets.
-	 * 
-	 * @param lhItr
-	 * @return Iterator over Set objects. Each Set object is a collection of
-	 *         LookupHit objects with the same begin,end offsets.
-	 */
-	protected Iterator organizeByOffset(Iterator lhItr)
-	{
-		// key = begin,end key (java.lang.String)
-		// val = Set of LookupHit objects corresponding to begin,end
-		Map m = new HashMap();
+// TODO rename this class properly: AbstractBaseLookupConsumer.  Requires refactoring outside module
+public abstract class BaseLookupConsumerImpl implements LookupConsumer {
+   /**
+    * Organizes the LookupHit objects by begin and end offsets.
+    *
+    * @param lookupHitIterator -
+    * @return Iterator over Set objects. Each Set object is a collection of
+    *         LookupHit objects with the same begin,end offsets.
+    */
+   static protected Iterator organizeByOffset( final Iterator<LookupHit> lookupHitIterator ) {
+      final  Map<LookupHitKey, Set<LookupHit>> lookupHitMap = createLookupHitMap( lookupHitIterator );
+      return lookupHitMap.values().iterator();
+   }
 
-		while (lhItr.hasNext())
-		{
-			LookupHit lh = (LookupHit) lhItr.next();
-			String keyStr = getKeyString(lh.getStartOffset(), lh.getEndOffset());
+   static protected Map<LookupHitKey, Set<LookupHit>> createLookupHitMap( final Iterator<LookupHit> lookupHitIterator ) {
+      final Map<LookupHitKey, Set<LookupHit>> lookupHitMap = new HashMap<LookupHitKey, Set<LookupHit>>();
+      while ( lookupHitIterator.hasNext() ) {
+         final LookupHit lookupHit = lookupHitIterator.next();
+         final LookupHitKey key = new LookupHitKey( lookupHit );
+         Set<LookupHit> lookupHits = lookupHitMap.get( key );
+         if ( lookupHits == null ) {
+            lookupHits = new HashSet<LookupHit>();
+            lookupHitMap.put( key, lookupHits );
+         }
+         lookupHits.add( lookupHit );
+      }
+      return lookupHitMap;
+   }
 
-			Set s = null;
-			if (m.containsKey(keyStr))
-			{
-				s = (Set) m.get(keyStr);
-			}
-			else
-			{
-				s = new HashSet();
-			}
-			s.add(lh);
-			m.put(keyStr, s);
-		}
+   /**
+    * Using a String as a HashMap Key can be slow as
+    * the hashCode is computed per character with each call - ditto for equals
+    */
+   static protected class LookupHitKey {
+      final protected int __start;
+      final protected int __end;
+      final private int __hashCode;
 
-		return m.values().iterator();
-	}
+      private LookupHitKey( final LookupHit lookupHit ) {
+         __start = lookupHit.getStartOffset();
+         __end = lookupHit.getEndOffset();
+         __hashCode = 1000 * __end + __start;
+      }
 
-	private String getKeyString(int begin, int end)
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append(begin);
-		sb.append(',');
-		sb.append(end);
-		return sb.toString();
-	}
+      public int hashCode() {
+         return __hashCode;
+      }
 
-	public abstract void consumeHits(JCas jcas, Iterator lookupHitItr)
-			throws AnalysisEngineProcessException;
+      public boolean equals( final Object object ) {
+         return object instanceof LookupHitKey
+               && __start == ((LookupHitKey) object).__start
+               && __end == ((LookupHitKey) object).__end;
+      }
+   }
+
 }

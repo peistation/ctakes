@@ -18,24 +18,26 @@
  */
 package org.apache.ctakes.dictionary.lookup.filter;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
 /**
- *
  * @author Mayo Clinic
  */
-public class StringPreLookupFilterImpl implements PreLookupFilter
-{
-    private Set iv_strSet;
+@Immutable
+final public class StringPreLookupFilterImpl implements PreLookupFilter {
+   final private Set<String> _strSet;
 
-    public StringPreLookupFilterImpl(Set strSet)
-    {
-        iv_strSet = strSet;
-    }
+   public StringPreLookupFilterImpl( final Set<String> strSet ) {
+      _strSet = strSet;
+   }
 
-    public boolean contains(String text) throws FilterException
-    {
-	    return iv_strSet.contains(text);
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean contains( final String text ) throws FilterException {
+      return _strSet.contains( text );
+   }
 
 }

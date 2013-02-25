@@ -18,56 +18,72 @@
  */
 package org.apache.ctakes.dictionary.lookup.ae;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.ctakes.dictionary.lookup.vo.LookupAnnotation;
 import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @author Mayo Clinic
- * 
  */
-public class LookupAnnotationToJCasAdapter implements LookupAnnotation, LookupToken
-{
-    private Map iv_attrMap = new HashMap();
+public class LookupAnnotationToJCasAdapter implements LookupAnnotation, LookupToken {
 
-    private Annotation iv_jcasAnnotObj;
+   final private Map<String, String> _attributeMap;
+   final private Annotation _jcasAnnotation;
 
-    public LookupAnnotationToJCasAdapter(Annotation jcasAnnotObj)
-    {
-        iv_jcasAnnotObj = jcasAnnotObj;
-    }
+   public LookupAnnotationToJCasAdapter( final Annotation jcasAnnotation ) {
+      _jcasAnnotation = jcasAnnotation;
+      _attributeMap = new HashMap<String, String>();
+   }
 
-    public void addStringAttribute(String attrKey, String attrVal)
-    {
-        iv_attrMap.put(attrKey, attrVal);
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void addStringAttribute( final String attrKey, final String attrVal ) {
+      _attributeMap.put( attrKey, attrVal );
+   }
 
-    public int getEndOffset()
-    {
-        return iv_jcasAnnotObj.getEnd();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int getEndOffset() {
+      return _jcasAnnotation.getEnd();
+   }
 
-    public int getLength()
-    {
-        return getStartOffset() - getEndOffset();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int getLength() {
+      return getStartOffset() - getEndOffset();
+   }
 
-    public int getStartOffset()
-    {
-        return iv_jcasAnnotObj.getBegin();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int getStartOffset() {
+      return _jcasAnnotation.getBegin();
+   }
 
-    public String getStringAttribute(String attrKey)
-    {
-        return (String) iv_attrMap.get(attrKey);
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getStringAttribute( final String attrKey ) {
+      return _attributeMap.get( attrKey );
+   }
 
-    public String getText()
-    {
-        return iv_jcasAnnotObj.getCoveredText();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getText() {
+      return _jcasAnnotation.getCoveredText();
+   }
 }

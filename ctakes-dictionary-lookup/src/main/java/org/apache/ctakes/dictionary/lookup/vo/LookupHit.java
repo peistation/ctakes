@@ -44,7 +44,7 @@ final public class LookupHit {
       iv_mdh = mdh;
       iv_startOffset = startOffset;
       iv_endOffset = endOffset;
-      _hashCode = mdh.hashCode() * 7 + startOffset * 3 + endOffset;
+      _hashCode = mdh.hashCode() * 7 + 1000 * endOffset + startOffset;
    }
 
    public int getEndOffset() {

@@ -20,8 +20,8 @@ package org.apache.ctakes.dictionary.lookup.ae;
 
 import java.util.Iterator;
 
+import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.analysis_engine.annotator.AnnotatorProcessException;
 import org.apache.uima.jcas.JCas;
 
 /**
@@ -38,13 +38,12 @@ public interface LookupConsumer
 	/**
 	 * Consumes the hits produced by the LookupAnnotator. This typically means
 	 * iterating over the hits and storing what's necessary to the JCas
-	 * @param jcas
-	 *            CAS for storing data
+	 * @param jcas CAS for storing data
 	 * @param lookupHitItr
 	 *            Iterator over LookupHit objects. These objects contain data
 	 *            about the annotation span plus any associated metadata.
-	 * @throws AnnotatorProcessException
+	 * @throws AnalysisEngineProcessException
 	 */
-	public void consumeHits(JCas jcas, Iterator lookupHitItr)
+	public void consumeHits(JCas jcas, Iterator<LookupHit> lookupHitItr)
 			throws AnalysisEngineProcessException;
 }

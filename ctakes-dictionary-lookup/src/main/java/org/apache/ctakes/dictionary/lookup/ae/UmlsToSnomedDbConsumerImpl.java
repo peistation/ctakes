@@ -59,17 +59,9 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
 
    }
 
-
    public UmlsToSnomedDbConsumerImpl( final UimaContext uimaContext, final Properties properties )
          throws Exception {
-      super( uimaContext, properties );
-      final String resourceName = props.getProperty( DB_CONN_RESRC_KEY_PRP_KEY );
-      final JdbcConnectionResource resource = (JdbcConnectionResource) uimaContext.getResourceObject( resourceName );
-
-      final String sqlStatement = props.getProperty( MAP_PREP_STMT_PRP_KEY );
-      final Connection connection = resource.getConnection();
-      _preparedStatement = connection.prepareStatement( sqlStatement );
-
+      this( uimaContext, properties, Integer.MAX_VALUE );
    }
 
    /**
@@ -79,6 +71,7 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
     * @return          -
     * @throws SQLException
     */
+   @Override
    protected Set<String> getSnomedCodes( final String umlsCode ) throws SQLException {
       final Set<String> codeSet = new HashSet<String>();
       _preparedStatement.setString( 1, umlsCode );
@@ -87,6 +80,7 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
          final String snomedCode = rs.getString( 1 ).trim();
          codeSet.add( snomedCode );
       }
+      rs.close();
       return codeSet;
    }
 

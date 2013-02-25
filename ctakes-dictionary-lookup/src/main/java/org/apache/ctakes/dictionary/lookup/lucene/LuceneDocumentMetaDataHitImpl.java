@@ -18,60 +18,59 @@
  */
 package org.apache.ctakes.dictionary.lookup.lucene;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
-import org.apache.ctakes.dictionary.lookup.BaseMetaDataHitImpl;
+import org.apache.ctakes.dictionary.lookup.AbstractBaseMetaDataHit;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableField;
 
+import javax.annotation.concurrent.Immutable;
+import java.util.*;
+
 
 /**
- * 
  * @author Mayo Clinic
  */
-public class LuceneDocumentMetaDataHitImpl extends BaseMetaDataHitImpl
-        implements MetaDataHit
-{
-    private Document iv_doc;
-    private Set iv_nameSet = new HashSet();
-    private Collection iv_valCol = new ArrayList();
+@Immutable
+public final class LuceneDocumentMetaDataHitImpl extends AbstractBaseMetaDataHit implements MetaDataHit {
+   final private Document _luceneDoc;
+   final private Set<String> _nameSet;
+   final private Collection<String> _valueList;
 
-    public LuceneDocumentMetaDataHitImpl(Document luceneDoc)
-    {
-        iv_doc = luceneDoc;
+   public LuceneDocumentMetaDataHitImpl( final Document luceneDoc ) {
+      _luceneDoc = luceneDoc;
+      final List<IndexableField> fieldEnumList = _luceneDoc.getFields();
+      final Set<String> nameSet = new HashSet<String>( fieldEnumList.size() );
+      final List<String> valueList = new ArrayList<String>( fieldEnumList.size() );
+      for ( IndexableField field : fieldEnumList ) {
+         nameSet.add( field.name() );
+         valueList.add( field.stringValue() );
+      }
+      _nameSet = Collections.unmodifiableSet( nameSet );
+      _valueList = Collections.unmodifiableList( valueList );
+   }
 
-        List<IndexableField> fieldEnumList = iv_doc.getFields();
-        
-        ListIterator<IndexableField> fieldEnum = fieldEnumList.listIterator();
-        while (fieldEnum.hasNext())
-        {
-            Field f = (Field) fieldEnum.next();
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getMetaFieldValue( final String metaFieldName ) {
+      return _luceneDoc.get( metaFieldName );
+   }
 
-            iv_nameSet.add(f.name());
-            iv_valCol.add(f.stringValue());
-        }
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Set<String> getMetaFieldNames() {
+      return _nameSet;
+   }
 
-    public String getMetaFieldValue(String metaFieldName)
-    {
-        return iv_doc.get(metaFieldName);
-    }
-
-    public Set getMetaFieldNames()
-    {
-        return iv_nameSet;
-    }
-
-    public Collection getMetaFieldValues()
-    {
-        return iv_valCol;
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<String> getMetaFieldValues() {
+      return _valueList;
+   }
 }

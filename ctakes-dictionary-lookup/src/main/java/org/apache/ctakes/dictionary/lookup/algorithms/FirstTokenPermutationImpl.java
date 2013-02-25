@@ -118,15 +118,6 @@ public class FirstTokenPermutationImpl implements LookupAlgorithm {
       final List<LookupHit> lookupHits = new ArrayList<LookupHit>();
       for ( int currentIndex = 0; currentIndex < lookupTokenList.size(); currentIndex++ ) {
          final LookupToken lookupToken = lookupTokenList.get( currentIndex );
-         // TODO a bug?  Program flow is possibly not performing as expected.
-         // Boolean valueOf() always returns true or false.  If passed a null parameter it returns false.
-         // two lines down a -null return- is treated the same way as true... are we expecting to
-         // perform a certain way if the attribute does not exist, that being the same behavior
-         // as for the attribute being true?  If so, then this is a bug.
-         // I have left the original code, and refactored to use the actual original behavior,
-         // not the original (possible) expected behavior.  12-26-2012 SPF
-         //         Boolean useForLookup = Boolean.valueOf( lookupToken.getStringAttribute( LT_KEY_USE_FOR_LOOKUP ) );
-         //         if ( (useForLookup == null) || (useForLookup.booleanValue()) ) {
          final String useForLookupString = lookupToken.getStringAttribute( LT_KEY_USE_FOR_LOOKUP );
          final boolean useForLookup = Boolean.valueOf( useForLookupString );
          if ( !useForLookup ) {
@@ -204,12 +195,42 @@ public class FirstTokenPermutationImpl implements LookupAlgorithm {
 
       final List<LookupHit> lookupHits = new ArrayList<LookupHit>();
       final LookupToken firstWordLookupToken = wLookupTokenList.get( firstTokenIndex );
+      final int firstWordStartOffset = firstWordLookupToken.getStartOffset();
+      final int firstWordEndOffset = firstWordLookupToken.getEndOffset();
+      final List<LookupToken> singleTokenList = Arrays.asList( firstWordLookupToken );
+      final String[] firstWordPhrases = iv_phrBuilder.getPhrases( singleTokenList );
+      for ( int i=0; i<firstWordPhrases.length; i++ ) {
+         // perform toLowerCase() here instead of in the iterations below 2-21-13 spf
+         firstWordPhrases[i] = firstWordPhrases[i].toLowerCase();
+      }
       int permutationIndex = wLookupTokenList.size();
       if ( firstTokenIndex < wLookupTokenList.size() && permutationIndex > 0 ) {
          permutationIndex--;
       }
       final List<List<Integer>> permutationList = iv_permCacheMap.get( permutationIndex );
       for ( List<Integer> permutations : permutationList ) {
+         // Moved sort and offset calculation from inner (per MetaDataHit) iteration 2-21-2013 spf
+         Collections.sort( permutations );
+         int startOffset = firstWordStartOffset;
+         int endOffset = firstWordEndOffset;
+         if ( !permutations.isEmpty() ) {
+            int firstIdx = permutations.get( 0 );
+            if ( firstIdx <= firstTokenIndex ) {
+               firstIdx--;
+            }
+            final LookupToken firstToken = wLookupTokenList.get( firstIdx );
+            if ( firstToken.getStartOffset() < firstWordStartOffset ) {
+               startOffset = firstToken.getStartOffset();
+            }
+            int lastIdx = permutations.get( permutations.size() - 1 );
+            if ( lastIdx <= firstTokenIndex ) {
+               lastIdx--;
+            }
+            final LookupToken lastToken = wLookupTokenList.get( lastIdx );
+            if ( lastToken.getEndOffset() > firstWordEndOffset ) {
+               endOffset = lastToken.getEndOffset();
+            }
+         }
          // convert permutation idx back into LookupTokens
          final List<LookupToken> tempLookupTokens = new ArrayList<LookupToken>();
          for ( Integer idx : permutations ) {
@@ -219,16 +240,13 @@ public class FirstTokenPermutationImpl implements LookupAlgorithm {
             final LookupToken lookupToken = wLookupTokenList.get( idx );
             tempLookupTokens.add( lookupToken );
          }
-
-         final List<LookupToken> singleTokenList = Arrays.asList( firstWordLookupToken );
-         final String[] firstWordPhrases = iv_phrBuilder.getPhrases( singleTokenList );
          final String[] lookupTokenPhrases = iv_phrBuilder.getPhrases( tempLookupTokens );
          for ( String lookupTokenPhrase : lookupTokenPhrases ) {
-            // perform trim() and toLowerCase() here instead of repeating in each inner loop
+            // perform toLowerCase() here instead of repeating in each inner loop
             lookupTokenPhrase = lookupTokenPhrase.toLowerCase();
             for ( String firstWordPhrase : firstWordPhrases ) {
-               // perform trim() and toLowerCase() here so it isn't done for the whole concatenated string
-               firstWordPhrase = firstWordPhrase.toLowerCase();
+               // perform toLowerCase() here so it isn't done for the whole concatenated string
+//               firstWordPhrase = firstWordPhrase.toLowerCase();
                final StringBuilder phraseSB = new StringBuilder();
                phraseSB.append( firstWordPhrase ).append( ' ' ).append( lookupTokenPhrase );
                final String fullPhrase = phraseSB.toString().trim();
@@ -237,42 +255,6 @@ public class FirstTokenPermutationImpl implements LookupAlgorithm {
                   continue;
                }
                for ( MetaDataHit mdh : mdhSet ) {
-                  // figure out start and end offsets -- does List permutations change per iteration?
-                  // TODO Why is this not extracted?  Why sort for every (inner inner) iteration ?
-                  Collections.sort( permutations );
-
-                  int startOffset;
-                  if ( !permutations.isEmpty() ) {
-                     int firstIdx = permutations.get( 0 );
-                     if ( firstIdx <= firstTokenIndex ) {
-                        firstIdx--;
-                     }
-                     final LookupToken lt = wLookupTokenList.get( firstIdx );
-                     if ( lt.getStartOffset() < firstWordLookupToken.getStartOffset() ) {
-                        startOffset = lt.getStartOffset();
-                     } else {
-                        startOffset = firstWordLookupToken.getStartOffset();
-                     }
-                  } else {
-                     startOffset = firstWordLookupToken.getStartOffset();
-                  }
-
-                  int endOffset;
-                  if ( !permutations.isEmpty() ) {
-                     int lastIdx = permutations.get( permutations.size() - 1 );
-                     if ( lastIdx <= firstTokenIndex ) {
-                        lastIdx--;
-                     }
-                     final LookupToken lt = wLookupTokenList.get( lastIdx );
-                     if ( lt.getEndOffset() > firstWordLookupToken.getEndOffset() ) {
-                        endOffset = lt.getEndOffset();
-                     } else {
-                        endOffset = firstWordLookupToken.getEndOffset();
-                     }
-                  } else {
-                     endOffset = firstWordLookupToken.getEndOffset();
-                  }
-
                   final LookupHit lh = new LookupHit( mdh, startOffset, endOffset );
                   lookupHits.add( lh );
                }

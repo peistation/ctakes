@@ -18,154 +18,110 @@
  */
 package org.apache.ctakes.dictionary.lookup.ae;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
-
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
-
-import org.apache.ctakes.dictionary.lookup.MetaDataHit;
-import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
-import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
-import org.apache.ctakes.typesystem.type.constants.CONST;
+import java.util.*;
 
 /**
  * @author Mayo Clinic
  */
-public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl
-		implements LookupConsumer
-{
+public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl implements LookupConsumer {
 
-	private final String CODE_MF_PRP_KEY = "codeMetaField";
+   private static final String CODE_MF_PRP_KEY = "codeMetaField";
 
-	private final String CODING_SCHEME_PRP_KEY = "codingScheme";
+   private static final String CODING_SCHEME_PRP_KEY = "codingScheme";
 
-	private final String TYPE_ID_FIELD = "typeIdField";
-	
-	private Properties iv_props;
-	
-	private static int iv_maxSize;
+   private static final String TYPE_ID_FIELD = "typeIdField";
 
-	public NamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props, int maxListSize)
-	{
-		// TODO property validation could be done here
-		iv_props = props;
-		iv_maxSize = maxListSize;
-	}
-	public NamedEntityLookupConsumerImpl(UimaContext aCtx, Properties props)
-	{
-		// TODO property validation could be done here
-		iv_props = props;
-	}
+   private final  Properties _properties;
 
-	private int countUniqueCodes(Collection hitsAtOffset) {
-		Iterator lhAtOffsetItr = hitsAtOffset.iterator();
-		Set<String> codes = new HashSet<String>();
-		while (lhAtOffsetItr.hasNext())
-		{
-			LookupHit lh = (LookupHit) lhAtOffsetItr.next();
+   private static int iv_maxSize;
 
-			MetaDataHit mdh = lh.getDictMetaDataHit();
+   public NamedEntityLookupConsumerImpl( final UimaContext aCtx, final Properties props, final int maxListSize ) {
+      // TODO property validation could be done here
+      _properties = props;
+      iv_maxSize = maxListSize;
+   }
 
-			String code = mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY));
-			if (codes.contains(code)) {
-				// don't create a second entry in the array for a code already seen, including null 
-			} else {
-				
-				codes.add(code);
+   public NamedEntityLookupConsumerImpl( final UimaContext aCtx, final Properties props ) {
+      // TODO property validation could be done here
+      _properties = props;
+   }
 
-			}
-		}
-		
-		return codes.size();
-	}
+   private int countUniqueCodes( final Collection<LookupHit> hitsAtOffset ) {
+      final String CODE_MF = _properties.getProperty( CODE_MF_PRP_KEY );
+      final Set<String> codes = new HashSet<String>();
+      for ( LookupHit lookupHit : hitsAtOffset ) {
+         final MetaDataHit mdh = lookupHit.getDictMetaDataHit();
+         final String code = mdh.getMetaFieldValue( CODE_MF );
+         codes.add( code );
+      }
+      return codes.size();
+   }
 
-	
-	public void consumeHits(JCas jcas, Iterator lhItr)
-			throws AnalysisEngineProcessException
-	{
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void consumeHits( final JCas jcas, final Iterator<LookupHit> lhItr ) throws AnalysisEngineProcessException {
+      final String TYPE_ID = _properties.getProperty( TYPE_ID_FIELD );
+      final String CODE_MF = _properties.getProperty( CODE_MF_PRP_KEY );
+      final String CODING_SCHEME = _properties.getProperty( CODING_SCHEME_PRP_KEY );
+      int typeId = CONST.NE_TYPE_ID_UNKNOWN;
+      if ( TYPE_ID != null ) {
+         try {
+            typeId = Integer.parseInt( TYPE_ID );
+         } catch ( NumberFormatException nfe ) {
+            typeId = CONST.NE_TYPE_ID_UNKNOWN;
+         }
+      }
+      final Map<LookupHitKey, Set<LookupHit>> lookupHitMap = createLookupHitMap( lhItr );
+      for ( Map.Entry<LookupHitKey, Set<LookupHit>> entry : lookupHitMap.entrySet() ) {
+         final int uniqueCodeCount = countUniqueCodes( entry.getValue() );
+         final FSArray ocArr = new FSArray( jcas, uniqueCodeCount );
+         // iterate over the LookupHit objects and create
+         // a corresponding JCas OntologyConcept object that will
+         // be placed in a FSArray
+         int ocArrIdx = 0;
+         final Set<String> codes = new HashSet<String>();
+         for ( LookupHit lookupHit : entry.getValue() ) {
+            final MetaDataHit mdh = lookupHit.getDictMetaDataHit();
+            final String code = mdh.getMetaFieldValue( CODE_MF );
+            if ( !codes.contains( code ) ) {
+               // create only first entry in the array for a code
+               final OntologyConcept oc = new OntologyConcept( jcas );
+               oc.setCode( code );
+               oc.setCodingScheme( CODING_SCHEME );
+               ocArr.set( ocArrIdx, oc );
+               ocArrIdx++;
+               codes.add( code );
+            }
+         }
+         IdentifiedAnnotation neAnnot;
+         if ( typeId == CONST.NE_TYPE_ID_DRUG || typeId == CONST.NE_TYPE_ID_UNKNOWN ) {
+            neAnnot = new MedicationEventMention( jcas );
+         } else {
+            neAnnot = new EntityMention( jcas );
+         }
+         final int neBegin = entry.getKey().__start;
+         final int neEnd = entry.getKey().__end;
+         neAnnot.setBegin( neBegin );
+         neAnnot.setEnd( neEnd );
+         neAnnot.setDiscoveryTechnique( CONST.NE_DISCOVERY_TECH_DICT_LOOKUP );
+         neAnnot.setOntologyConceptArr( ocArr );
+         neAnnot.setTypeID( typeId );
+         neAnnot.addToIndexes();
+      }
+   }
 
-		String typeId = null;
-		Iterator hitsByOffsetItr = organizeByOffset(lhItr);
-		while (hitsByOffsetItr.hasNext())
-		{
-			Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
-
-			
-			FSArray ocArr = new FSArray(jcas, countUniqueCodes(hitsAtOffsetCol));
-			
-			int ocArrIdx = 0;
-
-			// iterate over the LookupHit objects and create
-			// a corresponding JCas OntologyConcept object that will
-			// be placed in a FSArray
-			Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
-			int neBegin = -1;
-			int neEnd = -1;
-			Set<String> codes = new HashSet<String>();
-			while (lhAtOffsetItr.hasNext())
-			{
-				LookupHit lh = (LookupHit) lhAtOffsetItr.next();
-				neBegin = lh.getStartOffset();
-				neEnd = lh.getEndOffset();
-
-				MetaDataHit mdh = lh.getDictMetaDataHit();
-
-				String code = mdh.getMetaFieldValue(iv_props.getProperty(CODE_MF_PRP_KEY));
-				if (codes.contains(code)) {
-					// don't create a second entry in the array for a code already seen, including null 
-				} else {
-					
-					OntologyConcept oc = new OntologyConcept(jcas);
-					oc.setCode(code);
-					oc.setCodingScheme(iv_props.getProperty(CODING_SCHEME_PRP_KEY));
-
-					if(iv_props.getProperty(TYPE_ID_FIELD) != null) {
-						typeId = iv_props.getProperty(TYPE_ID_FIELD);//mdh.getMetaFieldValue(iv_props.getProperty(TYPE_ID_FIELD));
-					}
-					
-					ocArr.set(ocArrIdx, oc);
-					ocArrIdx++;
-
-					codes.add(code);
-
-				}
-			}
-
-			int tid=CONST.NE_TYPE_ID_UNKNOWN;
-			if(typeId != null){
-				try { 
-					tid = Integer.parseInt(typeId);
-				} catch ( NumberFormatException nfe ) {
-					tid = CONST.NE_TYPE_ID_UNKNOWN;
-				}
-				
-			}
-
-			IdentifiedAnnotation neAnnot;
-			if (tid == CONST.NE_TYPE_ID_DRUG || tid == CONST.NE_TYPE_ID_UNKNOWN) {
-				neAnnot = new MedicationEventMention(jcas);	
-			} else {
-				neAnnot = new EntityMention(jcas);	
-			
-			}
-			
-			neAnnot.setBegin(neBegin);
-			neAnnot.setEnd(neEnd);
-			neAnnot.setDiscoveryTechnique(CONST.NE_DISCOVERY_TECH_DICT_LOOKUP);
-			neAnnot.setOntologyConceptArr(ocArr);
-			neAnnot.setTypeID(tid);
-			neAnnot.addToIndexes();			
-		}
-	}
 }

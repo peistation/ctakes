@@ -42,8 +42,7 @@ import java.util.*;
  *
  * @author Mayo Clinic
  */
-public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl implements
-                                                                              LookupConsumer {
+public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl implements LookupConsumer {
 
    static private final String CUI_MF_PRP_KEY = "cuiMetaField";
    static private final String TUI_MF_PRP_KEY = "tuiMetaField";
@@ -94,37 +93,125 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
    protected abstract Set<String> getSnomedCodes( final String umlsCode ) throws SQLException, DictionaryException;
 
 
-   public void consumeHits( final JCas jcas, final Iterator lhItr ) throws AnalysisEngineProcessException {
+//   /**
+//    * {@inheritDoc}
+//    */
+//   @Override
+//   public void consumeHits( final JCas jcas, final Iterator<LookupHit> lhItr ) throws AnalysisEngineProcessException {
+//      try {
+//         final String cuiPropKey = props.getProperty( CUI_MF_PRP_KEY );
+//         final String tuiPropKey = props.getProperty( TUI_MF_PRP_KEY );
+//         final Iterator hitsByOffsetItr = organizeByOffset( lhItr );
+//         while ( hitsByOffsetItr.hasNext() ) {
+//            final Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
+//
+//            // Iterate over the LookupHit objects and group Snomed codes by NE type
+//            // For each NE type for which there is a hit, get all the Snomed codes
+//            // that map to the given CUI.
+//
+//            // Use key "cui,tui" to avoid duplicates at this offset
+//            final Set<String> cuiTuiSet = new HashSet<String>();
+//
+//            // key = type of named entity (java.lang.Integer)
+//            // val = set of UmlsConcept objects (java.util.Set)
+//            final Map<Integer,Set<UmlsConcept>> conceptMap = new HashMap<Integer,Set<UmlsConcept>>();
+//
+//            final Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
+//            int neBegin = -1;
+//            int neEnd = -1;
+//            while ( lhAtOffsetItr.hasNext() ) {
+//               final LookupHit lh = (LookupHit) lhAtOffsetItr.next();
+//               neBegin = lh.getStartOffset();
+//               neEnd = lh.getEndOffset();
+//
+//               final MetaDataHit mdh = lh.getDictMetaDataHit();
+//               final String cui = mdh.getMetaFieldValue( cuiPropKey );
+//               final String tui = mdh.getMetaFieldValue( tuiPropKey );
+//
+//               //String text = lh.getDictMetaDataHit().getMetaFieldValue("text");
+//               if ( !_validTuiSet.contains( tui ) ) {
+//                  continue;
+//               }
+//               final String cuiTuiKey = getUniqueKey( cui, tui );
+//               if ( cuiTuiSet.contains( cuiTuiKey ) ) {
+//                  continue;
+//               }
+//               cuiTuiSet.add( cuiTuiKey );
+//               final Set<String> snomedCodeSet = getSnomedCodes( cui );
+//               if ( !snomedCodeSet.isEmpty() ) {
+//                  final Integer neType = getNamedEntityType( tui );
+//                  Set<UmlsConcept> conceptSet;
+//                  if ( conceptMap.containsKey( neType ) ) {
+//                     conceptSet = conceptMap.get( neType );
+//                  } else {
+//                     conceptSet = new HashSet<UmlsConcept>();
+//                  }
+//                  final Collection<UmlsConcept> conceptCol = createConceptCol( jcas, cui, tui, snomedCodeSet );
+//                  conceptSet.addAll( conceptCol );
+//                  conceptMap.put( neType, conceptSet );
+//               }
+//            }
+//
+//            final Collection<Integer> conceptKeys = conceptMap.keySet();
+//            for ( Integer conceptKey : conceptKeys ) {
+//               final Set<UmlsConcept> conceptSet = conceptMap.get( conceptKey );
+//
+//               // Skip updating CAS if all Concepts for this type were filtered out
+//               // for this span.
+//               if ( !conceptSet.isEmpty() ) {
+//                  FSArray conceptArr = new FSArray( jcas, conceptSet.size() );
+//                  int arrIdx = 0;
+//                  for ( UmlsConcept umlsConcept : conceptSet ) {
+//                     conceptArr.set( arrIdx, umlsConcept );
+//                     arrIdx++;
+//                  }
+//
+//                  IdentifiedAnnotation neAnnot;
+//                  if ( conceptKey == CONST.NE_TYPE_ID_DRUG ) {
+//                     neAnnot = new MedicationEventMention( jcas );
+//                  } else {
+//                     neAnnot = new EntityMention( jcas );
+//                  }
+//                  neAnnot.setTypeID( conceptKey );
+//                  neAnnot.setBegin( neBegin );
+//                  neAnnot.setEnd( neEnd );
+//                  neAnnot.setDiscoveryTechnique( CONST.NE_DISCOVERY_TECH_DICT_LOOKUP );
+//                  neAnnot.setOntologyConceptArr( conceptArr );
+//                  neAnnot.addToIndexes();
+//               }
+//            }
+//         }
+//      } catch ( Exception e ) {
+//         throw new AnalysisEngineProcessException( e );
+//      }
+//   }
+
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void consumeHits( final JCas jcas, final Iterator<LookupHit> lhItr ) throws AnalysisEngineProcessException {
       try {
          final String cuiPropKey = props.getProperty( CUI_MF_PRP_KEY );
          final String tuiPropKey = props.getProperty( TUI_MF_PRP_KEY );
-         final Iterator hitsByOffsetItr = organizeByOffset( lhItr );
-         while ( hitsByOffsetItr.hasNext() ) {
-            final Collection hitsAtOffsetCol = (Collection) hitsByOffsetItr.next();
-
+         final Map<LookupHitKey, Set<LookupHit>> lookupHitMap = createLookupHitMap( lhItr );
+         // iterate over the LookupHit objects
+         for ( Map.Entry<LookupHitKey, Set<LookupHit>> entry : lookupHitMap.entrySet() ) {
+            // code is only valid if the covered text is also present in the filter
+            final int neBegin = entry.getKey().__start;
+            final int neEnd = entry.getKey().__end;
+            // Use key "cui,tui" to avoid duplicates at this offset
+            final Set<String> cuiTuiSet = new HashSet<String>();
+            // key = type of named entity, val = set of UmlsConcept objects
+            final Map<Integer,Set<UmlsConcept>> conceptMap = new HashMap<Integer,Set<UmlsConcept>>();
             // Iterate over the LookupHit objects and group Snomed codes by NE type
             // For each NE type for which there is a hit, get all the Snomed codes
             // that map to the given CUI.
-
-            // Use key "cui,tui" to avoid duplicates at this offset
-            final Set<String> cuiTuiSet = new HashSet<String>();
-
-            // key = type of named entity (java.lang.Integer)
-            // val = set of UmlsConcept objects (java.util.Set)
-            final Map<Integer,Set<UmlsConcept>> conceptMap = new HashMap<Integer,Set<UmlsConcept>>();
-
-            final Iterator lhAtOffsetItr = hitsAtOffsetCol.iterator();
-            int neBegin = -1;
-            int neEnd = -1;
-            while ( lhAtOffsetItr.hasNext() ) {
-               final LookupHit lh = (LookupHit) lhAtOffsetItr.next();
-               neBegin = lh.getStartOffset();
-               neEnd = lh.getEndOffset();
-
-               final MetaDataHit mdh = lh.getDictMetaDataHit();
+            for ( LookupHit lookupHit : entry.getValue() ) {
+               final MetaDataHit mdh = lookupHit.getDictMetaDataHit();
                final String cui = mdh.getMetaFieldValue( cuiPropKey );
                final String tui = mdh.getMetaFieldValue( tuiPropKey );
-
                //String text = lh.getDictMetaDataHit().getMetaFieldValue("text");
                if ( !_validTuiSet.contains( tui ) ) {
                   continue;
@@ -142,21 +229,18 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
                      conceptSet = conceptMap.get( neType );
                   } else {
                      conceptSet = new HashSet<UmlsConcept>();
+                     conceptMap.put( neType, conceptSet );
                   }
                   final Collection<UmlsConcept> conceptCol = createConceptCol( jcas, cui, tui, snomedCodeSet );
                   conceptSet.addAll( conceptCol );
-                  conceptMap.put( neType, conceptSet );
                }
             }
 
-            final Collection<Integer> conceptKeys = conceptMap.keySet();
-            for ( Integer conceptKey : conceptKeys ) {
-               final Set<UmlsConcept> conceptSet = conceptMap.get( conceptKey );
-
-               // Skip updating CAS if all Concepts for this type were filtered out
-               // for this span.
+            for ( Map.Entry<Integer,Set<UmlsConcept>> conceptEntry : conceptMap.entrySet() ) {
+               final Set<UmlsConcept> conceptSet = conceptEntry.getValue();
+               // Skip updating CAS if all Concepts for this type were filtered out for this span.
                if ( !conceptSet.isEmpty() ) {
-                  FSArray conceptArr = new FSArray( jcas, conceptSet.size() );
+                  final FSArray conceptArr = new FSArray( jcas, conceptSet.size() );
                   int arrIdx = 0;
                   for ( UmlsConcept umlsConcept : conceptSet ) {
                      conceptArr.set( arrIdx, umlsConcept );
@@ -164,6 +248,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
                   }
 
                   IdentifiedAnnotation neAnnot;
+                  final int conceptKey = conceptEntry.getKey();
                   if ( conceptKey == CONST.NE_TYPE_ID_DRUG ) {
                      neAnnot = new MedicationEventMention( jcas );
                   } else {
@@ -182,6 +267,7 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
          throw new AnalysisEngineProcessException( e );
       }
    }
+
 
    private int getNamedEntityType( final String tui ) throws IllegalArgumentException {
       if ( _medicationSet.contains( tui ) ) {

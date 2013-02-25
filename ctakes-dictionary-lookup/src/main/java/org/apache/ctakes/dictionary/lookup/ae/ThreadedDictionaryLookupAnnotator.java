@@ -260,12 +260,14 @@ public class ThreadedDictionaryLookupAnnotator extends JCasAnnotator_ImplBase {
    static private class LookupHitKey {
       final private int __start;
       final private int __end;
+      final private int __hashCode;
       private LookupHitKey( final LookupHit lookupHit ) {
          __start = lookupHit.getStartOffset();
          __end = lookupHit.getEndOffset();
+         __hashCode = 1000 * __end + __start;
       }
       public int hashCode() {
-         return 10000 *__start + __end;
+         return __hashCode;
       }
       public boolean equals( final Object object ) {
          return object instanceof LookupHitKey
