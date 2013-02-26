@@ -162,8 +162,8 @@ public class RelationExtractorTrain {
     
     // Initialize component parameters
     ParameterSettings degreeOfParams = new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0);
-    ParameterSettings emPairParams = new ParameterSettings(false, 0.5f, "linear", 0.05, 1.0);
-
+    ParameterSettings emPairParams = new ParameterSettings(false, 0.5f, "radial basis function", 100.0, 0.01);
+    
     // For now all three components use MultiClass SVMs for classification
     Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
         
