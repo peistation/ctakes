@@ -27,8 +27,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -86,7 +88,12 @@ import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
@@ -197,6 +204,12 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
             usage = "run the version of the assertion module released with cTAKES 2.5",
             required = false)
     public boolean noCleartk = false;
+    
+    @Option(
+    		name = "--print-errors",
+    		usage = "Flag to have test method print out error context for misclassified examples",
+    		required = false)
+    public boolean printErrors = false;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -649,6 +662,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	      polarityStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
+	      if(options.printErrors){
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "polarity", CONST.NE_POLARITY_NEGATION_PRESENT);
+	      }
       }
 
       if (!options.ignoreConditional)
@@ -663,6 +679,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	      uncertaintyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
+	      if(options.printErrors){
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "uncertainty", CONST.NE_UNCERTAINTY_PRESENT);
+	      }
       }
 
       if (!options.ignoreSubject)
@@ -678,10 +697,116 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("generic"));
       }
-
     }
-    
     return map;
+  }
+
+private void printErrors(JCas jCas,
+		Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
+		Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, int trueCategory) {
+	  Map<HashableAnnotation, IdentifiedAnnotation> goldMap = Maps.newHashMap();
+	  for (IdentifiedAnnotation mention : goldEntitiesAndEvents) {
+		  goldMap.put(new HashableAnnotation(mention), mention);
+	  }
+	  Map<HashableAnnotation, IdentifiedAnnotation> systemMap = Maps.newHashMap();
+	  for (IdentifiedAnnotation relation : systemEntitiesAndEvents) {
+		  systemMap.put(new HashableAnnotation(relation), relation);
+	  }
+	  Set<HashableAnnotation> all = Sets.union(goldMap.keySet(), systemMap.keySet());
+	  List<HashableAnnotation> sorted = Lists.newArrayList(all);
+	  Collections.sort(sorted);
+	  for (HashableAnnotation key : sorted) {
+		  IdentifiedAnnotation goldAnnotation = goldMap.get(key);
+		  IdentifiedAnnotation systemAnnotation = systemMap.get(key);
+		  Feature feature = goldAnnotation.getType().getFeatureByBaseName(classifierType);
+		  int goldLabel = goldAnnotation.getIntValue(feature);
+		  feature = systemAnnotation.getType().getFeatureByBaseName(classifierType);
+		  int systemLabel = systemAnnotation.getIntValue(feature);
+		  if (goldLabel != systemLabel){
+			  if(systemLabel == trueCategory){
+				  System.out.println("False positive: " + formatError(jCas, systemAnnotation));
+			  }else{
+				  System.out.println("False negative: " + formatError(jCas, goldAnnotation));
+			  }
+		  }else{
+			  if(systemLabel == trueCategory){
+				  System.out.println("True positive: " + formatError(jCas, systemAnnotation));
+			  }else{
+				  System.out.println("True negative: " + formatError(jCas, systemAnnotation));
+			  }
+		  }
+	  }
+	  
+}
+
+private static String formatError(JCas jcas, IdentifiedAnnotation mention){
+	  List<Sentence> context = JCasUtil.selectCovering(jcas, Sentence.class, mention.getBegin(), mention.getEnd());
+	  StringBuffer buff = new StringBuffer();
+	  if(context.size() > 0){
+		  Sentence sent = context.get(0);
+		  buff.append(sent.getCoveredText());
+		  int offset = mention.getBegin() - sent.getBegin();
+		  buff.insert(offset, "***");
+		  offset += (mention.getEnd()-mention.getBegin() + 3);
+		  buff.insert(offset, "***");
+	  }
+	  return buff.toString();
+}
+
+public static class HashableAnnotation implements Comparable<HashableAnnotation> {
+
+    protected int begin;
+
+    protected int end;
+
+    public HashableAnnotation(int begin, int end) {
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public HashableAnnotation(Annotation arg1) {
+      this(arg1.getBegin(), arg1.getEnd());
+    }
+
+    @Override
+    public boolean equals(Object otherObject) {
+      boolean result = false;
+      if (otherObject instanceof HashableAnnotation) {
+        HashableAnnotation other = (HashableAnnotation) otherObject;
+        result = (this.getClass() == other.getClass() && this.begin == other.begin
+            && this.end == other.end);
+      }
+      return result;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(this.begin, this.end);
+    }
+
+    @Override
+    public String toString() {
+      return String.format(
+          "%s(%s,%s)",
+          this.getClass().getSimpleName(),
+          this.begin,
+          this.end);
+    }
+
+    @Override
+    public int compareTo(HashableAnnotation that) {
+      int thisBegin = this.begin;
+      int thatBegin = that.begin;
+      if (thisBegin < thatBegin) {
+        return -1;
+      } else if (thisBegin > thatBegin) {
+        return +1;
+      } else if (this.equals(that)) {
+        return 0;
+      } else {
+        return +1; // arbitrary choice for overlapping
+      }
+    }
   }
 
 private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
