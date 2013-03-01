@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Title: ctakes-regression-test
+Implementation-Version: 3.1.0-incubating-SNAPSHOT
+Implementation-Vendor-Id: org.apache.ctakes
+Specification-Vendor: The Apache Software Foundation
+Build-Jdk: 1.6.0_26
+Built-By: CH150124
+Created-By: Maven Integration for Eclipse
+Specification-Title: ctakes-regression-test
+Specification-Version: 3.1.0-incubating-SNAPSHOT
+
