@@ -45,6 +45,7 @@ import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.util.CasCopier;
 import org.apache.uima.util.Level;
 //import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
@@ -663,7 +664,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
 	      if(options.printErrors){
-	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "polarity", CONST.NE_POLARITY_NEGATION_PRESENT);
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "polarity", CONST.NE_POLARITY_NEGATION_PRESENT, Integer.class);
 	      }
       }
 
@@ -672,6 +673,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	      conditionalStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("conditional"));
+	      if(options.printErrors){
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "conditional", CONST.NE_CONDITIONAL_TRUE, Boolean.class);
+	      }
       }
 
       if (!options.ignoreUncertainty)
@@ -680,7 +684,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
 	      if(options.printErrors){
-	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "uncertainty", CONST.NE_UNCERTAINTY_PRESENT);
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "uncertainty", CONST.NE_UNCERTAINTY_PRESENT, Integer.class);
 	      }
       }
 
@@ -689,6 +693,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	      subjectStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("subject"));
+	      if(options.printErrors){
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "subject", null, CONST.ATTR_SUBJECT_PATIENT.getClass());
+	      }
       }
 
       if (!options.ignoreGeneric)
@@ -696,14 +703,17 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	      genericStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
 			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("generic"));
+	      if(options.printErrors){
+	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "generic", CONST.NE_GENERIC_TRUE, Boolean.class);
+	      }
       }
     }
     return map;
   }
 
-private void printErrors(JCas jCas,
-		Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
-		Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, int trueCategory) {
+  private static void printErrors(JCas jCas,
+		  Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
+		  Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, Object trueCategory, Class<? extends Object> categoryClass) throws ResourceProcessException {
 	  Map<HashableAnnotation, IdentifiedAnnotation> goldMap = Maps.newHashMap();
 	  for (IdentifiedAnnotation mention : goldEntitiesAndEvents) {
 		  goldMap.put(new HashableAnnotation(mention), mention);
@@ -719,27 +729,44 @@ private void printErrors(JCas jCas,
 		  IdentifiedAnnotation goldAnnotation = goldMap.get(key);
 		  IdentifiedAnnotation systemAnnotation = systemMap.get(key);
 		  Feature feature = goldAnnotation.getType().getFeatureByBaseName(classifierType);
-		  int goldLabel = goldAnnotation.getIntValue(feature);
+		  Object goldLabel = getFeatureValue(feature, categoryClass, goldAnnotation);
+//		  Integer goldLabel = goldAnnotation.getIntValue(feature);
 		  feature = systemAnnotation.getType().getFeatureByBaseName(classifierType);
-		  int systemLabel = systemAnnotation.getIntValue(feature);
-		  if (goldLabel != systemLabel){
-			  if(systemLabel == trueCategory){
+		  Object systemLabel = getFeatureValue(feature, categoryClass, systemAnnotation);
+//		  Integer systemLabel = systemAnnotation.getIntValue(feature);
+		  if(!goldLabel.equals(systemLabel)){
+			  if(trueCategory == null){
+				  // used for multi-class case:
+				  System.out.println("Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
+			  }else if(systemLabel.equals(trueCategory)){
 				  System.out.println("False positive: " + formatError(jCas, systemAnnotation));
 			  }else{
 				  System.out.println("False negative: " + formatError(jCas, goldAnnotation));
 			  }
 		  }else{
-			  if(systemLabel == trueCategory){
+			  if(systemLabel.equals(trueCategory)){
 				  System.out.println("True positive: " + formatError(jCas, systemAnnotation));
 			  }else{
 				  System.out.println("True negative: " + formatError(jCas, systemAnnotation));
 			  }
 		  }
 	  }
-	  
-}
+  }
+  
+  private static Object getFeatureValue(Feature feature,
+		  Class<? extends Object> class1, Annotation annotation) throws ResourceProcessException {
+	  if(class1 == Integer.class){
+		  return annotation.getIntValue(feature);
+	  }else if(class1 == String.class){
+		  return annotation.getStringValue(feature);
+	  }else if(class1 == Boolean.class){
+		  return annotation.getBooleanValue(feature);
+	  }else{
+		  throw new ResourceProcessException("Received a class type that I'm not familiar with: ", new Object[]{class1});
+	  }
+  }
 
-private static String formatError(JCas jcas, IdentifiedAnnotation mention){
+  private static String formatError(JCas jcas, IdentifiedAnnotation mention){
 	  List<Sentence> context = JCasUtil.selectCovering(jcas, Sentence.class, mention.getBegin(), mention.getEnd());
 	  StringBuffer buff = new StringBuffer();
 	  if(context.size() > 0){
@@ -751,7 +778,7 @@ private static String formatError(JCas jcas, IdentifiedAnnotation mention){
 		  buff.insert(offset, "***");
 	  }
 	  return buff.toString();
-}
+  }
 
 public static class HashableAnnotation implements Comparable<HashableAnnotation> {
 
