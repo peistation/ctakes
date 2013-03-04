@@ -35,7 +35,6 @@ import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -64,6 +63,8 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
 
   private List<RelationFeaturesExtractor> featureExtractors = this.getFeatureExtractors();
   
+  private Class<? extends Annotation> coveringClass = getCoveringClass();
+
   /**
    * Defines the list of feature extractors used by the classifier.
    * Subclasses may override this method to provide a different set of feature extractors. 
@@ -81,10 +82,15 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
         );
   }
  
-  /**
-   * Selects the relevant mentions/annotations within a sentence for relation identification/extraction.
+  /*
+   * Defines the type of annotation that the relation exists within (sentence, document, segment) 
    */
-  protected abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Sentence sentence);
+  protected abstract Class<? extends Annotation> getCoveringClass();
+  
+  /**
+   * Selects the relevant mentions/annotations within a covering annotation for relation identification/extraction.
+   */
+  protected abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Annotation coveringAnnotation);
 
   /*
    * Implement the standard UIMA process method.
@@ -107,10 +113,10 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     }
 
     // walk through each sentence in the text
-    for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+    for (Annotation coveringAnnotation : JCasUtil.select(jCas, coveringClass)) {
 
     	// collect all relevant relation arguments from the sentence
-    	List<IdentifiedAnnotationPair> candidatePairs = this.getCandidateRelationArgumentPairs(jCas, sentence);
+    	List<IdentifiedAnnotationPair> candidatePairs = this.getCandidateRelationArgumentPairs(jCas, coveringAnnotation);
 
     	// walk through the pairs of annotations
     	for (IdentifiedAnnotationPair pair : candidatePairs) {
@@ -154,20 +160,7 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     					arg2 = temp;
     				}
 
-    				// add the relation to the CAS
-    				RelationArgument relArg1 = new RelationArgument(jCas);
-    				relArg1.setArgument(arg1);
-    				relArg1.setRole("Argument");
-    				relArg1.addToIndexes();
-    				RelationArgument relArg2 = new RelationArgument(jCas);
-    				relArg2.setArgument(arg2);
-    				relArg2.setRole("Related_to");
-    				relArg2.addToIndexes();
-    				BinaryTextRelation relation = new BinaryTextRelation(jCas);
-    				relation.setArg1(relArg1);
-    				relation.setArg2(relArg2);
-    				relation.setCategory(predictedCategory);
-    				relation.addToIndexes();
+    				createRelation(jCas, arg1, arg2, predictedCategory);
     			}
     		}
     	} // end pair in pairs
@@ -208,6 +201,31 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
     return this.classifier.classify(features);
   }
 
+  /**
+   * Create a UIMA relation type based on arguments and the relation label.
+   * This allows subclasses to create/define their own types: e.g.
+   * coreference can create CoreferenceRelation instead of BinaryTextRelation
+   * @param jCas - JCas object, needed to create new UIMA types
+   * @param arg1 - First argument to relation
+   * @param arg2 - Second argument to relation
+   * @param predictedCategory - Name of relation
+   */
+  protected void createRelation(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2, String predictedCategory){
+		// add the relation to the CAS
+		RelationArgument relArg1 = new RelationArgument(jCas);
+		relArg1.setArgument(arg1);
+		relArg1.setRole("Argument");
+		relArg1.addToIndexes();
+		RelationArgument relArg2 = new RelationArgument(jCas);
+		relArg2.setArgument(arg2);
+		relArg2.setRole("Related_to");
+		relArg2.addToIndexes();
+		BinaryTextRelation relation = new BinaryTextRelation(jCas);
+		relation.setArg1(relArg1);
+		relation.setArg2(relArg2);
+		relation.setCategory(predictedCategory);
+		relation.addToIndexes();
+  }
   
   public static class IdentifiedAnnotationPair {
 	  

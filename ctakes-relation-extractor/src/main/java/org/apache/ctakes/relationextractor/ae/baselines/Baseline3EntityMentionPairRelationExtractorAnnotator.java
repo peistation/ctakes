@@ -27,6 +27,7 @@ import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
@@ -37,8 +38,13 @@ import org.uimafit.util.JCasUtil;
 public class Baseline3EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	@Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		return Sentence.class;
+	}
+
+	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 
 		// collect all possible relation arguments from the sentence
 		List<EntityMention> args = JCasUtil.selectCovered(
@@ -61,7 +67,7 @@ public class Baseline3EntityMentionPairRelationExtractorAnnotator extends Relati
 		List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
 		for(IdentifiedAnnotationPair pair : pairs) {
 		  if(Utils.validateLocationOfArgumentTypes(pair)) {
-		    for(TreebankNode nounPhrase : Utils.getNounPhrases(identifiedAnnotationView, sentence)) {
+		    for(TreebankNode nounPhrase : Utils.getNounPhrases(identifiedAnnotationView, (Sentence) sentence)) {
 		      if(Utils.isEnclosed(pair, nounPhrase)) {
 		        IdentifiedAnnotation arg1 = pair.getArg1();
 		        IdentifiedAnnotation arg2 = pair.getArg2();

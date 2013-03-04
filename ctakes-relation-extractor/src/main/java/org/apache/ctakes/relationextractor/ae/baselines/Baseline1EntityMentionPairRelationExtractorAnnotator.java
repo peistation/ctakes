@@ -25,6 +25,7 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
@@ -37,8 +38,13 @@ import com.google.common.collect.Lists;
 public class Baseline1EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	@Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		return Sentence.class;
+	}
+	
+	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 
 		// collect all possible relation arguments from the sentence
 		List<EntityMention> args = JCasUtil.selectCovered(

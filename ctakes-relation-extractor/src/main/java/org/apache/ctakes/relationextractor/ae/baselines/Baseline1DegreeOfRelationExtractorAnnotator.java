@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
 
@@ -35,7 +35,7 @@ public class Baseline1DegreeOfRelationExtractorAnnotator extends DegreeOfRelatio
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 	  List<IdentifiedAnnotationPair> pairs = super.getCandidateRelationArgumentPairs(identifiedAnnotationView, sentence);
 		
 		// look for sentences with one entity and one modifier

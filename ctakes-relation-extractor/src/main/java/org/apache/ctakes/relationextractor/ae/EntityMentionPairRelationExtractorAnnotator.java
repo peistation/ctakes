@@ -50,8 +50,13 @@ public class EntityMentionPairRelationExtractorAnnotator extends RelationExtract
 	protected boolean classifyBothDirections = false;
 
 	@Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		return Sentence.class;
+	}
+	
+	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 
 		// collect all possible relation arguments from the sentence
 		List<EntityMention> args = JCasUtil.selectCovered(

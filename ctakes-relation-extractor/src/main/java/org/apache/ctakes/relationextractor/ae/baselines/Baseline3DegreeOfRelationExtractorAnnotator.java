@@ -26,6 +26,7 @@ import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 
 /**
  * Annotate degree_of relation between two entities whenever 
@@ -35,14 +36,14 @@ public class Baseline3DegreeOfRelationExtractorAnnotator extends DegreeOfRelatio
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 		List<IdentifiedAnnotationPair> pairs = super.getCandidateRelationArgumentPairs(identifiedAnnotationView, sentence);
 		
     // find pairs enclosed inside a noun phrase
     List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
     for(IdentifiedAnnotationPair pair : pairs) {
       if(Utils.validateDegreeOfArgumentTypes(pair)) {
-        for(TreebankNode nounPhrase : Utils.getNounPhrases(identifiedAnnotationView, sentence)) {
+        for(TreebankNode nounPhrase : Utils.getNounPhrases(identifiedAnnotationView, (Sentence) sentence)) {
           if(Utils.isEnclosed(pair, nounPhrase)) {
             IdentifiedAnnotation arg1 = pair.getArg1();
             IdentifiedAnnotation arg2 = pair.getArg2();

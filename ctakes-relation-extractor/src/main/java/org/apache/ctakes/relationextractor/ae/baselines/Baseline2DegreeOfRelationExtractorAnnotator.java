@@ -30,6 +30,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
@@ -47,8 +48,13 @@ import com.google.common.collect.Ordering;
 public class Baseline2DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
 
 	@Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		return Sentence.class;
+	}
+	
+	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 		
 		List<EntityMention> entities = JCasUtil.selectCovered(identifiedAnnotationView, EntityMention.class, sentence);
 		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);

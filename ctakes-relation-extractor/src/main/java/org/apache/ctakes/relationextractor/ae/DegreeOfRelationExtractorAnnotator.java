@@ -25,6 +25,7 @@ import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 
 /**
@@ -35,7 +36,7 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
+			JCas identifiedAnnotationView, Annotation sentence) {
 		
 		List<EntityMention> entities = JCasUtil.selectCovered(identifiedAnnotationView, EntityMention.class, sentence);
 		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
@@ -47,5 +48,11 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 			}
 		}
 		return pairs;
+	}
+
+	@Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		// TODO Auto-generated method stub
+		return Sentence.class;
 	}
 }

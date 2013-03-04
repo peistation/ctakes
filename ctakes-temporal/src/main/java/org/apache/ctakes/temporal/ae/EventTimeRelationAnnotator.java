@@ -63,9 +63,14 @@ public class EventTimeRelationAnnotator extends RelationExtractorAnnotator {
   }
 
   @Override
+	protected Class<? extends Annotation> getCoveringClass() {
+		return Sentence.class;
+	}
+  
+  @Override
   public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
       JCas jCas,
-      Sentence sentence) {
+      Annotation sentence) {
     List<IdentifiedAnnotationPair> pairs = Lists.newArrayList();
     for (EventMention event : JCasUtil.selectCovered(jCas, EventMention.class, sentence)) {
       // ignore subclasses like Procedure and Disease/Disorder
