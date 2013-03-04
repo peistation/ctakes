@@ -89,6 +89,12 @@
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-coreference</artifactId>
-		</dependency>				
+		</dependency>	
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>			
+		</dependency>					
 	</dependencies>  
 </project>

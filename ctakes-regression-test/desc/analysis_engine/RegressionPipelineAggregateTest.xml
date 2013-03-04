@@ -68,9 +68,11 @@
 <delegateAnalysisEngine key="AssertionAnnotator">
 <import location="../../../ctakes-assertion/desc/AssertionMiniPipelineAnalysisEngine.xml"/>
 </delegateAnalysisEngine>
+<!-- 
 <delegateAnalysisEngine key="DependencyParser">
 <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
 </delegateAnalysisEngine>
+ -->
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
 <name>AggregatePlaintextProcessor</name>
@@ -120,8 +122,10 @@ Includes adjusting NP chunks to include NP NP and NP PP NP.</description>
 <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
 <node>LookupWindowAnnotator</node>
 <node>DictionaryLookupAnnotator</node>
+<!-- 
 <node>DependencyParser</node>
 <node>AssertionAnnotator</node>
+-->
 <!-- 
 	<node>StatusAnnotator</node>
 	<node>NegationAnnotator</node>

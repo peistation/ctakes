@@ -36,10 +36,30 @@
 </collectionIterator>
 </collectionReader>
 <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-<casProcessor deployment="integrated" name="RegressionPipelineAggregateTest">
+<casProcessor deployment="integrated" name="POSTaggerCPETest">
 <descriptor>
-<import location="../analysis_engine/RegressionPipelineAggregateTest.xml"/>
+<import location="../../../ctakes-pos-tagger/desc/POSTaggerAggregate.xml"/>
 </descriptor>
+<configurationParameterSettings>
+<nameValuePair>
+<name>PosModelFile</name>
+<value>
+<string>org/apache/ctakes/postagger/models/mayo-pos.zip</string>
+</value>
+</nameValuePair>
+<nameValuePair>
+<name>CaseSensitive</name>
+<value>
+<boolean>true</boolean>
+</value>
+</nameValuePair>
+<nameValuePair>
+<name>TagDictionary</name>
+<value>
+<string>org/apache/ctakes/postagger/models/tag.dictionary.txt</string>
+</value>
+</nameValuePair>
+</configurationParameterSettings>
 <deploymentParameters/>
 <errorHandling>
 <errorRateThreshold action="terminate" value="0/1000"/>
@@ -63,7 +83,7 @@
 <nameValuePair>
 <name>outputDir</name>
 <value>
-<string>testdata/generatedoutput/RegressionPipelineCPETest</string>
+<string>testdata/generatedoutput/POSTaggerCPETest</string>
 </value>
 </nameValuePair>
 </configurationParameterSettings>

@@ -705,8 +705,8 @@
     <uima.cas.NonEmptyFSList _indexed="1" _id="4567" _ref_head="4501" _ref_tail="4570"/>
     <uima.cas.NonEmptyFSList _indexed="1" _id="4570" _ref_head="4504" _ref_tail="4573"/>
     <uima.cas.NonEmptyFSList _indexed="1" _id="4573" _ref_head="4507" _ref_tail="4576"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="4577" _ref_sofa="3" begin="219" end="225" id="2" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="4593" _ref_sofa="3" begin="229" end="235" id="3" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="4577" _ref_sofa="3" begin="229" end="235" id="3" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="4593" _ref_sofa="3" begin="219" end="225" id="2" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false"/>
     <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="4609" _ref_sofa="3" begin="262" end="267" id="5" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="4625" _ref_sofa="3" begin="0" end="22" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="4630" _ref_sofa="3" begin="23" end="34" chunkType="NP"/>
