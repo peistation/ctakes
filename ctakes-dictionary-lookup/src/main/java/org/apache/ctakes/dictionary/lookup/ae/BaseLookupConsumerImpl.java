@@ -39,7 +39,7 @@ public abstract class BaseLookupConsumerImpl implements LookupConsumer {
     * @return Iterator over Set objects. Each Set object is a collection of
     *         LookupHit objects with the same begin,end offsets.
     */
-   static protected Iterator organizeByOffset( final Iterator<LookupHit> lookupHitIterator ) {
+   static protected Iterator<Set<LookupHit>> organizeByOffset( final Iterator<LookupHit> lookupHitIterator ) {
       final  Map<LookupHitKey, Set<LookupHit>> lookupHitMap = createLookupHitMap( lookupHitIterator );
       return lookupHitMap.values().iterator();
    }

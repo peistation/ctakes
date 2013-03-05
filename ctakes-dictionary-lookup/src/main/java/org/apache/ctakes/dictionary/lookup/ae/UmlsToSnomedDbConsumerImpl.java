@@ -64,6 +64,16 @@ public class UmlsToSnomedDbConsumerImpl extends UmlsToSnomedConsumerImpl impleme
       this( uimaContext, properties, Integer.MAX_VALUE );
    }
 
+   public void close() {
+      try {
+         if ( _preparedStatement != null && !_preparedStatement.isClosed() ) {
+            _preparedStatement.close();
+         }
+      } catch ( SQLException sqlE ) {
+         // Nothing necessary
+      }
+   }
+
    /**
     * Queries the given UMLS CUI against the DB. Re`turns a set of SNOMED codes.
     *

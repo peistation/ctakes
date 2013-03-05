@@ -63,6 +63,23 @@ public class ThreadedDictionaryLookupAnnotator extends JCasAnnotator_ImplBase {
    }
 
    /**
+    * Close db connections in UmlsToSnomedDbConsumerImpl
+    * @throws org.apache.uima.analysis_engine.AnalysisEngineProcessException
+    */
+   public void collectionProcessComplete() throws org.apache.uima.analysis_engine.AnalysisEngineProcessException {
+      for ( Object value : _lookupSpecSet ) {
+         if ( value instanceof LookupSpec ) {
+            final LookupSpec ls = (LookupSpec)value;
+            final LookupConsumer lookupConsumer = ls.getLookupConsumer();
+            if ( lookupConsumer != null && lookupConsumer instanceof UmlsToSnomedDbConsumerImpl ) {
+               ((UmlsToSnomedDbConsumerImpl)lookupConsumer).close();
+            }
+         }
+      }
+      super.collectionProcessComplete();
+   }
+
+   /**
     * Reads configuration parameters.
     */
    private void configInit( final UimaContext uimaContext ) throws ResourceInitializationException {
@@ -128,6 +145,11 @@ public class ThreadedDictionaryLookupAnnotator extends JCasAnnotator_ImplBase {
          // thrown by future.get()
          throw new AnalysisEngineProcessException( exE );
       }
+      try {
+         fixedThreadService.shutdown();
+      } catch ( SecurityException sE ) {
+         _logger.debug( "Can ignore: " + sE.getMessage() );
+      }
    }
 
    private LookupDataStore getLookupData( final JCas jcas, final LookupSpec lookupSpec ) {
@@ -156,6 +178,8 @@ public class ThreadedDictionaryLookupAnnotator extends JCasAnnotator_ImplBase {
             // throw new AnalysisEngineProcessException(e);
          }
       }
+      // TODO - last ditch memory reclamation, haven't tried yet  - spf
+//      NDC.remove();
       return new LookupDataStore( lookupSpec, allHits );
    }
 
