@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<?xml version="1.0" encoding="UTF-8"?><typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <name>org.apache.ctakes.typesystem.types.TypeSystem</name>
   <description>This is a Apache cTAKES Common Type System for clinical NLP. It includes general types necessary to store annotations and interface with clinical element models</description>
   <version>1.0</version>
@@ -1178,6 +1177,51 @@ More qualifying information on how the procedure was done.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.relation.AttributeRelation</supertypeName>
     </typeDescription>
     <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.AffectsTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.ComplicatesDisruptsTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.ManagesTreatsTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.ManifestationOfTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.ResultOfTextRelation</name>
+      <description/>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.AspectualTextRelation</name>
+      <description>A UMLS relation between clinical elements.</description>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</name>
+      <description>A UMLS relation between clinical elements.</description>
+      <supertypeName>org.apache.ctakes.typesystem.type.relation.BinaryTextRelation</supertypeName>
+    </typeDescription>
+    <typeDescription>
       <name>org.apache.ctakes.typesystem.type.structured.Demographics</name>
       <description>Demographic information about the patient in a clinical document.  Typically comes from structured metadata.</description>
       <supertypeName>uima.cas.TOP</supertypeName>
@@ -1640,6 +1684,11 @@ More qualifying information on how the procedure was done.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
       <features>
         <featureDescription>
+          <name>date</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Date</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
           <name>time</name>
           <description/>
           <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
@@ -2011,210 +2060,83 @@ More qualifying information on how the procedure was done.</description>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationRouteModifier</name>
       <description>Means by which the medication was taken or administered.  Value set includes Topical, Enteral_Oral, Parenteral_Intravenous, Other, undetermined, etc.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationFormModifier</name>
       <description>Form of this medication.  Value set includes tablet, capsule, liquid, inhalant, gel, other, etc.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationStrengthModifier</name>
       <description>Strength indicates the strength number and unit of the prescribed drug.  E.g. "5 mg" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>number</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>unit</name>
-          <description>the unit of measurement</description>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationDurationModifier</name>
       <description>The amount of time after which a medication should stop being used, e.g., "2 weeks" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationDosageModifier</name>
       <description>Dosage indicates how much of a prescribed drug should be taken.  E.g. "one" in "one 5 mg tablet twice-a-day for 2 weeks"</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationFrequencyModifier</name>
       <description>How often a medication should be used. e.g., BID or b.i.d. or "twice-a-day" would have a number=2 and unit=day.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>number</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>unit</name>
-          <description>The periodic unit used, e.g day, month, hour, etc.</description>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationStatusChangeModifier</name>
       <description>Status refers to the whether the medication is currently being taken or not.  Value set: start, stop, increase, decrease, no change.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description>Indicates the change status of 'stop', 'start', 'increase', 'decrease', or 'noChange'.</description>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.ProcedureDeviceModifier</name>
       <description>Corresponds to the UMLS Devices semantic group: medical device and research device. 
 Example: arterial line has a Medical Device semantic type. This is qualifying information on how a procedure was done.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.ProcedureMethodModifier</name>
       <description>The way or the equipment used to give or administration something (medication, test). This corresponds to the Procedures UMLS semantic group.
 More qualifying information on how the procedure was done.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.LabDeltaFlagModifier</name>
       <description>An indicator to warn that the laboratory test result has changed significantly from the previous identical laboratory test result.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.LabValueModifier</name>
       <description>Quantitative results of a laboratory, with number and unit.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>number</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>unit</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.LabReferenceRangeModifier</name>
       <description>Holds a narrative (i.e. string) reference range</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier</name>
       <description>The proximity of the location in anatomical terms (distal, proximal, superior, anterior and etc.). This is finer-grained to allow combinations of values.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.BodySideModifier</name>
       <description>Value set: unmarked (default), left, right, bilateral</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.CourseModifier</name>
       <description>An indication of progress or decline of a condition.  Value set: unmarked (default), changed, increased, decreased, improved, worsened, resolved</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.SeverityModifier</name>
       <description>An explicitly-mentioned indication of the seriousness of a condition.  Value Set: unmarked (default), severe, moderate, slight</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.Modifier</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.PolarityModifier</name>
@@ -2347,6 +2269,11 @@ More qualifying information on how the procedure was done.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
         <featureDescription>
+          <name>medicationAllergy</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.MedicationAllergyModifier</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
           <name>medicationFrequency</name>
           <description/>
           <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.MedicationFrequencyModifier</rangeTypeName>
@@ -2384,17 +2311,17 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>startDate</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Date</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>endDate</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Date</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>relativeTemporalContext</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -2416,7 +2343,7 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>bodyLocation</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>procedureDevice</name>
@@ -2426,12 +2353,12 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>duration</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>endTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>method</name>
@@ -2441,12 +2368,12 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>startTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>relativeTemporalContext</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -2458,7 +2385,7 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>alleviatingFactor</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ElementRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ManagesTreatsTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>bodyLaterality</name>
@@ -2473,42 +2400,42 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>bodyLocation</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>course</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.CourseModifier</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>duration</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>endTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>exacerbatingFactor</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ElementRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ComplicatesDisruptsTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>severity</name>
           <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>startTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>relativeTemporalContext</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -2520,12 +2447,12 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>alleviatingFactor</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ElementRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ManagesTreatsTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>associatedSignSymptom</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ManifestationOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ManifestationOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>bodyLaterality</name>
@@ -2540,37 +2467,42 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>bodyLocation</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>course</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.CourseModifier</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>duration</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>endTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>exacerbatingFactor</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ElementRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ComplicatesDisruptsTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>startTime</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.refsem.Time</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.TimeMention</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>relativeTemporalContext</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalRelation</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.TemporalTextRelation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>severity</name>
+          <description/>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
@@ -2582,7 +2514,7 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>abnormalInterpretation</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>deltaFlag</name>
@@ -2592,12 +2524,12 @@ More qualifying information on how the procedure was done.</description>
         <featureDescription>
           <name>labValue</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.LabValueModifier</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.ResultOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>ordinalInterpretation</name>
           <description/>
-          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOf</rangeTypeName>
+          <rangeTypeName>org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation</rangeTypeName>
         </featureDescription>
         <featureDescription>
           <name>referenceRangeNarrative</name>

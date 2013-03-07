@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
 import org.apache.ctakes.temporal.ae.EventTimeRelationAnnotator;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.TemporalTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -185,7 +186,7 @@ public class EvaluationOfTemporalRelations extends
       for (BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(
           jCas,
           BinaryTextRelation.class))) {
-        if (!relation.getCategory().startsWith("TLINK")) {
+        if (!(relation instanceof TemporalTextRelation)) {
           relation.getArg1().removeFromIndexes();
           relation.getArg2().removeFromIndexes();
           relation.removeFromIndexes();
