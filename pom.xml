@@ -110,10 +110,9 @@
 		<module>ctakes-assertion</module>
 		<module>ctakes-assertion-zoner</module>
 		<module>ctakes-temporal</module>
-
-		<!-- pipeline and distribution should always be last -->
 		<module>ctakes-clinical-pipeline</module>
 		<module>ctakes-distribution</module>
+		<module>ctakes-regression-test</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -571,6 +570,8 @@
 							<include>**/*Tests.java</include>
 							<include>**/*TestCase.java</include>
 						</includes>
+						<argLine>-Xmx1536m</argLine>
+						<forkedProcessTimeoutInSeconds>900</forkedProcessTimeoutInSeconds>						
 					</configuration>
 				</plugin>
 				<plugin>
