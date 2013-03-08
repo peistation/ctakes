@@ -35,8 +35,7 @@ import org.apache.uima.collection.StatusCallbackListener;
 import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.util.XMLInputSource;
 import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
-import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
+import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -131,15 +130,11 @@ public class RegressionPipelineTest extends XMLTestCase {
 				expected.normalizeDocument();
 
 				Diff myDiff = new Diff(expected, generated);
-				// Only Testing the skeleton because the xml attributes in the
-				// xcas could be in different Ordering
-				//myDiff.overrideElementQualifier(new ElementNameAndTextQualifier());
+				// Elment and attributes in the xcas could be in different Ordering
+				myDiff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
 				//myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
 				assertTrue("Verifying Test Output: " + file.getName() + myDiff,
 						myDiff.similar());
-				// assertXMLEqual("Verifying Test Output: " + file.getName(),
-				// myDiff, true);				
-
 			}
 		}
 	}
