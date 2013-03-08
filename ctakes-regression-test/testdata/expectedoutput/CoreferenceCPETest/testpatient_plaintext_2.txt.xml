@@ -899,23 +899,23 @@
     <uima.cas.NonEmptyFSList _indexed="1" _id="5828" _ref_head="5744" _ref_tail="5831"/>
     <uima.cas.NonEmptyFSList _indexed="1" _id="5831" _ref_head="5747" _ref_tail="5834"/>
     <org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation _indexed="1" _id="5835" _ref_sofa="3" begin="180" end="182" id="2" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5852" _ref_sofa="3" begin="176" end="182" id="1" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5869" _ref_sofa="3" begin="201" end="206" id="3" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5903" _ref_sofa="3" begin="347" end="352" id="5" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5920" _ref_sofa="3" begin="324" end="332" id="4" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5852" _ref_sofa="3" begin="201" end="206" id="3" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5869" _ref_sofa="3" begin="176" end="182" id="1" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5903" _ref_sofa="3" begin="324" end="332" id="4" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation _indexed="1" _id="5920" _ref_sofa="3" begin="347" end="352" id="5" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
     <org.apache.ctakes.typesystem.type.textsem.FractionAnnotation _indexed="1" _id="5886" _ref_sofa="3" begin="347" end="350" id="6" typeID="0" segmentID="SIMPLE_SEGMENT" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5937" _ref_sofa="3" begin="2" end="16" chunkType="NP"/>
-    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5942" _ref_sofa="3" begin="20" end="64" chunkType="NP"/>
+    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5942" _ref_sofa="3" begin="20" end="45" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5952" _ref_sofa="3" begin="50" end="64" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5967" _ref_sofa="3" begin="84" end="94" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5977" _ref_sofa="3" begin="96" end="99" chunkType="NP"/>
-    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5992" _ref_sofa="3" begin="108" end="134" chunkType="NP"/>
+    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="5992" _ref_sofa="3" begin="108" end="116" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6002" _ref_sofa="3" begin="122" end="134" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6007" _ref_sofa="3" begin="137" end="150" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6017" _ref_sofa="3" begin="152" end="156" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6027" _ref_sofa="3" begin="158" end="166" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6032" _ref_sofa="3" begin="168" end="174" chunkType="NP"/>
-    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6042" _ref_sofa="3" begin="176" end="199" chunkType="NP"/>
+    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6042" _ref_sofa="3" begin="176" end="182" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6047" _ref_sofa="3" begin="185" end="199" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6057" _ref_sofa="3" begin="201" end="206" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6062" _ref_sofa="3" begin="208" end="212" chunkType="NP"/>
@@ -923,7 +923,7 @@
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6087" _ref_sofa="3" begin="244" end="249" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6102" _ref_sofa="3" begin="252" end="265" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6117" _ref_sofa="3" begin="279" end="281" chunkType="NP"/>
-    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6127" _ref_sofa="3" begin="284" end="300" chunkType="NP"/>
+    <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6127" _ref_sofa="3" begin="284" end="287" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6137" _ref_sofa="3" begin="292" end="300" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6142" _ref_sofa="3" begin="303" end="316" chunkType="NP"/>
     <org.apache.ctakes.typesystem.type.syntax.NP _indexed="1" _id="6157" _ref_sofa="3" begin="324" end="332" chunkType="NP"/>
@@ -962,22 +962,26 @@
     <org.apache.ctakes.typesystem.type.syntax.VP _indexed="1" _id="6167" _ref_sofa="3" begin="335" end="343" chunkType="VP"/>
     <org.apache.ctakes.typesystem.type.syntax.VP _indexed="1" _id="6217" _ref_sofa="3" begin="393" end="401" chunkType="VP"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6222" _ref_sofa="3" begin="2" end="16"/>
-    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6226" _ref_sofa="3" begin="20" end="64"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6226" _ref_sofa="3" begin="20" end="45"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6230" _ref_sofa="3" begin="50" end="64"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6234" _ref_sofa="3" begin="84" end="94"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6238" _ref_sofa="3" begin="96" end="99"/>
-    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6242" _ref_sofa="3" begin="108" end="134"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6242" _ref_sofa="3" begin="108" end="116"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6246" _ref_sofa="3" begin="122" end="134"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6250" _ref_sofa="3" begin="137" end="150"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6254" _ref_sofa="3" begin="152" end="156"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6258" _ref_sofa="3" begin="158" end="166"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6262" _ref_sofa="3" begin="168" end="174"/>
-    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6266" _ref_sofa="3" begin="176" end="199"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6266" _ref_sofa="3" begin="176" end="182"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6270" _ref_sofa="3" begin="185" end="199"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6274" _ref_sofa="3" begin="201" end="206"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6278" _ref_sofa="3" begin="208" end="212"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6282" _ref_sofa="3" begin="223" end="242"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6286" _ref_sofa="3" begin="244" end="249"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6290" _ref_sofa="3" begin="252" end="265"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6294" _ref_sofa="3" begin="279" end="281"/>
-    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6298" _ref_sofa="3" begin="284" end="300"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6298" _ref_sofa="3" begin="284" end="287"/>
+    <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6302" _ref_sofa="3" begin="292" end="300"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6306" _ref_sofa="3" begin="303" end="316"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6310" _ref_sofa="3" begin="324" end="332"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6314" _ref_sofa="3" begin="347" end="352"/>
@@ -985,6 +989,642 @@
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6322" _ref_sofa="3" begin="358" end="369"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="6326" _ref_sofa="3" begin="371" end="373"/>
     <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="6348" _ref_sofa="3" begin="50" end="64" id="0" _ref_ontologyConceptArr="6344" typeID="2" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6400" _ref_sofa="3" begin="2" end="5" nodeType="NNP" nodeValue="Dr." leaf="true" _ref_parent="6444" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6413" _ref_sofa="3" begin="6" end="16" nodeType="NNP" nodeValue="Nutritious" leaf="true" _ref_parent="6444" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6540" _ref_sofa="3" begin="20" end="27" nodeType="JJ" nodeValue="Medical" leaf="true" _ref_parent="6640" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6553" _ref_sofa="3" begin="28" end="37" nodeType="NN" nodeValue="Nutrition" leaf="true" _ref_parent="6640" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6566" _ref_sofa="3" begin="38" end="45" nodeType="NN" nodeValue="Therapy" leaf="true" _ref_parent="6640" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6579" _ref_sofa="3" begin="46" end="49" nodeType="IN" nodeValue="for" leaf="true" _ref_parent="6658" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6592" _ref_sofa="3" begin="50" end="64" nodeType="NN" nodeValue="Hyperlipidemia" leaf="true" _ref_parent="6675" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6905" _ref_sofa="3" begin="68" end="79" nodeType="JJ" nodeValue="Significant" leaf="true" _ref_parent="7105" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6918" _ref_sofa="3" begin="80" end="83" nodeType="IN" nodeValue="for" leaf="true" _ref_parent="7123" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6931" _ref_sofa="3" begin="84" end="87" nodeType="PRP$" nodeValue="her" leaf="true" _ref_parent="7158" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6944" _ref_sofa="3" begin="88" end="94" nodeType="NN" nodeValue="father" leaf="true" _ref_parent="7158" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6957" _ref_sofa="3" begin="94" end="95" nodeType="," nodeValue="," leaf="true" _ref_parent="7140" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6970" _ref_sofa="3" begin="96" end="99" nodeType="WP" nodeValue="who" leaf="true" _ref_parent="7192" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6983" _ref_sofa="3" begin="100" end="104" nodeType="VBD" nodeValue="died" leaf="true" _ref_parent="7225" headIndex="0" index="6" tokenIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="6996" _ref_sofa="3" begin="105" end="107" nodeType="IN" nodeValue="at" leaf="true" _ref_parent="7242" headIndex="0" index="7" tokenIndex="7"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7009" _ref_sofa="3" begin="108" end="110" nodeType="CD" nodeValue="50" leaf="true" _ref_parent="7277" headIndex="0" index="8" tokenIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7022" _ref_sofa="3" begin="111" end="116" nodeType="NNS" nodeValue="years" leaf="true" _ref_parent="7277" headIndex="0" index="9" tokenIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7035" _ref_sofa="3" begin="117" end="121" nodeType="IN" nodeValue="from" leaf="true" _ref_parent="7294" headIndex="0" index="10" tokenIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7048" _ref_sofa="3" begin="122" end="127" nodeType="NN" nodeValue="colon" leaf="true" _ref_parent="7311" headIndex="0" index="11" tokenIndex="11"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7061" _ref_sofa="3" begin="128" end="134" nodeType="NN" nodeValue="cancer" leaf="true" _ref_parent="7311" headIndex="0" index="12" tokenIndex="12"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7074" _ref_sofa="3" begin="134" end="135" nodeType="." nodeValue="." leaf="true" _ref_parent="7105" headIndex="0" index="13" tokenIndex="13"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7437" _ref_sofa="3" begin="137" end="142" nodeType="NN" nodeValue="Phone" leaf="true" _ref_parent="7565" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7450" _ref_sofa="3" begin="143" end="150" nodeType="NN" nodeValue="contact" leaf="true" _ref_parent="7565" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7463" _ref_sofa="3" begin="150" end="151" nodeType=":" nodeValue=":" leaf="true" _ref_parent="7546" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7476" _ref_sofa="3" begin="152" end="153" nodeType="NN" nodeValue="-LRB-" leaf="true" _ref_parent="7601" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7489" _ref_sofa="3" begin="153" end="156" nodeType="CD" nodeValue="555" leaf="true" _ref_parent="7601" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7502" _ref_sofa="3" begin="156" end="157" nodeType="NN" nodeValue="-RRB-" leaf="true" _ref_parent="7601" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7515" _ref_sofa="3" begin="158" end="166" nodeType="CD" nodeValue="555-1212" leaf="true" _ref_parent="7619" headIndex="0" index="6" tokenIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7775" _ref_sofa="3" begin="168" end="174" nodeType="NN" nodeValue="Height" leaf="true" _ref_parent="7928" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7788" _ref_sofa="3" begin="174" end="175" nodeType=":" nodeValue=":" leaf="true" _ref_parent="7910" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7801" _ref_sofa="3" begin="176" end="179" nodeType="CD" nodeValue="144" leaf="true" _ref_parent="7980" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7814" _ref_sofa="3" begin="180" end="182" nodeType="NNS" nodeValue="cm" leaf="true" _ref_parent="7980" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7827" _ref_sofa="3" begin="185" end="192" nodeType="JJ" nodeValue="Current" leaf="true" _ref_parent="7962" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7840" _ref_sofa="3" begin="193" end="199" nodeType="NN" nodeValue="Weight" leaf="true" _ref_parent="7962" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7853" _ref_sofa="3" begin="199" end="200" nodeType=":" nodeValue=":" leaf="true" _ref_parent="7944" headIndex="0" index="6" tokenIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7866" _ref_sofa="3" begin="201" end="203" nodeType="CD" nodeValue="45" leaf="true" _ref_parent="7997" headIndex="0" index="7" tokenIndex="7"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="7879" _ref_sofa="3" begin="204" end="206" nodeType="NNS" nodeValue="kg" leaf="true" _ref_parent="7997" headIndex="0" index="8" tokenIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8063" _ref_sofa="3" begin="208" end="212" nodeType="NN" nodeValue="Diet" leaf="true" _ref_parent="8138" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8076" _ref_sofa="3" begin="212" end="213" nodeType=":" nodeValue=":" leaf="true" _ref_parent="8120" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8089" _ref_sofa="3" begin="214" end="221" nodeType="JJ" nodeValue="General" leaf="true" _ref_parent="8171" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8477" _ref_sofa="3" begin="223" end="228" nodeType="JJ" nodeValue="Daily" leaf="true" _ref_parent="8778" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8490" _ref_sofa="3" begin="229" end="236" nodeType="NN" nodeValue="Calorie" leaf="true" _ref_parent="8778" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8503" _ref_sofa="3" begin="237" end="242" nodeType="VBZ" nodeValue="needs" leaf="true" _ref_parent="8796" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8516" _ref_sofa="3" begin="243" end="244" nodeType="NN" nodeValue="-LRB-" leaf="true" _ref_parent="8814" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8529" _ref_sofa="3" begin="244" end="249" nodeType="NNS" nodeValue="kcals" leaf="true" _ref_parent="8814" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8542" _ref_sofa="3" begin="249" end="250" nodeType="NN" nodeValue="-RRB-" leaf="true" _ref_parent="8831" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8555" _ref_sofa="3" begin="250" end="251" nodeType=":" nodeValue=":" leaf="true" _ref_parent="8742" headIndex="0" index="6" tokenIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8568" _ref_sofa="3" begin="252" end="256" nodeType="CD" nodeValue="1500" leaf="true" _ref_parent="8865" headIndex="0" index="7" tokenIndex="7"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8581" _ref_sofa="3" begin="257" end="265" nodeType="NNS" nodeValue="calories" leaf="true" _ref_parent="8865" headIndex="0" index="8" tokenIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8594" _ref_sofa="3" begin="265" end="266" nodeType="," nodeValue="," leaf="true" _ref_parent="8847" headIndex="0" index="9" tokenIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8607" _ref_sofa="3" begin="267" end="275" nodeType="VBN" nodeValue="assessed" leaf="true" _ref_parent="8882" headIndex="0" index="10" tokenIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8620" _ref_sofa="3" begin="276" end="278" nodeType="IN" nodeValue="as" leaf="true" _ref_parent="8899" headIndex="0" index="11" tokenIndex="11"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8633" _ref_sofa="3" begin="279" end="281" nodeType="NN" nodeValue="HB" leaf="true" _ref_parent="8933" headIndex="0" index="12" tokenIndex="12"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8646" _ref_sofa="3" begin="282" end="283" nodeType="SYM" nodeValue="+" leaf="true" _ref_parent="8933" headIndex="0" index="13" tokenIndex="13"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8659" _ref_sofa="3" begin="284" end="286" nodeType="CD" nodeValue="20" leaf="true" _ref_parent="8933" headIndex="0" index="14" tokenIndex="14"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8672" _ref_sofa="3" begin="286" end="287" nodeType="NN" nodeValue="%" leaf="true" _ref_parent="8933" headIndex="0" index="15" tokenIndex="15"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8685" _ref_sofa="3" begin="288" end="291" nodeType="IN" nodeValue="for" leaf="true" _ref_parent="8952" headIndex="0" index="16" tokenIndex="16"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8698" _ref_sofa="3" begin="292" end="300" nodeType="NN" nodeValue="activity" leaf="true" _ref_parent="8969" headIndex="0" index="17" tokenIndex="17"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="8711" _ref_sofa="3" begin="300" end="301" nodeType="." nodeValue="." leaf="true" _ref_parent="8742" headIndex="0" index="18" tokenIndex="18"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9199" _ref_sofa="3" begin="303" end="308" nodeType="JJ" nodeValue="Daily" leaf="true" _ref_parent="9418" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9212" _ref_sofa="3" begin="309" end="316" nodeType="NN" nodeValue="Protein" leaf="true" _ref_parent="9418" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9225" _ref_sofa="3" begin="317" end="322" nodeType="NNS" nodeValue="needs" leaf="true" _ref_parent="9418" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9238" _ref_sofa="3" begin="322" end="323" nodeType=":" nodeValue=":" leaf="true" _ref_parent="9399" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9251" _ref_sofa="3" begin="324" end="326" nodeType="CD" nodeValue="40" leaf="true" _ref_parent="9454" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9264" _ref_sofa="3" begin="327" end="332" nodeType="NNS" nodeValue="grams" leaf="true" _ref_parent="9454" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9277" _ref_sofa="3" begin="332" end="333" nodeType="," nodeValue="," leaf="true" _ref_parent="9436" headIndex="0" index="6" tokenIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9290" _ref_sofa="3" begin="335" end="343" nodeType="VBN" nodeValue="assessed" leaf="true" _ref_parent="9471" headIndex="0" index="7" tokenIndex="7"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9303" _ref_sofa="3" begin="344" end="346" nodeType="IN" nodeValue="as" leaf="true" _ref_parent="9488" headIndex="0" index="8" tokenIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9316" _ref_sofa="3" begin="347" end="350" nodeType="CD" nodeValue="1.0" leaf="true" _ref_parent="9522" headIndex="0" index="9" tokenIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9329" _ref_sofa="3" begin="351" end="352" nodeType="NNS" nodeValue="g" leaf="true" _ref_parent="9522" headIndex="0" index="10" tokenIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9342" _ref_sofa="3" begin="352" end="353" nodeType="SYM" nodeValue="/" leaf="true" _ref_parent="9539" headIndex="0" index="11" tokenIndex="11"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9355" _ref_sofa="3" begin="353" end="355" nodeType="NN" nodeValue="kg" leaf="true" _ref_parent="9556" headIndex="0" index="12" tokenIndex="12"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9368" _ref_sofa="3" begin="355" end="356" nodeType="." nodeValue="." leaf="true" _ref_parent="9399" headIndex="0" index="13" tokenIndex="13"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9606" _ref_sofa="3" begin="358" end="369" nodeType="NN" nodeValue="Colonoscopy" leaf="true" _ref_parent="9650" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9619" _ref_sofa="3" begin="369" end="370" nodeType="." nodeValue="." leaf="true" _ref_parent="9650" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9761" _ref_sofa="3" begin="371" end="373" nodeType="DT" nodeValue="No" leaf="true" _ref_parent="9876" headIndex="0" index="0" tokenIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9774" _ref_sofa="3" begin="374" end="378" nodeType="NN" nodeValue="pain" leaf="true" _ref_parent="9894" headIndex="0" index="1" tokenIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9787" _ref_sofa="3" begin="379" end="381" nodeType="CC" nodeValue="or" leaf="true" _ref_parent="9894" headIndex="0" index="2" tokenIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9800" _ref_sofa="3" begin="382" end="392" nodeType="NN" nodeValue="discomfort" leaf="true" _ref_parent="9894" headIndex="0" index="3" tokenIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9813" _ref_sofa="3" begin="393" end="401" nodeType="VBN" nodeValue="reported" leaf="true" _ref_parent="9912" headIndex="0" index="4" tokenIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode _indexed="1" _id="9826" _ref_sofa="3" begin="401" end="402" nodeType="." nodeValue="." leaf="true" _ref_parent="9857" headIndex="0" index="5" tokenIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="6444" _ref_sofa="3" begin="2" end="16" nodeType="NP" leaf="false" _ref_parent="6426" _ref_children="6457" _ref_nodeTags="6455" headIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="6623" _ref_sofa="3" begin="20" end="64" nodeType="NP" leaf="false" _ref_parent="6605" _ref_children="6636" _ref_nodeTags="6634" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="6640" _ref_sofa="3" begin="20" end="45" nodeType="NP" leaf="false" _ref_parent="6623" _ref_children="6653" _ref_nodeTags="6651" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="6658" _ref_sofa="3" begin="46" end="64" nodeType="PP" leaf="false" _ref_parent="6623" _ref_children="6671" _ref_nodeTags="6669" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="6675" _ref_sofa="3" begin="50" end="64" nodeType="NP" leaf="false" _ref_parent="6658" _ref_children="6688" _ref_nodeTags="6686" headIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7105" _ref_sofa="3" begin="68" end="135" nodeType="ADJP" leaf="false" _ref_parent="7087" _ref_children="7118" _ref_nodeTags="7116" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7123" _ref_sofa="3" begin="80" end="134" nodeType="PP" leaf="false" _ref_parent="7105" _ref_children="7136" _ref_nodeTags="7134" headIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7140" _ref_sofa="3" begin="84" end="134" nodeType="NP" leaf="false" _ref_parent="7123" _ref_children="7153" _ref_nodeTags="7151" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7158" _ref_sofa="3" begin="84" end="94" nodeType="NP" leaf="false" _ref_parent="7140" _ref_children="7171" _ref_nodeTags="7169" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7175" _ref_sofa="3" begin="96" end="134" nodeType="SBAR" leaf="false" _ref_parent="7140" _ref_children="7188" _ref_nodeTags="7186" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7192" _ref_sofa="3" begin="96" end="99" nodeType="WHNP" leaf="false" _ref_parent="7175" _ref_children="7206" _ref_nodeTags="7203" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7209" _ref_sofa="3" begin="100" end="134" nodeType="S" leaf="false" _ref_parent="7175" _ref_children="7222" _ref_nodeTags="7220" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7225" _ref_sofa="3" begin="100" end="134" nodeType="VP" leaf="false" _ref_parent="7209" _ref_children="7238" _ref_nodeTags="7236" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7242" _ref_sofa="3" begin="105" end="134" nodeType="PP" leaf="false" _ref_parent="7225" _ref_children="7256" _ref_nodeTags="7253" headIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7260" _ref_sofa="3" begin="108" end="134" nodeType="NP" leaf="false" _ref_parent="7242" _ref_children="7273" _ref_nodeTags="7271" headIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7277" _ref_sofa="3" begin="108" end="116" nodeType="NP" leaf="false" _ref_parent="7260" _ref_children="7290" _ref_nodeTags="7288" headIndex="9"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7294" _ref_sofa="3" begin="117" end="134" nodeType="PP" leaf="false" _ref_parent="7260" _ref_children="7307" _ref_nodeTags="7305" headIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7311" _ref_sofa="3" begin="122" end="134" nodeType="NP" leaf="false" _ref_parent="7294" _ref_children="7324" _ref_nodeTags="7322" headIndex="12"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7546" _ref_sofa="3" begin="137" end="166" nodeType="S" leaf="false" _ref_parent="7528" _ref_children="7560" _ref_nodeTags="7557" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7565" _ref_sofa="3" begin="137" end="150" nodeType="NP" leaf="false" _ref_parent="7546" _ref_children="7579" _ref_nodeTags="7576" headIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7583" _ref_sofa="3" begin="152" end="166" nodeType="NP" leaf="false" _ref_parent="7546" _ref_children="7597" _ref_nodeTags="7594" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7601" _ref_sofa="3" begin="152" end="157" nodeType="NP" leaf="false" _ref_parent="7583" _ref_children="7614" _ref_nodeTags="7612" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7619" _ref_sofa="3" begin="158" end="166" nodeType="NP" leaf="false" _ref_parent="7583" _ref_children="7633" _ref_nodeTags="7630" headIndex="6"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7910" _ref_sofa="3" begin="168" end="206" nodeType="FRAG" leaf="false" _ref_parent="7892" _ref_children="7923" _ref_nodeTags="7921" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7928" _ref_sofa="3" begin="168" end="174" nodeType="NP" leaf="false" _ref_parent="7910" _ref_children="7941" _ref_nodeTags="7939" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7944" _ref_sofa="3" begin="176" end="206" nodeType="FRAG" leaf="false" _ref_parent="7910" _ref_children="7957" _ref_nodeTags="7955" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7962" _ref_sofa="3" begin="176" end="199" nodeType="NP" leaf="false" _ref_parent="7944" _ref_children="7975" _ref_nodeTags="7973" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7980" _ref_sofa="3" begin="176" end="182" nodeType="NP" leaf="false" _ref_parent="7962" _ref_children="7993" _ref_nodeTags="7991" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="7997" _ref_sofa="3" begin="201" end="206" nodeType="NP" leaf="false" _ref_parent="7944" _ref_children="8010" _ref_nodeTags="8008" headIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8120" _ref_sofa="3" begin="208" end="221" nodeType="FRAG" leaf="false" _ref_parent="8102" _ref_children="8133" _ref_nodeTags="8131" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8138" _ref_sofa="3" begin="208" end="212" nodeType="NP" leaf="false" _ref_parent="8120" _ref_children="8151" _ref_nodeTags="8149" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8154" _ref_sofa="3" begin="214" end="221" nodeType="S" leaf="false" _ref_parent="8120" _ref_children="8168" _ref_nodeTags="8165" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8171" _ref_sofa="3" begin="214" end="221" nodeType="ADJP" leaf="false" _ref_parent="8154" _ref_children="8185" _ref_nodeTags="8182" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8742" _ref_sofa="3" begin="223" end="301" nodeType="FRAG" leaf="false" _ref_parent="8724" _ref_children="8755" _ref_nodeTags="8753" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8761" _ref_sofa="3" begin="223" end="250" nodeType="S" leaf="false" _ref_parent="8742" _ref_children="8774" _ref_nodeTags="8772" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8778" _ref_sofa="3" begin="223" end="236" nodeType="NP" leaf="false" _ref_parent="8761" _ref_children="8792" _ref_nodeTags="8789" headIndex="1"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8796" _ref_sofa="3" begin="237" end="250" nodeType="VP" leaf="false" _ref_parent="8761" _ref_children="8809" _ref_nodeTags="8807" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8814" _ref_sofa="3" begin="243" end="249" nodeType="NP" leaf="false" _ref_parent="8796" _ref_children="8827" _ref_nodeTags="8825" headIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8831" _ref_sofa="3" begin="249" end="250" nodeType="NP" leaf="false" _ref_parent="8796" _ref_children="8844" _ref_nodeTags="8842" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8847" _ref_sofa="3" begin="252" end="300" nodeType="NP" leaf="false" _ref_parent="8742" _ref_children="8860" _ref_nodeTags="8858" headIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8865" _ref_sofa="3" begin="252" end="265" nodeType="NP" leaf="false" _ref_parent="8847" _ref_children="8878" _ref_nodeTags="8876" headIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8882" _ref_sofa="3" begin="267" end="300" nodeType="VP" leaf="false" _ref_parent="8847" _ref_children="8895" _ref_nodeTags="8893" headIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8899" _ref_sofa="3" begin="276" end="300" nodeType="PP" leaf="false" _ref_parent="8882" _ref_children="8912" _ref_nodeTags="8910" headIndex="11"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8916" _ref_sofa="3" begin="279" end="300" nodeType="NP" leaf="false" _ref_parent="8899" _ref_children="8929" _ref_nodeTags="8927" headIndex="15"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8933" _ref_sofa="3" begin="279" end="287" nodeType="NP" leaf="false" _ref_parent="8916" _ref_children="8946" _ref_nodeTags="8944" headIndex="15"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8952" _ref_sofa="3" begin="288" end="300" nodeType="PP" leaf="false" _ref_parent="8916" _ref_children="8965" _ref_nodeTags="8963" headIndex="16"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="8969" _ref_sofa="3" begin="292" end="300" nodeType="NP" leaf="false" _ref_parent="8952" _ref_children="8982" _ref_nodeTags="8980" headIndex="17"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9399" _ref_sofa="3" begin="303" end="356" nodeType="FRAG" leaf="false" _ref_parent="9381" _ref_children="9412" _ref_nodeTags="9410" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9418" _ref_sofa="3" begin="303" end="322" nodeType="NP" leaf="false" _ref_parent="9399" _ref_children="9431" _ref_nodeTags="9429" headIndex="2"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9436" _ref_sofa="3" begin="324" end="355" nodeType="NP" leaf="false" _ref_parent="9399" _ref_children="9449" _ref_nodeTags="9447" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9454" _ref_sofa="3" begin="324" end="332" nodeType="NP" leaf="false" _ref_parent="9436" _ref_children="9467" _ref_nodeTags="9465" headIndex="5"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9471" _ref_sofa="3" begin="335" end="355" nodeType="VP" leaf="false" _ref_parent="9436" _ref_children="9484" _ref_nodeTags="9482" headIndex="7"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9488" _ref_sofa="3" begin="344" end="355" nodeType="PP" leaf="false" _ref_parent="9471" _ref_children="9501" _ref_nodeTags="9499" headIndex="8"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9505" _ref_sofa="3" begin="347" end="355" nodeType="NP" leaf="false" _ref_parent="9488" _ref_children="9518" _ref_nodeTags="9516" headIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9522" _ref_sofa="3" begin="347" end="352" nodeType="NP" leaf="false" _ref_parent="9505" _ref_children="9535" _ref_nodeTags="9533" headIndex="10"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9539" _ref_sofa="3" begin="352" end="355" nodeType="PP" leaf="false" _ref_parent="9505" _ref_children="9552" _ref_nodeTags="9550" headIndex="11"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9556" _ref_sofa="3" begin="353" end="355" nodeType="NP" leaf="false" _ref_parent="9539" _ref_children="9569" _ref_nodeTags="9567" headIndex="12"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9650" _ref_sofa="3" begin="358" end="370" nodeType="NP" leaf="false" _ref_parent="9632" _ref_children="9663" _ref_nodeTags="9661" headIndex="0"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9857" _ref_sofa="3" begin="371" end="402" nodeType="S" leaf="false" _ref_parent="9839" _ref_children="9871" _ref_nodeTags="9868" headIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9876" _ref_sofa="3" begin="371" end="392" nodeType="NP" leaf="false" _ref_parent="9857" _ref_children="9890" _ref_nodeTags="9887" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9894" _ref_sofa="3" begin="374" end="392" nodeType="NML" leaf="false" _ref_parent="9876" _ref_children="9907" _ref_nodeTags="9905" headIndex="3"/>
+    <org.apache.ctakes.typesystem.type.syntax.TreebankNode _indexed="1" _id="9912" _ref_sofa="3" begin="393" end="401" nodeType="VP" leaf="false" _ref_parent="9857" _ref_children="9925" _ref_nodeTags="9923" headIndex="4"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="6426" _ref_sofa="3" begin="2" end="16" nodeType="TOP" leaf="false" _ref_children="6441" _ref_nodeTags="6439" headIndex="0" treebankParse="(TOP (NP (NNP Dr.) (NNP Nutritious)))" _ref_terminals="6396"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="6605" _ref_sofa="3" begin="20" end="64" nodeType="TOP" leaf="false" _ref_children="6620" _ref_nodeTags="6618" headIndex="0" treebankParse="(TOP (NP (NP (JJ Medical) (NN Nutrition) (NN Therapy)) (PP (IN for) (NP (NN Hyperlipidemia)))))" _ref_terminals="6533"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="7087" _ref_sofa="3" begin="68" end="135" nodeType="TOP" leaf="false" _ref_children="7102" _ref_nodeTags="7100" headIndex="0" treebankParse="(TOP (ADJP (JJ Significant) (PP (IN for) (NP (NP (PRP$ her) (NN father)) (, ,) (SBAR (WHNP-1 (WP who)) (S (VP (VBD died) (PP-TMP (IN at) (NP (NP (CD 50) (NNS years)) (PP (IN from) (NP (NN colon) (NN cancer)))))))))) (. .)))" _ref_terminals="6889"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="7528" _ref_sofa="3" begin="137" end="166" nodeType="TOP" leaf="false" _ref_children="7543" _ref_nodeTags="7541" headIndex="0" treebankParse="(TOP (S-RED (NP-SBJ (NN Phone) (NN contact)) (: :) (NP-PRD (NP (NN -LRB-) (CD 555) (NN -RRB-)) (NP-TMP (CD 555-1212)))))" _ref_terminals="7428"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="7892" _ref_sofa="3" begin="168" end="206" nodeType="TOP" leaf="false" _ref_children="7907" _ref_nodeTags="7905" headIndex="0" treebankParse="(TOP (FRAG (NP (NN Height)) (: :) (FRAG (NP (NP (CD 144) (NNS cm)) (JJ Current) (NN Weight)) (: :) (NP (CD 45) (NNS kg)))))" _ref_terminals="7764"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="8102" _ref_sofa="3" begin="208" end="221" nodeType="TOP" leaf="false" _ref_children="8117" _ref_nodeTags="8115" headIndex="0" treebankParse="(TOP (FRAG (NP (NN Diet)) (: :) (S-RED (ADJP-PRD (JJ General)))))" _ref_terminals="8058"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="8724" _ref_sofa="3" begin="223" end="301" nodeType="TOP" leaf="false" _ref_children="8739" _ref_nodeTags="8737" headIndex="0" treebankParse="(TOP (FRAG (S (NP-SBJ (JJ Daily) (NN Calorie)) (VP (VBZ needs) (NP (NN -LRB-) (NNS kcals)) (NP (NN -RRB-)))) (: :) (NP (NP (CD 1500) (NNS calories)) (, ,) (VP (VBN assessed) (PP (IN as) (NP (NP (NN HB) (SYM +) (CD 20) (NN %)) (PP (IN for) (NP (NN activity))))))) (. .)))" _ref_terminals="8456"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="9381" _ref_sofa="3" begin="303" end="356" nodeType="TOP" leaf="false" _ref_children="9396" _ref_nodeTags="9394" headIndex="0" treebankParse="(TOP (FRAG (NP (JJ Daily) (NN Protein) (NNS needs)) (: :) (NP (NP (CD 40) (NNS grams)) (, ,) (VP (VBN assessed) (PP (IN as) (NP (NP (CD 1.0) (NNS g)) (PP (SYM /) (NP (NN kg))))))) (. .)))" _ref_terminals="9183"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="9632" _ref_sofa="3" begin="358" end="370" nodeType="TOP" leaf="false" _ref_children="9647" _ref_nodeTags="9645" headIndex="0" treebankParse="(TOP (NP (NN Colonoscopy) (. .)))" _ref_terminals="9602"/>
+    <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="9839" _ref_sofa="3" begin="371" end="402" nodeType="TOP" leaf="false" _ref_children="9854" _ref_nodeTags="9852" headIndex="0" treebankParse="(TOP (S-RED (NP-SBJ (DT No) (NML (NN pain) (CC or) (NN discomfort))) (VP (VBN reported)) (. .)))" _ref_terminals="9753"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="9928" _ref_sofa="3" begin="50" end="64" _ref_content="6348" id="45" anaphoric_prob="0.0"/>
+    <uima.cas.FSArray _id="9753" size="6">
+        <i>9761</i>
+        <i>9774</i>
+        <i>9787</i>
+        <i>9800</i>
+        <i>9813</i>
+        <i>9826</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9852" size="0"/>
+    <uima.cas.FSArray _id="9854" size="1">
+        <i>9857</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="9602" size="2">
+        <i>9606</i>
+        <i>9619</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9645" size="0"/>
+    <uima.cas.FSArray _id="9647" size="1">
+        <i>9650</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="9183" size="14">
+        <i>9199</i>
+        <i>9212</i>
+        <i>9225</i>
+        <i>9238</i>
+        <i>9251</i>
+        <i>9264</i>
+        <i>9277</i>
+        <i>9290</i>
+        <i>9303</i>
+        <i>9316</i>
+        <i>9329</i>
+        <i>9342</i>
+        <i>9355</i>
+        <i>9368</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9394" size="0"/>
+    <uima.cas.FSArray _id="9396" size="1">
+        <i>9399</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="8456" size="19">
+        <i>8477</i>
+        <i>8490</i>
+        <i>8503</i>
+        <i>8516</i>
+        <i>8529</i>
+        <i>8542</i>
+        <i>8555</i>
+        <i>8568</i>
+        <i>8581</i>
+        <i>8594</i>
+        <i>8607</i>
+        <i>8620</i>
+        <i>8633</i>
+        <i>8646</i>
+        <i>8659</i>
+        <i>8672</i>
+        <i>8685</i>
+        <i>8698</i>
+        <i>8711</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8737" size="0"/>
+    <uima.cas.FSArray _id="8739" size="1">
+        <i>8742</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="8058" size="3">
+        <i>8063</i>
+        <i>8076</i>
+        <i>8089</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8115" size="0"/>
+    <uima.cas.FSArray _id="8117" size="1">
+        <i>8120</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="7764" size="9">
+        <i>7775</i>
+        <i>7788</i>
+        <i>7801</i>
+        <i>7814</i>
+        <i>7827</i>
+        <i>7840</i>
+        <i>7853</i>
+        <i>7866</i>
+        <i>7879</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7905" size="0"/>
+    <uima.cas.FSArray _id="7907" size="1">
+        <i>7910</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="7428" size="7">
+        <i>7437</i>
+        <i>7450</i>
+        <i>7463</i>
+        <i>7476</i>
+        <i>7489</i>
+        <i>7502</i>
+        <i>7515</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7541" size="0"/>
+    <uima.cas.FSArray _id="7543" size="1">
+        <i>7546</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="6889" size="14">
+        <i>6905</i>
+        <i>6918</i>
+        <i>6931</i>
+        <i>6944</i>
+        <i>6957</i>
+        <i>6970</i>
+        <i>6983</i>
+        <i>6996</i>
+        <i>7009</i>
+        <i>7022</i>
+        <i>7035</i>
+        <i>7048</i>
+        <i>7061</i>
+        <i>7074</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7100" size="0"/>
+    <uima.cas.FSArray _id="7102" size="1">
+        <i>7105</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="6533" size="5">
+        <i>6540</i>
+        <i>6553</i>
+        <i>6566</i>
+        <i>6579</i>
+        <i>6592</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6618" size="0"/>
+    <uima.cas.FSArray _id="6620" size="1">
+        <i>6623</i>
+    </uima.cas.FSArray>
+    <uima.cas.FSArray _id="6396" size="2">
+        <i>6400</i>
+        <i>6413</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6439" size="0"/>
+    <uima.cas.FSArray _id="6441" size="1">
+        <i>6444</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9923" size="0"/>
+    <uima.cas.FSArray _id="9925" size="1">
+        <i>9813</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9905" size="0"/>
+    <uima.cas.FSArray _id="9907" size="3">
+        <i>9774</i>
+        <i>9787</i>
+        <i>9800</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9887" size="1">
+        <i>SBJ</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="9890" size="2">
+        <i>9761</i>
+        <i>9894</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9868" size="1">
+        <i>RED</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="9871" size="3">
+        <i>9876</i>
+        <i>9912</i>
+        <i>9826</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9661" size="0"/>
+    <uima.cas.FSArray _id="9663" size="2">
+        <i>9606</i>
+        <i>9619</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9567" size="0"/>
+    <uima.cas.FSArray _id="9569" size="1">
+        <i>9355</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9550" size="0"/>
+    <uima.cas.FSArray _id="9552" size="2">
+        <i>9342</i>
+        <i>9556</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9533" size="0"/>
+    <uima.cas.FSArray _id="9535" size="2">
+        <i>9316</i>
+        <i>9329</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9516" size="0"/>
+    <uima.cas.FSArray _id="9518" size="2">
+        <i>9522</i>
+        <i>9539</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9499" size="0"/>
+    <uima.cas.FSArray _id="9501" size="2">
+        <i>9303</i>
+        <i>9505</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9482" size="0"/>
+    <uima.cas.FSArray _id="9484" size="2">
+        <i>9290</i>
+        <i>9488</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9465" size="0"/>
+    <uima.cas.FSArray _id="9467" size="2">
+        <i>9251</i>
+        <i>9264</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9447" size="0"/>
+    <uima.cas.FSArray _id="9449" size="3">
+        <i>9454</i>
+        <i>9277</i>
+        <i>9471</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9429" size="0"/>
+    <uima.cas.FSArray _id="9431" size="3">
+        <i>9199</i>
+        <i>9212</i>
+        <i>9225</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="9410" size="0"/>
+    <uima.cas.FSArray _id="9412" size="4">
+        <i>9418</i>
+        <i>9238</i>
+        <i>9436</i>
+        <i>9368</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8980" size="0"/>
+    <uima.cas.FSArray _id="8982" size="1">
+        <i>8698</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8963" size="0"/>
+    <uima.cas.FSArray _id="8965" size="2">
+        <i>8685</i>
+        <i>8969</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8944" size="0"/>
+    <uima.cas.FSArray _id="8946" size="4">
+        <i>8633</i>
+        <i>8646</i>
+        <i>8659</i>
+        <i>8672</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8927" size="0"/>
+    <uima.cas.FSArray _id="8929" size="2">
+        <i>8933</i>
+        <i>8952</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8910" size="0"/>
+    <uima.cas.FSArray _id="8912" size="2">
+        <i>8620</i>
+        <i>8916</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8893" size="0"/>
+    <uima.cas.FSArray _id="8895" size="2">
+        <i>8607</i>
+        <i>8899</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8876" size="0"/>
+    <uima.cas.FSArray _id="8878" size="2">
+        <i>8568</i>
+        <i>8581</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8858" size="0"/>
+    <uima.cas.FSArray _id="8860" size="3">
+        <i>8865</i>
+        <i>8594</i>
+        <i>8882</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8842" size="0"/>
+    <uima.cas.FSArray _id="8844" size="1">
+        <i>8542</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8825" size="0"/>
+    <uima.cas.FSArray _id="8827" size="2">
+        <i>8516</i>
+        <i>8529</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8807" size="0"/>
+    <uima.cas.FSArray _id="8809" size="3">
+        <i>8503</i>
+        <i>8814</i>
+        <i>8831</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8789" size="1">
+        <i>SBJ</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="8792" size="2">
+        <i>8477</i>
+        <i>8490</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8772" size="0"/>
+    <uima.cas.FSArray _id="8774" size="2">
+        <i>8778</i>
+        <i>8796</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8753" size="0"/>
+    <uima.cas.FSArray _id="8755" size="4">
+        <i>8761</i>
+        <i>8555</i>
+        <i>8847</i>
+        <i>8711</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8182" size="1">
+        <i>PRD</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="8185" size="1">
+        <i>8089</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8165" size="1">
+        <i>RED</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="8168" size="1">
+        <i>8171</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8149" size="0"/>
+    <uima.cas.FSArray _id="8151" size="1">
+        <i>8063</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8131" size="0"/>
+    <uima.cas.FSArray _id="8133" size="3">
+        <i>8138</i>
+        <i>8076</i>
+        <i>8154</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="8008" size="0"/>
+    <uima.cas.FSArray _id="8010" size="2">
+        <i>7866</i>
+        <i>7879</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7991" size="0"/>
+    <uima.cas.FSArray _id="7993" size="2">
+        <i>7801</i>
+        <i>7814</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7973" size="0"/>
+    <uima.cas.FSArray _id="7975" size="3">
+        <i>7980</i>
+        <i>7827</i>
+        <i>7840</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7955" size="0"/>
+    <uima.cas.FSArray _id="7957" size="3">
+        <i>7962</i>
+        <i>7853</i>
+        <i>7997</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7939" size="0"/>
+    <uima.cas.FSArray _id="7941" size="1">
+        <i>7775</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7921" size="0"/>
+    <uima.cas.FSArray _id="7923" size="3">
+        <i>7928</i>
+        <i>7788</i>
+        <i>7944</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7630" size="1">
+        <i>TMP</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7633" size="1">
+        <i>7515</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7612" size="0"/>
+    <uima.cas.FSArray _id="7614" size="3">
+        <i>7476</i>
+        <i>7489</i>
+        <i>7502</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7594" size="1">
+        <i>PRD</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7597" size="2">
+        <i>7601</i>
+        <i>7619</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7576" size="1">
+        <i>SBJ</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7579" size="2">
+        <i>7437</i>
+        <i>7450</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7557" size="1">
+        <i>RED</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7560" size="3">
+        <i>7565</i>
+        <i>7463</i>
+        <i>7583</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7322" size="0"/>
+    <uima.cas.FSArray _id="7324" size="2">
+        <i>7048</i>
+        <i>7061</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7305" size="0"/>
+    <uima.cas.FSArray _id="7307" size="2">
+        <i>7035</i>
+        <i>7311</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7288" size="0"/>
+    <uima.cas.FSArray _id="7290" size="2">
+        <i>7009</i>
+        <i>7022</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7271" size="0"/>
+    <uima.cas.FSArray _id="7273" size="2">
+        <i>7277</i>
+        <i>7294</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7253" size="1">
+        <i>TMP</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7256" size="2">
+        <i>6996</i>
+        <i>7260</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7236" size="0"/>
+    <uima.cas.FSArray _id="7238" size="2">
+        <i>6983</i>
+        <i>7242</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7220" size="0"/>
+    <uima.cas.FSArray _id="7222" size="1">
+        <i>7225</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7203" size="1">
+        <i>1</i>
+    </uima.cas.StringArray>
+    <uima.cas.FSArray _id="7206" size="1">
+        <i>6970</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7186" size="0"/>
+    <uima.cas.FSArray _id="7188" size="2">
+        <i>7192</i>
+        <i>7209</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7169" size="0"/>
+    <uima.cas.FSArray _id="7171" size="2">
+        <i>6931</i>
+        <i>6944</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7151" size="0"/>
+    <uima.cas.FSArray _id="7153" size="3">
+        <i>7158</i>
+        <i>6957</i>
+        <i>7175</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7134" size="0"/>
+    <uima.cas.FSArray _id="7136" size="2">
+        <i>6918</i>
+        <i>7140</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="7116" size="0"/>
+    <uima.cas.FSArray _id="7118" size="3">
+        <i>6905</i>
+        <i>7123</i>
+        <i>7074</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6686" size="0"/>
+    <uima.cas.FSArray _id="6688" size="1">
+        <i>6592</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6669" size="0"/>
+    <uima.cas.FSArray _id="6671" size="2">
+        <i>6579</i>
+        <i>6675</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6651" size="0"/>
+    <uima.cas.FSArray _id="6653" size="3">
+        <i>6540</i>
+        <i>6553</i>
+        <i>6566</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6634" size="0"/>
+    <uima.cas.FSArray _id="6636" size="2">
+        <i>6640</i>
+        <i>6658</i>
+    </uima.cas.FSArray>
+    <uima.cas.StringArray _id="6455" size="0"/>
+    <uima.cas.FSArray _id="6457" size="2">
+        <i>6400</i>
+        <i>6413</i>
+    </uima.cas.FSArray>
     <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="6337" codingScheme="SNOMED" code="200309" oid="200309#SNOMED" cui="Cui0309" tui="T_DD"/>
     <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="6330" codingScheme="SNOMED" code="100309" oid="100309#SNOMED" cui="Cui0309" tui="T_DD"/>
     <uima.cas.FSArray _id="6344" size="2">

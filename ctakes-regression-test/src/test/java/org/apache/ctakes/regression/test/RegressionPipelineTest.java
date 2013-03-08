@@ -132,10 +132,9 @@ public class RegressionPipelineTest extends XMLTestCase {
 
 				Diff myDiff = new Diff(expected, generated);
 				// Only Testing the skeleton because the xml attributes in the
-				// xcas could be in different
-				// Ordering
-				myDiff.overrideElementQualifier(new ElementNameAndTextQualifier());
-				myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
+				// xcas could be in different Ordering
+				//myDiff.overrideElementQualifier(new ElementNameAndTextQualifier());
+				//myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
 				assertTrue("Verifying Test Output: " + file.getName() + myDiff,
 						myDiff.similar());
 				// assertXMLEqual("Verifying Test Output: " + file.getName(),
