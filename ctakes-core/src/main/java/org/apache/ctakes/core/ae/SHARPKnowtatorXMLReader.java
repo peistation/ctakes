@@ -323,7 +323,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             annotation,
             mention,
             jCas,
-            CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
+            CONST.NE_TYPE_ID_CLINICAL_ATTRIBUTE,
             stringSlots,
             booleanSlots,
             annotationSlots,
@@ -336,7 +336,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             annotation,
             mention,
             jCas,
-            CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
+            CONST.NE_TYPE_ID_DEVICE,
             stringSlots,
             booleanSlots,
             annotationSlots,
@@ -408,7 +408,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             annotation,
             mention,
             jCas,
-            CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
+            CONST.NE_TYPE_ID_LAB,
             stringSlots,
             booleanSlots,
             annotationSlots,
@@ -468,7 +468,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
             annotation,
             mention,
             jCas,
-            CONST.NE_TYPE_ID_UNKNOWN /* TODO: is this the correct type? */,
+            CONST.NE_TYPE_ID_PHENOMENA,
             stringSlots,
             booleanSlots,
             annotationSlots,
@@ -867,7 +867,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       } else if ("reference_range".equals(annotation.type)) {
         LabReferenceRangeModifier modifier = new LabReferenceRangeModifier(jCas, coveringSpan.begin, coveringSpan.end);
         LabReferenceRange attribute = new LabReferenceRange(jCas);
-        // TODO: is this where the reference range value should be taken from?
         attribute.setValue(modifier.getCoveredText());
         attribute.addToIndexes();
         modifier.setNormalizedForm(attribute);

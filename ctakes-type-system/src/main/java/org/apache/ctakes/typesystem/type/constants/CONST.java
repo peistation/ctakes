@@ -30,6 +30,10 @@ public class CONST {
 	public static final int NE_TYPE_ID_FINDING = 3;
 	public static final int NE_TYPE_ID_PROCEDURE = 5;
 	public static final int NE_TYPE_ID_ANATOMICAL_SITE = 6;
+	public static final int NE_TYPE_ID_CLINICAL_ATTRIBUTE = 7;
+	public static final int NE_TYPE_ID_DEVICE = 8;
+	public static final int NE_TYPE_ID_LAB = 9;
+	public static final int NE_TYPE_ID_PHENOMENA = 10;
 	
 	public static final int MODIFIER_TYPE_ID_UNKNOWN = 0;
 	public static final int MODIFIER_TYPE_ID_COURSE_CLASS = 1;
