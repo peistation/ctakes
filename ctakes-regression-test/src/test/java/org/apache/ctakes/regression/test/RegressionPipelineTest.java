@@ -36,6 +36,7 @@ import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.util.XMLInputSource;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
+import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -131,8 +132,9 @@ public class RegressionPipelineTest extends XMLTestCase {
 
 				Diff myDiff = new Diff(expected, generated);
 				// Elment and attributes in the xcas could be in different Ordering
-				myDiff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
-				//myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
+				// Match on the id attribute are the same
+				//myDiff.overrideElementQualifier(new ElementNameAndAttributeQualifier("id"));
+				myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
 				assertTrue("Verifying Test Output: " + file.getName() + myDiff,
 						myDiff.similar());
 			}
