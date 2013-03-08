@@ -1,8 +1,5 @@
 package org.apache.ctakes.core.util;
 
-import java.util.Map;
-
-import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 
 /**
@@ -14,13 +11,6 @@ import org.apache.ctakes.typesystem.type.constants.CONST;
  */
 public class SHARPKnowtatorXMLDefaults {
 
-	public static String getSubject(String normalizedSubject) {
-		if (normalizedSubject==null) {
-			return CONST.ATTR_SUBJECT_PATIENT;
-		}
-		return normalizedSubject;
-	}
-
 	public static String getSubject() {
 		return CONST.ATTR_SUBJECT_PATIENT;
 	}
@@ -28,13 +18,4 @@ public class SHARPKnowtatorXMLDefaults {
 	public static int getHistoryOf() {
 		return CONST.NE_HISTORY_OF_ABSENT;
 	}
-
-//	public static String getSubject(Map<String, KnowtatorAnnotation> annotationSlots) {
-//		if (annotationSlots.get("subject_CU")==null) {
-//			return CONST.ATTR_SUBJECT_PATIENT;
-//		}
-//		return annotationSlots.get("subject_CU").stringSlots.get("subject_normalization_CU");
-//	}
-
-
 }

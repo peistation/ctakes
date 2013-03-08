@@ -103,7 +103,6 @@ import org.apache.ctakes.typesystem.type.textsem.SubjectModifier;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textsem.UncertaintyModifier;
 import org.apache.log4j.Logger;
-import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.Feature;
@@ -111,10 +110,10 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceInitializationException;
 import org.jdom2.JDOMException;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.component.xwriter.XWriter;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
@@ -126,57 +125,43 @@ import com.google.common.io.Files;
 public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
   static Logger LOGGER = Logger.getLogger(SHARPKnowtatorXMLReader.class);
   
-  // paramater that should contain the path to text files, with Knowtator XML in a "nephew"
-  public static final String PARAM_TEXTURI = "TextURI";
-  public static final String SET_DEFAULTS = "SetDefaults";
+  public static final String PARAM_TEXT_DIRECTORY = "TextDirectory";
+  @ConfigurationParameter(
+      name = PARAM_TEXT_DIRECTORY,
+      description = "directory containing the text files (if DocumentIDs are just filenames); "
+          + "defaults to assuming that DocumentIDs are full file paths")
+  private File textDirectory;
+  
+  public static final String PARAM_SET_DEFAULTS = "SetDefaults";
+  @ConfigurationParameter(
+      name = PARAM_SET_DEFAULTS,
+      description = "whether or not to set default attribute values if no annotation is present")
+  private boolean setDefaults;
 
-  private static final Map<String, String> knowtatorSubjectValuesMappedToCasValues;
+  private static final Map<String, String> SUBJECT_KNOWTATOR_TO_UIMA_MAP;
   static {
-	  knowtatorSubjectValuesMappedToCasValues = Maps.newHashMap();
-	  String [] knowtatorValues = {  // subject_normalization_CU
-			  "patient",
-			  "family_member",
-			  "donor_family_member",
-			  "donor_other",
-			  "other",
-	  };
-
-	  String [] casValues = {
-				CONST.ATTR_SUBJECT_PATIENT,
-				CONST. ATTR_SUBJECT_FAMILY_MEMBER, // = "family_member";
-				CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER, // = "donor_family_member";
-				CONST.ATTR_SUBJECT_DONOR_OTHER, // = "donor_other";
-				CONST.ATTR_SUBJECT_OTHER, // = "other";
-			  
-	  };
-	  
-	  for (int i=0; i<knowtatorValues.length; i++) {
-		  knowtatorSubjectValuesMappedToCasValues.put(knowtatorValues[i], casValues[i]);
-		  
-	  }
-	  
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP = Maps.newHashMap();
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("C0030705", CONST.ATTR_SUBJECT_PATIENT);
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("patient", CONST.ATTR_SUBJECT_PATIENT);
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("family_member", CONST.ATTR_SUBJECT_FAMILY_MEMBER);
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("donor_family_member", CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER);
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("donor_other", CONST.ATTR_SUBJECT_DONOR_OTHER);
+    SUBJECT_KNOWTATOR_TO_UIMA_MAP.put("other", CONST.ATTR_SUBJECT_OTHER);
   }
   
-  // path to knowtator xml files
-  public static File textURIDirectory;
-  public static Boolean setDefaults;
-
   /**
    * Get the URI that the text in this class was loaded from
    */
   protected URI getTextURI(JCas jCas) throws AnalysisEngineProcessException {
-    URI uri;
+    String textPath = JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID();
+    if (this.textDirectory != null) {
+      textPath = this.textDirectory + File.separator + textPath;
+    }
     try {
-      if (!(textURIDirectory == null) && !"".equals(textURIDirectory.toString())) {
-        uri = new URI(textURIDirectory.toURI().toString() + File.separator
-            + JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
-      } else {
-        uri = new URI(JCasUtil.selectSingle(jCas, DocumentID.class).getDocumentID());
-      }
+      return new URI(textPath);
     } catch (URISyntaxException e) {
       throw new AnalysisEngineProcessException(e);
     }
-    return uri;
   }
   
   /**
@@ -184,18 +169,8 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
    */
   protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
     String textURI = this.getTextURI(jCas).toString();
-    String fileSeparator;
-    if (!textURI.contains("Knowtator"+File.separator)) {
-    	fileSeparator = "/";
-    } else {
-    	fileSeparator = File.separator;
-    }
-    String xmlURI = textURI.replaceAll("Knowtator"+fileSeparator+"text", "Knowtator_XML") + ".knowtator.xml";
-    // check if directory structure doesn't have underscores
+    String xmlURI = textURI.replaceAll("Knowtator[/\\\\]text", "Knowtator_XML") + ".knowtator.xml";
     try {
-    	if (!new File(new URI(xmlURI)).exists()) {
-    		xmlURI = textURI.replaceAll("Knowtator"+fileSeparator+"text", "Knowtator%20XML") + ".knowtator.xml";
-    	}
       return new URI(xmlURI);
     } catch (URISyntaxException e) {
       throw new AnalysisEngineProcessException(e);
@@ -207,19 +182,6 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
    */
   protected String[] getAnnotatorNames() {
     return new String[] { "consensus set annotator team" };
-  }
-
-  @Override
-  public void initialize(UimaContext aContext) throws ResourceInitializationException {
-	super.initialize(aContext);
-
-  Boolean sd = (Boolean) aContext.getConfigParameterValue(SET_DEFAULTS);
-  setDefaults = (sd==null)? true : sd;
-  try {
-		textURIDirectory = new File( (String) aContext.getConfigParameterValue(PARAM_TEXTURI) );
-	} catch (NullPointerException e) {
-		textURIDirectory = null;
-	}
   }
 
   @Override
@@ -692,31 +654,34 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 
       } else if ("Person".equals(annotation.type)) {
         String value = stringSlots.remove("subject_normalization_CU");
-        if (value != null) {
-          value = knowtatorSubjectValuesMappedToCasValues.get(value);
-        }
+        String uimaValue = SUBJECT_KNOWTATOR_TO_UIMA_MAP.get(value);
         String code = stringSlots.remove("associatedCode");
-        if (code != null) {
-          if ("C0030705".equals(code)) {
-            if (value == null) {
-              value = CONST.ATTR_SUBJECT_PATIENT;
-            } else if (!CONST.ATTR_SUBJECT_PATIENT.equals(value)) {
-              LOGGER.error(String.format(
-                  "subject value \"%s\" and code \"%s\" are inconsistent for annotation with id \"%s\"",
-                  value,
-                  code,
-                  annotation.id));
-            }
-          } else {
-            LOGGER.error(String.format(
-                "unrecognized code \"%s\" for annotation with id \"%s\"",
-                code,
-                annotation.id));
-          }
+        String uimaCode = SUBJECT_KNOWTATOR_TO_UIMA_MAP.get(code);
+        if (value != null && uimaValue == null) {
+          LOGGER.error(String.format(
+              "unrecognized subject value \"%s\" for annotation with id \"%s\"",
+              value,
+              annotation.id));
+        }
+        if (code != null && uimaCode == null) {
+          LOGGER.error(String.format(
+              "unrecognized subject code \"%s\" for annotation with id \"%s\"",
+              code,
+              annotation.id));
+        }
+        if (uimaValue != null && uimaCode != null && !uimaValue.equals(uimaCode)) {
+          LOGGER.error(String.format(
+              "subject value \"%s\" and code \"%s\" are inconsistent for annotation with id \"%s\"",
+              value,
+              code,
+              annotation.id));
+        }
+        String subject = uimaValue != null ? uimaValue : uimaCode;
+        if (subject == null && this.setDefaults) {
+          subject = SHARPKnowtatorXMLDefaults.getSubject();
         }
         SubjectModifier modifier = new SubjectModifier(jCas, coveringSpan.begin, coveringSpan.end);
-        if (setDefaults) value = SHARPKnowtatorXMLDefaults.getSubject(value);
-        modifier.setSubject(value);
+        modifier.setSubject(subject);
         modifier.addToIndexes();
         idAnnotationMap.put(annotation.id, modifier);
 
@@ -724,13 +689,13 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         String value = stringSlots.remove("historyOf_normalization");
         HistoryOfModifier modifier = new HistoryOfModifier(jCas, coveringSpan.begin, coveringSpan.end);
         if (null == value) {
-          if (setDefaults) modifier.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf());
+          if (this.setDefaults) {
+            modifier.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf());
+          }
         } else if ("historyOf_present".equals(value)) {
           modifier.setHistoryOf(CONST.NE_HISTORY_OF_PRESENT);
         } else if ("historyOf_absent".equals(value)) {
           modifier.setHistoryOf(CONST.NE_HISTORY_OF_ABSENT);
-        } else if (setDefaults) {
-          modifier.setHistoryOf(SHARPKnowtatorXMLDefaults.getHistoryOf());
         } else {
           LOGGER.error(String.format(
               "unrecognized history-of value \"%s\" on annotation with id \"%s\"",
