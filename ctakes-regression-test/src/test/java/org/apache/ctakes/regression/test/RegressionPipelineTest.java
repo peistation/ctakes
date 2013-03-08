@@ -35,7 +35,6 @@ import org.apache.uima.collection.StatusCallbackListener;
 import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.util.XMLInputSource;
 import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.junit.Assert;
@@ -66,20 +65,22 @@ import org.xml.sax.SAXException;
  */
 public class RegressionPipelineTest extends XMLTestCase {
 
+	private static final int MAX_TIMEOUT_MS = 15 * 60 * 1000; // 15 mins
 	// LOG4J logger based on class name
 	Logger logger = Logger.getLogger(getClass().getName());
 	private static final File CPEDIR = new File(
 			"desc/collection_processing_engine");
 	int num_cpe = 0;
 
+
 	@Test
 	public void testCPE() throws Exception {
-
+		long started = System.currentTimeMillis();
 		File[] listOfFiles = CPEDIR.listFiles();
 		for (File file : listOfFiles) {
 
 			if (file.isFile()) {
-				num_cpe++ ;
+				num_cpe++;
 				File generated = new File("testdata/generatedoutput/"
 						+ file.getName().substring(0,
 								file.getName().indexOf(".")));
@@ -88,7 +89,7 @@ public class RegressionPipelineTest extends XMLTestCase {
 								file.getName().indexOf(".")));
 
 				logger.info("Creating Dir" + generated);
-				
+
 				Assert.assertTrue(
 						"Unable to create " + generated.getAbsolutePath(),
 						generated.exists() || generated.mkdirs());
@@ -97,21 +98,28 @@ public class RegressionPipelineTest extends XMLTestCase {
 				logger.info("Parsing CPE Descriptor:" + file.getName());
 				CpeDescription cpeDesc = UIMAFramework.getXMLParser()
 						.parseCpeDescription(new XMLInputSource(file));
-				CollectionProcessingEngine mCPE = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
+				CollectionProcessingEngine mCPE = UIMAFramework
+						.produceCollectionProcessingEngine(cpeDesc);
 				// Create and register a Status Callback Listener
-				mCPE.addStatusCallbackListener(new StatusCallbackListenerImpl(expected, generated));
+				mCPE.addStatusCallbackListener(new StatusCallbackListenerImpl(
+						expected, generated));
 				mCPE.process();
 			}
 		}
 		// Wait until all of the CPE's have been completed
 		// Before comparing.
 		while (num_cpe > 0) {
+			if (System.currentTimeMillis() - started >= MAX_TIMEOUT_MS) {
+				logger.error("Regression CPE test timed out after "
+						+ MAX_TIMEOUT_MS + " ms");
+				System.exit(1);
+			}
 			Thread.sleep(1000);
 		}
 	}
 
-	public void compareXMLOutput(File expected_, File generated_) throws IOException,
-			ParserConfigurationException, SAXException {
+	public void compareXMLOutput(File expected_, File generated_)
+			throws IOException, ParserConfigurationException, SAXException {
 
 		File[] listOfFiles = expected_.listFiles();
 		for (File file : listOfFiles) {
@@ -125,15 +133,18 @@ public class RegressionPipelineTest extends XMLTestCase {
 				dbf.setIgnoringComments(true);
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				Document expected = db.parse(file);
-				File f = new File(generated_.getPath() + File.separator + file.getName() );
+				File f = new File(generated_.getPath() + File.separator
+						+ file.getName());
 				Document generated = db.parse(f);
 				generated.normalizeDocument();
 				expected.normalizeDocument();
 
 				Diff myDiff = new Diff(expected, generated);
-				// Elment and attributes in the xcas could be in different Ordering
+				// Elment and attributes in the xcas could be in different
+				// Ordering
 				// Match on the id attribute are the same
-				//myDiff.overrideElementQualifier(new ElementNameAndAttributeQualifier("id"));
+				// myDiff.overrideElementQualifier(new
+				// ElementNameAndAttributeQualifier("id"));
 				myDiff.overrideDifferenceListener(new IgnoreTextAndAttributeValuesDifferenceListener());
 				assertTrue("Verifying Test Output: " + file.getName() + myDiff,
 						myDiff.similar());
@@ -156,6 +167,7 @@ public class RegressionPipelineTest extends XMLTestCase {
 			this.expected = expected_;
 			this.generated = generated_;
 		}
+
 		/**
 		 * Called when the initialization is completed.
 		 * 
