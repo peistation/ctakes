@@ -2216,8 +2216,8 @@
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="17676" _ref_sofa="3" begin="549" end="563" nodeType="TOP" leaf="false" _ref_children="17691" _ref_nodeTags="17689" headIndex="0" treebankParse="(TOP (NP (NN FAMILY) (NN HISTORY)))" _ref_terminals="17646"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="18135" _ref_sofa="3" begin="565" end="635" nodeType="TOP" leaf="false" _ref_children="18150" _ref_nodeTags="18148" headIndex="0" treebankParse="(TOP (S (SYM -) (NP-SBJ (NN Mother)) (VP (VBD died) (, ,) (NP (NP (CD 67)) (, ,) (NP (NN stroke)) (, ;) (NP (VBN had) (JJ varicose) (NNS veins)) (, ,) (NP (NNS headaches)) (, ,) (NP (NN hypertension))))))" _ref_terminals="17923"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="18540" _ref_sofa="3" begin="637" end="670" nodeType="TOP" leaf="false" _ref_children="18555" _ref_nodeTags="18553" headIndex="0" treebankParse="(TOP (S (SYM -) (NP-SBJ (NN Father)) (VP (VBD died) (, ,) (NP (CD 43) (, ,) (NN train) (NN accident)))))" _ref_terminals="18426"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="18630" _ref_sofa="3" begin="421" end="443" _ref_content="12393" id="0" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="18637" _ref_sofa="3" begin="464" end="468" _ref_content="12421" id="1" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="18630" _ref_sofa="3" begin="421" end="443" _ref_content="12393" id="36" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="18637" _ref_sofa="3" begin="464" end="468" _ref_content="12421" id="37" anaphoric_prob="0.0"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="18644" _ref_sofa="3" begin="464" end="468" _ref_anaphor="18637" _ref_antecedentList="18650"/>
     <uima.cas.EmptyFSList _id="18656"/>
     <org.apache.ctakes.coreference.type.BooleanLabeledFS _id="18653" label="false" _ref_feature="18630"/>

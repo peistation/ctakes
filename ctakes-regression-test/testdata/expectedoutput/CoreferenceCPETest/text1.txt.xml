@@ -250,7 +250,7 @@
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="1713" _ref_sofa="3" begin="2" end="45" nodeType="TOP" leaf="false" _ref_children="1728" _ref_nodeTags="1726" headIndex="0" treebankParse="(TOP (S (NP-SBJ (DT The) (NN patient)) (VP (VBD reported) (NP (NP (NN pain)) (PP-LOC (IN in) (NP (PRP$ her) (JJ upper) (NN arm))))) (. .)))" _ref_terminals="1585"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="1941" _ref_sofa="3" begin="47" end="59" nodeType="TOP" leaf="false" _ref_children="1956" _ref_nodeTags="1954" headIndex="0" treebankParse="(TOP (NP (DT No) (NN swelling) (. .)))" _ref_terminals="1897"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="2093" _ref_sofa="3" begin="61" end="76" nodeType="TOP" leaf="false" _ref_children="2108" _ref_nodeTags="2106" headIndex="0" treebankParse="(TOP (NP (NP (NNP Aspirin)) (NP (CD 325) (NNS mg)) (. .)))" _ref_terminals="2035"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2162" _ref_sofa="3" begin="23" end="44" _ref_content="1439" id="46" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2162" _ref_sofa="3" begin="23" end="44" _ref_content="1439" id="35" anaphoric_prob="0.0"/>
     <uima.cas.FSArray _id="2035" size="4">
         <i>2041</i>
         <i>2054</i>

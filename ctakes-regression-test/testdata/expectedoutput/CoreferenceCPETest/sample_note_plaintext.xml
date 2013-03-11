@@ -247,9 +247,9 @@
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="1665" _ref_sofa="3" begin="0" end="27" nodeType="TOP" leaf="false" _ref_children="1680" _ref_nodeTags="1678" headIndex="0" treebankParse="(TOP (NP (NP (NN S)) (HYPH /) (PP-TMP (IN P) (NP (NML (JJ right) (NN knee)) (NN arthroscopy))) (. .)))" _ref_terminals="1565"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="1858" _ref_sofa="3" begin="28" end="39" nodeType="TOP" leaf="false" _ref_children="1873" _ref_nodeTags="1871" headIndex="0" treebankParse="(TOP (NP (NP (NN Knee)) (NN x-ray) (. .)))" _ref_terminals="1814"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="2054" _ref_sofa="3" begin="41" end="66" nodeType="TOP" leaf="false" _ref_children="2069" _ref_nodeTags="2067" headIndex="0" treebankParse="(TOP (S (NP-SBJ (NN Patient)) (VP (VBZ denies) (NP (NN knee) (NN pain))) (. .)))" _ref_terminals="1982"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2141" _ref_sofa="3" begin="28" end="32" _ref_content="1353" id="32" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2148" _ref_sofa="3" begin="56" end="60" _ref_content="1409" id="33" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2155" _ref_sofa="3" begin="56" end="65" _ref_content="1381" id="34" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2141" _ref_sofa="3" begin="28" end="32" _ref_content="1353" id="29" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2148" _ref_sofa="3" begin="56" end="60" _ref_content="1409" id="30" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="2155" _ref_sofa="3" begin="56" end="65" _ref_content="1381" id="31" anaphoric_prob="0.0"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="2162" _ref_sofa="3" begin="56" end="60" _ref_anaphor="2148" _ref_antecedentList="2168"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="2175" _ref_sofa="3" begin="56" end="65" _ref_anaphor="2155" _ref_antecedentList="2184"/>
     <uima.cas.EmptyFSList _id="2184"/>

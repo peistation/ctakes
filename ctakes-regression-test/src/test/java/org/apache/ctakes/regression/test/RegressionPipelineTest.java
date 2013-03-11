@@ -196,13 +196,14 @@ public class RegressionPipelineTest extends XMLTestCase {
 		public void collectionProcessComplete() {
 
 			logger.info("Completed " + entityCount + " documents");
+			num_cpe--;
 			// Only compare after the batch has been completed.
 			try {
 				compareXMLOutput(expected, generated);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			num_cpe--;
+
 		}
 
 		/**

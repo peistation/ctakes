@@ -1410,25 +1410,25 @@
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="9347" _ref_sofa="3" begin="106" end="178" nodeType="TOP" leaf="false" _ref_children="9362" _ref_nodeTags="9360" headIndex="0" treebankParse="(TOP (S (NP-SBJ (DT The) (NN pain)) (VP (VBD was) (ADJP-PRD (RB so) (JJ severe) (SBAR (IN that) (S (NP-SBJ (PRP he)) (VP (VBD had) (VP (VBN begun) (VP (VBG taking) (NP (NNS narcotics)) (S-PRP (VP (TO to) (VP (VB relieve) (NP (PRP it)))))))))))) (. .)))" _ref_terminals="9135"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="10383" _ref_sofa="3" begin="182" end="331" nodeType="TOP" leaf="false" _ref_children="10398" _ref_nodeTags="10396" headIndex="0" treebankParse="(TOP (S (NP-SBJ (DT The) (NN patient)) (ADVP (RB also)) (VP (VP (VBD was) (ADJP-PRD (JJ concerned) (PP (IN about) (NP (NP (DT a) (JJ small) (NN lesion)) (PP-LOC (IN in) (NP (NP (PRP$ his) (NNP Broca) (POS 's)) (NN area))))))) (CC and) (VP (VBD said) (SBAR (S (NP-SBJ (DT the) (NN lesion)) (VP (VBD was) (VP (VBG causing) (S (NP-SBJ (PRP him)) (VP (TO to) (VP (VB lettuce) (NP (NNP Wednesday) (NN baseball) (NN applesauce))))))))))) (. .)))" _ref_terminals="10003"/>
     <org.apache.ctakes.typesystem.type.syntax.TopTreebankNode _indexed="1" _id="11336" _ref_sofa="3" begin="335" end="436" nodeType="TOP" leaf="false" _ref_children="11351" _ref_nodeTags="11349" headIndex="0" treebankParse="(TOP (S (PP-TMP (IN After) (NP (NP (NN imaging)) (SBAR (WHNP-1 (WDT which)) (S (VP (VBD was) (ADJP-PRD (JJ inconclusive))))))) (, ,) (NP-SBJ (DT the) (NN patient)) (VP (VBD was) (VP (VBN released) (S (VP (TO to) (VP (VB go) (NP (NN home)) (CC and) (VB treat) (NP (PRP$ his) (NN pain) (NN himself))))))) (. .)))" _ref_terminals="11068"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11648" _ref_sofa="3" begin="87" end="103" _ref_content="7939" id="35" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11655" _ref_sofa="3" begin="106" end="114" _ref_content="7967" id="36" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11662" _ref_sofa="3" begin="423" end="427" _ref_content="7995" id="37" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.PronounMarkable _indexed="1" _id="11669" _ref_sofa="3" begin="50" end="52" _ref_content="198" id="38" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.PronounMarkable _indexed="1" _id="11676" _ref_sofa="3" begin="175" end="177" _ref_content="482" id="39" anaphoric_prob="0.0"/>
-    <org.apache.ctakes.coreference.type.DemMarkable _indexed="1" _id="11683" _ref_sofa="3" begin="349" end="354" _ref_content="7783" id="40" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11648" _ref_sofa="3" begin="87" end="103" _ref_content="7939" id="23" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11655" _ref_sofa="3" begin="106" end="114" _ref_content="7967" id="24" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.NEMarkable _indexed="1" _id="11662" _ref_sofa="3" begin="423" end="427" _ref_content="7995" id="25" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.PronounMarkable _indexed="1" _id="11669" _ref_sofa="3" begin="50" end="52" _ref_content="198" id="26" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.PronounMarkable _indexed="1" _id="11676" _ref_sofa="3" begin="175" end="177" _ref_content="482" id="27" anaphoric_prob="0.0"/>
+    <org.apache.ctakes.coreference.type.DemMarkable _indexed="1" _id="11683" _ref_sofa="3" begin="349" end="354" _ref_content="7783" id="28" anaphoric_prob="0.0"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="11690" _ref_sofa="3" begin="87" end="103" _ref_anaphor="11648" _ref_antecedentList="11696"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="11703" _ref_sofa="3" begin="106" end="114" _ref_anaphor="11655" _ref_antecedentList="11709"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="11722" _ref_sofa="3" begin="0" end="0" _ref_anaphor="11676" _ref_antecedentList="11728"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="11747" _ref_sofa="3" begin="0" end="0" _ref_anaphor="11683" _ref_antecedentList="11753"/>
     <org.apache.ctakes.coreference.type.MarkablePairSet _indexed="1" _id="11778" _ref_sofa="3" begin="423" end="427" _ref_anaphor="11662" _ref_antecedentList="11784"/>
-    <org.apache.ctakes.typesystem.type.relation.RelationArgument _indexed="1" _id="11825" id="36" _ref_argument="7967" role="antecedent"/>
-    <org.apache.ctakes.typesystem.type.relation.RelationArgument _indexed="1" _id="11830" id="37" _ref_argument="7995" role="anaphor"/>
+    <org.apache.ctakes.typesystem.type.relation.RelationArgument _indexed="1" _id="11825" id="24" _ref_argument="7967" role="antecedent"/>
+    <org.apache.ctakes.typesystem.type.relation.RelationArgument _indexed="1" _id="11830" id="25" _ref_argument="7995" role="anaphor"/>
     <org.apache.ctakes.typesystem.type.relation.CoreferenceRelation _indexed="1" _id="11816" id="0" category="Coreference" discoveryTechnique="0" confidence="0.8132229325516998" polarity="0" uncertainty="0" _ref_arg1="11825" _ref_arg2="11830"/>
     <org.apache.ctakes.typesystem.type.relation.CollectionTextRelation _indexed="1" _id="11851" id="0" category="CoreferenceChain" discoveryTechnique="0" confidence="0.0" polarity="0" uncertainty="0" _ref_members="11848"/>
     <uima.cas.EmptyFSList _id="11815"/>
-    <org.apache.ctakes.typesystem.type.relation.RelationArgument _id="11835" id="37" _ref_argument="7995" role="mention"/>
+    <org.apache.ctakes.typesystem.type.relation.RelationArgument _id="11835" id="25" _ref_argument="7995" role="mention"/>
     <uima.cas.NonEmptyFSList _id="11840" _ref_head="11835" _ref_tail="11815"/>
-    <org.apache.ctakes.typesystem.type.relation.RelationArgument _id="11843" id="36" _ref_argument="7967" role="mention"/>
+    <org.apache.ctakes.typesystem.type.relation.RelationArgument _id="11843" id="24" _ref_argument="7967" role="mention"/>
     <uima.cas.NonEmptyFSList _id="11848" _ref_head="11843" _ref_tail="11840"/>
     <uima.cas.EmptyFSList _id="11814"/>
     <org.apache.ctakes.coreference.type.BooleanLabeledFS _id="11808" label="false" _ref_feature="11669"/>
