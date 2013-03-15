@@ -459,11 +459,6 @@
                 <node>EntityMentionPairRelationExtractorAnnotator</node>
             </fixedFlow>
         </flowConstraints>
-        <typeSystemDescription>
-            <imports>
-                <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
         <capabilities/>
         <operationalProperties>
             <modifiesCas>true</modifiesCas>

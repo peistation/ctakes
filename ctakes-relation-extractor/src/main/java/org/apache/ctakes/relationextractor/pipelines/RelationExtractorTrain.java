@@ -228,6 +228,9 @@ public class RelationExtractorTrain {
       File descDir,
       Class<?> annotatorClass,
       AnalysisEngineDescription desc) throws SAXException, IOException {
+    // set the type system (uimaFIT expands all imports, so this simplifies the descriptor)
+    desc.getAnalysisEngineMetaData().setTypeSystem(TypeSystemDescriptionFactory.createTypeSystemDescription(
+        "org.apache.ctakes.typesystem.types.TypeSystem"));
     writeDesc(descDir, annotatorClass.getSimpleName(), desc);
   }
 
@@ -235,9 +238,6 @@ public class RelationExtractorTrain {
       throws SAXException, IOException {
     // set the name (not done by uimaFIT)
     desc.getMetaData().setName(name);
-    // set the type system (uimaFIT expands all imports, so this simplifies the descriptor)
-    desc.getAnalysisEngineMetaData().setTypeSystem(TypeSystemDescriptionFactory.createTypeSystemDescription(
-        "org.apache.ctakes.typesystem.types.TypeSystem"));
     File descFile = new File(descDir, name + ".xml");
     System.out.println("writing description to " + descFile);
     FileOutputStream output = new FileOutputStream(descFile);
