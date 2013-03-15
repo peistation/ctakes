@@ -415,6 +415,11 @@
 				<artifactId>openaifsm</artifactId>
 				<version>0.0.1</version>
 			</dependency>										
+			<dependency>
+				<groupId>gov.nih.nlm.nls.lvg</groupId>
+				<artifactId>lvg2010dist</artifactId>
+				<version>0.0.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

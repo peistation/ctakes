@@ -52,11 +52,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>lvg2010dist</groupId>
+			<groupId>gov.nih.nlm.nls.lvg</groupId>
 			<artifactId>lvg2010dist</artifactId>
 			<version>0.0.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/lvg2010dist.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

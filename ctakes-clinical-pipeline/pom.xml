@@ -141,11 +141,9 @@
 								<systemPath>${project.basedir}/../ctakes-assertion/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
 							</dependency>
 							<dependency>
-								<groupId>lvg2010dist</groupId>
+								<groupId>gov.nih.nlm.nls.lvg</groupId>
 								<artifactId>lvg2010dist</artifactId>
 								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-lvg/lib/lvg2010dist.jar</systemPath>
 							</dependency>
 						</dependencies>						
 					</plugin>
@@ -219,11 +217,9 @@
 								<systemPath>${project.basedir}/../ctakes-assertion/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
 							</dependency>
 							<dependency>
-								<groupId>lvg2010dist</groupId>
+								<groupId>gov.nih.nlm.nls.lvg</groupId>
 								<artifactId>lvg2010dist</artifactId>
 								<version>0.0.1</version>
-								<scope>system</scope>
-								<systemPath>${project.basedir}/../ctakes-lvg/lib/lvg2010dist.jar</systemPath>
 							</dependency>
 						</dependencies>
 					</plugin>
