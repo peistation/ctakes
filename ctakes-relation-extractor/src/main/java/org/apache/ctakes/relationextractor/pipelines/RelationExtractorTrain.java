@@ -43,6 +43,7 @@ import org.kohsuke.args4j.Option;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
+import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.testing.util.HideOutput;
 import org.xml.sax.SAXException;
 
@@ -232,7 +233,11 @@ public class RelationExtractorTrain {
 
   private static void writeDesc(File descDir, String name, AnalysisEngineDescription desc)
       throws SAXException, IOException {
+    // set the name (not done by uimaFIT)
     desc.getMetaData().setName(name);
+    // set the type system (uimaFIT expands all imports, so this simplifies the descriptor)
+    desc.getAnalysisEngineMetaData().setTypeSystem(TypeSystemDescriptionFactory.createTypeSystemDescription(
+        "org.apache.ctakes.typesystem.types.TypeSystem"));
     File descFile = new File(descDir, name + ".xml");
     System.out.println("writing description to " + descFile);
     FileOutputStream output = new FileOutputStream(descFile);
