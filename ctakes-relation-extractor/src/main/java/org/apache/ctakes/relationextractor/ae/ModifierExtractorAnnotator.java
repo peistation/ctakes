@@ -21,6 +21,9 @@ package org.apache.ctakes.relationextractor.ae;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -34,10 +37,6 @@ import org.cleartk.classifier.chunking.Chunking;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
-
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
 
@@ -56,6 +55,7 @@ public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
+    RelationExtractorAnnotator.allowClassifierModelOnClasspath(context);
     super.initialize(context);
     this.chunking = new BIOChunking<BaseToken, Modifier>(BaseToken.class, Modifier.class, "typeID");
   }

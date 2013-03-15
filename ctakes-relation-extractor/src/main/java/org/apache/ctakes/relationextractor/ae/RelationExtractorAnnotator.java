@@ -18,6 +18,7 @@
  */
 package org.apache.ctakes.relationextractor.ae;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,13 +36,18 @@ import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.UimaContext;
+import org.apache.uima.UimaContextAdmin;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ConfigurationManager;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.CleartkProcessingException;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
@@ -91,6 +97,31 @@ public abstract class RelationExtractorAnnotator extends CleartkAnnotator<String
    * Selects the relevant mentions/annotations within a covering annotation for relation identification/extraction.
    */
   protected abstract List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(JCas identifiedAnnotationView, Annotation coveringAnnotation);
+  
+  /**
+   * Workaround for https://code.google.com/p/cleartk/issues/detail?id=346
+   * 
+   * Not intended for external use
+   */
+  static void allowClassifierModelOnClasspath(UimaContext context) {
+    String modelPathParam = GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH;
+    String modelPath = (String) context.getConfigParameterValue(modelPathParam);
+    if (modelPath != null) {
+      URL modelClasspathURL = RelationExtractorAnnotator.class.getResource(modelPath); 
+      if (modelClasspathURL != null) {
+        UimaContextAdmin contextAdmin = (UimaContextAdmin) context;
+        ConfigurationManager manager = contextAdmin.getConfigurationManager();
+        String qualifiedModelPathParam = contextAdmin.getQualifiedContextName() + modelPathParam;
+        manager.setConfigParameterValue(qualifiedModelPathParam, modelClasspathURL.toString());
+      }
+    }
+  }
+
+  @Override
+  public void initialize(UimaContext context) throws ResourceInitializationException {
+    allowClassifierModelOnClasspath(context);
+    super.initialize(context);
+  }
 
   /*
    * Implement the standard UIMA process method.

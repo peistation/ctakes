@@ -57,7 +57,7 @@ public class TreeFragmentFeatureExtractor implements RelationFeaturesExtractor {
 		frags = new HashSet<SimpleTree>();
 		try{
 //			File fragsFile = FileLocator.locateFile("resources/frags_args.txt");
-			File fragsFile = FileLocator.locateFile("org/apache/ctakes/relationextractor/models/em_pair/frags_nolex_args.txt");
+			File fragsFile = FileLocator.locateFile("org/apache/ctakes/relationextractor/frags_nolex_args.txt");
 			Scanner scanner = new Scanner(fragsFile);
 			while(scanner.hasNextLine()){
 				frags.add(FragmentUtils.frag2tree(scanner.nextLine().trim()));
