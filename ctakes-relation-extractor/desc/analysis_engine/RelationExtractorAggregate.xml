@@ -147,9 +147,6 @@
                     <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
                         <import location="../../../ctakes-dictionary-lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
                     </delegateAnalysisEngine>
-                    <delegateAnalysisEngine key="ExtractionPrepAnnotator">
-                        <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/ExtractionPrepAnnotator.xml"/>
-                    </delegateAnalysisEngine>
                     <delegateAnalysisEngine key="LookupWindowAnnotator">
                         <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/LookupWindowAnnotator.xml"/>
                     </delegateAnalysisEngine>
@@ -208,7 +205,6 @@
                             <node>DictionaryLookupAnnotatorDB</node>
                             <node>StatusAnnotator</node>
                             <node>NegationAnnotator</node>
-                            <node>ExtractionPrepAnnotator</node>
                         </fixedFlow>
                     </flowConstraints>
                     <typePriorities>
@@ -239,21 +235,15 @@
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.TimeAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.SymbolToken</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspan.Sentence</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textspanSegment</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.SBAR</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RomanNumeralAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.RangeAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PunctuationToken</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.Property</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.Properties</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.PersonTitleAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PRT</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.PP</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.OntologyConcept</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.NumToken</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation</type>
-                                <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.Lemma</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.LST</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.INTJ</type>
@@ -263,7 +253,6 @@
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.DateAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopySrcAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.CopyDestAnnotation</type>
-                                <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.ContractionToken</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.textsem.ContextAnnotation</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.Chunk</type>
                                 <type allAnnotatorFeatures="true">org.apache.ctakes.typesystem.type.syntax.CONJP</type>
