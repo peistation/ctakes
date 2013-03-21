@@ -10,7 +10,7 @@
 <stringAttribute key="org.eclipse.debug.ui.ATTR_CAPTURE_IN_FILE" value="/tmp/assertion.log"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.ctakes.assertion.eval.AssertionEvaluation"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--train-dir /sharp_data/train --test-dir /sharp_data/test --models-dir /sharp_data/model/eval.model"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--train-dir data/train --test-dir data/test --models-dir data/model/eval.model --dev-dir data/dev"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ctakes-assertion"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>

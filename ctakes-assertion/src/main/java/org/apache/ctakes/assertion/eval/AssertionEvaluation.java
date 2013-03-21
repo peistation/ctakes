@@ -69,6 +69,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngi
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
 import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.HistoryCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
@@ -175,6 +176,13 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
             usage = "specify whether generic processing should be ignored (true or false). default: false",
             required = false)
     public boolean ignoreGeneric = false;
+        
+    // srh adding 2/20/13
+    @Option(
+            name = "--ignore-history",
+            usage = "specify whether 'history of' processing should be run (true or false). default: false",
+            required = false)
+    public boolean ignoreHistory = false;
         
     @Option(
             name = "--cross-validation",
@@ -337,6 +345,7 @@ protected static Options options = new Options();
 	    "ignore uncertainty: %b%n" +
 	    "ignore subject: %b%n" +
 	    "ignore generic: %b%n" +
+	    "ignore history: %b%n" +
 	    "%n%n",
 	    options.trainDirectory.getAbsolutePath(),
 	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
@@ -346,7 +355,8 @@ protected static Options options = new Options();
 	    options.ignoreConditional,
 	    options.ignoreUncertainty,
 	    options.ignoreSubject,
-	    options.ignoreGeneric
+	    options.ignoreGeneric,
+	    options.ignoreHistory
 	    );
   }
 
@@ -534,6 +544,21 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 		    );
 		builder.add(genericAnnotator);
     }
+    
+    // 2/20/13 srh adding
+    if (!options.ignoreHistory) {
+    	AnalysisEngineDescription historyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(HistoryCleartkAnalysisEngine.class);
+    	ConfigurationParameterFactory.addConfigurationParameters(
+    			historyAnnotator,
+    			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+    			AssertionEvaluation.GOLD_VIEW_NAME,
+    			CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+    			this.dataWriterFactoryClass.getName(),
+    			DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+    			new File(directory, "historyOf").getPath()
+    			);
+    	builder.add(historyAnnotator);
+    }
 
 /*
     AnalysisEngineDescription classifierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
@@ -606,6 +631,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     AnnotationStatistics uncertaintyStats = new AnnotationStatistics();
     AnnotationStatistics subjectStats = new AnnotationStatistics();
     AnnotationStatistics genericStats = new AnnotationStatistics();
+    AnnotationStatistics historyStats = new AnnotationStatistics();	// srh 3/6/13
     
     Map<String, AnnotationStatistics> map = new TreeMap<String, AnnotationStatistics>(); 
     if (!options.ignorePolarity)
@@ -631,6 +657,12 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     if (!options.ignoreGeneric)
     {
       map.put("generic", genericStats);
+    }
+    
+    // srh 3/6/13
+    if (!options.ignoreHistory)
+    {
+    	map.put("historyOf", historyStats);
     }
 
     for (JCas jCas : new JCasIterable(collectionReader, aggregate)) {
@@ -707,6 +739,15 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "generic", CONST.NE_GENERIC_TRUE, Boolean.class);
 	      }
       }
+      
+      // srh 3/6/13
+      if (!options.ignoreHistory)
+      {
+    	  historyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
+    			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
+    			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("historyOf"));
+      }
+      
     }
     return map;
   }
@@ -803,6 +844,7 @@ public static class HashableAnnotation implements Comparable<HashableAnnotation>
         result = (this.getClass() == other.getClass() && this.begin == other.begin
             && this.end == other.end);
       }
+      
       return result;
     }
 

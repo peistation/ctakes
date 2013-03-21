@@ -157,11 +157,16 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     if (this.textDirectory != null) {
       textPath = this.textDirectory + File.separator + textPath;
     }
-    try {
-      return new URI(textPath);
-    } catch (URISyntaxException e) {
-      throw new AnalysisEngineProcessException(e);
-    }
+
+    // srh changing to try to get to work on Windows
+//    try {
+    File tmpFile = new File(textPath);
+    URI answer = tmpFile.toURI();
+    return answer;
+      // return new URI(textPath);
+//    } catch (URISyntaxException e) {
+//      throw new AnalysisEngineProcessException(e);
+//    }
   }
   
   /**

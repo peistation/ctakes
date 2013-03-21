@@ -148,7 +148,7 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 			AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
 					SHARPKnowtatorXMLReader.class,
 					typeSystemDescription,
-					"TextURI",
+					"TextDirectory", // 3/13/13 halgrim changed from "TextURI" trying to work with new SHARPKnowtatorXMLReader.java
 					//"/work/medfacts/sharp/data/2012-10-16_full_data_set_updated/Seed_Corpus/sandbox/batch02_mayo/knowtator/"
 					textDirectory.toString() + "/"
 			);
