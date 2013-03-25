@@ -147,8 +147,8 @@ public class EvaluationOfEventProperties extends
             this.loggers.get(name).fine(String.format(
                 "%s was %s but should be %s, in  ...%s[!%s!]%s...",
                 name,
-                goldOutcome,
                 systemOutcome,
+                goldOutcome,
                 text.substring(windowBegin, begin).replaceAll("[\r\n]", " "),
                 text.substring(begin, end),
                 text.substring(end, windowEnd).replaceAll("[\r\n]", " ")));
