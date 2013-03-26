@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -103,16 +104,19 @@ public class CoveredTextToValuesExtractor implements SimpleFeatureExtractor {
 
   @Override
   public List<Feature> extract(JCas view, Annotation annotation) throws CleartkExtractorException {
-    double[] values = this.textDoublesMap.get(annotation.getCoveredText());
-    if (values == null) {
-      values = this.meanValues;
-    }
-    ArrayList<Feature> features = new ArrayList<Feature>();
-    for (int i = 0; i < values.length; ++i) {
-      String featureName = Feature.createName(this.name, String.valueOf(i));
-      features.add(new Feature(featureName, values[i]));
-    }
-    return features;
+	  ArrayList<Feature> features = new ArrayList<Feature>();
+	  if (annotation instanceof  WordToken){
+		  double[] values = this.textDoublesMap.get(annotation.getCoveredText().toLowerCase());
+		  if (values == null) {
+			  values = this.meanValues;
+		  }
+
+		  for (int i = 0; i < values.length; ++i) {
+			  String featureName = Feature.createName(this.name, String.valueOf(i));
+			  features.add(new Feature(featureName, values[i]));
+		  }
+	  }
+	  return features;
   }
 
 }
