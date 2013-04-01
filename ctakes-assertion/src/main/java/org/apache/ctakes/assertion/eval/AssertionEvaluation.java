@@ -273,6 +273,7 @@ protected static Options options = new Options();
     if (!options.ignoreUncertainty) { annotationTypes.add("uncertainty"); }
     if (!options.ignoreSubject) { annotationTypes.add("subject"); }
     if (!options.ignoreGeneric) { annotationTypes.add("generic"); }
+    if (!options.ignoreHistory) { annotationTypes.add("historyOf"); }
     
     AssertionEvaluation evaluation = new AssertionEvaluation(
         modelsDir,
@@ -746,6 +747,9 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     	  historyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
     			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
     			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("historyOf"));
+    	  if(options.printErrors){
+    		  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "historyOf", CONST.NE_HISTORY_OF_PRESENT, Integer.class);
+    	  }
       }
       
     }
@@ -1004,6 +1008,18 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		);
 		builder.add(genericAnnotator);
 	}
+	
+	if(!options.ignoreHistory){
+		AnalysisEngineDescription historyAnnotator = AnalysisEngineFactory.createPrimitiveDescription(HistoryCleartkAnalysisEngine.class);
+		ConfigurationParameterFactory.addConfigurationParameters(
+				historyAnnotator,
+				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+				AssertionEvaluation.GOLD_VIEW_NAME,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(new File(directory, "historyOf"), "model.jar").getPath()
+				);
+		builder.add(historyAnnotator);
+	}
 }
 
   public static final String GOLD_VIEW_NAME = "GoldView";
@@ -1249,6 +1265,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
         newGoldEntityMention.setGeneric(oldSystemEntityMention.getGeneric());
         newGoldEntityMention.setPolarity(oldSystemEntityMention.getPolarity());
         newGoldEntityMention.setSubject(oldSystemEntityMention.getSubject());
+        newGoldEntityMention.setHistoryOf(oldSystemEntityMention.getHistoryOf());
 
         // copying non-assertion fields
         newGoldEntityMention.setConfidence(oldSystemEntityMention.getConfidence());
@@ -1267,6 +1284,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
         newGoldEventMention.setGeneric(oldSystemEventMention.getGeneric());
         newGoldEventMention.setPolarity(oldSystemEventMention.getPolarity());
         newGoldEventMention.setSubject(oldSystemEventMention.getSubject());
+        newGoldEventMention.setHistoryOf(oldSystemEventMention.getHistoryOf());
 
         // copying non-assertion fields
         newGoldEventMention.setConfidence(oldSystemEventMention.getConfidence());

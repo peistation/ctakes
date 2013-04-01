@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import org.apache.ctakes.assertion.attributes.features.GenericFeaturesExtractor;
 import org.apache.ctakes.assertion.attributes.features.HistoryFeaturesExtractor;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -67,20 +68,20 @@ public class HistoryCleartkAnalysisEngine extends
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String generic = entityMention.getGeneric()? "1":"0";
+			int history = entityMention.getHistoryOf(); 
 
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
-	        if ("0".equals(generic) 
+	        if (history == CONST.NE_HISTORY_OF_ABSENT
 	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
 	        	return;
 	        }
-	        instance.setOutcome(generic);
+	                
+	        instance.setOutcome(String.valueOf(history));
 	        this.dataWriter.write(instance);
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        entityMention.setGeneric("1".equals(label));
+	        entityMention.setHistoryOf(Integer.parseInt(label));
 	      }
 	}
-
 }
