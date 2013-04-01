@@ -83,17 +83,6 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<!-- Temporary workaround: Adding in the system scoped libaries. Remove 
-				these once they are in Maven Central -->
-			<directory>../ctakes-lvg/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>lvg2010dist.jar</include>
-			</includes>
-		</fileSet>
-
-
-		<fileSet>
 			<directory>../</directory>
 			<outputDirectory></outputDirectory>
 
