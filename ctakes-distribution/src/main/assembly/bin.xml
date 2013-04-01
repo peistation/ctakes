@@ -100,8 +100,7 @@
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
 			<includes>
-				<include>README</include>
-				<include>DISCLAIMER</include>				
+				<include>README</include>			
 			</includes>
 		</fileSet>
 		<fileSet>

@@ -24,17 +24,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.ctakes</groupId>
 	<artifactId>ctakes</artifactId>
-	<version>3.1.0-incubating-SNAPSHOT</version>
+	<version>3.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Apache cTAKES</name>
-	<url>http://incubator.apache.org/ctakes/</url>
+	<url>http://ctakes.apache.org</url>
 	<inceptionYear>2012</inceptionYear>
 	<scm>
 		<!-- In child modules, Maven will append ${artifactId} to the following 
 			URLs -->
-		<connection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/trunk</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/ctakes/trunk</developerConnection>
-		<url>https://svn.apache.org/repos/asf/incubator/ctakes/trunk</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/ctakes/trunk</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/ctakes/trunk</developerConnection>
+		<url>https://svn.apache.org/repos/asf/ctakes/trunk</url>
 	</scm>
 	<issueManagement>
 		<system>jira</system>
@@ -47,36 +47,36 @@
 	<mailingLists>
 		<mailingList>
 			<name>Apache cTAKES Users</name>
-			<subscribe>ctakes-user-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>ctakes-user-unsubscribe@incubator.apache.org</unsubscribe>
-			<post>ctakes-user@incubator.apache.org</post>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-ctakes-user/</archive>
+			<subscribe>user-subscribe@ctakes.apache.org</subscribe>
+			<unsubscribe>user-unsubscribe@ctakes.apache.org</unsubscribe>
+			<post>user@ctakes.apache.org</post>
+			<archive>http://mail-archives.apache.org/mod_mbox/ctakes-user/</archive>
 		</mailingList>
 
 		<mailingList>
 			<name>Apache cTAKES Developers</name>
-			<subscribe>ctakes-dev-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>ctakes-dev-unsubscribe@incubator.apache.org</unsubscribe>
-			<post>ctakes-dev@incubator.apache.org</post>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-ctakes-dev/</archive>
+			<subscribe>dev-subscribe@ctakes.apache.org</subscribe>
+			<unsubscribe>dev-unsubscribe@ctakes.apache.org</unsubscribe>
+			<post>dev@ctakes.apache.org</post>
+			<archive>http://mail-archives.apache.org/mod_mbox/ctakes-dev/</archive>
 		</mailingList>
 
 		<mailingList>
 			<name>Apache cTAKES Commits</name>
-			<subscribe>ctakes-commits-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>ctakes-commits-unsubscribe@incubator.apache.org</unsubscribe>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-ctakes-commits/</archive>
+			<subscribe>commits-subscribe@ctakes.apache.org</subscribe>
+			<unsubscribe>commits-unsubscribe@ctakes.apache.org</unsubscribe>
+			<archive>http://mail-archives.apache.org/mod_mbox/ctakes-commits/</archive>
 		</mailingList>
 
 		<mailingList>
 			<name>Apache cTAKES Notifications</name>
-			<subscribe>ctakes-notifications-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>ctakes-notifications-unsubscribe@incubator.apache.org</unsubscribe>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-ctakes-notifications/</archive>
+			<subscribe>notifications-subscribe@ctakes.apache.org</subscribe>
+			<unsubscribe>notifications-unsubscribe@ctakes.apache.org</unsubscribe>
+			<archive>http://mail-archives.apache.org/mod_mbox/ctakes-notifications/</archive>
 		</mailingList>
 	</mailingLists>
 	<properties>
-		<ctakes.version>3.1.0-incubating-SNAPSHOT</ctakes.version>
+		<ctakes.version>3.1.0-SNAPSHOT</ctakes.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -482,7 +482,7 @@
 						<properties>
 							<owner>Apache Software Foundation</owner>
 							<year>${project.inceptionYear}</year>
-							<email>ctakes-dev@incubator.apache.org</email>
+							<email>dev@ctakes.apache.org</email>
 						</properties>
 						<strictCheck>true</strictCheck>
 					</configuration>
