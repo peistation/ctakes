@@ -33,7 +33,11 @@
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.10</version>
-		</dependency>	
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup-res</artifactId>
+		</dependency>			
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>

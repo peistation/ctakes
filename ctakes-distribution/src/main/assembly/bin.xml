@@ -82,6 +82,7 @@
 				<include>jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</include>
 			</includes>
 		</fileSet>
+
 		<fileSet>
 			<directory>../</directory>
 			<outputDirectory></outputDirectory>

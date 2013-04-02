@@ -31,6 +31,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-pos-tagger-res</artifactId>
+		</dependency>	    
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
 		</dependency>
 		<dependency>

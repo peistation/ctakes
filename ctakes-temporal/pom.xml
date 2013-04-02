@@ -32,6 +32,10 @@
 	</parent>
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-temporal-res</artifactId>
+		</dependency>	    
+		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
 		</dependency>

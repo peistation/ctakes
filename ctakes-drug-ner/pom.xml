@@ -32,6 +32,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-drug-ner-res</artifactId>
+		</dependency>	    
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
 		</dependency>
 		<dependency>
@@ -91,16 +95,4 @@
 			<artifactId>ctakes-lvg</artifactId>
 		</dependency>
 	</dependencies>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.cleartk</groupId>
-				<artifactId>jcasgen-maven-plugin</artifactId>
-				<configuration>
-					<typeSystem>src/main/resources/org/apache/ctakes/drugner/types/TypeSystem.xml</typeSystem>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
