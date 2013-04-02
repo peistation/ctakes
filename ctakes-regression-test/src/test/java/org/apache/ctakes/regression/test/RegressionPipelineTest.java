@@ -110,9 +110,8 @@ public class RegressionPipelineTest extends XMLTestCase {
 		// Before comparing.
 		while (num_cpe > 0) {
 			if (System.currentTimeMillis() - started >= MAX_TIMEOUT_MS) {
-				logger.error("Regression CPE test timed out after "
+				Assert.assertEquals("Timed out:", "Regression CPE test timed out after "
 						+ MAX_TIMEOUT_MS + " ms");
-				System.exit(1);
 			}
 			Thread.sleep(1000);
 		}
