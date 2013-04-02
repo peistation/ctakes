@@ -39,8 +39,8 @@ import org.uimafit.util.JCasUtil;
  */
 public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
 
-  String tokenFile = "/home/dima/thyme/event-context/tokens.txt";
-  String eventFile = "/home/dima/thyme/event-context/events.txt";
+  String tokenFile = "event-context/tokens.txt";
+  String eventFile = "event-context/events.txt";
   
 	@Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
