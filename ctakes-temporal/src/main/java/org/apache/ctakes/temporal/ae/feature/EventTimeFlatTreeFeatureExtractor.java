@@ -7,6 +7,7 @@ import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
@@ -32,14 +33,22 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 		
 		SimpleTree arg1Tree = null;
 		SimpleTree arg2Tree = null;
-		
+		String eventModality="";
+		String timeClass;
+	
 		// make sure we have the right classes
 		if(arg1 instanceof EventMention){
-			arg1Tree = new SimpleTree("EVENT");
-			arg2Tree = new SimpleTree("TIMEX");
+			eventModality = ((EventMention)arg1).getEvent().getProperties().getContextualModality();
+			timeClass = ((TimeMention)arg2).getTimeClass();
+
+			arg1Tree = new SimpleTree("EVENT-"+eventModality);
+			arg2Tree = new SimpleTree("TIMEX-"+timeClass);
 		}else{
-			arg1Tree = new SimpleTree("TIMEX");
-			arg2Tree = new SimpleTree("EVENT");
+			eventModality = ((EventMention)arg2).getEvent().getProperties().getContextualModality();
+			timeClass = ((TimeMention)arg1).getTimeClass();
+
+			arg1Tree = new SimpleTree("TIMEX-"+timeClass);
+			arg2Tree = new SimpleTree("EVENT-"+eventModality);
 		}
 		
 		List<BaseToken> tokens = JCasUtil.selectCovered(jcas, BaseToken.class, arg1.getBegin(), arg2.getEnd());
