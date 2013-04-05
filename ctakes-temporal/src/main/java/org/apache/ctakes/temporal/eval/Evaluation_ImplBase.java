@@ -21,6 +21,7 @@ package org.apache.ctakes.temporal.eval;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,12 +152,16 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   private List<File> getFilesFor(List<Integer> patientSets) {
     List<File> files = new ArrayList<File>();
     for (Integer set : patientSets) {
-      File setTextDirectory = new File(this.rawTextDirectory, "doc" + set);
-      for (File file : setTextDirectory.listFiles()) {
+      final int setNum = set;
+      for (File file : rawTextDirectory.listFiles(new FilenameFilter(){
+        @Override
+        public boolean accept(File dir, String name) {
+          return name.contains(String.format("ID%03d", setNum));
+        }})) {
         // skip hidden files like .svn
         if (!file.isHidden()) {
           files.add(file);
-        }
+        } 
       }
     }
     return files;
