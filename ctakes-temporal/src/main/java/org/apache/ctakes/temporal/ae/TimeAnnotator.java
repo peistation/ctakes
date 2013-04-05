@@ -92,6 +92,7 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
     CombinedExtractor allExtractors = new CombinedExtractor(
         new CoveredTextExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
+        new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"));
 
     this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
