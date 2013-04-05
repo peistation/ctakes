@@ -546,6 +546,11 @@
 				<artifactId>lvg2010dist</artifactId>
 				<version>0.0.1</version>
 			</dependency>
+			<dependency>
+				<groupId>com.googlecode.clearnlp</groupId>
+				<artifactId>clearnlp</artifactId>
+				<version>1.3.1</version>
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 	<build>

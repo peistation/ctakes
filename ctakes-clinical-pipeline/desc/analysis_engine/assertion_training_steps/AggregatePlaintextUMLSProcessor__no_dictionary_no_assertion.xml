@@ -80,7 +80,7 @@
     </delegateAnalysisEngine>
     -->
     <delegateAnalysisEngine key="DependencyParser">
-      <import location="../../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+      <import location="../../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

@@ -69,7 +69,10 @@
 <import location="../../../ctakes-assertion/desc/AssertionMiniPipelineAnalysisEngine.xml"/>
 </delegateAnalysisEngine>
 <delegateAnalysisEngine key="DependencyParser">
-<import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+<import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPDependencyParserAE.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="SemanticRoleLabeler">
+<import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPSemanticRoleLabelerAE.xml"/>
 </delegateAnalysisEngine>
 </delegateAnalysisEngineSpecifiers>
 <analysisEngineMetaData>
@@ -121,6 +124,8 @@ Includes adjusting NP chunks to include NP NP and NP PP NP.</description>
 <node>LookupWindowAnnotator</node>
 <node>DictionaryLookupAnnotator</node>
 <node>DependencyParser</node>
+<node>SemanticRoleLabeler</node>
+
 <node>AssertionAnnotator</node>
 <!-- 
 	<node>StatusAnnotator</node>

@@ -69,8 +69,11 @@
       <import location="../../../ctakes-assertion/desc/AssertionMiniPipelineAnalysisEngine.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DependencyParser">
-      <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+      <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
+<delegateAnalysisEngine key="SemanticRoleLabeler">
+<import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPSemanticRoleLabelerAE.xml"/>
+</delegateAnalysisEngine>    
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>AggregatePlaintextUMLSProcessor</name>
@@ -122,6 +125,7 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
         <node>LookupWindowAnnotator</node>
         <node>DictionaryLookupAnnotatorDB</node>
         <node>DependencyParser</node>
+		<node>SemanticRoleLabeler</node>        
         <node>AssertionAnnotator</node>
         <!-- 
         	<node>StatusAnnotator</node>

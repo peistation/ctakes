@@ -36,8 +36,8 @@
     <delegateAnalysisEngine key="Chunker">
       <import location="../../../ctakes-chunker/desc/Chunker.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ClearParserAE">
-      <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearParserDependencyParserAE.xml"/>
+    <delegateAnalysisEngine key="ClearNLPAE">
+      <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DictionaryLookupAnnotatorDB">
       <import location="../../../ctakes-dictionary-lookup/desc/analysis_engine/DictionaryLookupAnnotatorUMLS.xml"/>
@@ -92,7 +92,7 @@
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
         <node>ConstituencyParser</node>
-        <node>ClearParserAE</node>
+        <node>ClearNLPAE</node>
         <node>Chunker</node>
         <node>AdjustNounPhraseToIncludeFollowingNP</node>
         <node>AdjustNounPhraseToIncludeFollowingPPNP</node>

@@ -38,8 +38,8 @@ import org.apache.ctakes.core.resource.FileResourceImpl;
 import org.apache.ctakes.core.resource.JdbcConnectionResourceImpl;
 import org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl;
 import org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl;
-import org.apache.ctakes.dependency.parser.ae.ClearParserDependencyParserAE;
-import org.apache.ctakes.dependency.parser.ae.ClearParserSemanticRoleLabelerAE;
+import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
+import org.apache.ctakes.dependency.parser.ae.ClearNLPSemanticRoleLabelerAE;
 import org.apache.ctakes.dictionary.lookup.ae.UmlsDictionaryLookupAnnotator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
@@ -371,10 +371,10 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     aggregateBuilder.add(lvgAnnotator);
 
     // add dependency parser
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearParserDependencyParserAE.class));
+    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearNLPDependencyParserAE.class));
 
     // add semantic role labeler
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearParserSemanticRoleLabelerAE.class));
+    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearNLPSemanticRoleLabelerAE.class));
 
     // write out the CAS after all the above annotations
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
