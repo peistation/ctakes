@@ -66,12 +66,12 @@ public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
   protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
     URI uri = this.getTextURI(jCas);
     File file = new File(uri.getPath());
-    String subDir = file.getParentFile().getName();
-    Matcher matcher = Pattern.compile("^doc(\\d+)$").matcher(subDir);
+    String subDir = file.getName().substring(3, 5);
+    Matcher matcher = Pattern.compile("^\\d+$").matcher(subDir);
     if (!matcher.matches()) {
       throw new IllegalArgumentException("Unrecognized subdirectory naming: " + subDir);
     }
-    subDir = String.format("gold_revised_xml_docset%02d", Integer.parseInt(matcher.group(1)));
+    subDir = String.format("gold_revised_xml_docset%s", subDir);
     String fileName = file.getName() + ".knowtator.xml";
     return new File(new File(this.knowtatorXMLDirectory, subDir), fileName).toURI();
   }
