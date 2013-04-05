@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -150,21 +151,24 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   }
   
   private List<File> getFilesFor(List<Integer> patientSets) {
-    List<File> files = new ArrayList<File>();
-    for (Integer set : patientSets) {
-      final int setNum = set;
-      for (File file : rawTextDirectory.listFiles(new FilenameFilter(){
-        @Override
-        public boolean accept(File dir, String name) {
-          return name.contains(String.format("ID%03d", setNum));
-        }})) {
-        // skip hidden files like .svn
-        if (!file.isHidden()) {
-          files.add(file);
-        } 
-      }
-    }
-    return files;
+	  if ( !rawTextDirectory.exists() ) {
+		  return Collections.emptyList();
+	  }
+	  List<File> files = new ArrayList<File>();
+	  for (Integer set : patientSets) {
+		  final int setNum = set;
+		  for (File file : rawTextDirectory.listFiles(new FilenameFilter(){
+			  @Override
+			  public boolean accept(File dir, String name) {
+				  return name.contains(String.format("ID%03d", setNum));
+			  }})) {
+			  // skip hidden files like .svn
+			  if (!file.isHidden()) {
+				  files.add(file);
+			  } 
+		  }
+	  }
+	  return files;
   }
 
   @Override
