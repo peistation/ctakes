@@ -81,9 +81,15 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  System.out.format("%-30s%d\n", "degree_of count", relationTypes.count("degree_of"));
 	  
 	  System.out.println();
-	  System.out.format("%-30s%d\n", "as-disorder", entityMentionPairTypes.count("as-dd"));
-	  System.out.format("%-30s%d\n", "as-ss", entityMentionPairTypes.count("as-ss"));
-	  System.out.format("%-30s%d\n", "as-procedure", entityMentionPairTypes.count("as-procedure"));
+	  System.out.println("location_of:");
+	  System.out.format("%-40s%d\n", "anatomical site - disease/disorder", entityMentionPairTypes.count("anatomical site - disease/disorder"));
+	  System.out.format("%-40s%d\n", "anatomical site - sign/symptom", entityMentionPairTypes.count("anatomical site - sign/symptom"));
+	  System.out.format("%-40s%d\n", "anatomical site - procedure", entityMentionPairTypes.count("anatomical site - procedure"));
+	  
+	  System.out.println();
+	  System.out.println("degree_of:"); 
+	  System.out.format("%-40s%d\n", "disorder - modifier", entityMentionPairTypes.count("disease/disorder - modifier"));
+	  System.out.format("%-40s%d\n", "sign/symptom - modifier", entityMentionPairTypes.count("sign/symptom - modifier"));
   }
   
 	@Override
@@ -100,7 +106,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     countSentences(jCas);
     countEntities(goldView);
     countEntityMentionPairs(jCas, goldView); 
-    countEntityMentionPairTypes(jCas, goldView);
+    countEntityMentionPairTypes(jCas, goldView, "location_of");
     countRelationTypes(goldView); 
   }
 	
@@ -124,24 +130,26 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     }
   }
 
-  private void countEntityMentionPairTypes(JCas jCas, JCas goldView) {
+  private void countEntityMentionPairTypes(JCas jCas, JCas goldView, String relationType) {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
-      EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
-      DegreeOfRelationExtractorAnnotator degreeOfAnnot = new DegreeOfRelationExtractorAnnotator();
-      
-      List<IdentifiedAnnotationPair> pairs1 = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
-      // List<IdentifiedAnnotationPair> pairs2 = degreeOfAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
-      List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
-      pairs.addAll(pairs1);
-      // pairs.addAll(pairs2);
-      
-      for(IdentifiedAnnotationPair pair : pairs) {
-        IdentifiedAnnotation arg1 = pair.getArg1();
-        IdentifiedAnnotation arg2 = pair.getArg2();
-        String type1 = getEntityType(arg1.getTypeID());
-        String type2 = getEntityType(arg2.getTypeID());
-        entityMentionPairTypes.add(type1 + "-" + type2);
+         
+      if(relationType.equals("location_of")) {
+        EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
+        List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
+        for(IdentifiedAnnotationPair pair : pairs) {
+          String type1 = getEntityType(pair.getArg1().getTypeID());
+          String type2 = getEntityType(pair.getArg2().getTypeID());
+          entityMentionPairTypes.add(type1 + " - " + type2);
+        }
+      } 
+      if(relationType.equals("degree_of")){
+        DegreeOfRelationExtractorAnnotator degreeOfAnnot = new DegreeOfRelationExtractorAnnotator();
+        List<IdentifiedAnnotationPair> pairs = degreeOfAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
+        for(IdentifiedAnnotationPair pair : pairs) {
+          String type1 = getEntityType(pair.getArg1().getTypeID());
+          entityMentionPairTypes.add(type1 + " - " + "modifier"); // type2 is always modifier for degree_of
+        }
       }
     }
   }
@@ -160,19 +168,19 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  entityMentionCount += entityMentions.size();
 	}
 	
-	private String getEntityType(int typeId) {
+	private static String getEntityType(int typeId) {
 	  
 	  if(typeId == 0) {
-      return "modifier";
+      return "unknown";
     }
 	  if(typeId == 1) {
 	    return "drug";
 	  }
 	  if(typeId == 2) {
-	    return "dd";
+	    return "disease/disorder";
 	  } 
 	  if(typeId == 3) {
-      return "ss";
+      return "sign/symptom";
     }
 	  if(typeId == 4) {
       return "none";
@@ -181,7 +189,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
       return "procedure";
     }
 	  if(typeId == 6) {
-      return "as";
+      return "anatomical site";
     }
 	  return "n/a";
 	}
