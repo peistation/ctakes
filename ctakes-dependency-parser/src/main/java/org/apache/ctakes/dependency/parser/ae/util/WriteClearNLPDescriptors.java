@@ -80,7 +80,7 @@ public class WriteClearNLPDescriptors {
 		Options options = new Options();
 		options.parseOptions(args);
 
-		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../../../ctakes-type-system/desc/common_type_system.xml");
+		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../../../ctakes-type-system/src/main/resources/org/apache/ctakes/typesystem/types/TypeSystem.xml");
 
 		AnalysisEngineDescription ClearNLPSRLDesc = AnalysisEngineFactory.createPrimitiveDescription(
 				ClearNLPSemanticRoleLabelerAE.class,

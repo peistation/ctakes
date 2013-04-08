@@ -18,15 +18,9 @@
  */
 package org.apache.ctakes.dependency.parser.ae;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +53,6 @@ import com.googlecode.clearnlp.dependency.DEPNode;
 import com.googlecode.clearnlp.dependency.DEPTree;
 import com.googlecode.clearnlp.engine.EngineGetter;
 import com.googlecode.clearnlp.nlp.NLPLib;
-
 import com.googlecode.clearnlp.reader.AbstractReader;
 
 /**
@@ -179,7 +172,11 @@ final String language = AbstractReader.LANG_EN;
         BaseToken token = tokens.get(i);
 
         // Determine HeadId
-        ConllDependencyNode casDepNode = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, token).get(0);
+        List<ConllDependencyNode> casDepNodes = JCasUtil.selectCovered(jCas, ConllDependencyNode.class, token);
+        
+        ConllDependencyNode casDepNode = casDepNodes.get(0);
+        if(casDepNode.getId() == 0) casDepNode = casDepNodes.get(1);
+
         deprels[i] = casDepNode.getDeprel();
         ConllDependencyNode head = casDepNode.getHead();
 
