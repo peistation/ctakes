@@ -20,6 +20,7 @@ package org.apache.ctakes.dependency.parser.ae.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -29,6 +30,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.cleartk.util.Options_ImplBase;
 import org.cleartk.util.cr.FilesCollectionReader;
+import org.junit.Test;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -52,32 +54,33 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
  * @author lbecker
  *
  */
-public class TestClearNLPAnalysisEngines {
-	public static String DEP_DUMMY_MODEL_FILE = "src/resources/dependency/dummy.dep.mod.jar";
-	public static String SRL_DUMMY_MODEL_FILE = "src/resources/srl/dummy.srl.mod.jar";
-	public static String INPUT_FILE = "../ctakes-clinical-pipeline/test/data/plaintext/testpatient_plaintext_1.txt";
-
-
+public class TestClearNLPAnalysisEngines{
+	
+	// Create dependency parsers analysis engine with the default models
+	// The dummy models from ClearParser haven't been updated to work with ClearNLP.
+	//public static final String DEP_DUMMY_MODEL_FILE = "org/apache/ctakes/dependency/parser/models/dependency/dummy.dep.mod.jar";
+	//public static final String SRL_DUMMY_MODEL_FILE = "org/apache/ctakes/dependency/parser/models/srl/dummy.srl.mod.jar";
+	public static String INPUT_FILE = "../ctakes-clinical-pipeline/src/test/data/plaintext/testpatient_plaintext_1.txt";
 	public static class Options extends Options_ImplBase {
 		
 		@Option(name = "-d",
 				aliases = "--depModelFile",
 				usage = "specify the path to the dependency parser model file",
 				required = false)
-		public File depModelFile = new File(DEP_DUMMY_MODEL_FILE);
+		public String depModelFile = null;
 		
 		@Option(name = "-s",
 				aliases = "--srlModelFile",
 				usage = "specify the path to the ClearNLP srl model file",
 				required = false)
-		public File srlModelFile = new File(SRL_DUMMY_MODEL_FILE);
+		public String srlModelFile = null;
 		
 		
 		@Option(name = "-i",
 				aliases = "--inputFile",
 				usage = "specify the path to the plaintext input",
 				required = false)
-		public File inputFile = new File(INPUT_FILE);
+		public String inputFile = INPUT_FILE;
 	}
 
 	
@@ -102,57 +105,40 @@ public class TestClearNLPAnalysisEngines {
 	}
 	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 * @throws UIMAException 
-	 * @throws SAXException 
-	 */
-	public static void main(String[] args) throws IOException, UIMAException, SAXException {
-		Options options = new Options();
-		options.parseOptions(args);
-
-		File depModelFile = options.depModelFile;
-		File srlModelFile = options.srlModelFile;
-		File inputFile = options.inputFile;
+	@Test
+	public void TestClearNLPPipeLine() throws Exception {
 		
-		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../ctakes-type-system/desc/common_type_system.xml");
-				
+		TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescription();
+		
 		CollectionReader reader1 = CollectionReaderFactory.createCollectionReader(
 				FilesCollectionReader.class,
 				typeSystem,
 				FilesCollectionReader.PARAM_ROOT_FILE,
-				inputFile.toString()
+				INPUT_FILE
 				);
 		
 		// Load preprocessing pipeline (consists of 
 		AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
 		
-		
-		// Create dependency parsers analysis engine
+		// Create dependency parsers analysis engine with the default models
+		// The dummy models from ClearParser haven't been updated to work with ClearNLP.
 		AnalysisEngine ClearNLPDepParser = AnalysisEngineFactory.createPrimitive(
 				ClearNLPDependencyParserAE.class,
-				typeSystem,
-				ClearNLPDependencyParserAE.PARAM_PARSER_MODEL_FILE_NAME,
-				depModelFile.toString()
+				typeSystem
 				);
 	
 				
 		// Create analysis engine for SRL
 		AnalysisEngine ClearNLPSRL = AnalysisEngineFactory.createPrimitive(
 				ClearNLPSemanticRoleLabelerAE.class,
-				typeSystem,
-				ClearNLPSemanticRoleLabelerAE.PARAM_PARSER_MODEL_FILE_NAME,
-				srlModelFile.toString()
+				typeSystem
 				);
-		
-	
 		
 		AnalysisEngine dumpClearNLPOutput = AnalysisEngineFactory.createPrimitive(
 				DumpClearNLPOutputAE.class,
 				typeSystem);
 		
-		SimplePipeline.runPipeline(reader1, preprocessingAE, ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);
+		SimplePipeline.runPipeline(reader1, preprocessingAE, ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
 	}
-
+	
 }
