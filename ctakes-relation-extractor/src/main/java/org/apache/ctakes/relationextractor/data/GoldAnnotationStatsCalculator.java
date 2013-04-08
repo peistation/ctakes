@@ -18,7 +18,6 @@
  */
 package org.apache.ctakes.relationextractor.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.Identif
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -43,7 +41,10 @@ import com.google.common.collect.Multiset;
 
 /**
  * Count various stats such as token and relation counts 
- * based on the gold standard data.
+ * based on the gold standard data. 
+ * 
+ * Make sure relationType constant is set to the appropriate relation ("location_of" vs. "degree_of")
+ * to make sure the relation-specific statisitics are calculated correctly. 
  *  
  * @author dmitriy dligach
  *
@@ -51,6 +52,8 @@ import com.google.common.collect.Multiset;
 public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 
 	public static final String goldViewName = "GoldView";
+	public static final String relationType = "degree_of"; 
+	
 	public int tokenCount;
 	public int sentenceCount;
 	public int entityMentionCount;
@@ -106,7 +109,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     countSentences(jCas);
     countEntities(goldView);
     countEntityMentionPairs(jCas, goldView); 
-    countEntityMentionPairTypes(jCas, goldView, "location_of");
+    countEntityMentionPairTypes(jCas, goldView);
     countRelationTypes(goldView); 
   }
 	
@@ -124,13 +127,20 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
   private void countEntityMentionPairs(JCas jCas, JCas goldView) {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
-      EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
-      List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
-      entityMentionPairCount += pairs.size();
+      if(relationType.equals("location_of")) {
+        EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
+        List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
+        entityMentionPairCount += pairs.size();
+      } 
+      if(relationType.equals("degree_of")) {
+        DegreeOfRelationExtractorAnnotator degreeOfAnnot = new DegreeOfRelationExtractorAnnotator();
+        List<IdentifiedAnnotationPair> pairs = degreeOfAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
+        entityMentionPairCount += pairs.size();
+      }
     }
   }
 
-  private void countEntityMentionPairTypes(JCas jCas, JCas goldView, String relationType) {
+  private void countEntityMentionPairTypes(JCas jCas, JCas goldView) {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
          
