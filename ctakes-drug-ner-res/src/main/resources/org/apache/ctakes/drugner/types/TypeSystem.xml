@@ -309,22 +309,5 @@ Strongly encouraged to use bold text</description>
       <description>Similar to LookupWindowAnnotation however, these annotations are restricted to the segments/sections specified in the parameter - sectionOverrideSet - in DrugCNP2LookupWindow</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
-    <typeDescription>
-      <name>edu.mayo.bmi.lookup.type.MetaHeader</name>
-      <description/>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>rev_date</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>start_date</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
   </types>
 </typeSystemDescription>
