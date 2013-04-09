@@ -63,7 +63,7 @@ public class ClearNLPPOSTaggerAE extends JCasAnnotator_ImplBase {
 	public Logger logger = Logger.getLogger(getClass().getName());
 	
 	// Default model values
-	public static final String DEFAULT_MODEL_FILE_NAME = "org/apache/ctakes/postagger/models/mayo-en-pos-1.3.0.jar";
+	public static final String DEFAULT_MODEL_FILE_NAME = "org/apache/ctakes/postagger/models/clearnlp/mayo-en-pos-1.3.0.jar";
 
 	
 	
