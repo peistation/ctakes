@@ -58,6 +58,10 @@
 			<artifactId>opennlp-tools</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.googlecode.clearnlp</groupId>
+			<artifactId>clearnlp</artifactId>
+		</dependency>		
+		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
 		</dependency>

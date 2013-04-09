@@ -53,6 +53,11 @@
 <delegateAnalysisEngine key="POSTagger">
 <import location="../../../ctakes-pos-tagger/desc/POSTagger.xml"/>
 </delegateAnalysisEngine>
+<!-- 
+<delegateAnalysisEngine key="ClearPOSTagger">
+<import location="../../../ctakes-pos-tagger/desc/ClearNLPPOSTagger.xml"/>
+</delegateAnalysisEngine>
+ -->
 <delegateAnalysisEngine key="StatusAnnotator">
 <import location="../../../ctakes-ne-contexts/desc/StatusAnnotator.xml"/>
 </delegateAnalysisEngine>
@@ -107,6 +112,7 @@ Please update DictionaryLookupAnnotatorUMLS.xml file with your UMLS username and
 <node>LvgAnnotator</node>
 <node>ContextDependentTokenizerAnnotator</node>
 <node>POSTagger</node>
+<!-- <node>ClearPOSTagger</node>  -->
 <node>Chunker</node>
 <node>AdjustNounPhraseToIncludeFollowingNP</node>
 <node>AdjustNounPhraseToIncludeFollowingPPNP</node>
