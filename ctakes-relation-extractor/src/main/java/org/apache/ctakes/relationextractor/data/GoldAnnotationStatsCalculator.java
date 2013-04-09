@@ -27,9 +27,11 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.Identif
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -52,12 +54,14 @@ import com.google.common.collect.Multiset;
 public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 
 	public static final String goldViewName = "GoldView";
-	public static final String relationType = "degree_of"; 
+	public static final String systemViewName = CAS.NAME_DEFAULT_SOFA;
+	public static final String targetRelationType = "location_of"; 
 	
 	public int tokenCount;
 	public int sentenceCount;
 	public int entityMentionCount;
 	public int entityMentionPairCount;
+	public int relationArgumentDistance;
 	public Multiset<String> relationTypes;
 	public Multiset<String> entityMentionPairTypes;
 	
@@ -68,6 +72,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  sentenceCount = 0;
 	  entityMentionCount = 0;
 	  entityMentionPairCount = 0;
+	  relationArgumentDistance = 0;
 	  relationTypes = HashMultiset.create();
 	  entityMentionPairTypes = HashMultiset.create();
 	}
@@ -84,15 +89,24 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
 	  System.out.format("%-30s%d\n", "degree_of count", relationTypes.count("degree_of"));
 	  
 	  System.out.println();
+	  System.out.format("%-40s%f\n", "average distance between arguments", 
+	      (float) relationArgumentDistance / relationTypes.count(targetRelationType));
+	  
+	  System.out.println();
 	  System.out.println("location_of:");
-	  System.out.format("%-40s%d\n", "anatomical site - disease/disorder", entityMentionPairTypes.count("anatomical site - disease/disorder"));
-	  System.out.format("%-40s%d\n", "anatomical site - sign/symptom", entityMentionPairTypes.count("anatomical site - sign/symptom"));
-	  System.out.format("%-40s%d\n", "anatomical site - procedure", entityMentionPairTypes.count("anatomical site - procedure"));
+	  System.out.format("%-40s%d\n", "anatomical site - disease/disorder", 
+	      entityMentionPairTypes.count("anatomical site - disease/disorder"));
+	  System.out.format("%-40s%d\n", "anatomical site - sign/symptom", 
+	      entityMentionPairTypes.count("anatomical site - sign/symptom"));
+	  System.out.format("%-40s%d\n", "anatomical site - procedure", 
+	      entityMentionPairTypes.count("anatomical site - procedure"));
 	  
 	  System.out.println();
 	  System.out.println("degree_of:"); 
-	  System.out.format("%-40s%d\n", "disorder - modifier", entityMentionPairTypes.count("disease/disorder - modifier"));
-	  System.out.format("%-40s%d\n", "sign/symptom - modifier", entityMentionPairTypes.count("sign/symptom - modifier"));
+	  System.out.format("%-40s%d\n", "disorder - modifier", 
+	      entityMentionPairTypes.count("disease/disorder - modifier"));
+	  System.out.format("%-40s%d\n", "sign/symptom - modifier", 
+	      entityMentionPairTypes.count("sign/symptom - modifier"));
   }
   
 	@Override
@@ -104,11 +118,19 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     } catch (CASException e) {
       throw new AnalysisEngineProcessException(e);
     }	  
+
+    JCas systemView;
+    try {
+      systemView = jCas.getView(systemViewName);
+    } catch (CASException e) {
+      throw new AnalysisEngineProcessException(e);
+    }
     
     countTokens(jCas); // tokens exist in system view (not in gold)
     countSentences(jCas);
     countEntities(goldView);
     countEntityMentionPairs(jCas, goldView); 
+    countDistanceBetweenArguments(systemView, goldView);
     countEntityMentionPairTypes(jCas, goldView);
     countRelationTypes(goldView); 
   }
@@ -127,12 +149,12 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
   private void countEntityMentionPairs(JCas jCas, JCas goldView) {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
-      if(relationType.equals("location_of")) {
+      if(targetRelationType.equals("location_of")) {
         EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         entityMentionPairCount += pairs.size();
       } 
-      if(relationType.equals("degree_of")) {
+      if(targetRelationType.equals("degree_of")) {
         DegreeOfRelationExtractorAnnotator degreeOfAnnot = new DegreeOfRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = degreeOfAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         entityMentionPairCount += pairs.size();
@@ -144,7 +166,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
          
-      if(relationType.equals("location_of")) {
+      if(targetRelationType.equals("location_of")) {
         EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         for(IdentifiedAnnotationPair pair : pairs) {
@@ -153,7 +175,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
           entityMentionPairTypes.add(type1 + " - " + type2);
         }
       } 
-      if(relationType.equals("degree_of")){
+      if(targetRelationType.equals("degree_of")){
         DegreeOfRelationExtractorAnnotator degreeOfAnnot = new DegreeOfRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = degreeOfAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         for(IdentifiedAnnotationPair pair : pairs) {
@@ -171,13 +193,30 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
       relationTypes.add(category);
     }
 	}
-	
+
+	private void countDistanceBetweenArguments(JCas systemView, JCas goldView) {
+
+	  for(BinaryTextRelation binaryTextRelation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
+	    if(binaryTextRelation.getCategory().equals(targetRelationType)) {
+	      IdentifiedAnnotation arg1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+	      IdentifiedAnnotation arg2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+	      relationArgumentDistance += getTokenDistance(systemView, arg1, arg2);
+	    }
+	  }
+	}
+
 	private void countEntities(JCas jCas) {
 	  
 	  Collection<EntityMention> entityMentions = JCasUtil.select(jCas, EntityMention.class);
 	  entityMentionCount += entityMentions.size();
 	}
 	
+  public static int getTokenDistance(JCas systemView, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)  {
+    
+    List<BaseToken> baseTokens = JCasUtil.selectBetween(systemView, BaseToken.class, arg1, arg2);
+    return baseTokens.size();
+  }
+  
 	private static String getEntityType(int typeId) {
 	  
 	  if(typeId == 0) {
