@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 //import java.util.logging.Logger;
 
-import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -34,15 +35,15 @@ import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.uimafit.util.JCasUtil;
 
-public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
+public class TimeXExtractor implements SimpleFeatureExtractor {
 
   private String name;
 
-  //private Logger logger = Logger.getLogger(this.getClass().getName());
+//  private Logger logger = Logger.getLogger(this.getClass().getName());
 
-  public NearbyVerbTenseXExtractor() {
+  public TimeXExtractor() {
     super();
-    this.name = "VerbTenseFeature";
+    this.name = "TimeXFeature";
     
   }
 
@@ -56,24 +57,30 @@ public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
 	  EventMention targetTokenAnnotation = (EventMention)annotation;
 	  Collection<Sentence> sentList = coveringMap.get(targetTokenAnnotation);
 	  
-	  //2 get Verb Tense
+	  //2 get TimeX
+	  Map<Integer, TimeMention> timeDistMap = null;
+	  
 	  if (sentList != null && !sentList.isEmpty()){
+		  timeDistMap = new TreeMap<Integer, TimeMention>();
+		  
 		  for(Sentence sent : sentList) {
-			  String verbTP ="";
-			  for ( WordToken wt : JCasUtil.selectCovered(view, WordToken.class, sent)) {
-				  if (wt != null){
-					  String pos = wt.getPartOfSpeech();
-					  if (pos.startsWith("VB")){
-						  verbTP = verbTP + "_" + pos;
-					  }
-				  }
+			  for (TimeMention time : JCasUtil.selectCovered(view, TimeMention.class, sent)) {
+				  timeDistMap.put(Math.abs(time.getBegin() - annotation.getBegin()), time);
 			  }
-			  Feature feature = new Feature(this.name, verbTP);
-			  features.add(feature);
-			  //logger.info("found nearby verb's pos tag: "+ verbTP);
 		  }
 		  
+		  //get the closest Time Expression feature
+		  for (Map.Entry<Integer, TimeMention> entry : timeDistMap.entrySet()) {
+			  Feature feature = new Feature(this.name, entry.getValue().getCoveredText());
+			  features.add(feature);
+//			  logger.info("add time feature: "+ entry.getValue().getCoveredText() + entry.getValue().getTimeClass());
+			  Feature indicator = new Feature("TimeXNearby", this.name);
+			  features.add(indicator);
+			  break;
+		  }
 	  }
+	  
+
 	  return features;
   }
 

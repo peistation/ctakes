@@ -24,9 +24,8 @@ import java.util.List;
 import java.util.Map;
 //import java.util.logging.Logger;
 
-import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -34,15 +33,15 @@ import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.uimafit.util.JCasUtil;
 
-public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
+public class SectionHeaderExtractor implements SimpleFeatureExtractor {
 
   private String name;
 
-  //private Logger logger = Logger.getLogger(this.getClass().getName());
+//  private Logger logger = Logger.getLogger(this.getClass().getName());
 
-  public NearbyVerbTenseXExtractor() {
+  public SectionHeaderExtractor() {
     super();
-    this.name = "VerbTenseFeature";
+    this.name = "SectionHeader";
     
   }
 
@@ -51,26 +50,18 @@ public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
 	  List<Feature> features = new ArrayList<Feature>();
 	  
 	  //1 get covering sentence:
-	  Map<EventMention, Collection<Sentence>> coveringMap =
-			  JCasUtil.indexCovering(view, EventMention.class, Sentence.class);
+	  Map<EventMention, Collection<Segment>> coveringMap =
+			  JCasUtil.indexCovering(view, EventMention.class, Segment.class);
 	  EventMention targetTokenAnnotation = (EventMention)annotation;
-	  Collection<Sentence> sentList = coveringMap.get(targetTokenAnnotation);
+	  Collection<Segment> segList = coveringMap.get(targetTokenAnnotation);
 	  
 	  //2 get Verb Tense
-	  if (sentList != null && !sentList.isEmpty()){
-		  for(Sentence sent : sentList) {
-			  String verbTP ="";
-			  for ( WordToken wt : JCasUtil.selectCovered(view, WordToken.class, sent)) {
-				  if (wt != null){
-					  String pos = wt.getPartOfSpeech();
-					  if (pos.startsWith("VB")){
-						  verbTP = verbTP + "_" + pos;
-					  }
-				  }
-			  }
-			  Feature feature = new Feature(this.name, verbTP);
+	  if (segList != null && !segList.isEmpty()){
+		  for(Segment seg : segList) {
+			  String segname = seg.getId();
+			  Feature feature = new Feature(this.name, segname);
 			  features.add(feature);
-			  //logger.info("found nearby verb's pos tag: "+ verbTP);
+//			  logger.info("found segment id: "+ segname);
 		  }
 		  
 	  }

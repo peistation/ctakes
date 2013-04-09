@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import org.apache.ctakes.temporal.ae.DocTimeRelAnnotator;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
@@ -40,6 +41,7 @@ import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
+//import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AggregateBuilder;
@@ -97,11 +99,12 @@ public class EvaluationOfEventProperties extends
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
+    aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createDataWriterDescription(
-        LIBSVMStringOutcomeDataWriter.class,
+    	LIBSVMStringOutcomeDataWriter.class,
         directory));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
-    JarClassifierBuilder.trainAndPackage(directory, "-c", "1000");
+    JarClassifierBuilder.trainAndPackage(directory, "-c", "10000");
   }
 
   @Override
@@ -110,6 +113,7 @@ public class EvaluationOfEventProperties extends
       File directory) throws Exception {
     AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
+    aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearEventProperties.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createAnnotatorDescription(directory));
 

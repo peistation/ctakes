@@ -21,7 +21,10 @@ package org.apache.ctakes.temporal.ae;
 import java.io.File;
 import java.util.List;
 
+import org.apache.ctakes.temporal.ae.feature.ClosestVerbExtractor;
 import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
+import org.apache.ctakes.temporal.ae.feature.SectionHeaderExtractor;
+import org.apache.ctakes.temporal.ae.feature.TimeXExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.UimaContext;
@@ -73,6 +76,9 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
 
   private CleartkExtractor contextExtractor;
   private NearbyVerbTenseXExtractor verbTensePatternExtractor;
+  private SectionHeaderExtractor sectionIDExtractor;
+  private ClosestVerbExtractor closestVerbExtractor;
+  private TimeXExtractor timeXExtractor;
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -87,6 +93,9 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
         new Covered(),
         new Following(3));
     this.verbTensePatternExtractor = new NearbyVerbTenseXExtractor();
+    this.sectionIDExtractor = new SectionHeaderExtractor();
+    this.closestVerbExtractor = new ClosestVerbExtractor();
+    this.timeXExtractor = new TimeXExtractor();
   }
 
   @Override
@@ -95,6 +104,9 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
       if (eventMention.getEvent() != null) {
         List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
         features.addAll(this.verbTensePatternExtractor.extract(jCas, eventMention));//add nearby verb POS pattern feature
+        features.addAll(this.sectionIDExtractor.extract(jCas, eventMention)); //add section heading
+        features.addAll(this.closestVerbExtractor.extract(jCas, eventMention)); //add closest verb
+        features.addAll(this.timeXExtractor.extract(jCas, eventMention)); //add the closest time expression types
         if (this.isTraining()) {
           String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
           this.dataWriter.write(new Instance<String>(outcome, features));

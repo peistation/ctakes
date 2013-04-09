@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 //import java.util.logging.Logger;
 
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
@@ -34,15 +35,15 @@ import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.uimafit.util.JCasUtil;
 
-public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
+public class ClosestVerbExtractor implements SimpleFeatureExtractor {
 
   private String name;
 
-  //private Logger logger = Logger.getLogger(this.getClass().getName());
+//  private Logger logger = Logger.getLogger(this.getClass().getName());
 
-  public NearbyVerbTenseXExtractor() {
+  public ClosestVerbExtractor() {
     super();
-    this.name = "VerbTenseFeature";
+    this.name = "ClosestVerb";
     
   }
 
@@ -56,21 +57,28 @@ public class NearbyVerbTenseXExtractor implements SimpleFeatureExtractor {
 	  EventMention targetTokenAnnotation = (EventMention)annotation;
 	  Collection<Sentence> sentList = coveringMap.get(targetTokenAnnotation);
 	  
-	  //2 get Verb Tense
+	  Map<Integer, WordToken> verbDistMap = null;
+	  
+	  //2 get all Verbs within the same sentence as target event lies
 	  if (sentList != null && !sentList.isEmpty()){
 		  for(Sentence sent : sentList) {
-			  String verbTP ="";
+			  verbDistMap = new TreeMap<Integer, WordToken>();
 			  for ( WordToken wt : JCasUtil.selectCovered(view, WordToken.class, sent)) {
 				  if (wt != null){
 					  String pos = wt.getPartOfSpeech();
 					  if (pos.startsWith("VB")){
-						  verbTP = verbTP + "_" + pos;
+						  verbDistMap.put(Math.abs(wt.getBegin() - annotation.getBegin()), wt);
 					  }
 				  }
 			  }
-			  Feature feature = new Feature(this.name, verbTP);
-			  features.add(feature);
-			  //logger.info("found nearby verb's pos tag: "+ verbTP);
+			  for (Map.Entry<Integer, WordToken> entry : verbDistMap.entrySet()) {
+				  //Feature feature = new Feature(this.name, entry.getValue().getCoveredText());
+				  //		        	  features.add(feature);
+				  //logger.info("found nearby closest verb: "+ entry.getValue().getCoveredText() + " POS:" + entry.getValue().getPartOfSpeech());
+				  Feature posfeature = new Feature(this.name, entry.getValue().getPartOfSpeech());
+				  features.add(posfeature);
+				  break;		          
+			  }
 		  }
 		  
 	  }
