@@ -21,6 +21,7 @@ package org.apache.ctakes.temporal.ae;
 import java.io.File;
 import java.util.List;
 
+import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.UimaContext;
@@ -71,6 +72,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   }
 
   private CleartkExtractor contextExtractor;
+  private NearbyVerbTenseXExtractor verbTensePatternExtractor;
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -84,6 +86,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
         new Preceding(3),
         new Covered(),
         new Following(3));
+    this.verbTensePatternExtractor = new NearbyVerbTenseXExtractor();
   }
 
   @Override
@@ -91,6 +94,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
     for (EventMention eventMention : JCasUtil.select(jCas, EventMention.class)) {
       if (eventMention.getEvent() != null) {
         List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
+        features.addAll(this.verbTensePatternExtractor.extract(jCas, eventMention));//add nearby verb POS pattern feature
         if (this.isTraining()) {
           String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
           this.dataWriter.write(new Instance<String>(outcome, features));
