@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <primitive>true</primitive>
+    <annotatorImplementationName>org.apache.ctakes.templatefiller.ae.TemplateFillerAnnotator</annotatorImplementationName>
+    <analysisEngineMetaData>
+        <name>TemplateFillerAnnotator</name>
+        <description></description>
+        <version>unknown</version>
+        <vendor></vendor>
+        <configurationParameters>
+        </configurationParameters>
+        <configurationParameterSettings>
+        </configurationParameterSettings>
+        <typeSystemDescription/>
+        <fsIndexCollection/>
+        <capabilities/>
+        <operationalProperties>
+            <modifiesCas>true</modifiesCas>
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <outputsNewCASes>false</outputsNewCASes>
+        </operationalProperties>
+    </analysisEngineMetaData>
+</analysisEngineDescription>
