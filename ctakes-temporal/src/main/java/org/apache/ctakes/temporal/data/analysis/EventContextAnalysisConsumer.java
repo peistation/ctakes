@@ -22,7 +22,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -32,7 +32,7 @@ import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.util.JCasUtil;
 
 /**
- * Print all tokens with contexts and all events with contexts for farther analysis.
+ * Print all tokens with contexts and all events with contexts for further analysis.
  * 
  * @author dmitriy dligach
  *
@@ -59,24 +59,34 @@ public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
       throw new AnalysisEngineProcessException(e);
     }
 
-    try {
-      BufferedWriter tokenWriter = getWriter(tokenFile, true);
-      for(WordToken wordToken : JCasUtil.select(systemView, WordToken.class)) {
-        String tokenText = wordToken.getCoveredText().toLowerCase();
-        String output = String.format("%s|%s\n", tokenText, getAnnotationContext(wordToken, 40));
-        tokenWriter.write(output);
-      }
-
-      BufferedWriter eventWriter = getWriter(eventFile, true);
-      for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
-        String eventText = eventMention.getCoveredText().toLowerCase();
-        String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, 40));
-        eventWriter.write(output);
-      }
+    BufferedWriter tokenWriter = getWriter(tokenFile, true);
+    BufferedWriter eventWriter = getWriter(eventFile, true);
       
+    for(BaseToken baseToken : JCasUtil.select(systemView, BaseToken.class)) {
+      String tokenText = baseToken.getCoveredText().toLowerCase();
+      String output = String.format("%s|%s\n", tokenText, getAnnotationContext(baseToken, 40));
+      
+      try {
+        tokenWriter.write(output);
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    } 
+
+    for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
+      String eventText = eventMention.getCoveredText().toLowerCase();
+      String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, 40));
+      
+      try {
+        eventWriter.write(output);
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
+    }
+    
+    try {
       tokenWriter.close();
       eventWriter.close();
-      
     } catch (IOException e) {
       throw new AnalysisEngineProcessException(e);
     }
