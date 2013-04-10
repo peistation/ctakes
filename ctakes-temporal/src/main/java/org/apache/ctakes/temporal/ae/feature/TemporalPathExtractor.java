@@ -24,6 +24,11 @@ public class TemporalPathExtractor implements RelationFeaturesExtractor {
 		List<Feature> features = new ArrayList<Feature>();
 		// first get the root and print it out...
 		TopTreebankNode root = AnnotationTreeUtils.getTreeCopy(jcas, AnnotationTreeUtils.getAnnotationTree(jcas, arg1));
+		if(root == null){
+			SimpleTree fakeTree = new SimpleTree("(S (NN null))");
+			features.add(new Feature("TK_PATH", fakeTree.toString()));
+			return features;
+		}
 		// swap the order if necessary:
 		if(arg2.getBegin() <= arg1.getBegin() && arg2.getEnd() <= arg1.getEnd()){
 			IdentifiedAnnotation temp = arg1;

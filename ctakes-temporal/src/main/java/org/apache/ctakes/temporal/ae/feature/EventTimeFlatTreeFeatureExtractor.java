@@ -14,6 +14,8 @@ import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
+import com.google.common.base.Function;
+
 
 public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtractor{
 
@@ -29,8 +31,16 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 			arg2 = temp;
 		}
 		
-		SimpleTree tree = new SimpleTree("BOP");
+		SimpleTree bopTree = getTree(jcas, arg1, arg2, "BOP", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getPartOfSpeech();}});
+//		SimpleTree bowTree = getTree(jcas, arg1, arg2, "BOW", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getCoveredText();}});
 		
+		feats.add(new Feature("TK_BOP", bopTree.toString()));
+//		feats.add(new Feature("TK_BOW", bowTree.toString()));
+		return feats;
+	}
+
+	private static SimpleTree getTree(JCas jcas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2, String label, Function<BaseToken, String> leafFun){
+		SimpleTree tree = new SimpleTree(label);
 		SimpleTree arg1Tree = null;
 		SimpleTree arg2Tree = null;
 		String eventModality="";
@@ -55,7 +65,7 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 		tree.addChild(arg1Tree);
 		for(BaseToken token : tokens){
 			SimpleTree tokenTree = new SimpleTree("TOK");
-			tokenTree.addChild(new SimpleTree(token.getPartOfSpeech()));
+			tokenTree.addChild(new SimpleTree(leafFun.apply(token)));
 			
 			if(token.getEnd() <= arg1.getEnd()){
 				arg1Tree.addChild(tokenTree);
@@ -66,10 +76,7 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 			}
 		}
 		tree.addChild(arg2Tree);
-		
-		feats.add(new Feature("TK_BOP", tree.toString()));
-		return feats;
+		return tree;
 	}
-
 
 }
