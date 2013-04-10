@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.ctakes.temporal.ae.feature.ClosestVerbExtractor;
+import org.apache.ctakes.temporal.ae.feature.EvevtPropertyExtractor;
 import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
 import org.apache.ctakes.temporal.ae.feature.SectionHeaderExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeXExtractor;
@@ -79,6 +80,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   private SectionHeaderExtractor sectionIDExtractor;
   private ClosestVerbExtractor closestVerbExtractor;
   private TimeXExtractor timeXExtractor;
+  private EvevtPropertyExtractor genericExtractor;
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -96,6 +98,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
     this.sectionIDExtractor = new SectionHeaderExtractor();
     this.closestVerbExtractor = new ClosestVerbExtractor();
     this.timeXExtractor = new TimeXExtractor();
+    this.genericExtractor = new EvevtPropertyExtractor();
   }
 
   @Override
@@ -107,6 +110,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
         features.addAll(this.sectionIDExtractor.extract(jCas, eventMention)); //add section heading
         features.addAll(this.closestVerbExtractor.extract(jCas, eventMention)); //add closest verb
         features.addAll(this.timeXExtractor.extract(jCas, eventMention)); //add the closest time expression types
+        features.addAll(this.genericExtractor.extract(jCas, eventMention)); //add the closest time expression types
         if (this.isTraining()) {
           String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
           this.dataWriter.write(new Instance<String>(outcome, features));
