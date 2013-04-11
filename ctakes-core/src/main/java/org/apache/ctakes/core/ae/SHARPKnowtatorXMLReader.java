@@ -250,7 +250,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       
       if (nonAnnotationTypes.contains(annotation.type)) {
         if (coveringSpan.begin != Integer.MAX_VALUE || coveringSpan.end != Integer.MIN_VALUE) {
-          LOGGER.error(String.format(
+          LOGGER.warn(String.format(
               "expected no span but found %s for '%s' with id '%s' in %s'",
               annotation.spans,
               annotation.type,
@@ -259,7 +259,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         }
       } else {
         if (coveringSpan.begin == Integer.MAX_VALUE || coveringSpan.end == Integer.MIN_VALUE) {
-          LOGGER.error(String.format(
+          LOGGER.warn(String.format(
               "expected span but found none for '%s' with id '%s' in %s'",
               annotation.type,
               annotation.id,
@@ -1346,7 +1346,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
     
     private void assertTypes(Annotation sourceMention, Class<? extends Annotation> expectedSourceClass, Annotation targetMention, Class<? extends Annotation> expectedTargetClass) {
       if (!expectedSourceClass.isInstance(sourceMention) || !expectedTargetClass.isInstance(targetMention)) {
-        LOGGER.error(String.format(
+        LOGGER.warn(String.format(
             "wrong relation argument types: expected %s(%s(...), %s(...)) but found %s(%s, %s) for ids %s(%s, %s) in %s",
             this.annotation.type,
             expectedSourceClass.getSimpleName(),
@@ -1382,7 +1382,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
       if (this.featureValue != null) {
         TOP valueAnnotation = idAnnotationMap.get(this.featureValue.id);
         if (valueAnnotation == null) {
-          LOGGER.error(String.format(
+          LOGGER.warn(String.format(
               "unable to set feature; found no annotation for %s",
               this.featureValue.id));
         } else {
@@ -1496,7 +1496,7 @@ public class SHARPKnowtatorXMLReader extends JCasAnnotator_ImplBase {
         message = "wrong relation arg2 type";
       }
       if (message != null) {
-        LOGGER.error(String.format(
+        LOGGER.warn(String.format(
             "%s: expected %s feature of %s to be %s(%s, %s) but found %s[%s](%s, %s) with id \"%s\"",
             message,
             this.featureName,
