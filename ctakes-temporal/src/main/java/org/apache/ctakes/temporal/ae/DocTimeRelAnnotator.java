@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.ctakes.temporal.ae.feature.ClosestVerbExtractor;
-import org.apache.ctakes.temporal.ae.feature.DateXExtractor;
+import org.apache.ctakes.temporal.ae.feature.DateAndMeasurementExtractor;
 import org.apache.ctakes.temporal.ae.feature.EvevtPropertyExtractor;
 import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
 import org.apache.ctakes.temporal.ae.feature.SectionHeaderExtractor;
@@ -82,7 +82,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   private ClosestVerbExtractor closestVerbExtractor;
   private TimeXExtractor timeXExtractor;
   private EvevtPropertyExtractor genericExtractor;
-  private DateXExtractor dateExtractor;
+  private DateAndMeasurementExtractor dateExtractor;
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -101,7 +101,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
     this.closestVerbExtractor = new ClosestVerbExtractor();
     this.timeXExtractor = new TimeXExtractor();
     this.genericExtractor = new EvevtPropertyExtractor();
-    this.dateExtractor = new DateXExtractor();
+    this.dateExtractor = new DateAndMeasurementExtractor();
   }
 
   @Override

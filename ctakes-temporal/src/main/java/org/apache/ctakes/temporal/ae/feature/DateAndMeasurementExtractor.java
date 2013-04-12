@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.ctakes.typesystem.type.textsem.DateAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -33,11 +34,11 @@ import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.uimafit.util.JCasUtil;
 
-public class DateXExtractor implements SimpleFeatureExtractor {
+public class DateAndMeasurementExtractor implements SimpleFeatureExtractor {
 
   private String name;
 
-  public DateXExtractor() {
+  public DateAndMeasurementExtractor() {
     super();
     this.name = "DateXFeature";
     
@@ -64,7 +65,17 @@ public class DateXExtractor implements SimpleFeatureExtractor {
 		  }
 	  }
 	  
-
+	//3 get Measurement
+	  if (sentList != null && !sentList.isEmpty()){
+		  for(Sentence sent : sentList) {
+			  for (@SuppressWarnings("unused") MeasurementAnnotation date : JCasUtil.selectCovered(view, MeasurementAnnotation.class, sent)) {
+				  Feature indicator = new Feature("MeasurementNearby", "measure");
+				  features.add(indicator);
+				  break;
+			  }
+		  }
+	  }
+	  
 	  return features;
   }
 
