@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ctakes.typesystem.type.syntax.NumToken;
 import org.apache.ctakes.typesystem.type.textsem.DateAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation;
@@ -70,6 +71,17 @@ public class DateAndMeasurementExtractor implements SimpleFeatureExtractor {
 		  for(Sentence sent : sentList) {
 			  for (@SuppressWarnings("unused") MeasurementAnnotation date : JCasUtil.selectCovered(view, MeasurementAnnotation.class, sent)) {
 				  Feature indicator = new Feature("MeasurementNearby", "measure");
+				  features.add(indicator);
+				  break;
+			  }
+		  }
+	  }
+	  
+	//4 get number
+	  if (sentList != null && !sentList.isEmpty()){
+		  for(Sentence sent : sentList) {
+			  for (@SuppressWarnings("unused") NumToken date : JCasUtil.selectCovered(view, NumToken.class, sent)) {
+				  Feature indicator = new Feature("NumTokenNearby", "NumToken");
 				  features.add(indicator);
 				  break;
 			  }
