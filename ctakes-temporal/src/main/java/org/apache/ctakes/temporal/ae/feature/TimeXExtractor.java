@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
@@ -38,12 +39,14 @@ import org.uimafit.util.JCasUtil;
 public class TimeXExtractor implements SimpleFeatureExtractor {
 
   private String name;
+  private EventTimeFlatTreeFeatureExtractor path;
 
 //  private Logger logger = Logger.getLogger(this.getClass().getName());
 
   public TimeXExtractor() {
     super();
     this.name = "TimeXFeature";
+    this.path = new EventTimeFlatTreeFeatureExtractor();
     
   }
 
@@ -73,9 +76,14 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
 		  for (Map.Entry<Integer, TimeMention> entry : timeDistMap.entrySet()) {
 			  Feature feature = new Feature(this.name, entry.getValue().getCoveredText());
 			  features.add(feature);
-//			  logger.info("add time feature: "+ entry.getValue().getCoveredText() + entry.getValue().getTimeClass());
+			  //			  logger.info("add time feature: "+ entry.getValue().getCoveredText() + entry.getValue().getTimeClass());
 			  Feature indicator = new Feature("TimeXNearby", this.name);
 			  features.add(indicator);
+			  try {
+				  features.addAll(this.path.extract(view, targetTokenAnnotation, entry.getValue()));//add path between timex and event
+			  } catch (AnalysisEngineProcessException e) {
+				  throw new IllegalArgumentException(String.format("error in gererating path feature:", features));
+			  }
 			  break;
 		  }
 	  }
