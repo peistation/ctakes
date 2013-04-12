@@ -101,10 +101,10 @@ public class EvaluationOfEventProperties extends
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
     aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createDataWriterDescription(
-    	LIBSVMStringOutcomeDataWriter.class,
+    		LIBSVMStringOutcomeDataWriter.class,
         directory));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
-    JarClassifierBuilder.trainAndPackage(directory, "-c", "10000");
+    JarClassifierBuilder.trainAndPackage(directory, "-h","0","-c", "1000");
   }
 
   @Override
