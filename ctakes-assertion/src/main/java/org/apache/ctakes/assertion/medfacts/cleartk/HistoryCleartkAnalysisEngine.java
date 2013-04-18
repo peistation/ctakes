@@ -20,8 +20,8 @@ package org.apache.ctakes.assertion.medfacts.cleartk;
 
 import java.util.ArrayList;
 
-import org.apache.ctakes.assertion.attributes.features.GenericFeaturesExtractor;
 import org.apache.ctakes.assertion.attributes.features.HistoryFeaturesExtractor;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
@@ -29,6 +29,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.extractor.ContextExtractor;
+import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
 public class HistoryCleartkAnalysisEngine extends
 		AssertionCleartkAnalysisEngine {
@@ -52,7 +53,7 @@ public class HistoryCleartkAnalysisEngine extends
 
 	}
 
-	private void initialize_history_extractor() {
+	private void initialize_history_extractor() throws ResourceInitializationException {
 		
 		if (this.contextFeatureExtractors==null) {
 			this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
@@ -60,7 +61,11 @@ public class HistoryCleartkAnalysisEngine extends
 		this.contextFeatureExtractors.add( 
 				new ContextExtractor<IdentifiedAnnotation>(
 						IdentifiedAnnotation.class, new HistoryFeaturesExtractor()) );
-				
+		
+		if(this.entityFeatureExtractors == null){
+			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+		}
+		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/history.txt"));
 	}
 	
 	@Override

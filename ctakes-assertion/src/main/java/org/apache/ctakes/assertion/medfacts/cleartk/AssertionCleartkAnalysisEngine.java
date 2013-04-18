@@ -21,14 +21,18 @@ package org.apache.ctakes.assertion.medfacts.cleartk;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.uima.jcas.tcas.Annotation;
-
-import org.apache.log4j.Level;
+import org.apache.ctakes.assertion.zoner.types.Zone;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -37,18 +41,13 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
-//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.CleartkAnnotatorDescriptionFactory;
-import org.cleartk.classifier.CleartkSequenceAnnotator;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
-import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
+import org.cleartk.classifier.feature.extractor.ContextExtractor;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
+import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
@@ -59,27 +58,11 @@ import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
 import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
 import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
 import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
-import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
-import org.cleartk.classifier.opennlp.MaxentDataWriterFactory_ImplBase;
-import org.cleartk.type.test.Token;
-import org.cleartk.classifier.Feature;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
-
-import org.apache.commons.lang.StringUtils;
-
-import org.apache.ctakes.assertion.zoner.types.Zone;
-import org.apache.ctakes.typesystem.type.structured.DocumentID;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
-
-import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 
 public abstract class AssertionCleartkAnalysisEngine extends
     CleartkAnnotator<String>
@@ -155,17 +138,8 @@ public abstract class AssertionCleartkAnalysisEngine extends
     // a list of feature extractors that require only the token:
     // the stem of the word, the text of the word itself, plus
     // features created from the word text like character ngrams
-    this.entityFeatureExtractors = Arrays.asList(
-        new CoveredTextExtractor(),
-        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
-        new ProliferatingExtractor(
-            new SpannedTextExtractor(),
-            new LowerCaseProliferator(),    
-            new CapitalTypeProliferator(),
-            new NumericTypeProliferator(),
-            new CharacterNGramProliferator(fromRight, 0, 2),
-            new CharacterNGramProliferator(fromRight, 0, 3)));
-
+    this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+    
     // a list of feature extractors that require the token and the sentence
     this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
     
@@ -356,11 +330,11 @@ public abstract class AssertionCleartkAnalysisEngine extends
 
 
         
-      /*
+      
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
-        instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+        instance.addAll(extractor.extract(jCas, entityMention));
       }
-      */
+      
       
       List<Feature> zoneFeatures = extractZoneFeatures(coveringZoneMap, entityMention);
       if (zoneFeatures != null && !zoneFeatures.isEmpty())

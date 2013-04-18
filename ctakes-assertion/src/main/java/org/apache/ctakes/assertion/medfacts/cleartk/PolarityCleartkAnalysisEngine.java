@@ -18,11 +18,16 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.util.ArrayList;
+
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.NegationDependencyFeatureExtractor;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.cleartk.classifier.Instance;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
 
 public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngine {
@@ -31,6 +36,12 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
 		probabilityOfKeepingADefaultExample = 0.1;
+		
+		if(this.entityFeatureExtractors == null){
+			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+		}
+		this.entityFeatureExtractors.add(new NegationDependencyFeatureExtractor());
+		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/polarity.txt"));
 	}
 
 	public void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException {
