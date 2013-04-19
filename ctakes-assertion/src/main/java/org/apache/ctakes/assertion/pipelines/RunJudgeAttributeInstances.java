@@ -15,6 +15,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -35,9 +36,46 @@ public class RunJudgeAttributeInstances {
 				usage = "where to write the 'adjudicated' instances in xmi format to",
 				required = true)
 				public String outputDir = "sharp_data/output_instancegathering";
+//		@Option(
+//				name = "--ignore-polarity",
+//				usage = "specify whether polarity processing should be ignored (true or false). default: false",
+//				required = false)
+//				public boolean ignorePolarity = false; // note that this is reversed from the "ignore" statement
+//
+//		@Option(
+//				name = "--ignore-conditional",
+//				usage = "specify whether conditional processing should be ignored (true or false). default: false",
+//				required = false)
+//				public boolean ignoreConditional = false;
+//
+//		@Option(
+//				name = "--ignore-uncertainty",
+//				usage = "specify whether uncertainty processing should be ignored (true or false). default: false",
+//				required = false)
+//				public boolean ignoreUncertainty = false;
+//
+//		@Option(
+//				name = "--ignore-subject",
+//				usage = "specify whether subject processing should be ignored (true or false). default: false",
+//				required = false,
+//				handler=BooleanOptionHandler.class)
+//				public boolean ignoreSubject = false;
+//
+//		@Option(
+//				name = "--ignore-generic",
+//				usage = "specify whether generic processing should be ignored (true or false). default: false",
+//				required = false)
+//				public boolean ignoreGeneric = false;
+//
+//		// srh adding 2/20/13
+//		@Option(
+//				name = "--ignore-history",
+//				usage = "specify whether 'history of' processing should be run (true or false). default: false",
+//				required = false)
+//				public boolean ignoreHistory = false;
 	}
 
-	protected static Options options = new Options();
+	public static Options options = new Options();
 
 	/**
 	 * @param args

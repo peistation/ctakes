@@ -24,10 +24,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
+import org.apache.ctakes.assertion.eval.AssertionEvaluation.Options;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.UimaContext;
@@ -84,6 +85,14 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	protected String fileNamerClassName;
 
 	/**
+	 * The parameter name which to ignore
+	 */
+//	public static final String PARAM_IGNORABLE_ATTR = ConfigurationParameterFactory
+//	.createConfigurationParameterName(JudgeAttributeInstances.class, "ignorableAttributes");
+//	@ConfigurationParameter(mandatory = true, description = "takes a path to directory into which output files will be written.")
+//	private String ignorableAttributesString;
+
+	/**
 	 * The name of the XMI XML scheme. This is a valid value for the parameter
 	 * {@value #PARAM_XML_SCHEME_NAME}
 	 */
@@ -99,6 +108,9 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 		CONDITIONAL, GENERIC, HISTORYOF, POLARITY, SUBJECT, UNCERTAINTY;
 	}
 	
+	protected static Options options = new Options();
+
+	
 	private static final HashMap<Selector,String> msg = new HashMap<Selector,String>();
 	static {
 		msg.put(Selector.CONDITIONAL,"conditional");
@@ -110,7 +122,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 		
 
-	private HashSet<EventMention> deletableMentions = new HashSet<EventMention>();
+	private ArrayList<EventMention> deletableMentions = new ArrayList<EventMention>();
 	
 	private File outputDirectory;
 
@@ -144,19 +156,29 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 
 	@Override
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		String fileName = fileNamer.nameFile(jcas);
+	public void process(JCas jCas) throws AnalysisEngineProcessException {
+		String fileName = fileNamer.nameFile(jCas);
 		System.out.println("==================\nFile: "+fileName);
-		judgeAttributes(jcas);
+		deletableMentions = new ArrayList<EventMention>();
 
-		removeExtraneousMentions(jcas);
+//		JCas jCas = null;
+//		try {
+//			jCas = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+//		} catch (CASException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
+		judgeAttributes(jCas);
+
+		removeExtraneousMentions(jCas);
 		
 		try {
 			if (useXMI) {
-				writeXmi(jcas.getCas(), fileName);
+				writeXmi(jCas.getCas(), fileName);
 			}
 			else {
-				writeXCas(jcas.getCas(), fileName);
+				writeXCas(jCas.getCas(), fileName);
 			}
 		}
 		catch (IOException e) {
@@ -218,27 +240,27 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 			String subject = mention.getSubject();
 			int uncertainty = mention.getUncertainty();
 
-			if (conditional==true) {
+			if (conditional==true && !options.ignoreConditional) {
 				interact(jCas,mention,Selector.CONDITIONAL); // uses the attribute in mention
 				flag = true;
 			}
-			if (generic==true) {
+			if (generic==true && !options.ignoreGeneric) {
 				interact(jCas,mention,Selector.GENERIC); // uses the attribute in mention
 				flag = true;
 			}
-			if (historyOf==CONST.NE_HISTORY_OF_PRESENT) {
-				interact(jCas,mention,Selector.HISTORYOF); // uses the attribute in mention
-				flag = true;
+			if (historyOf==CONST.NE_HISTORY_OF_PRESENT && !options.ignoreHistory) {
+//				interact(jCas,mention,Selector.HISTORYOF); // uses the attribute in mention
+//				flag = true;
 			}
-			if (polarity==CONST.NE_POLARITY_NEGATION_PRESENT) {
-				System.out.println("Polarity="+polarity+": "+mention.getCoveredText());
-				flag = true;
+			if (polarity==CONST.NE_POLARITY_NEGATION_PRESENT && !options.ignorePolarity) {
+//				interact(jCas,mention,Selector.POLARITY); // uses the attribute in mention
+//				flag = true;
 			}
-			if (!CONST.ATTR_SUBJECT_PATIENT.equals(subject) && subject!=null) {
+			if (!CONST.ATTR_SUBJECT_PATIENT.equals(subject) && subject!=null && !options.ignoreSubject) {
 				interact(jCas,mention,Selector.SUBJECT); // uses the attribute in mention
 				flag = true;
 			}
-			if (uncertainty==CONST.NE_UNCERTAINTY_PRESENT) {
+			if (uncertainty==CONST.NE_UNCERTAINTY_PRESENT && !options.ignoreUncertainty) {
 				interact(jCas,mention,Selector.UNCERTAINTY); // uses the attribute in mention
 				flag = true;
 			}
@@ -272,6 +294,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 		System.out.println("| "+ sb.toString().replaceAll("\\n", "\n| "));
 		
 		System.out.println(": "+ semGroup + 
+				" : beg=" + mention.getBegin() + " : end=" + mention.getEnd() +
 				" : c=" + mention.getConditional()  + " : g=" + mention.getGeneric() +
 				" : h=" + mention.getHistoryOf() + " : p="  + mention.getPolarity() + 
 				" : s=" + mention.getSubject() + " : u="  + mention.getUncertainty());
@@ -317,11 +340,15 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 				response = prompt( "umm... is this " + msg.get(attr) + "=" + getAttrValueString(mention,attr));
 			} 
 			else if (response.toLowerCase().startsWith("y")) {
-				// yes response -- do nothing or put into alternate view?
+				// yes response -- do nothing, or put into alternate view?
 				break;
 			}
-			else if (response.toLowerCase().startsWith("n") || response.toLowerCase().startsWith("s")) {
-				// no response
+			else if (response.toLowerCase().startsWith("n")) {
+				// response if "no"
+				adjustAttr(attr,response,mention);
+				break;
+			}
+			else if (response.toLowerCase().startsWith("s")) {
 				deletableMentions.add(mention);
 				break;
 			}
@@ -335,6 +362,46 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 						msg.get(attr) + "=" + getAttrValueString(mention,attr));
 			}
 		}		
+	}
+
+	private void adjustAttr(Selector attr, String response, EventMention mention) {
+		switch (attr) {
+		case CONDITIONAL:
+			mention.setConditional(CONST.NE_CONDITIONAL_FALSE);
+			break;
+		case GENERIC:
+			mention.setGeneric(CONST.NE_GENERIC_FALSE);
+			break;
+		case HISTORYOF:
+			mention.setHistoryOf(CONST.NE_HISTORY_OF_ABSENT);
+			break;
+		case POLARITY:
+			mention.setPolarity(CONST.NE_POLARITY_NEGATION_ABSENT);
+			break;
+		case SUBJECT:
+			response = prompt( "what is the subject? p=patient (default), f=family_member, " +
+			"df=donor_family_member, do=donor_other, o=other... or s=skip");
+			if (response.startsWith("p")) {
+				mention.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+			} else if (response.startsWith("f")) {
+				mention.setSubject(CONST.ATTR_SUBJECT_FAMILY_MEMBER);
+			} else if (response.startsWith("df")) {
+				mention.setSubject(CONST.ATTR_SUBJECT_DONOR_FAMILY_MEMBER);
+			} else if (response.equals("do")) {
+				mention.setSubject(CONST.ATTR_SUBJECT_DONOR_OTHER);
+			} else if (response.startsWith("o")) {
+				mention.setSubject(CONST.ATTR_SUBJECT_OTHER);
+			} else {
+				System.out.println("hmm... i'm skipping it.");
+				deletableMentions.add(mention);
+			}
+			break;
+		case UNCERTAINTY:
+			mention.setUncertainty(CONST.NE_UNCERTAINTY_ABSENT);
+			break;
+		default:
+			break;
+		} 
 	}
 
 	private String getAttrValueString(EventMention mention, Selector s) {
@@ -357,12 +424,14 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 	
 	private void removeExtraneousMentions(JCas jcas) {
-		// TODO: not operational yet
-//		for (EventMention mention : deletableMentions) {
-//			if (mention!=null) {
-//				mention.removeFromIndexes(jcas);
-//			}
-//		}
+		// TODO: how to remove if it is in a relation
+		
+		for (EventMention mention : deletableMentions) {
+			if (mention!=null) {
+//				System.out.println("removing "+mention.toString());
+				mention.removeFromIndexes();
+			}
+		}
 	}
 	
 }
