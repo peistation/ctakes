@@ -60,7 +60,7 @@ public class BaselineEventTimeRelationAnnotator extends RelationExtractorAnnotat
       // ignore subclasses like Procedure and Disease/Disorder
       if (event.getClass().equals(EventMention.class)) {
         for (TimeMention time : times) {
-          pairs.add(new IdentifiedAnnotationPair(event, time));
+          pairs.add(new IdentifiedAnnotationPair(time, event));
         }
       }
     }
