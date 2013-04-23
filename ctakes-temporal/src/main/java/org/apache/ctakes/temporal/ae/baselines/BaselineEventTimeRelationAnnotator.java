@@ -48,29 +48,25 @@ public class BaselineEventTimeRelationAnnotator extends RelationExtractorAnnotat
       JCas jCas,
       Annotation sentence) {
   
-    List<IdentifiedAnnotationPair> pairs = Lists.newArrayList();
     List<EventMention> events = JCasUtil.selectCovered(jCas, EventMention.class, sentence);
     List<TimeMention> times = JCasUtil.selectCovered(jCas, TimeMention.class, sentence);
     
     if(times.size() != 1 || events.size() < 1) {
-      return pairs;
-    }
-
-    for (EventMention event : events) {
-      // ignore subclasses like Procedure and Disease/Disorder
-      if (event.getClass().equals(EventMention.class)) {
-        for (TimeMention time : times) {
-          pairs.add(new IdentifiedAnnotationPair(time, event));
-        }
-      }
+      return Lists.newArrayList();
     }
 
     // compute token distance for each time-event pair
     HashMap<IdentifiedAnnotationPair, Integer> distanceLookup = new HashMap<IdentifiedAnnotationPair, Integer>();
-    for(IdentifiedAnnotationPair pair : pairs) {
-      List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
-      int distance = baseTokens.size();
-      distanceLookup.put(pair, distance);
+    for (EventMention event : events) {
+      // ignore subclasses like Procedure and Disease/Disorder
+      if (event.getClass().equals(EventMention.class)) {
+        for (TimeMention time : times) {
+          IdentifiedAnnotationPair pair = new IdentifiedAnnotationPair(time, event);
+          List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, pair.getArg1(), pair.getArg2());
+          int distance = baseTokens.size();
+          distanceLookup.put(pair, distance);
+        }
+      }
     }
 
     // find the pair where the distance between entities is the smallest and return it
