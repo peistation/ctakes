@@ -48,7 +48,7 @@ public class EventPropertyExtractor implements SimpleFeatureExtractor {
 	  //1 get event:
 	  EventMention event = (EventMention)annotation;
 	  String contextModal = event.getEvent().getProperties().getContextualModality();
-	  if (contextModal != null && contextModal.equals("GENERIC")){
+	  if ( "GENERIC".equals(contextModal) ){
 		  Feature contexmod = new Feature(this.name, contextModal);
 		  features.add(contexmod);
 //		  logger.info("found a event: "+ contextModal);
