@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.ctakes.temporal.ae.feature.ClosestVerbExtractor;
 import org.apache.ctakes.temporal.ae.feature.DateAndMeasurementExtractor;
-import org.apache.ctakes.temporal.ae.feature.EvevtPropertyExtractor;
+import org.apache.ctakes.temporal.ae.feature.EventPropertyExtractor;
 import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
 import org.apache.ctakes.temporal.ae.feature.SectionHeaderExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeXExtractor;
@@ -81,7 +81,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   private SectionHeaderExtractor sectionIDExtractor;
   private ClosestVerbExtractor closestVerbExtractor;
   private TimeXExtractor timeXExtractor;
-  private EvevtPropertyExtractor genericExtractor;
+  private EventPropertyExtractor genericExtractor;
   private DateAndMeasurementExtractor dateExtractor;
 
   @Override
@@ -100,7 +100,7 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
     this.sectionIDExtractor = new SectionHeaderExtractor();
     this.closestVerbExtractor = new ClosestVerbExtractor();
     this.timeXExtractor = new TimeXExtractor();
-    this.genericExtractor = new EvevtPropertyExtractor();
+    this.genericExtractor = new EventPropertyExtractor();
     this.dateExtractor = new DateAndMeasurementExtractor();
   }
 
