@@ -81,11 +81,6 @@ public class BaselineEventTimeRelationAnnotator extends RelationExtractorAnnotat
     List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
     result.add(rankedPairs.get(0));
 
-    System.out.println(sentence.getCoveredText());
-    System.out.println("arg1: " + result.get(0).getArg1().getCoveredText());
-    System.out.println("arg2: " + result.get(0).getArg2().getCoveredText());
-    System.out.println();
-
     return result;
   }
   
