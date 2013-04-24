@@ -80,9 +80,9 @@ public class TreeUtils {
 		}catch(Exception e){
 			System.err.println("Caught NPE");
 		}
-		if(pathTree.getChildren().size() == 1 && pathTree.getChildren(0).getLeaf()){
+		if(pathTree.getLeaf()){ //pathTree.getChildren().size() == 1 && pathTree.getChildren(0).getLeaf()){
 			buff.append(" ");
-			buff.append(pathTree.getChildren(0).getNodeType());
+			buff.append(pathTree.getNodeValue());
 //			buff.append(")");
 		}else{
 			for(int i = 0; i < pathTree.getChildren().size(); i++){

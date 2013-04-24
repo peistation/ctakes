@@ -18,6 +18,8 @@
  */
 package org.apache.ctakes.constituency.parser.util;
 
+import java.util.Collection;
+
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
@@ -26,24 +28,31 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.uimafit.util.JCasUtil;
 
 
 public class AnnotationTreeUtils {
 	
 	public static TopTreebankNode getAnnotationTree(JCas jcas, Annotation annot){
 		TopTreebankNode tree = null;
-		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(TopTreebankNode.type).iterator();
-		while(iter.hasNext()){
-			TopTreebankNode root = (TopTreebankNode) iter.next();
+//		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(TopTreebankNode.type).iterator();
+		Collection<TopTreebankNode> roots = JCasUtil.select(jcas, TopTreebankNode.class);
+//		while(iter.hasNext()){
+		for(TopTreebankNode root : roots){
+//			TopTreebankNode root = (TopTreebankNode) iter.next();
 			if(root.getBegin() <= annot.getBegin() && root.getEnd() >= annot.getEnd()){
 				tree = root;
 				break;
 			}
 		}
+		if(tree == null){
+			System.err.println("Could not find a tree.");
+		}
 		return tree;
 	}
 
 	public static TopTreebankNode getTreeCopy(JCas jcas, TopTreebankNode orig){
+		if(orig == null) return null;
 		TopTreebankNode copy = new TopTreebankNode(jcas);
 		copy.setNodeType(orig.getNodeType());
 		copy.setBegin(orig.getBegin());
@@ -55,6 +64,7 @@ public class AnnotationTreeUtils {
 			System.err.println("WHAT?");
 		}
 		copy.setChildren(0, getTreeCopy(jcas, orig.getChildren(0)));
+		copy.getChildren(0).setParent(copy);
 		return copy;
 	}
 
