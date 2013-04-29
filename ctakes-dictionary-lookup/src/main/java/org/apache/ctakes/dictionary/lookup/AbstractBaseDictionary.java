@@ -34,7 +34,7 @@ public abstract class AbstractBaseDictionary implements Dictionary {
     * TODO - get rid of the using class iterators and use Collection foreach
     * @return iterator of all metaField names
     */
-    protected Iterator getMetaFieldNames() {
+    protected Iterator<String> getMetaFieldNames() {
         return _metaFieldNames.iterator();
     }
 

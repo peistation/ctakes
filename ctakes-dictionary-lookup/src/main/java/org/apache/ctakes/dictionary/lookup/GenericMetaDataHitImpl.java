@@ -28,7 +28,7 @@ import java.util.Set;
  * @author Mayo Clinic
  */
 @Immutable
-public final class GenericMetaDataHitImpl extends AbstractBaseMetaDataHit implements MetaDataHit {
+public final class GenericMetaDataHitImpl extends AbstractBaseMetaDataHit {
    private final Map<String, String> _nameValueMap;
 
    public GenericMetaDataHitImpl( final Map<String,String> metaNameValueMap ) {

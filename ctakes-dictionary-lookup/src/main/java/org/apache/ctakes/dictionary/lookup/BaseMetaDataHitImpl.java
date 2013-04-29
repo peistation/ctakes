@@ -61,7 +61,7 @@ public abstract class BaseMetaDataHitImpl implements MetaDataHit {
              || !getMetaFieldNames().containsAll( mdh.getMetaFieldNames() ) ) {
           return false;
        }
-       final Collection<String> thisMetaFieldNames = (Collection<String>)getMetaFieldNames();
+       final Collection<String> thisMetaFieldNames = getMetaFieldNames();
        for ( String name : thisMetaFieldNames ) {
           if ( !getMetaFieldValue( name ).equals( mdh.getMetaFieldValue( name ) ) ) {
              return false;

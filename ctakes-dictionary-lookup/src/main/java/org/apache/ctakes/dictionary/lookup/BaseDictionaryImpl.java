@@ -33,9 +33,9 @@ import java.util.Set;
 @Deprecated
 public abstract class BaseDictionaryImpl implements Dictionary
 {
-    private Set iv_metaFieldNames = new HashSet();
+    private Set<String> iv_metaFieldNames = new HashSet<String>();
 
-    protected Iterator getMetaFieldNames()
+    protected Iterator<String> getMetaFieldNames()
     {
         return iv_metaFieldNames.iterator();
     }
