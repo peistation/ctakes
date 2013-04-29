@@ -45,6 +45,24 @@ public class EventContextAnalysisPipeline {
         usage = "specify the path to the directory containing the clinical notes to be processed",
         required = true)
     public File inputDirectory;
+
+    @Option(
+        name = "--token-output-file",
+        usage = "specify the path to the directory containing the clinical notes to be processed",
+        required = true)
+    public File tokenOutputFile;
+
+    @Option(
+        name = "--event-output-file",
+        usage = "specify the path to the directory containing the clinical notes to be processed",
+        required = true)
+    public File eventOutputFile;
+    
+    @Option(
+        name = "--context-size",
+        usage = "specify the number of characters to include on both sides",
+        required = false)
+    public int contextSize = 50;
   }
   
 	public static void main(String[] args) throws Exception {
@@ -55,10 +73,16 @@ public class EventContextAnalysisPipeline {
 		List<File> trainFiles = Arrays.asList(options.inputDirectory.listFiles());
     CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
-    AnalysisEngine relationExtractorConsumer = AnalysisEngineFactory.createPrimitive(
-    		EventContextAnalysisConsumer.class);
+    AnalysisEngine annotationConsumer = AnalysisEngineFactory.createPrimitive(
+    		EventContextAnalysisConsumer.class,
+    		"TokenOutputFile",
+    		options.tokenOutputFile,
+    		"EventOutputFile",
+    		options.eventOutputFile,
+    		"ContextSize",
+    		options.contextSize);
     		
-		SimplePipeline.runPipeline(collectionReader, relationExtractorConsumer);
+		SimplePipeline.runPipeline(collectionReader, annotationConsumer);
 	}
 	
   private static CollectionReader getCollectionReader(List<File> inputFiles) throws Exception {

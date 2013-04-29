@@ -29,6 +29,7 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.util.JCasUtil;
 
 /**
@@ -39,12 +40,27 @@ import org.uimafit.util.JCasUtil;
  */
 public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
 
-  String tokenFile = "event-context/tokens.txt";
-  String eventFile = "event-context/events.txt";
+  @ConfigurationParameter(
+      name = "TokenOutputFile",
+      mandatory = true,
+      description = "path to the file that stores token contexts")
+  private String tokenOutputFile;
+
+  @ConfigurationParameter(
+      name = "EventOutputFile",
+      mandatory = true,
+      description = "path to the file that stores event contexts")
+  private String eventOutputFile;
+  
+  @ConfigurationParameter(
+      name = "ContextSize",
+      mandatory = true,
+      description = "context size in characters")
+  private int contextSize;
   
 	@Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
-
+	  
     JCas goldView;
     try {
       goldView = jCas.getView("GoldView");
@@ -59,12 +75,12 @@ public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
       throw new AnalysisEngineProcessException(e);
     }
 
-    BufferedWriter tokenWriter = getWriter(tokenFile, true);
-    BufferedWriter eventWriter = getWriter(eventFile, true);
+    BufferedWriter tokenWriter = getWriter(tokenOutputFile, true);
+    BufferedWriter eventWriter = getWriter(eventOutputFile, true);
       
     for(BaseToken baseToken : JCasUtil.select(systemView, BaseToken.class)) {
       String tokenText = baseToken.getCoveredText().toLowerCase();
-      String output = String.format("%s|%s\n", tokenText, getAnnotationContext(baseToken, 40));
+      String output = String.format("%s|%s\n", tokenText, getAnnotationContext(baseToken, contextSize));
       
       try {
         tokenWriter.write(output);
@@ -75,7 +91,7 @@ public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
 
     for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
       String eventText = eventMention.getCoveredText().toLowerCase();
-      String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, 40));
+      String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, contextSize));
       
       try {
         eventWriter.write(output);
