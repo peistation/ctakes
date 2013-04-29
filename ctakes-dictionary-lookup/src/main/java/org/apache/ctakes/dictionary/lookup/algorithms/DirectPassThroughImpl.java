@@ -61,23 +61,23 @@ public class DirectPassThroughImpl implements LookupAlgorithm
     public Collection<LookupHit> lookup(final List<LookupToken> lookupTokenList,
                                         final Map<String,List<LookupAnnotation>> contextMap) throws Exception
     {
-        List lhList = new ArrayList();
+        List<LookupHit> lhList = new ArrayList<LookupHit>();
         for (int tokenIdx = 0; tokenIdx < lookupTokenList.size(); tokenIdx++)
         {
-            LookupToken lt = (LookupToken) lookupTokenList.get(tokenIdx);
+            LookupToken lt = lookupTokenList.get(tokenIdx);
 
-            List singleLtList = new ArrayList();
+            List<LookupToken> singleLtList = new ArrayList<LookupToken>();
             singleLtList.add(lt);
 
             String[] strArr = iv_phrBuilder.getPhrases(singleLtList);
-            Collection mdhCol = getHits(strArr);
+            Collection<MetaDataHit> mdhCol = getHits(strArr);
 
             if ((mdhCol != null) && (mdhCol.size() > 0))
             {
-                Iterator mdhMatchItr = mdhCol.iterator();
+                Iterator<MetaDataHit> mdhMatchItr = mdhCol.iterator();
                 while (mdhMatchItr.hasNext())
                 {
-                    MetaDataHit mdh = (MetaDataHit) mdhMatchItr.next();
+                    MetaDataHit mdh = mdhMatchItr.next();
                     LookupHit lh = new LookupHit(mdh, lt.getStartOffset(), lt
                             .getEndOffset());
                     lhList.add(lh);
@@ -87,12 +87,12 @@ public class DirectPassThroughImpl implements LookupAlgorithm
         return lhList;
     }
 
-    private Collection getHits(String[] phrases) throws Exception
+    private Collection<MetaDataHit> getHits(String[] phrases) throws Exception
     {
-        Collection mdhCol = new ArrayList();
+        Collection<MetaDataHit> mdhCol = new ArrayList<MetaDataHit>();
         for (int i = 0; i < phrases.length; i++)
         {
-            Collection curMdhCol = iv_dictEngine.metaLookup(phrases[i]);
+            Collection<MetaDataHit> curMdhCol = iv_dictEngine.metaLookup(phrases[i]);
             if (curMdhCol.size() > 0)
             {
                 mdhCol.addAll(curMdhCol);
