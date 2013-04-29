@@ -18,8 +18,12 @@
  */
 package org.apache.ctakes.constituency.parser.util;
 
-import opennlp.tools.parser.Parse;
+import java.util.ArrayList;
+import java.util.List;
 
+import opennlp.tools.parser.AbstractBottomUpParser;
+import opennlp.tools.parser.Parse;
+import opennlp.tools.util.Span;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
@@ -35,11 +39,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.jcas.tcas.Annotation;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 public class TreeUtils {
 
@@ -151,12 +150,11 @@ public class TreeUtils {
 		return same;
 	}
 
-	private static int getHighestIndexTerm(TreebankNode inTree) {
+	public static int getHighestIndexTerm(TreebankNode inTree) {
 		if(inTree instanceof TerminalTreebankNode){
 			return ((TerminalTreebankNode) inTree).getIndex();
-		}else{
-			return getHighestIndexTerm(inTree.getChildren(inTree.getChildren().size()-1));
 		}
+			return getHighestIndexTerm(inTree.getChildren(inTree.getChildren().size()-1));
 	}
 
 	public static TopTreebankNode getTopNode(TreebankNode inTree) {
@@ -174,7 +172,7 @@ public class TreeUtils {
 		FSArray termArray = TreeUtils.getTerminals(jcas, sent);
 		
 		StringBuffer parseBuff = new StringBuffer();
-		parse.show(parseBuff);
+		if(parse != null) parse.show(parseBuff);
 		
 		TopTreebankNode top = new TopTreebankNode(jcas, sent.getBegin(), sent.getEnd());
 		top.setTreebankParse(parseBuff.toString());
@@ -228,15 +226,17 @@ public class TreeUtils {
 	
 	public static String getSentence(FSArray termArray){
 		StringBuffer sent = new StringBuffer();
-		int offset = 0;
+//		int offset = 0;
 		
 		for(int i = 0; i < termArray.size(); i++){
 			TerminalTreebankNode ttn = (TerminalTreebankNode) termArray.get(i);
 			String word = ttn.getNodeValue();
 			word = word.replaceAll("\\s", "");
-			if(i == 0) offset = ttn.getBegin();
-			else if(word.length() == 0) continue;
-			else sent.append(" ");
+//			if(i == 0) offset = ttn.getBegin();
+			/*else*/
+			if(word.length() == 0) continue;
+			//else
+			sent.append(" ");
 
 			sent.append(word);
 		}		
@@ -303,6 +303,19 @@ public class TreeUtils {
 				}
 			}
 		}
+	}
+
+	public static Parse ctakesTokensToOpennlpTokens(Sentence sent, FSArray termArray) {
+		// based on the first part of parseLine in the opennlp libraries
+		String text = sent.getCoveredText();
+		Parse p = new Parse(sent.getCoveredText(), new Span(0, text.length()), AbstractBottomUpParser.INC_NODE, 0, 0);
+		
+		for(int i = 0; i < termArray.size(); i++){
+			TerminalTreebankNode token = (TerminalTreebankNode) termArray.get(i);
+			p.insert(new Parse(text, new Span(token.getBegin()-sent.getBegin(), token.getEnd()-sent.getBegin()), AbstractBottomUpParser.TOK_NODE, 0, i));
+		}
+		
+		return p;
 	}
 }
 

@@ -88,11 +88,12 @@ public class MaxentParserWrapper implements ParserWrapper {
 				continue;
 			}
 			FSArray termArray = TreeUtils.getTerminals(jcas, sentAnnot);
+			Parse inputTokens = TreeUtils.ctakesTokensToOpennlpTokens(sentAnnot, termArray);
 			String sentStr = TreeUtils.getSentence(termArray);
 			if(sentStr.length() == 0){
 				parse = null;
 			}else{
-				parse = ParserTool.parseLine(sentStr, parser, 1)[0];
+				parse = parser.parse(inputTokens);
 			}
 			TopTreebankNode top = TreeUtils.buildAlignedTree(jcas, parse, sentAnnot);
 			top.addToIndexes();
