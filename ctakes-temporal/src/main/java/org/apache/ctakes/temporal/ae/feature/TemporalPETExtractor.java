@@ -93,7 +93,7 @@ public class TemporalPETExtractor implements RelationFeaturesExtractor {
 		}
 	}
 
-	private static void moveTimexDownToNP(SimpleTree tree) {
+	public static void moveTimexDownToNP(SimpleTree tree) {
 		if(tree.cat.contains("-TIMEX-")){
 			SimpleTree child = tree.children.get(0);
 			// we've found the correct node: only correct clear violations: PP -> IN NP
