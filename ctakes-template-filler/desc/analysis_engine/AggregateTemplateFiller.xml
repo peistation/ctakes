@@ -4,7 +4,7 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="RelationExtractorAnnotator">
-      <import location="../../../ctakes-relation-extractor/desc/analysis_engine/RelationExtractorAggregate_wo_OrangeBook.xml"/>
+      <import location="RelationExtractorAggregateWithoutOrangeBook.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TemplateFillerAnnotator">
       <import location="../../../ctakes-template-filler/desc/analysis_engine/TemplateFillerAnnotator.xml"/>
