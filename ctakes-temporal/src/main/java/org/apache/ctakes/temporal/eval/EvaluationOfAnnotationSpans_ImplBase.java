@@ -73,7 +73,7 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
       File knowtatorXMLDirectory,
       File xmiDirectory,
       Class<? extends Annotation> annotationClass) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, null, xmiDirectory);
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null);
     this.annotationClass = annotationClass;
   }
   
