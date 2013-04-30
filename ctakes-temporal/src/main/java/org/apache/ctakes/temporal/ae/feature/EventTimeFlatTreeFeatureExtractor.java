@@ -32,10 +32,10 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 		}
 		
 		SimpleTree bopTree = getTree(jcas, arg1, arg2, "BOP", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getPartOfSpeech();}});
-//		SimpleTree bowTree = getTree(jcas, arg1, arg2, "BOW", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getCoveredText();}});
+		SimpleTree bowTree = getTree(jcas, arg1, arg2, "BOW", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getCoveredText();}});
 		
 		feats.add(new Feature("TK_BOP", bopTree.toString()));
-//		feats.add(new Feature("TK_BOW", bowTree.toString()));
+		feats.add(new Feature("TK_BOW", bowTree.toString()));
 		return feats;
 	}
 

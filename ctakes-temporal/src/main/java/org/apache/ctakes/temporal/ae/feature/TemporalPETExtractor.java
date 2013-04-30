@@ -79,7 +79,7 @@ public class TemporalPETExtractor implements RelationFeaturesExtractor {
 		return features;
 	}
 
-	private static void addOtherTimes(JCas jcas, TopTreebankNode root, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
+	public static void addOtherTimes(JCas jcas, TopTreebankNode root, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
 		List<TimeMention> timexes = JCasUtil.selectCovered(TimeMention.class, root);
 		
 		for(TimeMention timex : timexes){

@@ -32,10 +32,12 @@ import java.util.regex.Pattern;
 import org.apache.ctakes.chunker.ae.Chunker;
 import org.apache.ctakes.chunker.ae.DefaultChunkCreator;
 import org.apache.ctakes.chunker.ae.adjuster.ChunkAdjuster;
+import org.apache.ctakes.constituency.parser.ae.ConstituencyParser;
 import org.apache.ctakes.contexttokenizer.ae.ContextDependentTokenizerAnnotator;
 import org.apache.ctakes.core.ae.OverlapAnnotator;
 import org.apache.ctakes.core.ae.SentenceDetector;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.core.resource.FileResourceImpl;
 import org.apache.ctakes.core.resource.JdbcConnectionResourceImpl;
 import org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl;
@@ -47,6 +49,7 @@ import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
 import org.apache.ctakes.postagger.POSTagger;
 import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
+import org.apache.ctakes.temporal.ae.THYMETreebankReader;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
@@ -109,9 +112,21 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option(longName = "patients")
     public CommandLine.IntegerRanges getPatients();
     
-    @Option(longName = "print-errors", defaultValue="false")
+    @Option(longName = "treebank", defaultToNull=true)
+    public File getTreebankDirectory();
+    
+    @Option
+    public boolean getGrid();
+    
+    @Option
     public boolean getPrintErrors();
-  }
+    
+    @Option
+    public boolean getMergeOverlap();
+    
+    @Option(longName = "kernelParams", defaultToNull=true)
+    public String getKernelParams();
+}
 
   protected File rawTextDirectory;
 
@@ -121,18 +136,24 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   private boolean xmiExists;
 
-  protected boolean printErrors;
+  protected File treebankDirectory;
+  
+  protected boolean printErrors = false;
+  
+  protected String[] kernelParams;
   
   public Evaluation_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      File xmiDirectory) {
+      File xmiDirectory,
+      File treebankDirectory) {
     super(baseDirectory);
     this.rawTextDirectory = rawTextDirectory;
     this.knowtatorXMLDirectory = knowtatorXMLDirectory;
     this.xmiDirectory = xmiDirectory;
     this.xmiExists = this.xmiDirectory.exists() && this.xmiDirectory.listFiles().length > 0;
+    this.treebankDirectory = treebankDirectory;
   }
 
   public void prepareXMIsFor(List<Integer> patientSets) throws Exception {
@@ -221,7 +242,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
         "MaxentModel",
         ExternalResourceFactory.createExternalResourceDescription(
             SuffixMaxentModelResourceImpl.class,
-            SentenceDetector.class.getResource("../sentdetect/sdmed.mod"))));
+            FileLocator.locateFile("org/apache/ctakes/core/sentdetect/sdmed.mod").toURI().toURL())));
     // identify tokens
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
     // merge some tokens
@@ -243,7 +264,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
         Chunker.class,
         Chunker.CHUNKER_MODEL_FILE_PARAM,
-        Chunker.class.getResource("../models/chunk-model.claims-1.5.zip").toURI().getPath(),
+        FileLocator.locateFile("org/apache/ctakes/chunker/models/chunk-model.claims-1.5.zip"),
         Chunker.CHUNKER_CREATOR_CLASS_PARAM,
         DefaultChunkCreator.class));
 
@@ -384,6 +405,13 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
     // add semantic role labeler
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearNLPSemanticRoleLabelerAE.class));
+
+    // add constituency parser (or gold standard treebank if we have it)
+    if(this.treebankDirectory != null){
+    	aggregateBuilder.add(THYMETreebankReader.getDescription(this.treebankDirectory));
+    }else{
+    	aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
+    }
 
     // write out the CAS after all the above annotations
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(

@@ -89,7 +89,7 @@ public class EvaluationOfEventProperties extends
       File rawTextDirectory,
       File knowtatorXMLDirectory,
       File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory);
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, null, xmiDirectory);
     for (String name : PROPERTY_NAMES) {
       this.loggers.put(name, Logger.getLogger(String.format("%s.%s", this.getClass().getName(), name)));
     }
