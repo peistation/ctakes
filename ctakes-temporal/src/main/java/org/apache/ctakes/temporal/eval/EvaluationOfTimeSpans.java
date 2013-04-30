@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.apache.ctakes.temporal.ae.TimeAnnotator;
+import org.apache.ctakes.temporal.ae.ConstituencyBasedTimeAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
@@ -46,7 +46,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
         new File("target/eval/time-spans"),
         options.getRawTextDirectory(),
         options.getKnowtatorXMLDirectory(),
-        options.getXMIDirectory());
+        options.getXMIDirectory(),
+        options.getTreebankDirectory());
     evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-time-errors.log"));
     AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
@@ -57,14 +58,15 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
-      File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, TimeMention.class);
+      File xmiDirectory,
+      File treebankDirectory) {
+    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory, TimeMention.class);
   }
 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-    return TimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, directory);
+    return ConstituencyBasedTimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, directory);
   }
 
   @Override
@@ -75,7 +77,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   @Override
   protected AnalysisEngineDescription getAnnotatorDescription(File directory)
       throws ResourceInitializationException {
-    return TimeAnnotator.createAnnotatorDescription(directory);
+    return ConstituencyBasedTimeAnnotator.createAnnotatorDescription(directory);
   }
 
   @Override
