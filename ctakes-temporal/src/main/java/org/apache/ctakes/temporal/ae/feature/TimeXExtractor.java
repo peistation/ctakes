@@ -40,6 +40,7 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
 
   private String name;
   private EventTimeFlatTreeFeatureExtractor path;
+  private TemporalAttributeFeatureExtractor attr;
 
 //  private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -47,7 +48,7 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
     super();
     this.name = "TimeXFeature";
     this.path = new EventTimeFlatTreeFeatureExtractor();
-    
+    this.attr = new TemporalAttributeFeatureExtractor();
   }
 
   @Override
@@ -81,6 +82,7 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
 			  features.add(indicator);
 			  try {
 				  features.addAll(this.path.extract(view, targetTokenAnnotation, entry.getValue()));//add path between timex and event
+				  features.addAll(this.attr.extract(view, targetTokenAnnotation, entry.getValue()));//add temporal attribute features
 			  } catch (AnalysisEngineProcessException e) {
 				  throw new IllegalArgumentException(String.format("error in gererating path feature:", features));
 			  }

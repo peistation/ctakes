@@ -32,7 +32,7 @@ import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 public class EventPropertyExtractor implements SimpleFeatureExtractor {
 
   private String name;
-
+  
 //  private Logger logger = Logger.getLogger(this.getClass().getName());
 
   public EventPropertyExtractor() {
