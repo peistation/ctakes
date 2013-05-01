@@ -78,7 +78,16 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
     this.annotationClass = annotationClass;
   }
   
-  protected abstract AnalysisEngineDescription getDataWriterDescription(File directory)
+  public EvaluationOfAnnotationSpans_ImplBase(
+		File baseDirectory,
+		File rawTextDirectory, 
+		File knowtatorXMLDirectory, 
+		File xmiDirectory,
+		Class<? extends Annotation> annotationClass) {
+	  this(baseDirectory,rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null, annotationClass);
+  }
+
+protected abstract AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException;
 
   protected abstract void trainAndPackage(File directory) throws Exception;
