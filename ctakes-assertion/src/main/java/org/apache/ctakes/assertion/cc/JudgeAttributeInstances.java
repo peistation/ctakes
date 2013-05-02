@@ -24,19 +24,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.ctakes.assertion.eval.AssertionEvaluation.Options;
 import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.relation.Relation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XCASSerializer;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.XMLSerializer;
 import org.uimafit.component.JCasConsumer_ImplBase;
@@ -122,7 +129,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 		
 
-	private ArrayList<EventMention> deletableMentions = new ArrayList<EventMention>();
+	private ArrayList<IdentifiedAnnotation> deletableMentions = new ArrayList<IdentifiedAnnotation>();
 	
 	private File outputDirectory;
 
@@ -159,7 +166,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
 		String fileName = fileNamer.nameFile(jCas);
 		System.out.println("==================\nFile: "+fileName);
-		deletableMentions = new ArrayList<EventMention>();
+		deletableMentions = new ArrayList<IdentifiedAnnotation>();
 
 //		JCas jCas = null;
 //		try {
@@ -171,6 +178,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 		
 		judgeAttributes(jCas);
 
+		removeRelations(jCas);
 		removeExtraneousMentions(jCas);
 		
 		try {
@@ -224,14 +232,19 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 
 	private void judgeAttributes(JCas jCas) {
 
-		// TODO: expand this beyond just EventMentions
-		Collection<EventMention> mentions = JCasUtil.select(jCas, EventMention.class);
-		for (EventMention mention : mentions) {
+		Collection<IdentifiedAnnotation> mentions = new ArrayList<IdentifiedAnnotation>();
+		mentions.addAll(JCasUtil.select(jCas, IdentifiedAnnotation.class));
+//		mentions.addAll(JCasUtil.select(jCas, EventMention.class));
+//		mentions.addAll(JCasUtil.select(jCas, EntityMention.class));
+		for (IdentifiedAnnotation mention : mentions) {
 
 			// only consider attributes for entities and events
-			//		  if (mention.getClass()==EntityMention.class || mention.getClass()==EventMention.class) {
-			boolean flag = false;
-			String text = jCas.getDocumentText();
+			if (!EntityMention.class.isAssignableFrom(mention.getClass()) 
+					&& !EventMention.class.isAssignableFrom(mention.getClass())) { 
+				continue; 
+			}
+//			String text = jCas.getDocumentText();
+			HashSet<Selector> hypothAttr = new HashSet<Selector>(); 
 
 			boolean conditional = mention.getConditional();
 			boolean generic = mention.getGeneric();
@@ -241,40 +254,49 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 			int uncertainty = mention.getUncertainty();
 
 			if (conditional==true && !options.ignoreConditional) {
-				interact(jCas,mention,Selector.CONDITIONAL); // uses the attribute in mention
-				flag = true;
+				boolean keep = interact(jCas,mention,Selector.CONDITIONAL); // uses the attribute in mention
+				if (keep) hypothAttr.add(Selector.CONDITIONAL);
 			}
 			if (generic==true && !options.ignoreGeneric) {
-				interact(jCas,mention,Selector.GENERIC); // uses the attribute in mention
-				flag = true;
+				boolean keep = interact(jCas,mention,Selector.GENERIC); // uses the attribute in mention
+				if (keep) hypothAttr.add(Selector.GENERIC);
 			}
 			if (historyOf==CONST.NE_HISTORY_OF_PRESENT && !options.ignoreHistory) {
-//				interact(jCas,mention,Selector.HISTORYOF); // uses the attribute in mention
-//				flag = true;
+//				boolean keep = interact(jCas,mention,Selector.HISTORYOF); // uses the attribute in mention
+//				if (keep) hypothAttr.add(Selector.HISTORYOF);
 			}
 			if (polarity==CONST.NE_POLARITY_NEGATION_PRESENT && !options.ignorePolarity) {
-//				interact(jCas,mention,Selector.POLARITY); // uses the attribute in mention
-//				flag = true;
+//				boolean keep = interact(jCas,mention,Selector.POLARITY); // uses the attribute in mention
+//				if (keep) hypothAttr.add(Selector.POLARITY);
 			}
 			if (!CONST.ATTR_SUBJECT_PATIENT.equals(subject) && subject!=null && !options.ignoreSubject) {
-				interact(jCas,mention,Selector.SUBJECT); // uses the attribute in mention
-				flag = true;
+				boolean keep = interact(jCas,mention,Selector.SUBJECT); // uses the attribute in mention
+				if (keep) hypothAttr.add(Selector.SUBJECT);
 			}
 			if (uncertainty==CONST.NE_UNCERTAINTY_PRESENT && !options.ignoreUncertainty) {
-				interact(jCas,mention,Selector.UNCERTAINTY); // uses the attribute in mention
-				flag = true;
+				boolean keep = interact(jCas,mention,Selector.UNCERTAINTY); // uses the attribute in mention
+				if (keep) hypothAttr.add(Selector.UNCERTAINTY);
 			}
 
-			// optionally delete non-useful attributes 
-			if (!flag) {
-				if (mention!=null)
+//			if (hypothAttr.isEmpty()) {
+			// Get rid of all these mentions, copy to new ones with only attrs of interest.
+//			try {
+				if (hypothAttr.isEmpty()) {
 					deletableMentions.add(mention);
-			}
+//					createNewMention(jCas,mention,hypothAttr);
+				}
+//			} catch (IllegalAccessException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (Throwable e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 
 		}
 	}
 
-	private void printContext(String text, EventMention mention, int radius) {
+	private void printContext(String text, IdentifiedAnnotation mention, int radius) {
 		int mentionBegin = mention.getBegin();
 		int mentionEnd   = mention.getEnd();
 		StringBuilder sb = new StringBuilder();
@@ -300,7 +322,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 				" : s=" + mention.getSubject() + " : u="  + mention.getUncertainty());
 	}
 	
-	private void printContext(String text, EventMention mention) {
+	private void printContext(String text, IdentifiedAnnotation mention) {
 		printContext(text,mention,80);
 	}
 	
@@ -329,7 +351,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 
 
-	private void interact(JCas jCas, EventMention mention,
+	private boolean interact(JCas jCas, IdentifiedAnnotation mention,
 			Selector attr) {
 		
 		printContext(jCas.getDocumentText(),mention);
@@ -349,8 +371,8 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 				break;
 			}
 			else if (response.toLowerCase().startsWith("s")) {
-				deletableMentions.add(mention);
-				break;
+				deletableMentions.add(mention); // now redundant, all are being deleted
+				return false;
 			}
 			else if (response.toLowerCase().startsWith("m")) {
 				// more context response
@@ -361,10 +383,11 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 				response = prompt( "not sure what you meant. y=yes, n=no, m=more_context, s=skip.\\n"+
 						msg.get(attr) + "=" + getAttrValueString(mention,attr));
 			}
-		}		
+		}
+		return true;
 	}
 
-	private void adjustAttr(Selector attr, String response, EventMention mention) {
+	private void adjustAttr(Selector attr, String response, IdentifiedAnnotation mention) {
 		switch (attr) {
 		case CONDITIONAL:
 			mention.setConditional(CONST.NE_CONDITIONAL_FALSE);
@@ -404,7 +427,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 		} 
 	}
 
-	private String getAttrValueString(EventMention mention, Selector s) {
+	private String getAttrValueString(IdentifiedAnnotation mention, Selector s) {
 		switch (s) {
 		case CONDITIONAL:
 			return String.valueOf(mention.getConditional());
@@ -426,12 +449,57 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	private void removeExtraneousMentions(JCas jcas) {
 		// TODO: how to remove if it is in a relation
 		
-		for (EventMention mention : deletableMentions) {
+		for (IdentifiedAnnotation mention : deletableMentions) {
 			if (mention!=null) {
 //				System.out.println("removing "+mention.toString());
 				mention.removeFromIndexes();
 			}
 		}
+	}
+
+	private void removeRelations(JCas jCas) {
+		Collection<TOP> del = new HashSet<TOP>();
+		del.addAll(JCasUtil.select(jCas, RelationArgument.class));
+		del.addAll(JCasUtil.select(jCas, Relation.class));
+		for (TOP t : del) {
+			t.removeFromIndexes(jCas);
+		}
+	}
+
+	private void createNewMention(JCas jCas, IdentifiedAnnotation mention,
+			HashSet<Selector> hypothAttr) throws Throwable, IllegalAccessException {
+		
+		Constructor ctor = mention.getClass().getDeclaredConstructor(JCas.class);
+		IdentifiedAnnotation m = (IdentifiedAnnotation) ctor.newInstance(jCas);
+		
+		m.setBegin(mention.getBegin());
+		m.setEnd(mention.getEnd());
+		for (Selector s : msg.keySet()) {
+			if (!hypothAttr.contains(s)) {
+				switch (s) {
+				case CONDITIONAL:
+					m.setConditional(mention.getConditional());
+					break;
+				case GENERIC:
+					m.setGeneric(mention.getGeneric());
+					break;
+				case HISTORYOF:
+					m.setHistoryOf(mention.getHistoryOf());
+					break;
+				case POLARITY:
+					m.setPolarity(mention.getPolarity());
+					break;
+				case SUBJECT:
+					m.setSubject(mention.getSubject());
+					break;
+				case UNCERTAINTY:
+					m.setUncertainty(mention.getUncertainty());
+					break;
+				}
+			}
+		}
+	
+		m.addToIndexes(jCas);
 	}
 	
 }
