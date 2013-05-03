@@ -52,7 +52,9 @@ import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.temporal.ae.THYMETreebankReader;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -121,12 +123,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option
     public boolean getPrintErrors();
     
-    @Option
-    public boolean getMergeOverlap();
-    
     @Option(longName = "kernelParams", defaultToNull=true)
-    public String getKernelParams();
-}
+    public String getKernelParams();    
+  }
 
   protected File rawTextDirectory;
 
@@ -409,6 +408,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     // add constituency parser (or gold standard treebank if we have it)
     if(this.treebankDirectory != null){
     	aggregateBuilder.add(THYMETreebankReader.getDescription(this.treebankDirectory));
+    	aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TimexAnnotationCorrector.class));
     }else{
     	aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
     }
@@ -540,6 +540,45 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
       }
     }
   }
+  
+  public static class TimexAnnotationCorrector extends JCasAnnotator_ImplBase {
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      JCas goldView, systemView;
+      try {
+        goldView = jCas.getView(GOLD_VIEW_NAME);
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+      } catch (CASException e) {
+        e.printStackTrace();
+        throw new AnalysisEngineProcessException();
+      }
+      for(TimeMention mention : JCasUtil.select(goldView, TimeMention.class)){
+        // for each time expression, get the treebank node with the same span.
+        List<TreebankNode> nodes = JCasUtil.selectCovered(systemView, TreebankNode.class, mention);
+        TreebankNode sameSpanNode = null;
+        for(TreebankNode node : nodes){
+          if(node.getBegin() == mention.getBegin() && node.getEnd() == mention.getEnd()){
+            sameSpanNode = node;
+            break;
+          }
+        }
+        if(sameSpanNode != null){
+          // look at node at the position of the timex3.
+          if(sameSpanNode.getNodeType().equals("PP")){
+            // if it is a PP it should be moved down to the NP
+            int numChildren = sameSpanNode.getChildren().size();
+            if(sameSpanNode.getChildren(numChildren-1).getNodeType().equals("NP")){
+              // move the time span to this node:
+              TreebankNode mentionNode = sameSpanNode.getChildren(numChildren-1);
+              mention.setBegin(mentionNode.getBegin());
+              mention.setEnd(mentionNode.getEnd());
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   public static class CopyFromGold extends JCasAnnotator_ImplBase {
 
