@@ -1,4 +1,4 @@
-package org.apache.ctakes.temporal.ae.feature;
+package org.apache.ctakes.temporal.ae.feature.treekernel;
 
 import java.util.ArrayList;
 import java.util.List;
