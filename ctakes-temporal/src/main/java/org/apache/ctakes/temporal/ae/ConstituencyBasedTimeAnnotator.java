@@ -2,7 +2,9 @@ package org.apache.ctakes.temporal.ae;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
@@ -20,7 +22,7 @@ import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
-import static org.cleartk.classifier.feature.extractor.CleartkExtractor.*;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor.Bag;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.Covered;
 import org.cleartk.classifier.feature.extractor.simple.CharacterCategoryPatternExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CharacterCategoryPatternExtractor.PatternType;
@@ -89,12 +91,20 @@ TemporalEntityAnnotator_ImplBase {
   public void process(JCas jCas, Segment segment)
       throws AnalysisEngineProcessException {
 
+    HashSet<TimeMention> mentions = new HashSet<TimeMention>(JCasUtil.selectCovered(TimeMention.class, segment));
+	  
     for(TopTreebankNode root : JCasUtil.selectCovered(TopTreebankNode.class, segment)){
-      processNode(jCas, root.getChildren(0));
+      recursivelyProcessNode(jCas, root.getChildren(0), NON_MENTION, mentions);
     }
+//    if(mentions.size() > 0){
+//      System.out.println("Remaining mentions:");
+//      for(TimeMention mention : mentions){
+//        System.out.println(mention.getCoveredText());
+//      }
+//    }
   }
 
-  private void processNode(JCas jCas, TreebankNode node) throws CleartkProcessingException {
+  private void recursivelyProcessNode(JCas jCas, TreebankNode node, String parentCategory, Set<TimeMention> mentions) throws CleartkProcessingException {
     // accumulate features:
     ArrayList<Feature> features = new ArrayList<Feature>();
     String category = NON_MENTION;
@@ -103,6 +113,7 @@ TemporalEntityAnnotator_ImplBase {
     if(node.getParent().getParent() == null) features.add(new Feature("IS_ROOT"));
     features.add(new Feature("NODE_LABEL", node.getNodeType()));
     features.add(new Feature("PARENT_LABEL", node.getParent().getNodeType()));
+    features.add(new Feature("PARENT_CAT", parentCategory));
     
     if(node.getLeaf()){
       features.add(new Feature("IS_LEAF"));
@@ -111,7 +122,9 @@ TemporalEntityAnnotator_ImplBase {
       for(int i = 0; i < node.getChildren().size(); i++){
         buffer.append(node.getChildren(i).getNodeType());
         buffer.append("_");
+        features.add(new Feature("CHILD_BAG", node.getChildren(i).getNodeType()));
       }
+//      features.add(new Feature("NUM_TOKENS", JCasUtil.selectCovered(BaseToken.class, node).size()));
       features.add(new Feature("PRODUCTION", buffer.toString()));
     }
     
@@ -119,12 +132,13 @@ TemporalEntityAnnotator_ImplBase {
     for(SimpleFeatureExtractor extractor : featureExtractors){
       features.addAll(extractor.extract(jCas, node));
     }
-    
+      
     if(this.isTraining()){
       List<TimeMention> goldMentions = JCasUtil.selectCovered(TimeMention.class, node);
       for(TimeMention mention : goldMentions){
         if(mention.getBegin() == node.getBegin() && mention.getEnd() == node.getEnd()){
           category = MENTION;
+          mentions.remove(mention);
         }
       }
       this.dataWriter.write(new Instance<String>(category, features));
@@ -142,8 +156,7 @@ TemporalEntityAnnotator_ImplBase {
 
     for(int i = 0; i < node.getChildren().size(); i++){
       TreebankNode child = node.getChildren(i);
-      processNode(jCas, child);
+      recursivelyProcessNode(jCas, child, category, mentions);
     }
   }
-
 }
