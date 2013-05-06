@@ -211,4 +211,8 @@ public class CONST {
 	public static final String MED_STATUS_CHANGE_SUM = "add"; // TO BE DEPRECATED
 	public static final String MED_STATUS_CHANGE_MAX = "maximum"; // TO BE DEPRECATED
 	public static final String MED_STATUS_CHANGE_OTHER = "change"; // TO BE DEPRECATED
+	
+
+	public static final String TIME_CLASS_DATE = "DATE"; 
+
 }
