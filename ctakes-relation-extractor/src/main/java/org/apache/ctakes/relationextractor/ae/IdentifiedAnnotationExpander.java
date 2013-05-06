@@ -17,6 +17,7 @@ import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 public class IdentifiedAnnotationExpander extends JCasAnnotator_ImplBase {
@@ -32,11 +33,9 @@ public class IdentifiedAnnotationExpander extends JCasAnnotator_ImplBase {
   public static List<Integer> expandToNP(JCas jCas, IdentifiedAnnotation identifiedAnnotation) {
 
     // preserve the original begin and end of the annotation
-    List<Integer> oldSpan = new ArrayList<Integer>();
-    oldSpan.add(identifiedAnnotation.getBegin());
-    oldSpan.add(identifiedAnnotation.getEnd());
+    List<Integer> originalSpan = Lists.newArrayList(identifiedAnnotation.getBegin(), identifiedAnnotation.getEnd());
 
-    // map each treebank node to its character length
+    // map each covering treebank node to its character length
     Map<TreebankNode, Integer> treebankNodeSizes = new HashMap<TreebankNode, Integer>();
     for(TreebankNode treebankNode : JCasUtil.selectCovering(
         jCas, 
@@ -47,29 +46,26 @@ public class IdentifiedAnnotationExpander extends JCasAnnotator_ImplBase {
       // only expand nouns (and not verbs or adjectives)
       if(treebankNode instanceof TerminalTreebankNode) {
         if(! treebankNode.getNodeType().startsWith("N")) {
-          return oldSpan;
+          return originalSpan;
         }
       }
 
-      // no terminal nodes, no VPs, just noun phrases
+      // because only nouns are expanded, look for covering NPs
       if(treebankNode.getNodeType().equals("NP")) {
         treebankNodeSizes.put(treebankNode, treebankNode.getCoveredText().length());
       }
     }
 
-    // find the shortest treebank node
+    // find the shortest covering treebank node
     List<TreebankNode> sortedTreebankNodes = new ArrayList<TreebankNode>(treebankNodeSizes.keySet());
     Function<TreebankNode, Integer> getValue = Functions.forMap(treebankNodeSizes);
     Collections.sort(sortedTreebankNodes, Ordering.natural().onResultOf(getValue));
 
     if(sortedTreebankNodes.size() > 0) {
-      String oldString = identifiedAnnotation.getCoveredText();
       identifiedAnnotation.setBegin(sortedTreebankNodes.get(0).getBegin());
       identifiedAnnotation.setEnd(sortedTreebankNodes.get(0).getEnd());
-      String newString = identifiedAnnotation.getCoveredText();
-      // System.out.println(oldString + " => " + newString);
     }
 
-    return oldSpan;
+    return originalSpan;
   }
 }
