@@ -34,10 +34,10 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 	}
 	
 	@Override
-	public void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException {
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention, Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String uncertainty = (entityMention.getUncertainty() == 1) ? "uncertain" : "certain";
+	        String uncertainty = (entityOrEventMention.getUncertainty() == 1) ? "uncertain" : "certain";
 
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("certain".equals(uncertainty) 
@@ -57,7 +57,7 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 	        {
 	          uncertainty = 0;
 	        }
-	        entityMention.setUncertainty(uncertainty);
+	        entityOrEventMention.setUncertainty(uncertainty);
 	      }
 	}
 

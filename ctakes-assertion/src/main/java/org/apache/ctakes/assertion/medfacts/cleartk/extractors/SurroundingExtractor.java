@@ -34,8 +34,8 @@ public class SurroundingExtractor implements SimpleFeatureExtractor
 		logger.info("SurroundingExtractor.extract() BEGIN");
 		//JCasUtil.indexCovering(jcas, IdentifiedAnnotation.class, this.ancestorAnnotationClass)
 		
-		Map<EntityMention, Collection<Zone>> coveringMap =
-			JCasUtil.indexCovering(jcas, EntityMention.class, Zone.class);
+		Map<IdentifiedAnnotation, Collection<Zone>> coveringMap =
+			JCasUtil.indexCovering(jcas, IdentifiedAnnotation.class, Zone.class);
 		
 		IdentifiedAnnotation targetEntityAnnotation = (IdentifiedAnnotation)targetAnnotation;
 		

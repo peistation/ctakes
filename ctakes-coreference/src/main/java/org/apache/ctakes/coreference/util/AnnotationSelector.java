@@ -35,6 +35,7 @@ import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
@@ -45,16 +46,19 @@ public class AnnotationSelector {
 
 	public static ArrayList<Annotation> selectNE (JCas jcas) {
 		ArrayList<Annotation> ret = new ArrayList<Annotation>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(EntityMention.type).iterator();
+		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(IdentifiedAnnotation.type).iterator();
 		while (iter.hasNext()) {
-			EntityMention a = (EntityMention) iter.next();
-			if(a.getOntologyConceptArr() != null)
+		  IdentifiedAnnotation a = (IdentifiedAnnotation) iter.next();
+		  if (a instanceof EntityMention || a instanceof EventMention) {
+			if(a.getOntologyConceptArr() != null) {
 //			int tid = a.getTypeID();
 //			if (tid == TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE ||
 //				tid == TypeSystemConst.NE_TYPE_ID_DISORDER ||
 //				tid == TypeSystemConst.NE_TYPE_ID_PROCEDURE ||
 //				tid == TypeSystemConst.NE_TYPE_ID_FINDING)
 				ret.add(a);
+			}
+		  }
 		}
 		java.util.Collections.sort(ret, new AnnotOffsetComparator());
 		return ret;
@@ -62,7 +66,7 @@ public class AnnotationSelector {
 
 	public static ArrayList<BaseToken> selectBaseToken (JCas jcas) {
 		ArrayList<BaseToken> ret = new ArrayList<BaseToken>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(BaseToken.type).iterator();
+		FSIterator<?> iter = jcas.getJFSIndexRepository().getAnnotationIndex(BaseToken.type).iterator();
 		while (iter.hasNext())
 			ret.add((BaseToken)iter.next());
 		java.util.Collections.sort(ret, new AnnotOffsetComparator());
@@ -71,7 +75,7 @@ public class AnnotationSelector {
 
 	public static ArrayList<Sentence> selectSentence (JCas jcas) {
 		ArrayList<Sentence> ret = new ArrayList<Sentence>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(Sentence.type).iterator();
+		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(Sentence.type).iterator();
 		while (iter.hasNext())
 			ret.add((Sentence)iter.next());
 		java.util.Collections.sort(ret, new AnnotOffsetComparator());
@@ -83,7 +87,7 @@ public class AnnotationSelector {
 			Logger logger) {
 		Hashtable<String, WordToken> offset2token = new Hashtable<String, WordToken>();
 		ArrayList<WordToken> ret = new ArrayList<WordToken>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(WordToken.type).iterator();
+		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(WordToken.type).iterator();
 		while (iter.hasNext()) {
 			WordToken t = (WordToken)iter.next();
 			String s = t.getCoveredText();
@@ -138,8 +142,8 @@ public class AnnotationSelector {
 							findP(adjP, "SBAR", 1)!=null ||
 							findP(adjP, "S", 1)!=null))
 						return true;
-				} else if (isBe((TreebankNode) par.getChildren(0))) {
-					firstChild = (TreebankNode) vp.getChildren(0);
+				} else if (isBe(par.getChildren(0))) {
+					firstChild = vp.getChildren(0);
 					if (firstChild!=null && cogved.contains(firstChild.getCoveredText()) &&
 							(findP(vp, "SBAR", 1)!=null ||
 							findP(vp, "S", 1)!=null))
@@ -182,12 +186,13 @@ public class AnnotationSelector {
 						txt.equalsIgnoreCase("been") ||
 						txt.equalsIgnoreCase("be")))
 			return true;
-		else return false;
+		
+		return false;
 	}
 
 	public static ArrayList<Chunk> selectDemonAndRelative (JCas jcas) {
 		ArrayList<Chunk> ret = new ArrayList<Chunk>();
-		FSIterator iter = jcas.getJFSIndexRepository().getAnnotationIndex(Chunk.type).iterator();
+		FSIterator<Annotation> iter = jcas.getJFSIndexRepository().getAnnotationIndex(Chunk.type).iterator();
 		while (iter.hasNext()) {
 			Chunk c = (Chunk)iter.next();
 			if (c.getChunkType().equals("NP")) {

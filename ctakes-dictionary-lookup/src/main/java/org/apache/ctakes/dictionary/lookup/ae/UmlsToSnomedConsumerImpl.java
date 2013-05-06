@@ -23,9 +23,14 @@ import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
+import org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention;
+import org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
+import org.apache.ctakes.typesystem.type.textsem.LabMention;
+import org.apache.ctakes.typesystem.type.textsem.MedicationMention;
+import org.apache.ctakes.typesystem.type.textsem.ProcedureMention;
+import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
@@ -250,9 +255,19 @@ public abstract class UmlsToSnomedConsumerImpl extends BaseLookupConsumerImpl im
                   IdentifiedAnnotation neAnnot;
                   final int conceptKey = conceptEntry.getKey();
                   if ( conceptKey == CONST.NE_TYPE_ID_DRUG ) {
-                     neAnnot = new MedicationEventMention( jcas );
+                     neAnnot = new MedicationMention( jcas );
+                  } else if ( conceptKey == CONST.NE_TYPE_ID_ANATOMICAL_SITE ) {
+                      neAnnot = new AnatomicalSiteMention( jcas );
+                  } else if ( conceptKey == CONST.NE_TYPE_ID_DISORDER ) {
+                      neAnnot = new DiseaseDisorderMention( jcas );
+                  } else if ( conceptKey == CONST.NE_TYPE_ID_FINDING ) {
+                      neAnnot = new SignSymptomMention( jcas );
+                  } else if ( conceptKey == CONST.NE_TYPE_ID_LAB ) {
+                      neAnnot = new LabMention( jcas );
+                  } else if ( conceptKey == CONST.NE_TYPE_ID_PROCEDURE ) {
+                      neAnnot = new ProcedureMention( jcas );
                   } else {
-                     neAnnot = new EntityMention( jcas );
+                      neAnnot = new EntityMention( jcas );
                   }
                   neAnnot.setTypeID( conceptKey );
                   neAnnot.setBegin( neBegin );

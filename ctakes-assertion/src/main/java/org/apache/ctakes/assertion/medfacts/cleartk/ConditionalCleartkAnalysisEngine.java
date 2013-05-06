@@ -35,11 +35,11 @@ public class ConditionalCleartkAnalysisEngine extends
 	}
 	
 	@Override
-	public void setClassLabel(IdentifiedAnnotation entityMention,
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String conditional = (entityMention.getConditional()) ? "conditional" : "nonconditional";
+	        String conditional = (entityOrEventMention.getConditional()) ? "conditional" : "nonconditional";
 	        
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("nonconditional".equals(conditional) 
@@ -60,7 +60,7 @@ public class ConditionalCleartkAnalysisEngine extends
 	        {
 	          conditional = false;
 	        }
-	        entityMention.setConditional(conditional);
+	        entityOrEventMention.setConditional(conditional);
 	      }
 	}
 }

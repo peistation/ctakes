@@ -18,37 +18,19 @@
  */
 package org.apache.ctakes.coreference.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
 
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.Type;
-import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.jcas.cas.StringArray;
-import org.apache.uima.jcas.tcas.Annotation;
-
-import org.apache.ctakes.core.resource.FileLocator;
-import org.apache.ctakes.coreference.util.AnnotationSelector;
+import org.apache.ctakes.coreference.type.Markable;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
-import org.apache.ctakes.typesystem.type.textspan.Segment;
-import org.apache.ctakes.coreference.type.DemMarkable;
-import org.apache.ctakes.coreference.type.Markable;
-import org.apache.ctakes.coreference.type.NEMarkable;
-import org.apache.ctakes.coreference.type.PronounMarkable;
+import org.apache.uima.cas.FSIterator;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.tcas.Annotation;
 
 public class PairAttributeCalculator extends AttributeCalculator {
 
@@ -551,9 +533,9 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 
 	public boolean calcNegatedBoth(){
-		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
-			if(((EntityMention)a1).getPolarity() == -1 &&
-			   ((EntityMention)a2).getPolarity() == -1){
+		if((a1 instanceof EntityMention && a2 instanceof EntityMention) || (a1 instanceof EventMention && a2 instanceof EventMention)){
+			if(((IdentifiedAnnotation)a1).getPolarity() == -1 &&
+			   ((IdentifiedAnnotation)a2).getPolarity() == -1){
 				return true;
 			}
 		}
@@ -561,9 +543,9 @@ public class PairAttributeCalculator extends AttributeCalculator {
 	}
 	
 	public boolean calcNonNegatedBoth(){
-		if(a1 instanceof EntityMention && a2 instanceof EntityMention){
-			if(((EntityMention)a1).getPolarity() == 1.0 &&
-			   ((EntityMention)a2).getPolarity() == 1.0){
+		if(a1 instanceof EntityMention && a2 instanceof EntityMention || (a1 instanceof EventMention && a2 instanceof EventMention)){
+			if(((IdentifiedAnnotation)a1).getPolarity() == 1.0 &&
+			   ((IdentifiedAnnotation)a2).getPolarity() == 1.0){
 				return true;
 			}
 		}

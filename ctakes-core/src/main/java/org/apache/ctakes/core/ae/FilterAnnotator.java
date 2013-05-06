@@ -34,6 +34,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class FilterAnnotator extends JCasAnnotator_ImplBase {
 	// TODO parameterize retainAttrTypeId = DISORDER_ANNOTATIONS = 2
@@ -77,7 +78,7 @@ public class FilterAnnotator extends JCasAnnotator_ImplBase {
 	}
 
 	private boolean isValid(Annotation ann) {
-		if (((EntityMention) ann).getTypeID() != retainAttrTypeId)
+		if (((IdentifiedAnnotation) ann).getTypeID() != retainAttrTypeId)
 			return false;
 
 		return true;

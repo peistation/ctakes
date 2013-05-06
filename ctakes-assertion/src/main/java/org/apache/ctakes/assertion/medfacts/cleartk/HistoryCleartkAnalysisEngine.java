@@ -69,11 +69,11 @@ public class HistoryCleartkAnalysisEngine extends
 	}
 	
 	@Override
-	public void setClassLabel(IdentifiedAnnotation entityMention,
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-			int history = entityMention.getHistoryOf(); 
+			int history = entityOrEventMention.getHistoryOf(); 
 
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if (history == CONST.NE_HISTORY_OF_ABSENT
@@ -86,7 +86,7 @@ public class HistoryCleartkAnalysisEngine extends
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        entityMention.setHistoryOf(Integer.parseInt(label));
+	        entityOrEventMention.setHistoryOf(Integer.parseInt(label));
 	      }
 	}
 }

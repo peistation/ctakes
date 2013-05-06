@@ -67,11 +67,11 @@ public class GenericCleartkAnalysisEngine extends
 	}
 	
 	@Override
-	public void setClassLabel(IdentifiedAnnotation entityMention,
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String generic = entityMention.getGeneric()? "1":"0";
+	        String generic = entityOrEventMention.getGeneric()? "1":"0";
 
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("0".equals(generic) 
@@ -83,7 +83,7 @@ public class GenericCleartkAnalysisEngine extends
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        entityMention.setGeneric("1".equals(label));
+	        entityOrEventMention.setGeneric("1".equals(label));
 	      }
 	}
 

@@ -54,6 +54,7 @@ import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
@@ -454,6 +455,16 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     }
   }
 
+  public static class EventMentionRemover extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      for (EventMention mention : Lists.newArrayList(JCasUtil.select(jCas, EventMention.class))) {
+        mention.removeFromIndexes();
+      }
+    }
+  }
+  
   // replace this with SimpleSegmentWithTagsAnnotator if that code ever gets fixed
   public static class SegmentsFromBracketedSectionTagsAnnotator extends JCasAnnotator_ImplBase {
     private static Pattern SECTION_PATTERN = Pattern.compile(

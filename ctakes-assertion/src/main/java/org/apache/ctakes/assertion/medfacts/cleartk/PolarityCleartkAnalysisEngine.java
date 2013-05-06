@@ -44,10 +44,10 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/polarity.txt"));
 	}
 
-	public void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException {
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention, Instance<String> instance) throws AnalysisEngineProcessException {
 	      if (this.isTraining())
 	      {
-	        String polarity = (entityMention.getPolarity() == -1) ? "negated" : "present";
+	        String polarity = (entityOrEventMention.getPolarity() == -1) ? "negated" : "present";
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("negated".equals(polarity))
 	        {
@@ -70,10 +70,10 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	        {
 	          polarity = -1;
 	        }
-	        entityMention.setPolarity(polarity);
+	        entityOrEventMention.setPolarity(polarity);
 	        if ("negated".equals(label))
 	        {
-	          logger.debug(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityMention.getBegin(), entityMention.getEnd(), entityMention.getClass().getName()));
+	          logger.debug(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityOrEventMention.getBegin(), entityOrEventMention.getEnd(), entityOrEventMention.getClass().getName()));
 	        }
 	      }
 	}

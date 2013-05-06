@@ -77,11 +77,11 @@ public class SubjectCleartkAnalysisEngine extends
 	}
 	
 	@Override
-	public void setClassLabel(IdentifiedAnnotation entityMention,
+	public void setClassLabel(IdentifiedAnnotation entityOrEventMention,
 			Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
 	      {
-	        String subj = entityMention.getSubject();
+	        String subj = entityOrEventMention.getSubject();
 	        
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
 	        if ("patient".equals(subj) 
@@ -98,8 +98,8 @@ public class SubjectCleartkAnalysisEngine extends
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        entityMention.setSubject(label);
-	        logger.log(Level.DEBUG, "SUBJECT is being set on an IdentifiedAnnotation: "+label+" "+entityMention.getSubject());
+	        entityOrEventMention.setSubject(label);
+	        logger.log(Level.DEBUG, "SUBJECT is being set on an IdentifiedAnnotation: "+label+" "+entityOrEventMention.getSubject());
 	      }
 	}
 

@@ -247,25 +247,26 @@ public abstract class AssertionCleartkAnalysisEngine extends
 //    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentenceMap = JCasUtil.indexCovering(identifiedAnnotationView, IdentifiedAnnotation.class, Sentence.class);
 //    Map<Sentence, Collection<BaseToken>> tokensCoveredInSentenceMap = JCasUtil.indexCovered(identifiedAnnotationView, Sentence.class, BaseToken.class);
 
-    Map<EntityMention, Collection<Zone>> coveringZoneMap =
-        JCasUtil.indexCovering(jCas, EntityMention.class, Zone.class);
+    Map<IdentifiedAnnotation, Collection<Zone>> coveringZoneMap =
+        JCasUtil.indexCovering(jCas, IdentifiedAnnotation.class, Zone.class);
     
     List<Instance<String>> instances = new ArrayList<Instance<String>>();
     // generate a list of training instances for each sentence in the document
     Collection<IdentifiedAnnotation> entities = JCasUtil.select(identifiedAnnotationView, IdentifiedAnnotation.class);
-    for (IdentifiedAnnotation entityMention : entities)
+    for (IdentifiedAnnotation identifiedAnnotation : entities)
     {
-      if (!(entityMention instanceof EntityMention || entityMention instanceof EventMention))
+      if (!(identifiedAnnotation instanceof EntityMention || identifiedAnnotation instanceof EventMention))
       {
         continue;
       }
-      if (entityMention.getPolarity() == -1)
+      IdentifiedAnnotation entityOrEventMention = identifiedAnnotation;
+      if (entityOrEventMention.getPolarity() == -1)
       {
         logger.debug(String.format(" - identified annotation: [%d-%d] polarity %d (%s)",
-            entityMention.getBegin(),
-            entityMention.getEnd(),
-            entityMention.getPolarity(),
-            entityMention.getClass().getName()));
+            entityOrEventMention.getBegin(),
+            entityOrEventMention.getEnd(),
+            entityOrEventMention.getPolarity(),
+            entityOrEventMention.getClass().getName()));
       }
       Instance<String> instance = new Instance<String>();
       
@@ -316,11 +317,11 @@ public abstract class AssertionCleartkAnalysisEngine extends
         */
       for (CleartkExtractor extractor : this.tokenCleartkExtractors) {
           //instance.addAll(extractor.extractWithin(identifiedAnnotationView, entityMention, sentence));
-    	  instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+    	  instance.addAll(extractor.extract(identifiedAnnotationView, entityOrEventMention));
         }
       
       List<Feature> cuePhraseFeatures =
-          cuePhraseInWindowExtractor.extract(jCas, entityMention);
+          cuePhraseInWindowExtractor.extract(jCas, entityOrEventMention);
           //cuePhraseInWindowExtractor.extractWithin(jCas, entityMention, firstCoveringSentence);
       
       if (cuePhraseFeatures != null && !cuePhraseFeatures.isEmpty())
@@ -332,26 +333,26 @@ public abstract class AssertionCleartkAnalysisEngine extends
         
       
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
-        instance.addAll(extractor.extract(jCas, entityMention));
+        instance.addAll(extractor.extract(jCas, entityOrEventMention));
       }
       
       
-      List<Feature> zoneFeatures = extractZoneFeatures(coveringZoneMap, entityMention);
+      List<Feature> zoneFeatures = extractZoneFeatures(coveringZoneMap, entityOrEventMention);
       if (zoneFeatures != null && !zoneFeatures.isEmpty())
       {
         instance.addAll(zoneFeatures);
       }
        
 
-      setClassLabel(entityMention, instance);
+      setClassLabel(entityOrEventMention, instance);
       
     }
     
   }
   
-  public List<Feature> extractZoneFeatures(Map<EntityMention, Collection<Zone>> coveringZoneMap, IdentifiedAnnotation entityMention)
+  public List<Feature> extractZoneFeatures(Map<IdentifiedAnnotation, Collection<Zone>> coveringZoneMap, IdentifiedAnnotation entityOrEventMention)
   {
-    final Collection<Zone> zoneList = coveringZoneMap.get(entityMention);
+    final Collection<Zone> zoneList = coveringZoneMap.get(entityOrEventMention);
     
     if (zoneList == null || zoneList.isEmpty())
     {

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -28,14 +29,16 @@ public class Utils {
   public static boolean validateLocationOfArgumentTypes(IdentifiedAnnotationPair pair) {
     
     // allowable arg2 types for location_of
-    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
+	// Per CTAKES-190, only link anatomical sites in LocationOf to EventMentions, but these three are EventMentions now, 
+	// so this check of type ID now already handles if it is an EventMention. 
+    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(CONST.NE_TYPE_ID_DISORDER, CONST.NE_TYPE_ID_FINDING, CONST.NE_TYPE_ID_PROCEDURE));
     
     IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be anatomical site)
     IdentifiedAnnotation arg2 = pair.getArg2(); // Related_to (should be either disorder, sign/symptom, or procedure)
     int type1 = arg1.getTypeID();
     int type2 = arg2.getTypeID();
     
-    if(type1 == 6 && okArg2Types.contains(type2)) {
+    if(type1 == CONST.NE_TYPE_ID_ANATOMICAL_SITE && okArg2Types.contains(type2)) {
       return true;
     }
     
@@ -52,7 +55,9 @@ public class Utils {
   public static boolean validateDegreeOfArgumentTypes(IdentifiedAnnotationPair pair) {
 
     // allowable arg1 types
-    HashSet<Integer> okArg1Types = new HashSet<Integer>(Arrays.asList(2, 3));
+	// Per CTAKES-190, only link SeverityModifiers to EventMention, but the 2 type IDs below are EventMentions now, 
+    // so this check of type ID now already handles if it is an EventMention. 
+    HashSet<Integer> okArg1Types = new HashSet<Integer>(Arrays.asList(CONST.NE_TYPE_ID_DISORDER, CONST.NE_TYPE_ID_FINDING));
 
     IdentifiedAnnotation arg1 = pair.getArg1(); // Argument (should be either disease/disorder or sign/symptom
     int type1 = arg1.getTypeID();

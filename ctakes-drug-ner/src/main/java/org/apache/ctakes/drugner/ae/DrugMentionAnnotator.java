@@ -106,7 +106,7 @@ import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
 import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.ctakes.typesystem.type.textsem.DateAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -989,7 +989,7 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 			}
 		} catch (ArrayIndexOutOfBoundsException aioobe) { 
 			allNEs = 
-				FSUtil.getAnnotationsInSpan(jcas, EntityMention.type, begin, end, validNeTypes);
+				FSUtil.getAnnotationsInSpan(jcas, EventMention.type, begin, end, validNeTypes);
 
 			uniqueNEs = findUniqueMentions(allNEs.toArray());
 

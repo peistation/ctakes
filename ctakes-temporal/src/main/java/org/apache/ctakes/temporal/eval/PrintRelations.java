@@ -30,6 +30,8 @@ import java.util.TreeSet;
 import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -89,8 +91,10 @@ public class PrintRelations {
       List<BinaryTextRelation> relationList = new ArrayList<BinaryTextRelation>(relations);
       Collections.sort(relationList, BY_RELATION_OFFSETS);
 
-      for (EntityMention entityMention : JCasUtil.select(jCas, EntityMention.class)) {
-        System.err.printf("%s (%s)\n", entityMention.getCoveredText(), entityMention.getTypeID());
+      for (IdentifiedAnnotation identifiedAnnotation : JCasUtil.select(jCas, IdentifiedAnnotation.class)) {
+    	if (identifiedAnnotation instanceof EventMention || identifiedAnnotation instanceof EntityMention) {
+    		System.err.printf("%s (%s)\n", identifiedAnnotation.getCoveredText(), identifiedAnnotation.getTypeID());
+    	}
       }
 
       // print out the relations for visual inspection
