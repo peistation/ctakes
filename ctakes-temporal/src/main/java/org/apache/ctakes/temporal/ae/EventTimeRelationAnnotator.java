@@ -62,8 +62,8 @@ public class EventTimeRelationAnnotator extends RelationExtractorAnnotator {
   protected List<RelationFeaturesExtractor> getFeatureExtractors() {
     return Lists.newArrayList(
         new TokenFeaturesExtractor(), 
-        new PartOfSpeechFeaturesExtractor(), 
-        new UmlsFeatureExtractor());
+        new PartOfSpeechFeaturesExtractor()
+        );
   }
 
   @Override
