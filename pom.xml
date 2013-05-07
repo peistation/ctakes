@@ -130,6 +130,7 @@
 		<module>ctakes-assertion-zoner-res</module>
 		<module>ctakes-drug-ner-res</module>
 		<module>ctakes-ne-contexts-res</module>
+		<module>ctakes-template-filler</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
