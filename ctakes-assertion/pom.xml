@@ -238,4 +238,15 @@
 			<artifactId>ctakes-chunker</artifactId>
 		</dependency>
 	</dependencies>	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.cleartk</groupId>
+				<artifactId>jcasgen-maven-plugin</artifactId>
+				<configuration>
+					<typeSystem>src/main/resources/org/apache/ctakes/assertion/types/TypeSystem.xml</typeSystem>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>    	
 </project>

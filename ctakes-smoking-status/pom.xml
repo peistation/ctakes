@@ -75,4 +75,15 @@
             <artifactId>libsvm</artifactId>
 		</dependency>
 	</dependencies>	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.cleartk</groupId>
+				<artifactId>jcasgen-maven-plugin</artifactId>
+				<configuration>
+					<typeSystem>src/main/resources/org/apache/ctakes/smokingstatus/types/TypeSystem.xml</typeSystem>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build> 	
 </project>

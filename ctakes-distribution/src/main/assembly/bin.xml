@@ -159,11 +159,35 @@
 			<directoryMode>755</directoryMode>
     	</fileSet>
 		<fileSet>
+		    <directory>../ctakes-assertion-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>    
+		<fileSet>
+		    <directory>../ctakes-assertion-zoner/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>
+		<fileSet>
+		    <directory>../ctakes-assertion-zoner-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>      		
+		<fileSet>
 		    <directory>../ctakes-chunker/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
     	</fileSet>
+		<fileSet>
+		    <directory>../ctakes-chunker-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>    	
 		<fileSet>
 		    <directory>../ctakes-clinical-pipeline/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
@@ -175,7 +199,13 @@
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	
+    	</fileSet>   
+		<fileSet>
+		    <directory>../ctakes-constituency-parser-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>     	 	
 		<fileSet>
 		    <directory>../ctakes-context-tokenizer/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
@@ -190,23 +220,48 @@
 			<excludes><exclude>log4j.xml</exclude></excludes>
     	</fileSet>
 		<fileSet>
+		    <directory>../ctakes-core-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<excludes><exclude>log4j.xml</exclude></excludes>
+    	</fileSet>    	
+		<fileSet>
 		    <directory>../ctakes-coreference/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	   
+    	</fileSet>
+		<fileSet>
+		    <directory>../ctakes-coreference-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>      	    	   
 		<fileSet>
 		    <directory>../ctakes-dependency-parser/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	
+    	</fileSet>   
+		<fileSet>
+		    <directory>../ctakes-dependency-parser-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>      	 	
 		<fileSet>
 		    <directory>../ctakes-dictionary-lookup/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	 	
+    	</fileSet>    	 
+		<fileSet>
+		    <directory>../ctakes-dictionary-lookup-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>      		
 		<fileSet>
 		    <directory>../ctakes-drug-ner/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
@@ -214,17 +269,35 @@
 			<directoryMode>755</directoryMode>
     	</fileSet>    	
 		<fileSet>
+		    <directory>../ctakes-drug-ner-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>        	
+		<fileSet>
 		    <directory>../ctakes-lvg/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	
+    	</fileSet>    
+		<fileSet>
+		    <directory>../ctakes-lvg-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>     		
 		<fileSet>
 		    <directory>../ctakes-ne-contexts/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	
+    	</fileSet>   
+		<fileSet>
+		    <directory>../ctakes-ne-contexts-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>      	 	
 		<fileSet>
 		    <directory>../ctakes-pad-term-spotter/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
@@ -232,11 +305,23 @@
 			<directoryMode>755</directoryMode>
     	</fileSet>    	
 		<fileSet>
+		    <directory>../ctakes-pad-term-spotter-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>       	
+		<fileSet>
 		    <directory>../ctakes-pos-tagger/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    
+    	</fileSet>   
+		<fileSet>
+		    <directory>../ctakes-pos-tagger-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>        	 
 		<fileSet>
 		    <directory>../ctakes-preprocessor/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
@@ -250,17 +335,35 @@
 			<directoryMode>755</directoryMode>
     	</fileSet>  
 		<fileSet>
+		    <directory>../ctakes-relation-extractor-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>    	
+		<fileSet>
 		    <directory>../ctakes-side-effect/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
-    	</fileSet>    	  		
+    	</fileSet>    	
+		<fileSet>
+		    <directory>../ctakes-side-effect-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>       	  		
 		<fileSet>
 		    <directory>../ctakes-smoking-status/src/main/resources</directory>
 		    <outputDirectory>resources</outputDirectory>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
     	</fileSet>
+		<fileSet>
+		    <directory>../ctakes-smoking-status-res/src/main/resources</directory>
+		    <outputDirectory>resources</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+    	</fileSet>    	
     	<!-- Type System types should already be in the jar -->
     	<!-- 
 		<fileSet>

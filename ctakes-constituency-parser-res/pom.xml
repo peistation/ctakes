@@ -33,17 +33,7 @@
      <dependency>
 		<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
-	 </dependency>
+	 </dependency>	 
   </dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.cleartk</groupId>
-				<artifactId>jcasgen-maven-plugin</artifactId>
-				<configuration>
-					<typeSystem>src/main/resources/org/apache/ctakes/constituency/parser/types/LabeledTree.xml</typeSystem>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>  
+  
 </project>
