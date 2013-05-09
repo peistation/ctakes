@@ -20,9 +20,6 @@ package org.apache.ctakes.assertion.eval;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +30,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
+import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.HistoryCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
+import org.apache.ctakes.assertion.pipelines.GoldEntityAndAttributeReaderPipelineForSeedCorpus;
+import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
+import org.apache.ctakes.core.util.CtakesFileNamer;
+import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
+import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
+import org.apache.ctakes.typesystem.type.syntax.NumToken;
+import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
+import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
+import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -46,38 +68,22 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCopier;
-import org.apache.uima.util.Level;
-//import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-//import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
-//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
-import org.cleartk.classifier.opennlp.MaxentStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.mitre.medfacts.uima.ZoneAnnotator;
-import org.apache.ctakes.assertion.medfacts.AssertionAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
-import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.GenericCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.HistoryCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.PolarityCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.SubjectCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.medfacts.cleartk.UncertaintyCleartkAnalysisEngine;
-import org.apache.ctakes.assertion.pipelines.GoldEntityAndAttributeReaderPipelineForSeedCorpus;
-import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
-import org.apache.ctakes.core.util.CtakesFileNamer;
-import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.component.NoOpAnnotator;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -86,30 +92,12 @@ import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.pipeline.SimplePipeline;
-import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
-import org.apache.ctakes.typesystem.type.constants.CONST;
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.relation.RelationArgument;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
-import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
-import org.apache.ctakes.typesystem.type.syntax.NumToken;
-import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
-import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
-import org.apache.ctakes.typesystem.type.syntax.WordToken;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
   
@@ -219,6 +207,12 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
     		usage = "Flag to have test method print out error context for misclassified examples",
     		required = false)
     public boolean printErrors = false;
+
+    @Option(
+    		name = "--eval-only",
+    		usage = "Evaluate a CASes (supply the directory as an argument) with both system and gold in them.",
+    		required = false)
+    public boolean evalOnly;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -318,9 +312,14 @@ protected static Options options = new Options();
     // run on test set
     else {
       // train on the entire training set and evaluate on the test set
-      List<File> testFiles = Arrays.asList(options.testDirectory.listFiles());
+      List<File> testFiles;
+      if (options.evalOnly) {
+    	  testFiles = Arrays.asList(options.evaluationOutputDirectory.listFiles());
+      } else {
+    	  testFiles = Arrays.asList(options.testDirectory.listFiles());
+      }
       
-      if (!options.testOnly) {
+      if (!options.testOnly && !options.evalOnly) {
     	  CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
     	  evaluation.train(trainCollectionReader, modelsDir);
       }
@@ -608,8 +607,19 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     	addCleartkAttributeAnnotatorsToAggregate(directory, builder);
     }
 
-    if (evaluationOutputDirectory != null)
-    {
+    if (options.evalOnly && evaluationOutputDirectory != null) {
+    	// short circuit any other stuff in the pipeline
+    	builder = new AggregateBuilder();
+    	
+    	// uimafit find available type systems on classpath
+    	TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
+    	
+        AnalysisEngineDescription noOp =
+    		AnalysisEngineFactory.createPrimitiveDescription(
+	            NoOpAnnotator.class,
+	            typeSystemDescription);
+    	builder.add(noOp);
+    } else if (evaluationOutputDirectory!=null)  {
         AnalysisEngineDescription xwriter =
     		AnalysisEngineFactory.createPrimitiveDescription(
 	            XWriter.class,
@@ -666,6 +676,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     	map.put("historyOf", historyStats);
     }
 
+    // run on existing output that has both system (or instance gathering) and gold
     for (JCas jCas : new JCasIterable(collectionReader, aggregate)) {
       JCas goldView;
       try {
@@ -784,15 +795,15 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 				  // used for multi-class case:
 				  System.out.println("Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
 			  }else if(systemLabel.equals(trueCategory)){
-				  System.out.println("False positive: " + formatError(jCas, systemAnnotation));
+				  System.out.println(classifierType+" FP: " + formatError(jCas, systemAnnotation));
 			  }else{
-				  System.out.println("False negative: " + formatError(jCas, goldAnnotation));
+				  System.out.println(classifierType+" FN: " + formatError(jCas, goldAnnotation));
 			  }
 		  }else{
 			  if(systemLabel.equals(trueCategory)){
-				  System.out.println("True positive: " + formatError(jCas, systemAnnotation));
+				  System.out.println(classifierType+" TP: " + formatError(jCas, systemAnnotation));
 			  }else{
-				  System.out.println("True negative: " + formatError(jCas, systemAnnotation));
+				  System.out.println(classifierType+" TN: " + formatError(jCas, systemAnnotation));
 			  }
 		  }
 	  }
@@ -817,10 +828,11 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	  if(context.size() > 0){
 		  Sentence sent = context.get(0);
 		  buff.append(sent.getCoveredText());
-		  int offset = mention.getBegin() - sent.getBegin();
-		  buff.insert(offset, "***");
+		  long offset = mention.getBegin() - sent.getBegin();
+		  if (offset>=Integer.MAX_VALUE || offset<=Integer.MIN_VALUE) { offset=0; } // for spanless annots
+		  buff.insert((int)offset, "***");
 		  offset += (mention.getEnd()-mention.getBegin() + 3);
-		  buff.insert(offset, "***");
+		  buff.insert((int)offset, "***");
 	  }
 	  return buff.toString();
   }
@@ -901,13 +913,13 @@ private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
 	);
 	builder.add(oldConversionAnnotator);
 
-//	AnalysisEngineDescription oldSubjectAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/SubjectAttributeAnalysisEngine"); 
-//	ConfigurationParameterFactory.addConfigurationParameters(
-//			oldSubjectAnnotator,
-//			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-//			AssertionEvalBasedOnModifier.GOLD_VIEW_NAME
-//	);
-//	builder.add(oldSubjectAnnotator);
+	AnalysisEngineDescription oldSubjectAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/SubjectAttributeAnalysisEngine"); 
+	ConfigurationParameterFactory.addConfigurationParameters(
+			oldSubjectAnnotator,
+			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+			AssertionEvaluation.GOLD_VIEW_NAME
+	);
+	builder.add(oldSubjectAnnotator);
 
 	AnalysisEngineDescription oldGenericAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription("desc/GenericAttributeAnalysisEngine"); 
 	ConfigurationParameterFactory.addConfigurationParameters(
