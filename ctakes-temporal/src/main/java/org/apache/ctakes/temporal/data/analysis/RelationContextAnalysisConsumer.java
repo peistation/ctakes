@@ -63,27 +63,28 @@ public class RelationContextAnalysisConsumer extends JCasAnnotator_ImplBase {
     }
 
     BufferedWriter writer = getWriter(outputFile, true);
-      
-    for(BinaryTextRelation binaryTextRelation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
-      
-      Annotation arg1 = binaryTextRelation.getArg1().getArgument();
-      Annotation arg2 = binaryTextRelation.getArg2().getArgument();
-
-      String category = binaryTextRelation.getCategory();
-      String text = getTextBetweenAnnotations(systemView, arg1, arg2);
-      String output = String.format("%s|%s|%s|%s\n", category, arg1.getCoveredText(), arg2.getCoveredText(), text);
-
+    try {
+      for(BinaryTextRelation binaryTextRelation : JCasUtil.select(goldView, BinaryTextRelation.class)) {
+        
+        Annotation arg1 = binaryTextRelation.getArg1().getArgument();
+        Annotation arg2 = binaryTextRelation.getArg2().getArgument();
+    
+        String category = binaryTextRelation.getCategory();
+        String text = getTextBetweenAnnotations(systemView, arg1, arg2);
+        String output = String.format("%s|%s|%s|%s\n", category, arg1.getCoveredText(), arg2.getCoveredText(), text);
+    
+        try {
+          writer.write(output);
+        } catch (IOException e) {
+          throw new AnalysisEngineProcessException(e);
+        }
+      }
+    } finally {      
       try {
-        writer.write(output);
+        writer.close();
       } catch (IOException e) {
         throw new AnalysisEngineProcessException(e);
       }
-    }
-    
-    try {
-      writer.close();
-    } catch (IOException e) {
-      throw new AnalysisEngineProcessException(e);
     }
   }
 	

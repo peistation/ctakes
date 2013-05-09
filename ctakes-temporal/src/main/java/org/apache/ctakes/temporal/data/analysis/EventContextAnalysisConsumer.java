@@ -77,34 +77,35 @@ public class EventContextAnalysisConsumer extends JCasAnnotator_ImplBase {
 
     BufferedWriter tokenWriter = getWriter(tokenOutputFile, true);
     BufferedWriter eventWriter = getWriter(eventOutputFile, true);
-      
-    for(BaseToken baseToken : JCasUtil.select(systemView, BaseToken.class)) {
-      String tokenText = baseToken.getCoveredText().toLowerCase();
-      String output = String.format("%s|%s\n", tokenText, getAnnotationContext(baseToken, contextSize));
-      
-      try {
-        tokenWriter.write(output);
-      } catch (IOException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-    } 
-
-    for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
-      String eventText = eventMention.getCoveredText().toLowerCase();
-      String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, contextSize));
-      
-      try {
-        eventWriter.write(output);
-      } catch (IOException e) {
-        throw new AnalysisEngineProcessException(e);
-      }
-    }
-    
     try {
-      tokenWriter.close();
-      eventWriter.close();
-    } catch (IOException e) {
-      throw new AnalysisEngineProcessException(e);
+      for(BaseToken baseToken : JCasUtil.select(systemView, BaseToken.class)) {
+        String tokenText = baseToken.getCoveredText().toLowerCase();
+        String output = String.format("%s|%s\n", tokenText, getAnnotationContext(baseToken, contextSize));
+        
+        try {
+          tokenWriter.write(output);
+        } catch (IOException e) {
+          throw new AnalysisEngineProcessException(e);
+        }
+      } 
+  
+      for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
+        String eventText = eventMention.getCoveredText().toLowerCase();
+        String output = String.format("%s|%s\n", eventText, getAnnotationContext(eventMention, contextSize));
+        
+        try {
+          eventWriter.write(output);
+        } catch (IOException e) {
+          throw new AnalysisEngineProcessException(e);
+        }
+      }
+    } finally {
+      try {
+        tokenWriter.close();
+        eventWriter.close();
+      } catch (IOException e) {
+        throw new AnalysisEngineProcessException(e);
+      }
     }
   }
 	
