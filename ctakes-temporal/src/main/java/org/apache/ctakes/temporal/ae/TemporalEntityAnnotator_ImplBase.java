@@ -18,24 +18,20 @@
  */
 package org.apache.ctakes.temporal.ae;
 
-import java.util.Set;
-
+import org.apache.ctakes.temporal.eval.THYMEData;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.uimafit.util.JCasUtil;
 
-import com.google.common.collect.Sets;
-
 public abstract class TemporalEntityAnnotator_ImplBase extends CleartkAnnotator<String> {
 
-  public static final Set<String> SEGMENTS_TO_SKIP = Sets.newHashSet("20104", "20105", "20116", "20138");
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
     for (Segment segment : JCasUtil.select(jCas, Segment.class)) {
-      if (!SEGMENTS_TO_SKIP.contains(segment.getId())) {
+      if (!THYMEData.SEGMENTS_TO_SKIP.contains(segment.getId())) {
         this.process(jCas, segment);
       }
     }

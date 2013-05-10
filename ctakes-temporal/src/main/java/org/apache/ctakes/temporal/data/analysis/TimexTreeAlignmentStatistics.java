@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.ctakes.constituency.parser.util.TreeUtils;
-import org.apache.ctakes.temporal.ae.TemporalEntityAnnotator_ImplBase;
 import org.apache.ctakes.temporal.eval.CommandLine;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.XMIReader;
 import org.apache.ctakes.temporal.eval.THYMEData;
@@ -70,7 +69,7 @@ public class TimexTreeAlignmentStatistics {
       //      String docId = jCas.
       //      System.out.println("Document: " + docId);
       for(Segment segment : JCasUtil.select(jCas, Segment.class)){
-    	  if(TemporalEntityAnnotator_ImplBase.SEGMENTS_TO_SKIP.contains(segment.getId())) continue;
+    	  if(THYMEData.SEGMENTS_TO_SKIP.contains(segment.getId())) continue;
         Collection<TimeMention> mentions = JCasUtil.selectCovered(jCas.getView("GoldView"), TimeMention.class, segment);
         for(TimeMention mention : mentions){
           numMentions++;
