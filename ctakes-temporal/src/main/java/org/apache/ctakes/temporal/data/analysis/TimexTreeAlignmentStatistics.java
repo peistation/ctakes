@@ -9,13 +9,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.ctakes.constituency.parser.util.TreeUtils;
+import org.apache.ctakes.temporal.ae.TemporalEntityAnnotator_ImplBase;
 import org.apache.ctakes.temporal.eval.CommandLine;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.XMIReader;
 import org.apache.ctakes.temporal.eval.THYMEData;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
-import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -51,8 +51,8 @@ public class TimexTreeAlignmentStatistics {
     Options options = CliFactory.parseArguments(Options.class, args);
     List<Integer> patientSets = options.getPatients().getList();
     List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
-    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
-    List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
+    //List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
+    //List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
 
     CollectionReader reader = UriCollectionReader.getCollectionReaderFromFiles(getFilesFor(trainItems, options.getRawTextDirectory()));
     AggregateBuilder aggregateBuilder = new AggregateBuilder();
@@ -70,6 +70,7 @@ public class TimexTreeAlignmentStatistics {
       //      String docId = jCas.
       //      System.out.println("Document: " + docId);
       for(Segment segment : JCasUtil.select(jCas, Segment.class)){
+    	  if(TemporalEntityAnnotator_ImplBase.SEGMENTS_TO_SKIP.contains(segment.getId())) continue;
         Collection<TimeMention> mentions = JCasUtil.selectCovered(jCas.getView("GoldView"), TimeMention.class, segment);
         for(TimeMention mention : mentions){
           numMentions++;
@@ -94,8 +95,8 @@ public class TimexTreeAlignmentStatistics {
               }
             }
             System.out.println("No alignment for: " + mention.getCoveredText());
-            System.out.println("Smallest covering treebank node is: " + (smallestCoveringNode == null ? "null" : smallestCoveringNode.getCoveredText()));
-            System.out.println(smallestCoveringNode == null ? "no tree" : TreeUtils.tree2str(smallestCoveringNode));
+            System.out.println("  Smallest covering treebank node is: " + (smallestCoveringNode == null ? "null" : smallestCoveringNode.getCoveredText()));
+            System.out.println("  " + (smallestCoveringNode == null ? "no tree" : TreeUtils.tree2str(smallestCoveringNode)));
           }
         }
       }

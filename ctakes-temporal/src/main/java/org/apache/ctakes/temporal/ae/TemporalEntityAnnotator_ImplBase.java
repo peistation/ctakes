@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 
 public abstract class TemporalEntityAnnotator_ImplBase extends CleartkAnnotator<String> {
 
-  private static final Set<String> SEGMENTS_TO_SKIP = Sets.newHashSet("20104", "20105", "20116", "20138");
+  public static final Set<String> SEGMENTS_TO_SKIP = Sets.newHashSet("20104", "20105", "20116", "20138");
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
