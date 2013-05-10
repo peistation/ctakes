@@ -20,8 +20,10 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +56,10 @@ import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
@@ -69,6 +73,9 @@ public class EvaluationOfTemporalRelations extends
 
     @Option
     public boolean getPrintFormattedRelations();
+    
+    @Option
+    public boolean getClosure();
   }
 
   public static void main(String[] args) throws Exception {
@@ -84,6 +91,7 @@ public class EvaluationOfTemporalRelations extends
         options.getKnowtatorXMLDirectory(),
         options.getXMIDirectory(),
         options.getTreebankDirectory(),
+        options.getClosure(),
         options.getPrintErrors(),
         options.getPrintFormattedRelations());
     evaluation.prepareXMIsFor(patientSets);
@@ -99,6 +107,8 @@ public class EvaluationOfTemporalRelations extends
     System.err.println(stats);
   }
 
+  protected boolean useClosure;
+  
   protected boolean printRelations = false;
   
   public EvaluationOfTemporalRelations(
@@ -107,9 +117,11 @@ public class EvaluationOfTemporalRelations extends
       File knowtatorXMLDirectory,
       File xmiDirectory,
       File treebankDirectory,
+      boolean useClosure,
       boolean printErrors,
       boolean printRelations) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory);
+    this.useClosure = useClosure;
     this.printErrors = printErrors;
     this.printRelations = printRelations;
   }
@@ -120,6 +132,9 @@ public class EvaluationOfTemporalRelations extends
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class, TimeMention.class, BinaryTextRelation.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveNonTLINKRelations.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveCrossSentenceRelations.class));
+    if (this.useClosure) {
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(AddTransitiveContainsRelations.class));
+    }
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveEventEventRelations.class));
     aggregateBuilder.add(EventTimeRelationAnnotator.createDataWriterDescription(
         LIBSVMStringOutcomeDataWriter.class,
@@ -142,6 +157,12 @@ public class EvaluationOfTemporalRelations extends
         RemoveCrossSentenceRelations.class,
         RemoveCrossSentenceRelations.PARAM_RELATION_VIEW,
         GOLD_VIEW_NAME));
+    if (this.useClosure) {
+      aggregateBuilder.add(
+          AnalysisEngineFactory.createPrimitiveDescription(AddTransitiveContainsRelations.class),
+          CAS.NAME_DEFAULT_SOFA,
+          GOLD_VIEW_NAME);
+    }
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
     		RemoveEventEventRelations.class,
     		RemoveEventEventRelations.PARAM_RELATION_VIEW,
@@ -370,5 +391,70 @@ public class EvaluationOfTemporalRelations extends
         relation.removeFromIndexes();
       }
     }
+  }
+  
+  public static class AddTransitiveContainsRelations extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      
+      // collect many-to-many mappings of containment relations 
+      Multimap<Annotation, Annotation> isContainedIn = HashMultimap.create();
+      Multimap<Annotation, Annotation> contains = HashMultimap.create();
+      Set<BinaryTextRelation> containsRelations = Sets.newHashSet();
+      for (BinaryTextRelation relation : JCasUtil.select(jCas, BinaryTextRelation.class)) {
+        if (relation.getCategory().equals("CONTAINS")) {
+          containsRelations.add(relation);
+          Annotation arg1 = relation.getArg1().getArgument();
+          Annotation arg2 = relation.getArg2().getArgument();
+          contains.put(arg1, arg2);
+          isContainedIn.put(arg2, arg1);
+        }
+      }
+
+      // look for X -> Y -> Z containment chains and add X -> Z relations
+      Deque<Annotation> todo = new ArrayDeque<Annotation>(isContainedIn.keySet());
+      while (!todo.isEmpty()) {
+        Annotation next = todo.removeFirst();
+        for (Annotation parent : Lists.newArrayList(isContainedIn.get(next))) {
+          for (Annotation grandParent : Lists.newArrayList(isContainedIn.get(parent))) {
+            if (!isContainedIn.containsEntry(next, grandParent)) {
+              isContainedIn.put(next, grandParent);
+              contains.put(grandParent, next);
+              
+              // once X -> Z has been added, we need to re-do all W where W -> X
+              for (Annotation child : contains.get(next)) {
+                todo.add(child);
+              }
+            }
+          }
+        }
+      }
+      
+      // remove old relations
+      for (BinaryTextRelation relation : containsRelations) {
+        relation.getArg1().removeFromIndexes();
+        relation.getArg2().removeFromIndexes();
+        relation.removeFromIndexes();
+      }
+      
+      // add new, transitive relations
+      for (Annotation contained : isContainedIn.keySet()) {
+        for (Annotation container : isContainedIn.get(contained)) {
+          RelationArgument arg1 = new RelationArgument(jCas);
+          arg1.setArgument(container);
+          RelationArgument arg2 = new RelationArgument(jCas);
+          arg2.setArgument(contained);
+          BinaryTextRelation relation = new BinaryTextRelation(jCas);
+          relation.setArg1(arg1);
+          relation.setArg2(arg2);
+          relation.setCategory("CONTAINS");
+          arg1.addToIndexes();
+          arg2.addToIndexes();
+          relation.addToIndexes();
+        }
+      }
+    }
+    
   }
 }
