@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.ctakes.temporal.ae.ConstituencyBasedTimeAnnotator;
-import org.apache.ctakes.temporal.ae.TimeAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
@@ -33,8 +32,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
-import org.uimafit.factory.AnalysisEngineFactory;
-
 import com.lexicalscope.jewel.cli.CliFactory;
 
 public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase {

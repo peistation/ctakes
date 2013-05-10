@@ -8,7 +8,6 @@ import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.component.JCasAnnotator_ImplBase;
@@ -28,14 +27,6 @@ public class RemoveTreeAlignedMentions extends JCasAnnotator_ImplBase {
   
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
-    JCas goldView = null;
-    try {
-      goldView = jCas.getView(goldViewName);
-    } catch (CASException e) {
-      e.printStackTrace();
-      throw new AnalysisEngineProcessException("Could not extract gold view from jcas!", new Object[]{e});
-    }
-    
     Collection<TimeMention> times = JCasUtil.select(jCas, TimeMention.class);
     logger.info("File contains: " + times.size() + " timex mentions from first pass.");
     
