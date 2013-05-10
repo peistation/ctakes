@@ -64,8 +64,10 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
 
@@ -202,6 +204,17 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
   public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
     PredicateArgumentExtractor predicateArgumentExtractor = new PredicateArgumentExtractor(jCas);
 
+    // Create features for tokens that end UMLS (or other) entities
+    Multimap<BaseToken, Feature> endOfEntityFeatures = HashMultimap.create();
+    for (IdentifiedAnnotation entity : JCasUtil.select(jCas, IdentifiedAnnotation.class)) {
+      if (!entity.getClass().equals(EventMention.class)) {
+        List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, entity);
+        BaseToken lastToken = tokens.get(tokens.size() - 1);
+        String value = String.format("%s_%s", entity.getClass().getSimpleName(), entity.getTypeID());
+        endOfEntityFeatures.put(lastToken, new Feature("EndOf", value));
+      }
+    }
+
     Random rand = new Random();
     
     //TRY SMOTE algorithm here to generate more minority class samples
@@ -281,6 +294,9 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
 
         // features from surrounding tokens
         features.addAll(this.contextFeatureExtractor.extractWithin(jCas, token, sentence));
+        
+        // features from ends of entities
+        features.addAll(endOfEntityFeatures.get(token));
 
         // features from surrounding entity, phrase, etc. chunk-labels
         for (ChunkingExtractor extractor : chunkingExtractors) {
