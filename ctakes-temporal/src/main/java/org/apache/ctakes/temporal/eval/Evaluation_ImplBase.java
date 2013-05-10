@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -578,7 +579,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
           if(sameSpanNode.getNodeType().equals("PP")){
             // if it is a PP it should be moved down to the NP
             int numChildren = sameSpanNode.getChildren().size();
-            if(sameSpanNode.getChildren(numChildren-1).getNodeType().equals("NP")){
+            if(numChildren == 2 && sameSpanNode.getChildren(0).getNodeType().equals("IN") && sameSpanNode.getChildren(1).getNodeType().equals("NP")){
               // move the time span to this node:
               TreebankNode mentionNode = sameSpanNode.getChildren(numChildren-1);
               mention.setBegin(mentionNode.getBegin());
