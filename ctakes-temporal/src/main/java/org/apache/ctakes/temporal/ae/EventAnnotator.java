@@ -214,7 +214,12 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
       // during training, the list of all outcomes for the tokens
       List<String> outcomes;
       if (this.isTraining()) {
-        List<EventMention> events = JCasUtil.selectCovered(jCas, EventMention.class, sentence);
+        List<EventMention> events = Lists.newArrayList();
+        for (EventMention event : JCasUtil.selectCovered(jCas, EventMention.class, sentence)) {
+          if (event.getClass().equals(EventMention.class)) {
+            events.add(event);
+          }
+        }
         outcomes = this.eventChunking.createOutcomes(jCas, tokens, events);
       }
       // during prediction, the list of outcomes predicted so far

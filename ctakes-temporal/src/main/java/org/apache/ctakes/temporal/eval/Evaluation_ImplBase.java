@@ -617,7 +617,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
       }
       for (Class<? extends TOP> annotationClass : this.annotationClasses) {
         for (TOP annotation : Lists.newArrayList(JCasUtil.select(systemView, annotationClass))) {
-          annotation.removeFromIndexes();
+          if (annotation.getClass().equals(annotationClass)) {
+            annotation.removeFromIndexes();
+          }
         }
       }
       CasCopier copier = new CasCopier(goldView.getCas(), systemView.getCas());
