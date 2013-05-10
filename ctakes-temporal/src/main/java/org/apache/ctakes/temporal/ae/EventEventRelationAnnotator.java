@@ -63,7 +63,7 @@ public class EventEventRelationAnnotator extends RelationExtractorAnnotator {
 	    return Lists.newArrayList(
 	    						  new TokenFeaturesExtractor()
 	    						, new PartOfSpeechFeaturesExtractor()
-	    						, new TemporalAttributeFeatureExtractor()
+//	    						, new TemporalAttributeFeatureExtractor()
 //	    						, new EventTimeFlatTreeFeatureExtractor()
 //	    						, new TemporalPETExtractor()
 //	    						, new TemporalPathExtractor()
