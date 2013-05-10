@@ -34,8 +34,8 @@ import org.apache.ctakes.temporal.utils.SMOTEplus;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
@@ -134,7 +134,7 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
         EventAnnotator.createFeatureSelectionURI(modelDirectory));
   }
 
-  private BIOChunking<BaseToken, EntityMention> entityChunking;
+  private BIOChunking<BaseToken, IdentifiedAnnotation> entityChunking;
 
   private BIOChunking<BaseToken, EventMention> eventChunking;
 
@@ -161,9 +161,9 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
     super.initialize(context);
 
     // define chunkings
-    this.entityChunking = new BIOChunking<BaseToken, EntityMention>(
+    this.entityChunking = new BIOChunking<BaseToken, IdentifiedAnnotation>(
         BaseToken.class,
-        EntityMention.class,
+        IdentifiedAnnotation.class,
         "typeID");
     this.phraseChunking = new BIOChunking<BaseToken, Chunk>(
         BaseToken.class,
@@ -235,13 +235,23 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
           CONST.NE_TYPE_ID_FINDING,
           CONST.NE_TYPE_ID_PROCEDURE,
           CONST.NE_TYPE_ID_UNKNOWN };
-      List<EntityMention> entities = JCasUtil.selectCovered(jCas, EntityMention.class, sentence);
+      List<IdentifiedAnnotation> entities;
+      if (this.isTraining()) {
+        entities = Lists.newArrayList();
+        for (IdentifiedAnnotation entity : JCasUtil.selectCovered(jCas, IdentifiedAnnotation.class, sentence)) {
+          if (!entity.getClass().equals(EventMention.class)) {
+            entities.add(entity);
+          }
+        }
+      } else {
+        entities = JCasUtil.selectCovered(jCas, IdentifiedAnnotation.class, sentence);
+      }
+      
       List<ChunkingExtractor> chunkingExtractors = Lists.newArrayList(); 
       for (int typeID : entityTypeIDs) {
-        Predicate<EntityMention> hasTypeID = hasEntityType(typeID);
-        String name = String.format("EntityTag_%d", typeID);
-        List<EntityMention> subEntities = Lists.newArrayList(Iterables.filter(entities, hasTypeID));
-        chunkingExtractors.add(new ChunkingExtractor(name, this.entityChunking, jCas, tokens, subEntities));
+        Predicate<IdentifiedAnnotation> hasTypeID = hasEntityType(typeID);
+        List<IdentifiedAnnotation> subEntities = Lists.newArrayList(Iterables.filter(entities, hasTypeID));
+        chunkingExtractors.add(new ChunkingExtractor("EntityTag", this.entityChunking, jCas, tokens, subEntities));
       }
       
       // add extractor for phase chunks
@@ -320,10 +330,10 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
     
   }
 
-  private static Predicate<EntityMention> hasEntityType(final int typeID) {
-    return new Predicate<EntityMention>() {
+  private static Predicate<IdentifiedAnnotation> hasEntityType(final int typeID) {
+    return new Predicate<IdentifiedAnnotation>() {
       @Override
-      public boolean apply(EntityMention mention) {
+      public boolean apply(IdentifiedAnnotation mention) {
         return mention.getTypeID() == typeID;
       }
     };
