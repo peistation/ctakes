@@ -155,6 +155,8 @@ public class EvaluationOfTemporalRelations extends
         GOLD_VIEW_NAME);
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
         RemoveCrossSentenceRelations.class,
+        RemoveCrossSentenceRelations.PARAM_SENTENCE_VIEW,
+        CAS.NAME_DEFAULT_SOFA,
         RemoveCrossSentenceRelations.PARAM_RELATION_VIEW,
         GOLD_VIEW_NAME));
     if (this.useClosure) {
@@ -163,10 +165,10 @@ public class EvaluationOfTemporalRelations extends
           CAS.NAME_DEFAULT_SOFA,
           GOLD_VIEW_NAME);
     }
-    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
-    		RemoveEventEventRelations.class,
-    		RemoveEventEventRelations.PARAM_RELATION_VIEW,
-    		GOLD_VIEW_NAME));
+    aggregateBuilder.add(
+        AnalysisEngineFactory.createPrimitiveDescription(RemoveEventEventRelations.class),
+        CAS.NAME_DEFAULT_SOFA,
+        GOLD_VIEW_NAME);
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveRelations.class));
     aggregateBuilder.add(EventTimeRelationAnnotator.createAnnotatorDescription(directory));
 
@@ -265,20 +267,9 @@ public class EvaluationOfTemporalRelations extends
 
   public static class RemoveEventEventRelations extends JCasAnnotator_ImplBase {
 
-	  public static final String PARAM_RELATION_VIEW = "RelationView";
-
-	  @ConfigurationParameter(name = PARAM_RELATION_VIEW)
-	  private String relationViewName = CAS.NAME_DEFAULT_SOFA;
 	  @Override
 	  public void process(JCas jCas) throws AnalysisEngineProcessException {
-		  JCas relationView;
-		  try {
-			  relationView = jCas.getView(this.relationViewName);
-		  } catch (CASException e) {
-			  throw new AnalysisEngineProcessException(e);
-		  }
-
-		  for(BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(relationView, BinaryTextRelation.class))){
+		  for(BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(jCas, BinaryTextRelation.class))){
 			  if(relation.getCategory().equals("CONTAINS")){
 				  RelationArgument arg1 = relation.getArg1();
 				  RelationArgument arg2 = relation.getArg2();
@@ -312,6 +303,11 @@ public class EvaluationOfTemporalRelations extends
 
   public static class RemoveCrossSentenceRelations extends JCasAnnotator_ImplBase {
 
+    public static final String PARAM_SENTENCE_VIEW = "SentenceView";
+
+    @ConfigurationParameter(name = PARAM_SENTENCE_VIEW)
+    private String sentenceViewName = CAS.NAME_DEFAULT_SOFA;
+
     public static final String PARAM_RELATION_VIEW = "RelationView";
 
     @ConfigurationParameter(name = PARAM_RELATION_VIEW)
@@ -319,8 +315,9 @@ public class EvaluationOfTemporalRelations extends
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
-      JCas relationView;
+      JCas sentenceView, relationView;
       try {
+        sentenceView = jCas.getView(this.sentenceViewName);
         relationView = jCas.getView(this.relationViewName);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
@@ -329,7 +326,7 @@ public class EvaluationOfTemporalRelations extends
       // map events and times to the sentences that contain them
       Map<IdentifiedAnnotation, Integer> sentenceIndex = Maps.newHashMap();
       int index = -1;
-      for (Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
+      for (Sentence sentence : JCasUtil.select(sentenceView, Sentence.class)) {
         ++index;
         for (EventMention event : JCasUtil.selectCovered(relationView, EventMention.class, sentence)) {
           sentenceIndex.put(event, index);
@@ -355,21 +352,10 @@ public class EvaluationOfTemporalRelations extends
   }
 
   public static class RemoveNonContainsRelations extends JCasAnnotator_ImplBase {
-	  public static final String PARAM_RELATION_VIEW = "RelationView";
-
-	  @ConfigurationParameter(name = PARAM_RELATION_VIEW)
-	  private String relationViewName = CAS.NAME_DEFAULT_SOFA;
-
 	  @Override
 	  public void process(JCas jCas) throws AnalysisEngineProcessException {
-		  JCas relationView;
-		  try {
-			  relationView = jCas.getView(this.relationViewName);
-		  } catch (CASException e) {
-			  throw new AnalysisEngineProcessException(e);
-		  }
 		  for (BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(
-				  relationView,
+				  jCas,
 				  BinaryTextRelation.class))) {
 			  if (!relation.getCategory().startsWith("CONTAINS")) {
 				  relation.getArg1().removeFromIndexes();
