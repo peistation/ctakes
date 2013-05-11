@@ -1,15 +1,23 @@
-/*package org.apache.ctakes.temporal.eval;
+package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
 
-import org.apache.ctakes.temporal.eval.EvaluationOfTemporalRelations.ParameterSettings;
+import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.cleartk.classifier.tksvmlight.model.CompositeKernel.ComboOperator;
 import org.cleartk.eval.AnnotationStatistics;
+import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.util.JCasUtil;
 
+import com.google.common.collect.Lists;
 import com.lexicalscope.jewel.cli.Option;
 
 public abstract class EvaluationOfTemporalRelations_ImplBase extends
@@ -36,8 +44,8 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 	  protected static double DEFAULT_TK = 0.5;
 	  protected static double DEFAULT_LAMBDA = 0.5;
 	  
-	  protected static ParameterSettings defaultParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "linear",
-	  		  DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
+	  protected static ParameterSettings defaultParams = null; //new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "linear",
+	  		  //DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
 
 	  
 	  protected ParameterSettings params = null;
@@ -52,6 +60,28 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 		this.printRelations = printRelations;
 		this.printErrors =  printErrors;
 	}
+
+  public static class PreserveEventEventRelations extends JCasAnnotator_ImplBase {
+    public static final String PARAM_GOLD_VIEW = "GoldView";
+
+    @ConfigurationParameter(name = PARAM_GOLD_VIEW)
+    private String goldViewName = CAS.NAME_DEFAULT_SOFA;
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+      for(BinaryTextRelation relation : Lists.newArrayList(JCasUtil.select(jCas, BinaryTextRelation.class))){
+          RelationArgument arg1 = relation.getArg1();
+          RelationArgument arg2 = relation.getArg2();
+          if(arg1.getArgument() instanceof EventMention && arg2.getArgument() instanceof EventMention){
+            // these are the kind we keep.
+            continue;
+          }
+          arg1.removeFromIndexes();
+          arg2.removeFromIndexes();
+          relation.removeFromIndexes();
+      }
+    }   
+  }
 
 	  protected static void printRelationAnnotations(String fileName, Collection<BinaryTextRelation> relations) {
 
@@ -94,4 +124,3 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 	  }
 
 }
-*/
