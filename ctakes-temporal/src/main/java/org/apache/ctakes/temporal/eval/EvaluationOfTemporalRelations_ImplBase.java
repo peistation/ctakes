@@ -1,4 +1,4 @@
-package org.apache.ctakes.temporal.eval;
+/*package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
@@ -94,3 +94,4 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 	  }
 
 }
+*/

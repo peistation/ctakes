@@ -32,6 +32,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
+import org.uimafit.factory.AnalysisEngineFactory;
+
 import com.lexicalscope.jewel.cli.CliFactory;
 
 public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase {
@@ -65,22 +67,26 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-    return ConstituencyBasedTimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, directory);
+    return AnalysisEngineFactory.createAggregateDescription(
+//        TimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, new File(directory, "/seq")),
+        ConstituencyBasedTimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, new File(directory, "/tree")));
+//    return ConstituencyBasedTimeAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, directory);
   }
 
   @Override
   protected void trainAndPackage(File directory) throws Exception {
-    JarClassifierBuilder.trainAndPackage(directory, "-c", "10000");
+//    JarClassifierBuilder.trainAndPackage(new File(directory, "/seq"), "-c", "10000");
+    JarClassifierBuilder.trainAndPackage(new File(directory, "/tree"), "-c", "10000");
   }
 
   @Override
   protected AnalysisEngineDescription getAnnotatorDescription(File directory)
       throws ResourceInitializationException {
-//    return AnalysisEngineFactory.createAggregateDescription(
-//        TimeAnnotator.createAnnotatorDescription(directory),
-//        AnalysisEngineFactory.createPrimitiveDescription(RemoveTreeAlignedMentions.class),
-//        ConstituencyBasedTimeAnnotator.createAnnotatorDescription(directory));
-    return ConstituencyBasedTimeAnnotator.createAnnotatorDescription(directory);
+    return AnalysisEngineFactory.createAggregateDescription(
+//        TimeAnnotator.createAnnotatorDescription(new File(directory, "/seq")),
+//        AnalysisEngineFactory.createPrimitiveDescription(RemoveTreeAlignedMentions.class, RemoveTreeAlignedMentions.PARAM_GOLDVIEW_NAME, GOLD_VIEW_NAME),
+        ConstituencyBasedTimeAnnotator.createAnnotatorDescription(new File(directory, "/tree")));
+//    return ConstituencyBasedTimeAnnotator.createAnnotatorDescription(directory);
   }
 
   @Override

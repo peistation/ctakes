@@ -1,4 +1,4 @@
-package org.apache.ctakes.temporal.eval;
+/*package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.net.URI;
@@ -216,3 +216,4 @@ public class EvaluationOfEventEventRelations extends
 	}
 
 }
+*/
