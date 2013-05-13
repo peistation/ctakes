@@ -40,22 +40,24 @@ public class TemporalFTExtractor implements RelationFeaturesExtractor {
 			arg2 = temp;
 		}
 		
-		String a1type, a2type;
+		String a1type="", a2type="";
 		String eventModality="";
 		String timeClass;
 		
 		if(arg1 instanceof EventMention){
 			eventModality = ((EventMention)arg1).getEvent().getProperties().getContextualModality();
-			timeClass = ((TimeMention)arg2).getTimeClass();
-			
 			a1type = "EVENT-"+eventModality;
-			a2type = "TIMEX-"+timeClass;
-		}else{
-			eventModality = ((EventMention)arg2).getEvent().getProperties().getContextualModality();
+		}else if(arg1 instanceof TimeMention){
 			timeClass = ((TimeMention)arg1).getTimeClass();
-			
 			a1type = "TIMEX-"+timeClass;
-			a2type = "EVENT-"+eventModality;
+		}
+		
+		if(arg2 instanceof EventMention){
+      eventModality = ((EventMention)arg2).getEvent().getProperties().getContextualModality();
+      a2type = "EVENT-"+eventModality;		  
+		}else if(arg2 instanceof TimeMention){
+      timeClass = ((TimeMention)arg2).getTimeClass();
+      a2type = "TIMEX-"+timeClass;		  
 		}
 		
 		TreebankNode t1 = AnnotationTreeUtils.insertAnnotationNode(jcas, root, arg1, "ARG1-"+a1type);
