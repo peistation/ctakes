@@ -55,8 +55,8 @@ EvaluationOfTemporalRelations_ImplBase {
   }
 
   @Override
-  protected void train(CollectionReader collectionReader, File directory)
-      throws Exception {
+  protected void train(CollectionReader collectionReader, File directory) throws Exception
+       {
     AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class, TimeMention.class, BinaryTextRelation.class));
     //	    aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(MergeContainsOverlap.class));
@@ -69,13 +69,17 @@ EvaluationOfTemporalRelations_ImplBase {
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(PreserveEventEventRelations.class));
     aggregateBuilder.add(EventEventRelationAnnotator.createDataWriterDescription(
         LIBSVMStringOutcomeDataWriter.class,
-        //	        TKSVMlightStringOutcomeDataWriter.class,
+//        	        TKSVMlightStringOutcomeDataWriter.class,
         directory,
         1.0));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
 
     HideOutput hider = new HideOutput();
+    // libsvm:
     JarClassifierBuilder.trainAndPackage(directory,  "-t", "0", "-c", "10");
+    // tksvmlight with no tk features:
+//    JarClassifierBuilder.trainAndPackage(directory, "-t", "0", "-c", "10", "-N", "0");
+//    JarClassifierBuilder.trainAndPackage(directory,  "-t", "5", "-S", "0", "-N", "3", "-C", "+", "-T", "1.0");
     hider.restoreOutput();
     hider.close();
   }

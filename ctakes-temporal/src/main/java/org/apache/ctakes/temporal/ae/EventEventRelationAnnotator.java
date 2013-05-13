@@ -10,6 +10,8 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.features.PartOfSpeechFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
+import org.apache.ctakes.temporal.ae.feature.EventArgumentPropertyExtractor;
+import org.apache.ctakes.temporal.ae.feature.UmlsFeatureExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -62,6 +64,11 @@ public class EventEventRelationAnnotator extends RelationExtractorAnnotator {
 	    return Lists.newArrayList(
 	    						  new TokenFeaturesExtractor()
 	    						, new PartOfSpeechFeaturesExtractor()
+	    						, new EventArgumentPropertyExtractor()
+	    						, new UmlsFeatureExtractor()
+//	    						, new DependencyTreeFeaturesExtractor()
+//	    						, new DependencyPathFeaturesExtractor()
+	    						
 //	    						, new TemporalAttributeFeatureExtractor()
 //	    						, new EventTimeFlatTreeFeatureExtractor()
 //	    						, new TemporalPETExtractor()
@@ -81,8 +88,10 @@ public class EventEventRelationAnnotator extends RelationExtractorAnnotator {
 	    List<IdentifiedAnnotationPair> pairs = Lists.newArrayList();
 	    List<EventMention> events = new ArrayList<EventMention>(JCasUtil.selectCovered(jCas, EventMention.class, sentence));
 	    for (int i = 0; i < events.size(); i++){
+	      if(!events.get(i).getClass().equals(EventMention.class)) continue;
 	    	for(int j = i+1; j < events.size(); j++){
-	          pairs.add(new IdentifiedAnnotationPair(events.get(i), events.get(j)));
+	    	  if(!events.get(j).getClass().equals(EventMention.class)) continue;
+	        pairs.add(new IdentifiedAnnotationPair(events.get(i), events.get(j)));
 	    	}
 	    }
 	    return pairs;

@@ -27,6 +27,7 @@ import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.utils.struct.CounterMap;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -48,15 +49,21 @@ public class UmlsFeatureExtractor implements RelationFeaturesExtractor {
       throw new AnalysisEngineProcessException(e);
     }
     
-    // TODO: add the same logic for arg2
     if(arg1 instanceof EventMention) {
-      List<EntityMention> entityMentions = JCasUtil.selectCovering(systemView, EntityMention.class, arg1.getBegin(), arg1.getEnd());
+//      List<EntityMention> entityMentions = JCasUtil.selectCovering(systemView, EntityMention.class, arg1.getBegin(), arg1.getEnd());
+
+      CounterMap<String> typeCounts = 
+          getMentionTypes(JCasUtil.selectCovering(systemView, EntityMention.class, arg1.getBegin(), arg1.getEnd()));
       
-      Set<Integer> uniqueTypeIDs = new HashSet<Integer>();
-      for(EntityMention entityMention : entityMentions) {
-        uniqueTypeIDs.add(entityMention.getTypeID());
-        features.add(new Feature("arg1EntityTypeID", String.valueOf(entityMention.getTypeID())));
+      // print out totals:
+      for(String typeId : typeCounts.keySet()){
+        features.add(new Feature("arg1EntityTypeID_"+typeId, typeCounts.get(typeId)));        
       }
+      
+      // TO print out just the types without counts:
+//      for(String typeId : typeCounts.keySet()){
+//        features.add(new Feature("arg1EntityTypeID_", typeId));
+//      }
       
       // TODO: this is the correct implementatino, but it does not perform as well 
 //      for(int typeID : uniqueTypeIDs) {
@@ -64,7 +71,25 @@ public class UmlsFeatureExtractor implements RelationFeaturesExtractor {
 //      }
 
     }
-    
+
+    if(arg2 instanceof EventMention){
+      CounterMap<String> typeCounts = 
+          getMentionTypes(JCasUtil.selectCovering(systemView, EntityMention.class, arg2.getBegin(), arg2.getEnd()));
+      
+      // print out totals:
+      for(String typeId : typeCounts.keySet()){
+        features.add(new Feature("arg2EntityTypeID_"+typeId, typeCounts.get(typeId)));        
+      }      
+    }
     return features;
+  }
+  
+  private static CounterMap<String> getMentionTypes(List<EntityMention> entities){
+    CounterMap<String> typeCounts = new CounterMap<String>();
+    for(EntityMention entityMention : entities) {
+      typeCounts.add(String.valueOf(entityMention.getTypeID()));
+    }
+    return typeCounts;
+    
   }
 }

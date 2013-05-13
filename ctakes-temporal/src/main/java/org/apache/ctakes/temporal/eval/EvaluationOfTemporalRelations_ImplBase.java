@@ -53,7 +53,7 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 
 	public EvaluationOfTemporalRelations_ImplBase(File baseDirectory,
 			File rawTextDirectory, File knowtatorXMLDirectory,
-			File xmiDirectory, File treebankDirectory, boolean printRelations, boolean printErrors, ParameterSettings params) {
+			File xmiDirectory, File treebankDirectory, boolean printErrors, boolean printRelations, ParameterSettings params) {
 		super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory,
 				treebankDirectory);
 		this.params = params;
