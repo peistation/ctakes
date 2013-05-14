@@ -94,7 +94,7 @@ public class EventAndTimeExtractionPipeline {
         name = "--time-model-dir",
         usage = "specify the path to the directory where the trained event model is located",
         required = false)
-    public String timeModelDirectory = "target/eval/event-spans/train_and_test/";
+    public String timeModelDirectory = "target/eval/time-spans/train_and_test/seq/";
   }
   
 	public static void main(String[] args) throws Exception {
