@@ -68,7 +68,6 @@ import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
 /**
- * 
  * Given a trained event extraction model, run the event extractor on files in a directory.
  * Save the resulting annotations in XMI files. 
  * 
@@ -118,7 +117,6 @@ public class EventExtractionPipeline {
     SimplePipeline.runPipeline(
         collectionReader,
         aggregateBuilder.createAggregate(),
-        AnalysisEngineFactory.createPrimitive(PrintEventAnnotations.class),
         xWriter);
 	}
 	
@@ -306,20 +304,5 @@ public class EventExtractionPipeline {
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
     
     return aggregateBuilder;
-  }
-
-  public static class PrintEventAnnotations extends JCasAnnotator_ImplBase {
-
-    public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
-      return AnalysisEngineFactory.createPrimitiveDescription(PrintEventAnnotations.class);
-    }
-
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-     
-      for(EventMention eventMention : JCasUtil.select(jCas, EventMention.class)) {
-        System.out.println(eventMention.getCoveredText());
-      }
-    }
   }
 }
