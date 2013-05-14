@@ -42,6 +42,7 @@ import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
 import org.apache.ctakes.postagger.POSTagger;
 import org.apache.ctakes.temporal.ae.EventAnnotator;
+import org.apache.ctakes.temporal.ae.TimeAnnotator;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.CopyNPChunksToLookupWindowAnnotations;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
@@ -67,7 +68,7 @@ import org.uimafit.pipeline.SimplePipeline;
  * 
  * @author dmitriy dligach
  */
-public class EventExtractionPipeline {
+public class EventAndTimeExtractionPipeline {
   
   public static class Options extends Options_ImplBase {
 
@@ -84,10 +85,16 @@ public class EventExtractionPipeline {
     public String outputDirectory;
     
     @Option(
-        name = "--model-dir",
-        usage = "specify the path to the directory where the trained model is located",
+        name = "--event-model-dir",
+        usage = "specify the path to the directory where the trained event model is located",
         required = false)
-    public String modelDirectory = "target/eval/event-spans/train_and_test/";
+    public String eventModelDirectory = "target/eval/event-spans/train_and_test/";
+    
+    @Option(
+        name = "--time-model-dir",
+        usage = "specify the path to the directory where the trained event model is located",
+        required = false)
+    public String timeModelDirectory = "target/eval/event-spans/train_and_test/";
   }
   
 	public static void main(String[] args) throws Exception {
@@ -101,7 +108,8 @@ public class EventExtractionPipeline {
 				options.inputDirectory);
 
 		AggregateBuilder aggregateBuilder = getPreprocessorAggregateBuilder();
-		aggregateBuilder.add(EventAnnotator.createAnnotatorDescription(new File(options.modelDirectory)));
+		aggregateBuilder.add(EventAnnotator.createAnnotatorDescription(new File(options.eventModelDirectory)));
+		aggregateBuilder.add(TimeAnnotator.createAnnotatorDescription(new File(options.timeModelDirectory)));
 		
     AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
         XWriter.class,
