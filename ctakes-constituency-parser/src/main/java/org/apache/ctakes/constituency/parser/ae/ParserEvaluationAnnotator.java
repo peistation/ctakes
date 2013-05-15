@@ -21,39 +21,64 @@ package org.apache.ctakes.constituency.parser.ae;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
 
-// import opennlp.tools.lang.english.TreebankParser; // no longer part of OpenNLP as of 1.5
+import opennlp.tools.cmdline.parser.ParserTool;
 import opennlp.tools.parser.AbstractBottomUpParser;
 import opennlp.tools.parser.Parse;
-import opennlp.tools.parser.Parser;
-import opennlp.tools.parser.ParserFactory;
 import opennlp.tools.parser.ParserModel;
+import opennlp.tools.parser.chunking.Parser;
 
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.jcas.JCas;
-
+import org.apache.ctakes.constituency.parser.util.TreeUtils;
+import org.apache.ctakes.core.cr.LinesFromFileCollectionReader;
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
-import opennlp.tools.cmdline.parser.ParserTool;
+import org.apache.uima.UIMAException;
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.collection.CollectionReader;
+import org.apache.uima.jcas.JCas;
+import org.uimafit.component.JCasAnnotator_ImplBase;
+import org.uimafit.descriptor.ConfigurationParameter;
+import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.CollectionReaderFactory;
+import org.uimafit.pipeline.JCasIterable;
+import org.uimafit.util.JCasUtil;
+// import opennlp.tools.lang.english.TreebankParser; // no longer part of OpenNLP as of 1.5
 
-public class ParserEvaluationAnnotator extends JCasAnnotator_ImplBase {
+public class ParserEvaluationAnnotator extends JCasAnnotator_ImplBase{
 
+	public static final String PARAM_PARSERMODEL = "ParserModel";
+	
+	@ConfigurationParameter(
+			name = PARAM_PARSERMODEL,
+			description = "Parser model file to use for parsing",
+			mandatory = false,
+			defaultValue = "org/apache/ctakes/constituency/parser/models/sharpacqwsj.bin"
+	)
+	private File parserModel;
+			
 	Parser parser = null;
-	private boolean useTagDictionary = true;
-	private boolean useCaseSensitiveTagDictionary = true;
-	private String parseStr = "";
 	
 	@Override
 	public void initialize(org.apache.uima.UimaContext aContext) throws org.apache.uima.resource.ResourceInitializationException {
-		String modelFileOrDirname = (String) aContext.getConfigParameterValue("modelDir");
+		super.initialize(aContext);
+//		String modelFileOrDirname = (String) aContext.getConfigParameterValue("modelDir");
 		try {
-			FileInputStream fis = new FileInputStream(new File(modelFileOrDirname));
+//			FileInputStream fis = new FileInputStream(new File(modelFileOrDirname));
+//			File parserFile = FileLocator.locateFile(parserModel);
+			FileInputStream fis = new FileInputStream(parserModel);
 			ParserModel model = new ParserModel(fis);
-			parser = ParserFactory.create(model, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage); //TreebankParser.getParser(modelFileOrDirname, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+//			parser = ParserFactory.create(model, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage); //TreebankParser.getParser(modelFileOrDirname, useTagDictionary, useCaseSensitiveTagDictionary, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			parser = new Parser(model, AbstractBottomUpParser.defaultBeamSize, AbstractBottomUpParser.defaultAdvancePercentage);
+			fis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 	}
+	
+	
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		String sent = jcas.getDocumentText();
@@ -72,5 +97,30 @@ public class ParserEvaluationAnnotator extends JCasAnnotator_ImplBase {
 		TopTreebankNode ttn = new TopTreebankNode(jcas);
 		ttn.setTreebankParse(buff.toString());
 		ttn.addToIndexes();
+	}
+	
+	public static void main(String[] args) throws UIMAException, IOException{
+		if(args.length < 2){
+			System.err.println("Requires 2 arguments: <input file> <output file>");
+			System.exit(-1);
+		}
+		
+		CollectionReader reader = CollectionReaderFactory.createCollectionReader(LinesFromFileCollectionReader.class,
+				LinesFromFileCollectionReader.PARAM_INPUT_FILE_NAME,
+				args[0]);
+		PrintWriter out = new PrintWriter(args[1]);
+		AnalysisEngine ae = AnalysisEngineFactory.createPrimitive(ParserEvaluationAnnotator.class, new Object[]{});
+		
+		JCas jcas = null;
+		JCasIterable casIter = new JCasIterable(reader, ae);
+		while(casIter.hasNext()){
+			jcas = casIter.next();
+			Collection<TopTreebankNode> nodes = JCasUtil.select(jcas, TopTreebankNode.class);
+			for(TopTreebankNode tree : nodes){
+				out.println(tree.getTreebankParse());
+			}
+		}
+		out.close();
+		
 	}
 }

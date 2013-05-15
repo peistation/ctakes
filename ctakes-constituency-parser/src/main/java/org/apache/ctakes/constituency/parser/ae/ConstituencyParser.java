@@ -33,7 +33,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 public class ConstituencyParser extends JCasAnnotator_ImplBase {
 	public static final String PARAM_MODELFILE = "modelFilename";
-	public static final String defaultModel = "org/apache/ctakes/constituency/parser/models/sharpacq-1.5.bin";
+	public static final String defaultModel = "org/apache/ctakes/constituency/parser/models/sharpacq-3.1.bin";
 	
 	ParserWrapper parser = null;
 	Logger logger = Logger.getLogger(this.getClass());
