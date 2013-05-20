@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -315,6 +317,7 @@ protected static Options options = new Options();
       List<File> testFiles;
       if (options.evalOnly) {
     	  testFiles = Arrays.asList(options.evaluationOutputDirectory.listFiles());
+    	  logger.debug("evalOnly using files in directory " + evaluationOutputDirectory.getName() + " aka " + evaluationOutputDirectory.getCanonicalPath());
       } else {
     	  testFiles = Arrays.asList(options.testDirectory.listFiles());
       }
@@ -323,6 +326,10 @@ protected static Options options = new Options();
     	  CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
     	  evaluation.train(trainCollectionReader, modelsDir);
       }
+      if (testFiles==null || testFiles.size()==0) {
+    	  throw new RuntimeException("testFiles = " + testFiles + " testFiles.size() = " + (testFiles==null ? "null": testFiles.size())) ;
+      }
+      logger.debug("testFiles.size() = " + testFiles.size());
       CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
       Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
       
@@ -595,6 +602,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 
     AggregateBuilder builder = new AggregateBuilder();
     
+    // directory is such as /cTAKES/workspaces/Apache-cTAKES-trunk/ctakes/ctakes-assertion/sharp_data/model/eval.model
+    
     AnalysisEngineDescription goldCopierAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ReferenceIdentifiedAnnotationsSystemToGoldCopier.class);
     builder.add(goldCopierAnnotator);
     
@@ -619,6 +628,11 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	            NoOpAnnotator.class,
 	            typeSystemDescription);
     	builder.add(noOp);
+    	
+        AnalysisEngineDescription mergeGold =
+    		AnalysisEngineFactory.createPrimitiveDescription(org.apache.ctakes.assertion.eval.MergeGoldViewFromOneCasIntoInitialViewOfAnotherCas.class, typeSystemDescription);
+    	builder.add(mergeGold);
+    	
     } else if (evaluationOutputDirectory!=null)  {
         AnalysisEngineDescription xwriter =
     		AnalysisEngineFactory.createPrimitiveDescription(
@@ -634,7 +648,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     }
     
     //SimplePipeline.runPipeline(collectionReader,  builder.createAggregateDescription());
-    AnalysisEngineDescription aggregateDescription = builder.createAggregateDescription();
+    //AnalysisEngineDescription aggregateDescription = builder.createAggregateDescription();
+    
     AnalysisEngine aggregate = builder.createAggregate();
     
     AnnotationStatistics polarityStats = new AnnotationStatistics();
@@ -678,13 +693,17 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 
     // run on existing output that has both system (or instance gathering) and gold
     for (JCas jCas : new JCasIterable(collectionReader, aggregate)) {
+    	
+    	printViewNames("Views found by JCasIterable:", jCas);
+    	
       JCas goldView;
       try {
         goldView = jCas.getView(GOLD_VIEW_NAME);
       } catch (CASException e) {
+    	logger.info("jCas.getViewName() = " + jCas.getViewName());
         throw new AnalysisEngineProcessException(e);
       }
-      
+
       String documentId = DocumentIDAnnotationUtil.getDocumentID(jCas);
       System.out.format("document id: %s%n", documentId);
       
@@ -693,7 +712,17 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       goldEntitiesAndEvents.addAll(goldEntities);
       Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
       goldEntitiesAndEvents.addAll(goldEvents);
-//      System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
+      // System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
+      
+      if (goldEntitiesAndEvents.size()==0) { 
+    	  // gold annotations might have been read in as just IdentifiedAnnotation annotations
+    	  // since no EventMentio or EntityMention annotations were found, ok to just try IdentifiedAnnotation
+    	  // without concern for using some twice.
+          Collection<IdentifiedAnnotation> identifiedAnnotations = JCasUtil.select(goldView, IdentifiedAnnotation.class);
+          goldEntitiesAndEvents.addAll(identifiedAnnotations);
+    	  
+    	  
+      }
       
       Collection<IdentifiedAnnotation> systemEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>();
       Collection<EntityMention> systemEntities = JCasUtil.select(jCas, EntityMention.class);
@@ -767,7 +796,77 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     return map;
   }
 
-  private static void printErrors(JCas jCas,
+  private static boolean DEBUG = false;
+  private static void printViewNames(String message, JCas jcas) {
+	
+  	Iterator<JCas> viewIter;
+	try {
+		viewIter = jcas.getViewIterator();
+	} catch (CASException e) {
+		e.printStackTrace();
+		return;
+	}
+  	while (viewIter.hasNext()) {
+  		JCas view = viewIter.next();
+  		String viewName = view.getViewName();
+  		logger.debug(message + " View name " + viewName);
+  		int numIndexedAnnotations = view.getAnnotationIndex().size();
+  		logger.debug(message + "  has " + numIndexedAnnotations + " indexed annotations");
+  		if (viewName.toLowerCase().contains("gold")) {
+  	  	    if (DEBUG) printAnnotations(IdentifiedAnnotation.type, view);
+  		} else {
+  			if (DEBUG) printAnnotations(EventMention.type, view);
+  			if (DEBUG) printAnnotations(EntityMention.type, view);
+  		}
+  	}
+
+  }
+
+private static void printAnnotations(int uimaAnnotationType, JCas view) {
+	
+	AnnotationIndex<Annotation> index = view.getAnnotationIndex(uimaAnnotationType);
+	Iterator<Annotation> iter = index.iterator();
+	output("Printing annotations for view " + view.getViewName());
+	while (iter.hasNext()) {
+		Annotation a = iter.next();
+		printAnnotation(a);
+	}
+	
+	//// Temp debug code
+	//if (view.getViewName().equals("GoldView")) {
+	//	AnnotationIndex<Annotation> indexOfAll = view.getAnnotationIndex();
+	//	Iterator<Annotation> iterOverAll = indexOfAll.iterator();
+	//	output("Printing ALL annotations for view " + view.getViewName());
+	//	while (iterOverAll.hasNext()) {
+	//		Annotation a = iterOverAll.next();
+	//		printAnnotation(a);
+	//	}
+	//	
+	//}
+	
+}
+
+private static void printAnnotation(Annotation a) {
+	
+	String s = String.format(" (%d, %d) ", a.getBegin(), a.getEnd());
+	if (a instanceof IdentifiedAnnotation) {
+		s = s + ((IdentifiedAnnotation) a).getTypeID() + "=typeID, ";
+	}
+	s = s + "|" + a.getCoveredText() + "|";
+	s = s + a.getClass().getCanonicalName();
+	output(s);
+	
+}
+
+
+private static void output(Object o) {
+	if (o==null) {
+		System.out.println(o);
+	} else {
+		System.out.println(o.toString());
+	}
+}
+private static void printErrors(JCas jCas,
 		  Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
 		  Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, Object trueCategory, Class<? extends Object> categoryClass) throws ResourceProcessException {
 	  Map<HashableAnnotation, IdentifiedAnnotation> goldMap = Maps.newHashMap();
@@ -784,26 +883,44 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	  for (HashableAnnotation key : sorted) {
 		  IdentifiedAnnotation goldAnnotation = goldMap.get(key);
 		  IdentifiedAnnotation systemAnnotation = systemMap.get(key);
-		  Feature feature = goldAnnotation.getType().getFeatureByBaseName(classifierType);
-		  Object goldLabel = getFeatureValue(feature, categoryClass, goldAnnotation);
-//		  Integer goldLabel = goldAnnotation.getIntValue(feature);
-		  feature = systemAnnotation.getType().getFeatureByBaseName(classifierType);
-		  Object systemLabel = getFeatureValue(feature, categoryClass, systemAnnotation);
-//		  Integer systemLabel = systemAnnotation.getIntValue(feature);
-		  if(!goldLabel.equals(systemLabel)){
-			  if(trueCategory == null){
-				  // used for multi-class case:
-				  System.out.println("Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
-			  }else if(systemLabel.equals(trueCategory)){
-				  System.out.println(classifierType+" FP: " + formatError(jCas, systemAnnotation));
+		  Object goldLabel=null;
+		  Object systemLabel=null;
+		  if (goldAnnotation == null) {
+			  logger.debug(key + " not found in gold annotations ");
+		  } else {
+			  Feature feature = goldAnnotation.getType().getFeatureByBaseName(classifierType);
+			  goldLabel = getFeatureValue(feature, categoryClass, goldAnnotation);
+			  //  Integer goldLabel = goldAnnotation.getIntValue(feature);
+		  }
+		  
+		  if (systemAnnotation == null) {
+			  logger.info(key + " not found in system annotations ");
+		  } else {
+			  Feature feature = systemAnnotation.getType().getFeatureByBaseName(classifierType);
+			  systemLabel = getFeatureValue(feature, categoryClass, systemAnnotation);
+			  //  Integer systemLabel = systemAnnotation.getIntValue(feature);
+		  }
+		  
+		  
+		  if (goldLabel==null) {
+			  // skip counting the attribute value since we have no gold label to compare to
+			  logger.debug("Skipping annotation with label " + systemLabel + " because gold label is null");
+		  } else  {
+			  if(!goldLabel.equals(systemLabel)){
+				  if(trueCategory == null){
+					  // used for multi-class case:
+					  System.out.println("Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
+				  }else if(systemLabel.equals(trueCategory)){
+					  System.out.println(classifierType+" FP: " + formatError(jCas, systemAnnotation));
+				  }else{
+					  System.out.println(classifierType+" FN: " + formatError(jCas, goldAnnotation));
+				  }
 			  }else{
-				  System.out.println(classifierType+" FN: " + formatError(jCas, goldAnnotation));
-			  }
-		  }else{
-			  if(systemLabel.equals(trueCategory)){
-				  System.out.println(classifierType+" TP: " + formatError(jCas, systemAnnotation));
-			  }else{
-				  System.out.println(classifierType+" TN: " + formatError(jCas, systemAnnotation));
+				  if(systemLabel.equals(trueCategory)){
+					  System.out.println(classifierType+" TP: " + formatError(jCas, systemAnnotation));
+				  }else{
+					  System.out.println(classifierType+" TN: " + formatError(jCas, systemAnnotation));
+				  }
 			  }
 		  }
 	  }
