@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.NegationDependencyFeatureExtractor;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.TreeFragmentFeatureExtractor;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -35,15 +36,17 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		probabilityOfKeepingADefaultExample = 0.1;
+		probabilityOfKeepingADefaultExample = 1.0; //0.1;
 		
 		if(this.entityFeatureExtractors == null){
 			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
 		}
 		this.entityFeatureExtractors.add(new NegationDependencyFeatureExtractor());
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/polarity.txt"));
+		this.entityFeatureExtractors.add(new TreeFragmentFeatureExtractor("org/apache/ctakes/assertion/models/sharpPolarityFrags.txt"));
 	}
 
+	@Override
 	public void setClassLabel(IdentifiedAnnotation entityOrEventMention, Instance<String> instance) throws AnalysisEngineProcessException {
 	      if (this.isTraining())
 	      {

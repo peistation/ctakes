@@ -19,7 +19,6 @@
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -45,19 +44,12 @@ import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
-import org.cleartk.classifier.feature.proliferate.CapitalTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
-import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
-import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
+import org.cleartk.classifier.feature.function.FeatureFunctionExtractor;
+import org.cleartk.classifier.feature.function.LowerCaseFeatureFunction;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
@@ -117,14 +109,17 @@ public abstract class AssertionCleartkAnalysisEngine extends
 	
 	
 //private SimpleFeatureExtractor tokenFeatureExtractor;
-  protected List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
-  protected List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
+//  protected List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
+//  protected List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
+  protected List<CleartkExtractor> contextFeatureExtractors;
+  protected List<CleartkExtractor> tokenContextFeatureExtractors;
   protected List<CleartkExtractor> tokenCleartkExtractors;
   protected List<SimpleFeatureExtractor> entityFeatureExtractors;
 
   protected CleartkExtractor cuePhraseInWindowExtractor;
   
-  @SuppressWarnings("deprecation")
+  @Override
+@SuppressWarnings("deprecation")
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
     
@@ -133,7 +128,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
     }
     
     // alias for NGram feature parameters
-    int fromRight = CharacterNGramProliferator.RIGHT_TO_LEFT;
+//    int fromRight = CharacterNGramProliferator.RIGHT_TO_LEFT;
 
     // a list of feature extractors that require only the token:
     // the stem of the word, the text of the word itself, plus
@@ -141,13 +136,14 @@ public abstract class AssertionCleartkAnalysisEngine extends
     this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
     
     // a list of feature extractors that require the token and the sentence
-    this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+//    this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
     
     this.tokenCleartkExtractors = new ArrayList<CleartkExtractor>();
 
     CleartkExtractor tokenExtraction1 = 
     		new CleartkExtractor(
     				BaseToken.class, 
+//    				new FeatureFunctionExtractor(new CoveredTextExtractor(), new LowerCaseFeatureFunction()),
     				new CoveredTextExtractor(),
     				//new CleartkExtractor.Covered(),
     				new CleartkExtractor.LastCovered(2),
@@ -161,24 +157,23 @@ public abstract class AssertionCleartkAnalysisEngine extends
             new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
     				);
     
-    CleartkExtractor posExtraction1 = 
-    		new CleartkExtractor(
-    				BaseToken.class,
-    				new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-    				new CleartkExtractor.LastCovered(2),
-    				new CleartkExtractor.Preceding(3),
-    				new CleartkExtractor.Following(2)
-    				);
+//    CleartkExtractor posExtraction1 = 
+//    		new CleartkExtractor(
+//    				BaseToken.class,
+//    				new TypePathExtractor(BaseToken.class, "partOfSpeech"),
+//    				new CleartkExtractor.LastCovered(2),
+//    				new CleartkExtractor.Preceding(3),
+//    				new CleartkExtractor.Following(2)
+//    				);
 
     this.tokenCleartkExtractors.add(tokenExtraction1);
     //this.tokenCleartkExtractors.add(posExtraction1);
     
-    this.contextFeatureExtractors.add(new ContextExtractor<IdentifiedAnnotation>(
-        IdentifiedAnnotation.class,
-        new CoveredTextExtractor(),
-        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
-        new Preceding(2),
-        new Following(2)));
+//    this.contextFeatureExtractors.add(new CleartkExtractor(IdentifiedAnnotation.class,
+//        new CoveredTextExtractor(),
+//        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
+//        new Preceding(2),
+//        new Following(2)));
     
     // stab at dependency-based features
     //List<Feature> features = new ArrayList<Feature>();
@@ -275,26 +270,6 @@ public abstract class AssertionCleartkAnalysisEngine extends
 
       // extract all features that require the token and sentence annotations
 
-      /*** Commented by SWU 01/24/13 -- doesn't seem to be used
-      Collection<Sentence> sentenceList = coveringSentenceMap.get(entityMention);
-      Sentence sentence = null;
-      if (sentenceList == null || sentenceList.isEmpty())
-      {
-        String message = "no surrounding sentence found";
-        Exception runtimeException = new RuntimeException(message);
-        AnalysisEngineProcessException aeException = new AnalysisEngineProcessException(runtimeException);
-        logger.log(Level.ERROR, message);
-      } else if (sentenceList.size() > 1)
-      {
-        String message = "more than one surrounding sentence found";
-        Exception runtimeException = new RuntimeException(message);
-        AnalysisEngineProcessException aeException = new AnalysisEngineProcessException(runtimeException);
-        logger.log(Level.ERROR, message);
-      } else
-      {
-        sentence = sentenceList.iterator().next();
-      }
-      */
       //Sentence sentence = sentenceList.iterator().next();
       
       /*
@@ -320,8 +295,8 @@ public abstract class AssertionCleartkAnalysisEngine extends
     	  instance.addAll(extractor.extract(identifiedAnnotationView, entityOrEventMention));
         }
       
-      List<Feature> cuePhraseFeatures =
-          cuePhraseInWindowExtractor.extract(jCas, entityOrEventMention);
+      List<Feature> cuePhraseFeatures = null;
+//          cuePhraseInWindowExtractor.extract(jCas, entityOrEventMention);
           //cuePhraseInWindowExtractor.extractWithin(jCas, entityMention, firstCoveringSentence);
       
       if (cuePhraseFeatures != null && !cuePhraseFeatures.isEmpty())
@@ -340,9 +315,20 @@ public abstract class AssertionCleartkAnalysisEngine extends
       List<Feature> zoneFeatures = extractZoneFeatures(coveringZoneMap, entityOrEventMention);
       if (zoneFeatures != null && !zoneFeatures.isEmpty())
       {
-        instance.addAll(zoneFeatures);
+//        instance.addAll(zoneFeatures);
       }
-       
+      
+      List<Feature> feats = instance.getFeatures();
+//      List<Feature> lcFeats = new ArrayList<Feature>();
+      
+      for(Feature feat : feats){
+    	  if(feat.getName() != null && (feat.getName().startsWith("TreeFrag") || feat.getName().startsWith("WORD") || feat.getName().startsWith("NEG"))) continue;
+    	  if(feat.getValue() instanceof String){
+    		  feat.setValue(((String)feat.getValue()).toLowerCase());
+//    		  lcFeats.add(new Feature("LC_" + feat.getName(), ((String)feat.getValue()).toLowerCase()));
+    	  }
+      }
+//      instance.addAll(lcFeats);
 
       setClassLabel(entityOrEventMention, instance);
       
@@ -356,7 +342,6 @@ public abstract class AssertionCleartkAnalysisEngine extends
     
     if (zoneList == null || zoneList.isEmpty())
     {
-      //return null;
       //logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() early END (no zones)");
       return new ArrayList<Feature>();
     } else

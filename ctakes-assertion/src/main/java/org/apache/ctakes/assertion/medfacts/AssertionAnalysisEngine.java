@@ -142,7 +142,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
   public void process(JCas jcas) throws AnalysisEngineProcessException
   {
     logger.debug("(logging statement) AssertionAnalysisEngine.process() BEGIN");
-    System.out.println("(stdout) AssertionAnalysisEngine.process() BEGIN");
     String contents = jcas.getDocumentText();
 
     // String tokenizedContents = tokenizeCasDocumentText(jcas);
@@ -280,8 +279,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       //logger.info("    assertionTypeMap loop INSIDE END");
     }
     //logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
-    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
-    logger.info("(logging statement) AssertionAnalysisEngine.process() END");
+    logger.debug("(logging statement) AssertionAnalysisEngine.process() END");
   }
 
   public static void mapI2B2AssertionValueToCtakes(String assertionType,

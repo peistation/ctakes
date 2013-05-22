@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.ctakes.assertion.medfacts.cleartk.AlternateCuePhraseAnnotator;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
 import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
@@ -74,9 +75,11 @@ import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCopier;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
+import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
 import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
@@ -100,6 +103,9 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+//import org.chboston.cnlp.ctakes.relationextractor.ae.RelationExtractorAnnotator;
+//import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
+//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 
 public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
   
@@ -251,6 +257,8 @@ protected static Options options = new Options();
 
     // determine the type of classifier to be trained
     Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMaxentDataWriterFactory.class;
+//    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMultiClassLIBSVMDataWriterFactory.class;
+    
     // TODO Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultDataWriterFactory.class;
     //
     // A DataWriterFactory that creates a data writer from the class given by
@@ -277,6 +285,8 @@ protected static Options options = new Options();
         annotationTypes,
         annotatorClass,
         dataWriterFactoryClass,
+//        "-c",
+//        "1"
         "100",
         "2"
         );
@@ -456,7 +466,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
             ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
             generalSectionRegexFileUri
             );
-    builder.add(zonerAnnotator);
+//    builder.add(zonerAnnotator);
 
     String mayoSectionRegexFileUri =
         "org/mitre/medfacts/uima/mayo_sections.xml";
@@ -465,18 +475,19 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
             ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
             mayoSectionRegexFileUri
             );
-    builder.add(mayoZonerAnnotator);
+//    builder.add(mayoZonerAnnotator);
   
-    URL assertionCuePhraseLookupAnnotatorDescriptorUrl1 = this.getClass().getClassLoader().getResource("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator.xml");
-    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl1 (slashes): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl1));
-    URL assertionCuePhraseLookupAnnotatorDescriptorUrl2 = this.getClass().getClassLoader().getResource("org.apache.ctakes.dictionary.lookup.AssertionCuePhraseDictionaryLookupAnnotator.xml");
-    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl2 (periods): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl2));
-
+//    URL assertionCuePhraseLookupAnnotatorDescriptorUrl1 = this.getClass().getClassLoader().getResource("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator.xml");
+//    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl1 (slashes): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl1));
+//    URL assertionCuePhraseLookupAnnotatorDescriptorUrl2 = this.getClass().getClassLoader().getResource("org.apache.ctakes.dictionary.lookup.AssertionCuePhraseDictionaryLookupAnnotator.xml");
+//    logger.info(String.format("assertionCuePhraseLookupAnnotatorDescriptorUrl2 (periods): %s", assertionCuePhraseLookupAnnotatorDescriptorUrl2));
+//
+//    
+//    AnalysisEngineDescription cuePhraseLookupAnnotator =
+//        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
+//    builder.add(cuePhraseLookupAnnotator);
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(AlternateCuePhraseAnnotator.class, new Object[]{}));
     
-    AnalysisEngineDescription cuePhraseLookupAnnotator =
-        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
-    builder.add(cuePhraseLookupAnnotator);
-
     if (!options.ignorePolarity)
     {
 	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
@@ -1050,9 +1061,10 @@ private void addExternalAttributeAnnotatorsToAggregate(AggregateBuilder builder)
 private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		AggregateBuilder builder) throws UIMAException, IOException,
 		ResourceInitializationException {
-	AnalysisEngineDescription cuePhraseLookupAnnotator =
-		AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
-	builder.add(cuePhraseLookupAnnotator);
+//	AnalysisEngineDescription cuePhraseLookupAnnotator =
+//		AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
+//	builder.add(cuePhraseLookupAnnotator);
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(AlternateCuePhraseAnnotator.class, new Object[]{}));
 
 	String generalSectionRegexFileUri =
 		"org/mitre/medfacts/zoner/section_regex.xml";
@@ -1061,7 +1073,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 				ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
 				generalSectionRegexFileUri
 		);
-	builder.add(zonerAnnotator);
+//	builder.add(zonerAnnotator);
 
 	String mayoSectionRegexFileUri =
 		"org/mitre/medfacts/uima/mayo_sections.xml";
@@ -1070,7 +1082,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 				ZoneAnnotator.PARAM_SECTION_REGEX_FILE_URI,
 				mayoSectionRegexFileUri
 		);
-	builder.add(mayoZonerAnnotator);
+//	builder.add(mayoZonerAnnotator);
 
 	// RUN THE CLEARTK CLASSIFIERS
 	if (!options.ignorePolarity)
