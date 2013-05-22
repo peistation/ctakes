@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.relationextractor.cr;
+package org.apache.ctakes.core.util;
 
 import org.apache.ctakes.typesystem.type.constants.CONST;
 

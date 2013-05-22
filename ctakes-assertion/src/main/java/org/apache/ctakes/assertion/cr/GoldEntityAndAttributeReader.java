@@ -33,7 +33,6 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.ctakes.relationextractor.cr.Mapper;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -44,6 +43,7 @@ import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.core.util.Mapper;
 
 /**
  * Read named entity annotations from knowtator xml files into the CAS

@@ -34,6 +34,7 @@ import org.jdom.input.SAXBuilder;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.core.util.Mapper;
 import org.apache.ctakes.relationextractor.knowtator.Span;
 import org.apache.ctakes.relationextractor.knowtator.XMLReader;
 import org.apache.ctakes.typesystem.type.constants.CONST;

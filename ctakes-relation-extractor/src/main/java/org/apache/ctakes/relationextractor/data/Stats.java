@@ -28,7 +28,7 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import org.apache.ctakes.relationextractor.cr.Mapper;
+import org.apache.ctakes.core.util.Mapper;
 import org.apache.ctakes.relationextractor.knowtator.RelationInfo;
 import org.apache.ctakes.relationextractor.knowtator.XMLReader;
 import org.apache.ctakes.typesystem.type.constants.CONST;
