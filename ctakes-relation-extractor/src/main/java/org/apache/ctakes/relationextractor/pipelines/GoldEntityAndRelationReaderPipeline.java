@@ -45,13 +45,13 @@ public class GoldEntityAndRelationReaderPipeline {
 
   @Option(name = "-t", 
       aliases = "--textRoot", 
-      usage = "specify the directory contraining the textFiles (for example /NLP/Corpus/Relations/mipacq/text/train",
+      usage = "specify the directory contraining the text files",
       required = true)
   public File textRoot;
 
   @Option(name = "-x",
       aliases = "--xmlRoot",
-      usage = "specify the directory containing the knowtator xml files (for example: /NLP/Corpus/Relations/mipacq/xml/train",
+      usage = "specify the directory containing the knowtator xml files",
       required = true)
   public File xmlRoot;
 
