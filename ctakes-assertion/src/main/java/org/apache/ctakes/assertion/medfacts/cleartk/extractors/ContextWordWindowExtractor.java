@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.uimafit.util.JCasUtil;
@@ -24,7 +24,13 @@ public class ContextWordWindowExtractor implements SimpleFeatureExtractor {
 
 	private HashMap<String,Double> termVals = null;
 	private static final Pattern linePatt = Pattern.compile("^([^ ]+) : (.+)$");
-	private static final int WINDOW_SIZE = 5;
+	private static double[] weights = new double[50];
+	static{
+		weights[0] = 1.0;
+		for(int i = 1; i < weights.length; i++){
+			weights[i] = 1.0 / i;
+		}
+	}
 	
 	public ContextWordWindowExtractor(String resourceFilename) throws ResourceInitializationException {
 		termVals = new HashMap<String,Double>();
@@ -58,31 +64,54 @@ public class ContextWordWindowExtractor implements SimpleFeatureExtractor {
 	}
 	
 	@Override
-	public List<Feature> extract(JCas view, Annotation focusAnnotation)
+	public List<Feature> extract(JCas view, Annotation mention)
 			throws CleartkExtractorException {
 		ArrayList<Feature> feats = new ArrayList<Feature>();
-		List<BaseToken> precedingTokens = JCasUtil.selectPreceding(view, BaseToken.class, focusAnnotation, WINDOW_SIZE);
-		List<BaseToken> followingTokens = JCasUtil.selectFollowing(view, BaseToken.class, focusAnnotation, WINDOW_SIZE);
+		List<Sentence> sents = JCasUtil.selectCovering(view, Sentence.class, mention.getBegin(), mention.getEnd());
+		if(sents.size() == 0) return feats;
+		Sentence sent = sents.get(0);
+		List<BaseToken> tokens = JCasUtil.selectCovered(BaseToken.class, sent);
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		for(int i = 0; i < tokens.size(); i++){
+			if(tokens.get(i).getBegin() == mention.getBegin()){
+				startIndex = i;
+			}
+			if(tokens.get(i).getEnd() == mention.getEnd()){
+				endIndex = i;
+			}
+		}
 		
 		double score = 0.0;
+		double z = 0.0;
 		String key = null;
-		int ctxSize = 0;
-		for(int i = 0; i < precedingTokens.size(); i++){
-			key = precedingTokens.get(i).getCoveredText().toLowerCase();
+		double weight;
+		for(int i = 0; i < tokens.size(); i++){
+			key = tokens.get(i).getCoveredText().toLowerCase();
+			int dist = Math.min(Math.abs(startIndex - i), Math.abs(endIndex-i));
+			weight = weightFunction(dist);
+			z += weight;
 			if(termVals.containsKey(key)){
-				score += termVals.get(key);
+				score += (weight * termVals.get(key));
 			}
-			ctxSize++;
 		}
-		for(int i = 0; i < followingTokens.size(); i++){
-			key = followingTokens.get(i).getCoveredText().toLowerCase();
-			if(termVals.containsKey(key)){
-				score += termVals.get(key);
-			}
-			ctxSize++;
-		}
-		score /= ctxSize;  // weight by actual amount of context so we don't penalize begin/end of sentence.
+
+		score /= z;  // weight by actual amount of context so we don't penalize begin/end of sentence.
 		feats.add(new Feature("WORD_SCORE", score));
 		return feats;
+	}
+	
+	private static final double  weightFunction(int dist){
+		if(dist >= weights.length) return 0.0;
+		
+		// quick decay
+//		return 1.0 / dist;
+		
+		// linear decay
+//		return 1.0 - dist * (1.0/50.0);
+		
+		// no decay:
+		return 1.0;
 	}
 }
