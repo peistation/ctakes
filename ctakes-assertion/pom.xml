@@ -57,10 +57,6 @@
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
-    <dependency>
-      <groupId>org.apache.ctakes</groupId>
-      <artifactId>ctakes-relation-extractor</artifactId>
-    </dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-pos-tagger</artifactId>
