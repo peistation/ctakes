@@ -22,6 +22,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
+import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContext;
@@ -54,12 +58,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 
-import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
-import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
-import org.apache.ctakes.relationextractor.cr.GoldEntityAndRelationReader;
-import org.apache.ctakes.typesystem.type.structured.DocumentID;
-
-
 /**
  * Use this to do batch preprocessing and conversion to CAS XMI files for use in experiments.
  * @author lbecker
@@ -72,13 +70,13 @@ public class PreprocessAndWriteXmi {
 
 		@Option(name = "-t", 
 				aliases = "--textRoot", 
-				usage = "specify the directory contraining the textFiles (for example /NLP/Corpus/Relations/mipacq/text/train",
+				usage = "specify the directory contraining the text files",
 				required = true)
 		public File textRoot;
 
 		@Option(name = "-x",
 				aliases = "--xmlRoot",
-				usage = "specify the directory containing the knowtator xml files (for example: /NLP/Corpus/Relations/mipacq/xml/train",
+				usage = "specify the directory containing the knowtator xml files",
         required = true)
 		public File xmlRoot;
 		
