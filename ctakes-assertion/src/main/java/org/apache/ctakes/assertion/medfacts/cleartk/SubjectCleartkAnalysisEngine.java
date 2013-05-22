@@ -19,29 +19,16 @@
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import org.apache.ctakes.assertion.attributes.features.SubjectFeaturesExtractor;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Level;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
-import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
-import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
-import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
-import org.cleartk.classifier.feature.proliferate.CapitalTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
-import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
-import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
-
-import org.apache.ctakes.assertion.attributes.features.SubjectFeaturesExtractor;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class SubjectCleartkAnalysisEngine extends
 		AssertionCleartkAnalysisEngine {
@@ -68,10 +55,10 @@ public class SubjectCleartkAnalysisEngine extends
 	private void initialize_subject_extractor() {
 		
 		if (this.contextFeatureExtractors==null) {
-			this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
 		}
 		this.contextFeatureExtractors.add( 
-				new ContextExtractor<IdentifiedAnnotation>(
+				new CleartkExtractor(
 						IdentifiedAnnotation.class, new SubjectFeaturesExtractor()) );
 				
 	}

@@ -27,7 +27,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
 public class GenericCleartkAnalysisEngine extends
@@ -55,10 +55,10 @@ public class GenericCleartkAnalysisEngine extends
 	private void initialize_generic_extractor() throws ResourceInitializationException {
 		
 		if (this.contextFeatureExtractors==null) {
-			this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
+			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
 		}
 		this.contextFeatureExtractors.add( 
-				new ContextExtractor<IdentifiedAnnotation>(
+				new CleartkExtractor(
 						IdentifiedAnnotation.class, new GenericFeaturesExtractor()) );
 		if(this.entityFeatureExtractors == null){
 			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
