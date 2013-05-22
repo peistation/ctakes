@@ -27,12 +27,10 @@ import org.apache.ctakes.relationextractor.eval.PreprocessAndWriteXmi.Options;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.kohsuke.args4j.Option;
 import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 /**
@@ -60,8 +58,8 @@ public class GoldEntityAndRelationReaderPipeline {
   @Option(name = "-o",
       aliases = "--outputRoot",
       usage = "specify the directory to write out CAS XMI files",
-      required = false)
-  public File outputRoot = new File("target/out/xmi/");
+      required = true)
+  public File outputRoot;
 
   public static void main(String[] args) throws UIMAException, IOException {
 	
@@ -72,24 +70,18 @@ public class GoldEntityAndRelationReaderPipeline {
     File xmlRoot = options.xmlRoot;
     File outputRoot = options.outputRoot;
 
-	  TypeSystemDescription typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(
-	      "/home/dima/workspaces/ctakes/ctakes-type-system/desc/common_type_system.xml");
-
 	  CollectionReaderDescription collectionReader = CollectionReaderFactory.createDescription(
 	      FilesInDirectoryCollectionReader.class,
-	      typeSystemDescription,
 	      "InputDirectory",
 	      textRoot.getPath());
 
 	  AnalysisEngineDescription goldAnnotator = AnalysisEngineFactory.createPrimitiveDescription(
 	      GoldEntityAndRelationReader.class,
-	      typeSystemDescription,
 	      "InputDirectory",
 	      xmlRoot.getPath());
 
 	  AnalysisEngineDescription xWriter = AnalysisEngineFactory.createPrimitiveDescription(
 	      XWriter.class,
-	      typeSystemDescription,
 	      XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
 	      outputRoot.getPath());
 
