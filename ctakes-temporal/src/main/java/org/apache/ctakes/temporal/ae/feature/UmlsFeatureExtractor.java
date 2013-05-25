@@ -19,9 +19,7 @@
 package org.apache.ctakes.temporal.ae.feature;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
