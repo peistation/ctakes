@@ -32,7 +32,7 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Annotate degree_of relation between two entities whenever 
  * they are enclosed within the same noun phrse.
  */
-public class Baseline3DegreeOfRelationExtractorAnnotator extends DegreeOfRelationExtractorAnnotator {
+public class Baseline4DegreeOfRelationExtractorAnnotator extends DegreeOfRelationExtractorAnnotator {
 
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(

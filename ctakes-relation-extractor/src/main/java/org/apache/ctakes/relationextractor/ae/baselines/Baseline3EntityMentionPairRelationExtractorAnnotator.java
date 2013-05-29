@@ -19,72 +19,142 @@
 package org.apache.ctakes.relationextractor.ae.baselines;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
 import org.uimafit.util.JCasUtil;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
+
 /**
- * Annotate location_of relation between two entities whenever 
- * they are enclosed within the same noun phrse.
+ * This baseline links each anatomical site with the closest entity of a type  
+ * that's suitable for location_of, as long as there is no intervening anatomical site. 
  */
 public class Baseline3EntityMentionPairRelationExtractorAnnotator extends RelationExtractorAnnotator {
 	
 	@Override
-	protected Class<? extends Annotation> getCoveringClass() {
+	public Class<? extends Annotation> getCoveringClass(){
 		return Sentence.class;
 	}
-
+	
 	@Override
 	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
 			JCas identifiedAnnotationView, Annotation sentence) {
 
-		// collect all possible relation arguments from the sentence
-		List<EntityMention> args = JCasUtil.selectCovered(
+		List<EntityMention> entityMentions = JCasUtil.selectCovered(
 				identifiedAnnotationView,
 				EntityMention.class,
 				sentence);
-
-		// Create pairings
-    List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
-    for (EntityMention arg1 : args) {
-      for (EntityMention arg2 : args) {
-        if (arg1.getBegin() == arg2.getBegin() && arg1.getEnd() == arg2.getEnd()) {
-          continue;
-        }
-        pairs.add(new IdentifiedAnnotationPair(arg1, arg2));
-      }
-    }
-
-		// find pairs enclosed inside a noun phrase
+		
+		List<EntityMention> anatomicalSites = getAnatomicalSites(entityMentions);
+		List<EntityMention> entitiesSuitableForLocationOf = getEntitiesSuitableForLocationOf(entityMentions);
+		
+		if((anatomicalSites.size() < 1) || (entitiesSuitableForLocationOf.size() < 1)) {
+		  return new ArrayList<IdentifiedAnnotationPair>();
+		}
+		
 		List<IdentifiedAnnotationPair> result = new ArrayList<IdentifiedAnnotationPair>();
-		for(IdentifiedAnnotationPair pair : pairs) {
-		  if(Utils.validateLocationOfArgumentTypes(pair)) {
-		    for(TreebankNode nounPhrase : Utils.getNounPhrases(identifiedAnnotationView, (Sentence) sentence)) {
-		      if(Utils.isEnclosed(pair, nounPhrase)) {
-		        IdentifiedAnnotation arg1 = pair.getArg1();
-		        IdentifiedAnnotation arg2 = pair.getArg2();
-		        result.add(new IdentifiedAnnotationPair(arg1, arg2));
-		        System.out.println("NP: " + nounPhrase.getCoveredText() + ", " + nounPhrase.getBegin() + ", " + nounPhrase.getEnd());
-		        System.out.println("arg1: " + arg1.getCoveredText() + ", " + arg1.getBegin() + ", " + arg1.getEnd());
-		        System.out.println("arg2: " + arg2.getCoveredText() + ", " + arg2.getBegin() + ", " + arg2.getEnd());
-		        System.out.println();
-		        break; // don't check other NPs
-		      }
-		    }
+		Set<EntityMention> alreadyLinked = new HashSet<EntityMention>();
+		
+		for(EntityMention anatomicalSite : anatomicalSites) {
+		  EntityMention nearestEntity = getNearestEntity(identifiedAnnotationView, anatomicalSite, entitiesSuitableForLocationOf);
+		  
+		  // don't link if there's an another anatomical site between this one and its nearest entity
+		  if(checkForAnatomicalSiteBetween(identifiedAnnotationView, anatomicalSite, nearestEntity)) {
+		    continue;
+		  }
+		  
+		  // make sure this entity isn't already linked to an anatomical site
+		  if(! alreadyLinked.contains(nearestEntity)) {
+		    result.add(new IdentifiedAnnotationPair(anatomicalSite, nearestEntity));
+		    alreadyLinked.add(nearestEntity);
 		  }
 		}
 		
-		return result;
+    return result;
 	}
-		
+
+	/*
+	 * Return entity mentions that are anatomical types (i.e. typeId is 6)
+	 */
+	private static List<EntityMention> getAnatomicalSites(List<EntityMention> entityMentions) {
+	  
+	  List<EntityMention> anatomicalSites = new ArrayList<EntityMention>();
+	  
+	  for(EntityMention entityMention : entityMentions) {
+	    if(entityMention.getTypeID() == 6) {
+	      anatomicalSites.add(entityMention);
+	    }
+	  }
+	  
+	  return anatomicalSites;
+	}
+	
+  /*
+   * Return entity mentions that qualityf to be the arg2 of location_of relation (i.e. 2, 3, or 5)
+   */
+  private static List<EntityMention> getEntitiesSuitableForLocationOf(List<EntityMention> entityMentions) {
+    
+    HashSet<Integer> okArg2Types = new HashSet<Integer>(Arrays.asList(2, 3, 5));
+    List<EntityMention> suitableEntities = new ArrayList<EntityMention>();
+    
+    for(EntityMention entityMention : entityMentions) {
+      if(okArg2Types.contains(entityMention.getTypeID())) {
+        suitableEntities.add(entityMention);
+      }
+    }
+    
+    return suitableEntities;
+  }
+	
+  /*
+   * Find the entity nearest to the anatomical site
+   */
+	private static EntityMention getNearestEntity(JCas jCas, EntityMention anatomicalSite, List<EntityMention> entityMentions) {
+
+	  // token distance from anatomical site to other entity mentions
+	  Map<EntityMention, Integer> distanceToEntities = new HashMap<EntityMention, Integer>();
+
+	  for(EntityMention entityMention : entityMentions) {
+	    List<BaseToken> baseTokens = JCasUtil.selectBetween(jCas, BaseToken.class, anatomicalSite, entityMention);
+	    distanceToEntities.put(entityMention, baseTokens.size());
+	  }
+	  
+    List<EntityMention> sortedEntityMentions = new ArrayList<EntityMention>(distanceToEntities.keySet());
+    Function<EntityMention, Integer> getValue = Functions.forMap(distanceToEntities);
+    Collections.sort(sortedEntityMentions, Ordering.natural().onResultOf(getValue));
+    
+    return sortedEntityMentions.get(0);
+	}
+  
+  /*
+   * Return true if there's an anatomical site entity mention between two entities.
+   */
+  private static boolean checkForAnatomicalSiteBetween(JCas jCas, EntityMention entity1, EntityMention entity2) {
+    
+    for(EntityMention entityMention : JCasUtil.selectBetween(jCas, EntityMention.class, entity1, entity2)) {
+      if(entityMention.getTypeID() == 6) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
   @Override
   public String classify(List<Feature> features) {
     return "location_of";
