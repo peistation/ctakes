@@ -18,7 +18,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 
-public class TimeWordTypeExractor implements SimpleFeatureExtractor {
+public class TimeWordTypeExtractor implements SimpleFeatureExtractor {
   
   private static final String FEATURE_NAME = "TimeWordType";
   
@@ -26,7 +26,7 @@ public class TimeWordTypeExractor implements SimpleFeatureExtractor {
   
   private Map<String, String> wordTypes;
   
-  public TimeWordTypeExractor() throws ResourceInitializationException {
+  public TimeWordTypeExtractor() throws ResourceInitializationException {
     this.wordTypes = Maps.newHashMap();
     URL url = TimeWordsExtractor.class.getResource(LOOKUP_PATH);
     try {

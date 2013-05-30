@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExractor;
+import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
@@ -95,7 +95,7 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-        new TimeWordTypeExractor());
+        new TimeWordTypeExtractor());
 
     this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
     this.tokenFeatureExtractors.add(allExtractors);
