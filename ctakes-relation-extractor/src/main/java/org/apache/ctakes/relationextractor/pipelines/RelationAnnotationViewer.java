@@ -100,6 +100,10 @@ public class RelationAnnotationViewer {
         int type1 = entity1.getTypeID();
         int type2 = entity2.getTypeID();
         
+        // first argument has to be an anatomical site
+        if(type1 != 6) {
+          continue;
+        }
         // skip location_of(anatomical site, anatomical site)
         if(type1 == 6 && type2 == 6) {
           continue; 
