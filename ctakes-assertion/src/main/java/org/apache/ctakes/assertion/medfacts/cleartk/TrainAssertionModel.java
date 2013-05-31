@@ -61,7 +61,6 @@ import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
-import org.cleartk.examples.pos.ExamplePOSPlainTextWriter;
 
 
 public class TrainAssertionModel {

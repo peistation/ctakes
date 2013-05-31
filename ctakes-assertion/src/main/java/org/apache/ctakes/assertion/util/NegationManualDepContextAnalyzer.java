@@ -37,8 +37,6 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.jcas.JCas;
 
-import clear.dep.DepNode;
-
 //import edu.mayo.bmi.fsm.output.NegationIndicator;
 //import edu.mayo.bmi.nlp.parser.util.ClearDependencyUtility;
 //import edu.mayo.bmi.nlp.parser.util.DependencyPath;
@@ -142,7 +140,8 @@ public class NegationManualDepContextAnalyzer {
 		// Test regexes on path
 //		System.out.println(path.toString());
 		for (int i=0; i<regexes.regexSet.size(); i++) {
-			if (regexes.regexSet.get(i).matches( path.toString() )) {
+			String pathString = path.toString();
+			if (regexes.regexSet.get(i).matches( pathString )) {
 //				System.out.println("  Regex: "+regexes.regexSet.get(i).toString()+"\n  "
 //						+regexes.regexSet.get(i).matches( path.toString() ));
 				return i;
