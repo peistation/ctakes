@@ -23,13 +23,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.eval.XMIReader;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
+import org.apache.uima.jcas.JCas;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
+import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.pipeline.SimplePipeline;
+import org.uimafit.util.JCasUtil;
 
 /**
  * 
@@ -58,15 +67,52 @@ public class RelationAnnotationAnalysis {
 		List<File> trainFiles = Arrays.asList(options.inputDirectory.listFiles());
     CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
-    AnalysisEngine relationExtractorConsumer = AnalysisEngineFactory.createPrimitive(
-    		RelationExtractorConsumer.class);
+    AnalysisEngine relationExtractorPrinter = AnalysisEngineFactory.createPrimitive(
+    		RelationExtractorPrinter.class);
     		
-		SimplePipeline.runPipeline(collectionReader, relationExtractorConsumer);
+		SimplePipeline.runPipeline(collectionReader, relationExtractorPrinter);
 	}
-	
+  
+  public static class RelationExtractorPrinter extends JCasAnnotator_ImplBase {
+
+    @Override
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
+
+      JCas systemView;
+      try {
+        systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
+      } catch (CASException e) {
+        throw new AnalysisEngineProcessException(e);
+      }   
+      
+      System.out.println();
+      for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
+        IdentifiedAnnotation entity1; // entity whose role is "Argument"
+        IdentifiedAnnotation entity2; // entity whose role is "Related_to"
+        
+        if(binaryTextRelation.getArg1().getRole().equals("Argument")) {
+          entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+          entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+        } else {
+          entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+          entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+        }
+        
+        String category = binaryTextRelation.getCategory();
+        String arg1 = entity1.getCoveredText();
+        String arg2 = entity2.getCoveredText();
+        int type1 = entity1.getTypeID();
+        int type2 = entity2.getTypeID();
+        
+        // print relation and its arguments: location_of(colon/6, colon cancer/2)
+        System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
+      }
+    }
+  }
+  
   private static CollectionReader getCollectionReader(List<File> items) throws Exception {
 
-  	// convert the List<File> to a String[]
+    // convert the List<File> to a String[]
     String[] paths = new String[items.size()];
     for (int i = 0; i < paths.length; ++i) {
       paths[i] = items.get(i).getPath();
