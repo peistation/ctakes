@@ -1237,10 +1237,10 @@ public class DrugMentionAnnotator extends JCasAnnotator_ImplBase
 					OntologyConcept oc = (OntologyConcept) ocArr.get(i);
 
 					String scheme = oc.getCodingScheme();
-					if (scheme.compareTo("RXNORM") == 0)
-					{
+					//if (scheme.compareTo("RXNORM") == 0)
+					//{
 						isDrugNER = true;
-					}
+					//}
 
 				}
 			}
