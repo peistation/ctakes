@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.ctakes.relationextractor.eval.XMIReader;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -83,7 +82,6 @@ public class RelationAnnotationViewer {
         throw new AnalysisEngineProcessException(e);
       }   
       
-      System.out.println();
       for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
         IdentifiedAnnotation entity1; // entity whose role is "Argument"
         IdentifiedAnnotation entity2; // entity whose role is "Related_to"
@@ -97,10 +95,19 @@ public class RelationAnnotationViewer {
         }
         
         String category = binaryTextRelation.getCategory();
-        String arg1 = entity1.getCoveredText();
-        String arg2 = entity2.getCoveredText();
+        String arg1 = entity1.getCoveredText().toLowerCase();
+        String arg2 = entity2.getCoveredText().toLowerCase();
         int type1 = entity1.getTypeID();
         int type2 = entity2.getTypeID();
+        
+        // skip location_of(anatomical site, anatomical site)
+        if(type1 == 6 && type2 == 6) {
+          continue; 
+        }
+        // "to" is not a valid disease/disorder
+        if(type2 == 3 && arg2.equals("to")) {
+          continue;
+        }
         
         // print relation and its arguments: location_of(colon/6, colon cancer/2)
         System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
