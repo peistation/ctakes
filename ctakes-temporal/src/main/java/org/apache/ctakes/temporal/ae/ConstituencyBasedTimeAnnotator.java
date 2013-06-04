@@ -39,6 +39,7 @@ TemporalEntityAnnotator_ImplBase {
 
   private static final String NON_MENTION = "NON_TIME_MENTION";
   private static final String MENTION = "TIME_MENTION";
+  private static final int	SPAN_LIMIT = 12;
 
 
   public static AnalysisEngineDescription createDataWriterDescription(
@@ -92,6 +93,14 @@ TemporalEntityAnnotator_ImplBase {
       throws AnalysisEngineProcessException {
 
     HashSet<TimeMention> mentions = new HashSet<TimeMention>(JCasUtil.selectCovered(TimeMention.class, segment));
+    
+    //output the gold time expression's length and real words
+//    if(this.isTraining()){
+//    	for( TimeMention time: mentions){
+//    		int numTokens = JCasUtil.selectCovered(BaseToken.class, time).size();
+//    		System.out.println(numTokens + ";" +time.getCoveredText());
+//    	}
+//    }
 	  
     for(TopTreebankNode root : JCasUtil.selectCovered(TopTreebankNode.class, segment)){
       recursivelyProcessNode(jCas, root.getChildren(0), NON_MENTION, mentions, 0.0);
@@ -109,6 +118,12 @@ TemporalEntityAnnotator_ImplBase {
     features.add(new Feature("NODE_LABEL", node.getNodeType()));
     features.add(new Feature("PARENT_LABEL", node.getParent().getNodeType()));
     features.add(new Feature("PARENT_CAT", parentCategory));
+    
+    //add span length features
+    int numTokens = JCasUtil.selectCovered(BaseToken.class, node).size();
+//    if (numTokens <= 4){
+//    	features.add(new Feature("SPAN_4TOKENS", "span_4_tokens"));    	
+//    }
     
     if(node.getLeaf()){
       features.add(new Feature("IS_LEAF"));
@@ -139,8 +154,10 @@ TemporalEntityAnnotator_ImplBase {
           mentions.remove(mention);
         }
       }
-      this.dataWriter.write(new Instance<String>(category, features));
-    }else{
+      if(numTokens < SPAN_LIMIT){
+    	  this.dataWriter.write(new Instance<String>(category, features));
+      }
+    }else if(numTokens < SPAN_LIMIT){
       score = this.classifier.score(features, 1).get(0).getScore();
       category = this.classifier.classify(features);
       if(category.equals(MENTION)){
