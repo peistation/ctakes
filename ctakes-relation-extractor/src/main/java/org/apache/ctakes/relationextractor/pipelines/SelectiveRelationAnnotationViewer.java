@@ -27,6 +27,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.ctakes.relationextractor.eval.XMIReader;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
@@ -125,15 +126,15 @@ public class SelectiveRelationAnnotationViewer {
         int type2 = entity2.getTypeID();
         
         // first argument has to be an anatomical site
-        if(type1 != 6) {
+        if(type1 != CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
           continue;
         }
         // skip location_of(anatomical site, anatomical site)
-        if(type1 == 6 && type2 == 6) {
+        if(type1 == CONST.NE_TYPE_ID_ANATOMICAL_SITE && type2 == CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
           continue; 
         }
         // "to" is not a valid disease/disorder
-        if(type2 == 3 && arg2.equals("to")) {
+        if(type2 == CONST.NE_TYPE_ID_DISORDER && arg2.equals("to")) {
           continue;
         }
 
@@ -185,7 +186,7 @@ public class SelectiveRelationAnnotationViewer {
         UmlsConcept umlsConcept = (UmlsConcept) ontologyConcept;
         String code = umlsConcept.getCui();
         codes.add(code);
-      } else { // SNOMED or RxNorm
+      } else { // RxNorm
         String code = ontologyConcept.getCodingScheme() + ontologyConcept.getCode();
         codes.add(code);
       }
