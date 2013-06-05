@@ -21,21 +21,22 @@ package org.apache.ctakes.temporal.data.analysis;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.ctakes.relationextractor.eval.XMIReader;
+import org.apache.ctakes.core.cr.XMIReader;
+import org.apache.ctakes.temporal.eval.CommandLine;
+import org.apache.ctakes.temporal.eval.THYMEData;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.cleartk.util.Options_ImplBase;
-import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -43,44 +44,84 @@ import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
+import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
+
 /**
  * Print gold standard relations and their context.
  * 
  * @author dmitriy dligach
  */
 public class RelationContextViewerPipeline {
+  
+  static interface Options {
 
-  public static class Options extends Options_ImplBase {
+    @Option(longName = "xmi-dir")
+    public File getInputDirectory();
+    
+    @Option(longName = "output-file")
+    public File getOutputFile();
 
-    @Option(
-        name = "--input-dir",
-        usage = "specify the path to the directory containing the xmi files",
-        required = true)
-    public File inputDirectory;
-
-    @Option(
-        name = "--output-file",
-        usage = "specify the path to the file to which the output will be written",
-        required = true)
-    public File outputFile;
+    @Option(longName = "patients")
+    public CommandLine.IntegerRanges getPatients();
   }
   
 	public static void main(String[] args) throws Exception {
 		
-		Options options = new Options();
-		options.parseOptions(args);
-
-		List<File> trainFiles = Arrays.asList(options.inputDirectory.listFiles());
+		Options options = CliFactory.parseArguments(Options.class, args);
+		
+		List<Integer> patientSets = options.getPatients().getList();
+		List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+		List<File> trainFiles = getFilesFor(trainItems, options.getInputDirectory());
     CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
     AnalysisEngine annotationConsumer = AnalysisEngineFactory.createPrimitive(
     		RelationContextPrinter.class,
     		"OutputFile",
-    		options.outputFile);
+    		options.getOutputFile());
     		
 		SimplePipeline.runPipeline(collectionReader, annotationConsumer);
 	}
 	  
+	private static CollectionReader getCollectionReader(List<File> inputFiles) throws Exception {
+
+	  List<String> fileNames = new ArrayList<String>();
+	  for(File file : inputFiles) {
+	    if(! (file.isHidden())) {
+	      fileNames.add(file.getPath());
+	    }
+	  }
+
+	  String[] paths = new String[fileNames.size()];
+	  fileNames.toArray(paths);
+
+	  return CollectionReaderFactory.createCollectionReader(
+	      XMIReader.class,
+	      XMIReader.PARAM_FILES,
+	      paths);
+	}
+
+	private static List<File> getFilesFor(List<Integer> patientSets, File inputDirectory) {
+	  
+	  List<File> files = new ArrayList<File>();
+	  
+	  for (Integer set : patientSets) {
+	    final int setNum = set;
+	    for (File file : inputDirectory.listFiles(new FilenameFilter(){
+	      @Override
+	      public boolean accept(File dir, String name) {
+	        return name.contains(String.format("ID%03d", setNum));
+	      }})) {
+	      // skip hidden files like .svn
+	      if (!file.isHidden()) {
+	        files.add(file);
+	      } 
+	    }
+	  }
+	  
+	  return files;
+	}
+
   /**
    * Print gold standard relations and their context.
    * 
@@ -117,7 +158,7 @@ public class RelationContextViewerPipeline {
           
           Annotation arg1 = binaryTextRelation.getArg1().getArgument();
           Annotation arg2 = binaryTextRelation.getArg2().getArgument();
-      
+          
           String category = binaryTextRelation.getCategory();
           String text = getTextBetweenAnnotations(systemView, arg1, arg2);
           String output = String.format("%s|%s|%s|%s\n", category, arg1.getCoveredText(), arg2.getCoveredText(), text);
@@ -157,23 +198,5 @@ public class RelationContextViewerPipeline {
 
       return bufferedWriter;
     }
-  }
-
-  private static CollectionReader getCollectionReader(List<File> inputFiles) throws Exception {
-    
-    List<String> fileNames = new ArrayList<String>();
-    for(File file : inputFiles) {
-      if(! (file.isHidden())) {
-        fileNames.add(file.getPath());
-      }
-    }
-    
-    String[] paths = new String[fileNames.size()];
-    fileNames.toArray(paths);
-    
-    return CollectionReaderFactory.createCollectionReader(
-        XMIReader.class,
-        XMIReader.PARAM_FILES,
-        paths);
   }
 }
