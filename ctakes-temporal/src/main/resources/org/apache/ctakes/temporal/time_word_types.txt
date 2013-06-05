@@ -318,6 +318,7 @@ Time yesterday
 Time tomorrow
 Time noon
 Time midday
+Time time
 Time interim
 Time point
 Time admission
@@ -379,10 +380,12 @@ Adjuster ago
 Adjuster next
 Adjuster coming
 Adjuster following
+Adjuster upcoming
 Adjuster prior
 Modifier almost
 Modifier about
 Modifier around
+Modifier approximately
 Modifier less
 Modifier than
 Modifier nearly
@@ -401,12 +404,14 @@ Modifier later
 Modifier part
 Modifier pre
 Modifier post
+Modifier several
 Modifier during
 Modifier since
 PrePost preoperative
 PrePost postoperative
 PrePost preop
 PrePost postop
+PrePost postoperatively
 PrePost post-surgical
 PrePost postsurgical
 PrePost presurgical
