@@ -30,7 +30,6 @@ import org.apache.ctakes.core.cr.XMIReader;
 import org.apache.ctakes.temporal.eval.CommandLine;
 import org.apache.ctakes.temporal.eval.THYMEData;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -180,10 +179,15 @@ public class RelationContextViewerPipeline {
     
     private static String getTextBetweenAnnotations(JCas jCas, Annotation arg1, Annotation arg2) {
       
-      int begin = Math.min(arg1.getBegin(), arg2.getBegin());
-      int end = Math.max(arg1.getEnd(), arg2.getEnd());
+      final int windowSize = 15;
       
-      return jCas.getDocumentText().substring(begin, end).replaceAll("[\r\n]", " ");
+      String text = jCas.getDocumentText();
+      int leftArgBegin = Math.min(arg1.getBegin(), arg2.getBegin());
+      int rightArgEnd = Math.max(arg1.getEnd(), arg2.getEnd());
+      int begin = Math.max(0, leftArgBegin - windowSize);
+      int end = Math.min(text.length(), rightArgEnd + windowSize); 
+      
+      return text.substring(begin, end).replaceAll("[\r\n]", " ");
     }
     
     private static BufferedWriter getWriter(String filePath, boolean append) {
