@@ -1,11 +1,15 @@
 package org.apache.ctakes.temporal.ae;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
@@ -31,8 +35,13 @@ import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
+import org.cleartk.timeml.util.TimeWordsExtractor;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
+import com.google.common.io.Resources;
 
 public class ConstituencyBasedTimeAnnotator extends
 TemporalEntityAnnotator_ImplBase {
@@ -66,14 +75,38 @@ TemporalEntityAnnotator_ImplBase {
   }
 
   protected List<SimpleFeatureExtractor> featureExtractors;
+  
+  protected SimpleFeatureExtractor wordTypeExtractor;
+  
+  private static final String LOOKUP_PATH = "/org/apache/ctakes/temporal/time_word_types.txt";
+  
+  private Map<String, String> wordTypes;
+  
+  private Set<String> timeWords;
 
   @Override
   public void initialize(UimaContext context)
       throws ResourceInitializationException {
     super.initialize(context);
 
+    this.wordTypes = Maps.newHashMap();
+    URL url = TimeWordsExtractor.class.getResource(LOOKUP_PATH);
+    try {
+      for (String line : Resources.readLines(url, Charsets.US_ASCII)) {
+        String[] typeAndWord = line.split("\\s+");
+        if (typeAndWord.length != 2) {
+          throw new IllegalArgumentException("Expected '<type> <word>', found: " + line);
+        }
+        this.wordTypes.put(typeAndWord[1], typeAndWord[0]);
+      }
+    } catch (IOException e) {
+      throw new ResourceInitializationException(e);
+    }
+    this.timeWords = this.wordTypes.keySet();
+    
     CombinedExtractor allExtractors = new CombinedExtractor(
         new CoveredTextExtractor(),
+//        new TimeWordTypeExtractor(),
         new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
         new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"));
@@ -81,6 +114,7 @@ TemporalEntityAnnotator_ImplBase {
     featureExtractors = new ArrayList<SimpleFeatureExtractor>();
 //    featureExtractors.add(new CleartkExtractor(BaseToken.class, new CoveredTextExtractor(), new Bag(new Covered())));
     featureExtractors.add(new CleartkExtractor(BaseToken.class, allExtractors, new Bag(new Covered())));
+    wordTypeExtractor = new CleartkExtractor(BaseToken.class, new TimeWordTypeExtractor(), new Bag(new Covered()));
 //    featureExtractors.add(new CleartkExtractor(BaseToken.class, new CoveredTextExtractor(), new Bag(new Preceding(1))));
  //   featureExtractors.add(new CleartkExtractor(BaseToken.class, new CoveredTextExtractor(), new Bag(new Following(1))));
     // bag of constituent descendent labels
@@ -103,11 +137,11 @@ TemporalEntityAnnotator_ImplBase {
 //    }
 	  
     for(TopTreebankNode root : JCasUtil.selectCovered(TopTreebankNode.class, segment)){
-      recursivelyProcessNode(jCas, root.getChildren(0), NON_MENTION, mentions, 0.0);
+      recursivelyProcessNode(jCas, root.getChildren(0), NON_MENTION, mentions);
     }
   }
 
-  private void recursivelyProcessNode(JCas jCas, TreebankNode node, String parentCategory, Set<TimeMention> mentions, double parentScore) throws AnalysisEngineProcessException {
+  private void recursivelyProcessNode(JCas jCas, TreebankNode node, String parentCategory, Set<TimeMention> mentions) throws AnalysisEngineProcessException {
     // accumulate features:
 	double score=0.0;
     ArrayList<Feature> features = new ArrayList<Feature>();
@@ -119,14 +153,23 @@ TemporalEntityAnnotator_ImplBase {
     features.add(new Feature("PARENT_LABEL", node.getParent().getNodeType()));
     features.add(new Feature("PARENT_CAT", parentCategory));
     
-    //add span length features
+    //check span length, check if a small node contains any time word
     int numTokens = JCasUtil.selectCovered(BaseToken.class, node).size();
-//    if (numTokens <= 4){
-//    	features.add(new Feature("SPAN_4TOKENS", "span_4_tokens"));    	
-//    }
+    boolean containTimeWord = false;
+    boolean containGoldTime = false;
+    //if (numTokens < SPAN_LIMIT){//check if it contains time word
+    	for(BaseToken bt : JCasUtil.selectCovered(BaseToken.class, node)){
+    		String btword = bt.getCoveredText().toLowerCase();
+    		if(this.timeWords.contains(btword)){
+    			containTimeWord = true;
+    			break;
+    		}
+    	} 	
+    //}
     
     if(node.getLeaf()){
       features.add(new Feature("IS_LEAF"));
+      features.addAll(wordTypeExtractor.extract(jCas, node));
     }else{
       StringBuilder buffer = new StringBuilder();
       for(int i = 0; i < node.getChildren().size(); i++){
@@ -147,17 +190,21 @@ TemporalEntityAnnotator_ImplBase {
       
     if(this.isTraining()){
       List<TimeMention> goldMentions = JCasUtil.selectCovered(TimeMention.class, node);
-      for(TimeMention mention : goldMentions){
-        if(mention.getBegin() == node.getBegin() && mention.getEnd() == node.getEnd()){
-          category = MENTION;
-          score=1.0;
-          mentions.remove(mention);
-        }
+      if( goldMentions != null){
+    	  containGoldTime = true;
+
+    	  for(TimeMention mention : goldMentions){
+    		  if(mention.getBegin() == node.getBegin() && mention.getEnd() == node.getEnd()){
+    			  category = MENTION;
+    			  score=1.0;
+    			  mentions.remove(mention);
+    		  }
+    	  }
       }
       if(numTokens < SPAN_LIMIT){
     	  this.dataWriter.write(new Instance<String>(category, features));
       }
-    }else if(numTokens < SPAN_LIMIT){
+    }else{
       score = this.classifier.score(features, 1).get(0).getScore();
       category = this.classifier.classify(features);
       if(category.equals(MENTION)){
@@ -170,13 +217,14 @@ TemporalEntityAnnotator_ImplBase {
 
     // now do children if not a leaf & not a mention
     if(node.getLeaf() || MENTION.equals(category)) return;
-
-    double highestScoringChild = 0.0;
+    
+    //double highestScoringChild = 0.0;
+    if(!containGoldTime && !containTimeWord && numTokens >= SPAN_LIMIT) return;
     
     if(!node.getLeaf()){
     	for(int i = 0; i < node.getChildren().size(); i++){
     		TreebankNode child = node.getChildren(i);
-    		recursivelyProcessNode(jCas, child, category, mentions, score);
+    		recursivelyProcessNode(jCas, child, category, mentions);
     	}
     }
     
@@ -186,28 +234,28 @@ TemporalEntityAnnotator_ImplBase {
 //    }
   }
   
-  private static String getSiblingCategory(TreebankNode node, int offset) throws AnalysisEngineProcessException{
-	  String cat = null;
-	  
-	  TreebankNode parent = node.getParent();
-	  int nodeIndex = -1;
-	  for(int i = 0; i < parent.getChildren().size(); i++){
-		  if(parent.getChildren(i) == node){
-			  nodeIndex = i;
-			  break;
-		  }
-	  }
-	  
-	  if(nodeIndex == -1){
-		  throw new AnalysisEngineProcessException();
-	  }else if(nodeIndex + offset < 0){
-		  cat = "<";
-	  }else if(nodeIndex + offset >= parent.getChildren().size()){
-		  cat = ">";
-	  }else{
-		  cat = parent.getChildren(nodeIndex+offset).getNodeType();
-	  }
-	  
-	  return cat;
-  }
+//  private static String getSiblingCategory(TreebankNode node, int offset) throws AnalysisEngineProcessException{
+//	  String cat = null;
+//	  
+//	  TreebankNode parent = node.getParent();
+//	  int nodeIndex = -1;
+//	  for(int i = 0; i < parent.getChildren().size(); i++){
+//		  if(parent.getChildren(i) == node){
+//			  nodeIndex = i;
+//			  break;
+//		  }
+//	  }
+//	  
+//	  if(nodeIndex == -1){
+//		  throw new AnalysisEngineProcessException();
+//	  }else if(nodeIndex + offset < 0){
+//		  cat = "<";
+//	  }else if(nodeIndex + offset >= parent.getChildren().size()){
+//		  cat = ">";
+//	  }else{
+//		  cat = parent.getChildren(nodeIndex+offset).getNodeType();
+//	  }
+//	  
+//	  return cat;
+//  }
 }
