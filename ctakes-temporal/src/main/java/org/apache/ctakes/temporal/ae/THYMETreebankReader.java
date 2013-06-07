@@ -40,15 +40,16 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.FileUtils;
 import org.apache.uima.util.Level;
-import org.cleartk.syntax.constituent.util.TreebankFormatParser;
-import org.cleartk.util.UIMAUtil;
+import org.cleartk.corpus.penntreebank.TreebankFormatParser;
 import org.cleartk.util.ViewURIUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.util.FSCollectionFactory;
 import org.uimafit.util.JCasUtil;
 
 public class THYMETreebankReader extends JCasAnnotator_ImplBase {
@@ -211,7 +212,8 @@ public class THYMETreebankReader extends JCasAnnotator_ImplBase {
 			TreebankNode uimaNode,
 			TreebankNode parentNode) {
 		uimaNode.setNodeType(pojoNode.getType());
-		uimaNode.setNodeTags(UIMAUtil.toStringArray(jCas, pojoNode.getTags()));
+		uimaNode.setNodeTags(new StringArray(jCas, pojoNode.getTags().length));
+		FSCollectionFactory.fillArrayFS(uimaNode.getNodeTags(), pojoNode.getTags());
 		uimaNode.setNodeValue(pojoNode.getValue());
 		uimaNode.setLeaf(pojoNode.isLeaf());
 		uimaNode.setParent(parentNode);
