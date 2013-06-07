@@ -36,7 +36,7 @@ import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
+import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.uimafit.factory.AnalysisEngineFactory;
 
@@ -58,6 +58,9 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     List<Class<? extends CleartkAnnotator<String>>> annotatorClasses = Lists.newArrayList();
     annotatorClasses.add(TimeAnnotator.class);
     annotatorClasses.add(ConstituencyBasedTimeAnnotator.class);
+    Map<Class<? extends CleartkAnnotator<String>>, String[]> annotatorTrainingArguments = Maps.newHashMap();
+    annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
+    annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "1"});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
@@ -68,7 +71,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
           options.getKnowtatorXMLDirectory(),
           options.getXMIDirectory(),
           options.getTreebankDirectory(),
-          annotatorClass);
+          annotatorClass,
+          annotatorTrainingArguments.get(annotatorClass));
       evaluation.prepareXMIsFor(patientSets);
       String name = String.format("%s.errors", annotatorClass.getSimpleName());
       evaluation.setLogging(Level.FINE, new File("target/eval", name));
@@ -95,15 +99,19 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 
   private Class<? extends CleartkAnnotator<String>> annotatorClass;
 
+  private String[] trainingArguments;
+
   public EvaluationOfTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
       File xmiDirectory,
       File treebankDirectory,
-      Class<? extends CleartkAnnotator<String>> annotatorClass) {
+      Class<? extends CleartkAnnotator<String>> annotatorClass,
+      String[] trainingArguments) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory, TimeMention.class);
     this.annotatorClass = annotatorClass;
+    this.trainingArguments = trainingArguments;
   }
 
   @Override
@@ -114,14 +122,14 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
         CleartkAnnotator.PARAM_IS_TRAINING,
         true,
         DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        LIBSVMStringOutcomeDataWriter.class,
+        LIBLINEARStringOutcomeDataWriter.class,
         DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
         this.getModelDirectory(directory));
   }
 
   @Override
   protected void trainAndPackage(File directory) throws Exception {
-    JarClassifierBuilder.trainAndPackage(this.getModelDirectory(directory), "-c", "10000");
+    JarClassifierBuilder.trainAndPackage(this.getModelDirectory(directory), this.trainingArguments);
   }
 
   @Override

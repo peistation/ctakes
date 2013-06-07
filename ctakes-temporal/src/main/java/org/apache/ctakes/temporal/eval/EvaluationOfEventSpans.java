@@ -34,7 +34,7 @@ import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.feature.transform.InstanceDataWriter;
 import org.cleartk.classifier.feature.transform.InstanceStream;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
+import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 
 import com.lexicalscope.jewel.cli.CliFactory;
@@ -98,7 +98,7 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       throws ResourceInitializationException {
     Class<?> dataWriterClass = this.featureSelectionThreshold > 0f
         ? InstanceDataWriter.class
-        : LIBSVMStringOutcomeDataWriter.class;
+        : LIBLINEARStringOutcomeDataWriter.class;
     return EventAnnotator.createDataWriterDescription(
         dataWriterClass,
         directory,
@@ -117,14 +117,14 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
       featureSelection.train(instances);
       featureSelection.save(EventAnnotator.createFeatureSelectionURI(directory));
       // now write in the libsvm format
-      LIBSVMStringOutcomeDataWriter dataWriter = new LIBSVMStringOutcomeDataWriter(directory);
+      LIBLINEARStringOutcomeDataWriter dataWriter = new LIBLINEARStringOutcomeDataWriter(directory);
       for (Instance<String> instance : instances) {
         dataWriter.write(featureSelection.transform(instance));
       }
       dataWriter.finish();
     }
 
-    JarClassifierBuilder.trainAndPackage(directory, "-c", "10000");
+    JarClassifierBuilder.trainAndPackage(directory, "-c", "0.05");
   }
 
   @Override
