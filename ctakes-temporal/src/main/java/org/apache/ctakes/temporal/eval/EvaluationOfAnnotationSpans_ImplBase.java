@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionReader;
@@ -42,6 +43,7 @@ import org.cleartk.util.ViewURIUtil;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.pipeline.SimplePipeline;
+import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
@@ -104,9 +106,9 @@ protected abstract AnalysisEngineDescription getDataWriterDescription(File direc
   protected abstract AnalysisEngineDescription getAnnotatorDescription(File directory)
       throws ResourceInitializationException;
 
-  protected abstract Collection<? extends Annotation> getGoldAnnotations(JCas jCas);
+  protected abstract Collection<? extends Annotation> getGoldAnnotations(JCas jCas, Segment segment);
 
-  protected abstract Collection<? extends Annotation> getSystemAnnotations(JCas jCas);
+  protected abstract Collection<? extends Annotation> getSystemAnnotations(JCas jCas, Segment segment);
 
   @Override
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
@@ -125,49 +127,53 @@ protected abstract AnalysisEngineDescription getDataWriterDescription(File direc
     for (JCas jCas : new JCasIterable(collectionReader, aggregateBuilder.createAggregate())) {
       JCas goldView = jCas.getView(GOLD_VIEW_NAME);
       JCas systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
-      Collection<? extends Annotation> goldAnnotations = this.getGoldAnnotations(goldView);
-      Collection<? extends Annotation> systemAnnotations = this.getSystemAnnotations(systemView);
-      stats.add(goldAnnotations, systemAnnotations);
-
-      Set<Annotation> goldSet = new TreeSet<Annotation>(bySpans);
-      for (Annotation goldAnnotation : goldAnnotations) {
-        // TODO: fix data so that this is not necessary
-        if (goldAnnotation.getBegin() == Integer.MAX_VALUE || goldAnnotation.getEnd() == Integer.MIN_VALUE) {
-          this.logger.warning("Invalid annotation");
-          continue;
-        }
-        goldSet.add(goldAnnotation);
-      }
-      //goldSet.addAll(goldAnnotations);
-      Set<Annotation> systemSet = new TreeSet<Annotation>(bySpans);
-      systemSet.addAll(systemAnnotations);
-
-      Set<Annotation> goldOnly = new TreeSet<Annotation>(bySpans);
-      goldOnly.addAll(goldSet);
-      goldOnly.removeAll(systemSet);
-
-      Set<Annotation> systemOnly = new TreeSet<Annotation>(bySpans);
-      systemOnly.addAll(systemSet);
-      systemOnly.removeAll(goldSet);
-
-      String text = jCas.getDocumentText().replaceAll("[\r\n]", " ");
-      if (!goldOnly.isEmpty() || !systemOnly.isEmpty()) {
-        this.logger.fine("Errors in : " + ViewURIUtil.getURI(jCas).toString());
-        Set<Annotation> errors = new TreeSet<Annotation>(bySpans);
-        errors.addAll(goldOnly);
-        errors.addAll(systemOnly);
-        for (Annotation annotation : errors) {
-          int begin = annotation.getBegin();
-          int end = annotation.getEnd();
-          int windowBegin = Math.max(0, begin - 50);
-          int windowEnd = Math.min(text.length(), end + 50);
-          String label = goldOnly.contains(annotation) ? "DROPPED:" : "ADDED:  ";
-          this.logger.fine(String.format(
-              "%s  ...%s[!%s!]%s...",
-              label,
-              text.substring(windowBegin, begin),
-              text.substring(begin, end),
-              text.substring(end, windowEnd)));
+      for (Segment segment : JCasUtil.select(jCas, Segment.class)) {
+        if (!THYMEData.SEGMENTS_TO_SKIP.contains(segment.getId())) {
+          Collection<? extends Annotation> goldAnnotations = this.getGoldAnnotations(goldView, segment);
+          Collection<? extends Annotation> systemAnnotations = this.getSystemAnnotations(systemView, segment);
+          stats.add(goldAnnotations, systemAnnotations);
+    
+          Set<Annotation> goldSet = new TreeSet<Annotation>(bySpans);
+          for (Annotation goldAnnotation : goldAnnotations) {
+            // TODO: fix data so that this is not necessary
+            if (goldAnnotation.getBegin() == Integer.MAX_VALUE || goldAnnotation.getEnd() == Integer.MIN_VALUE) {
+              this.logger.warning("Invalid annotation");
+              continue;
+            }
+            goldSet.add(goldAnnotation);
+          }
+          //goldSet.addAll(goldAnnotations);
+          Set<Annotation> systemSet = new TreeSet<Annotation>(bySpans);
+          systemSet.addAll(systemAnnotations);
+    
+          Set<Annotation> goldOnly = new TreeSet<Annotation>(bySpans);
+          goldOnly.addAll(goldSet);
+          goldOnly.removeAll(systemSet);
+    
+          Set<Annotation> systemOnly = new TreeSet<Annotation>(bySpans);
+          systemOnly.addAll(systemSet);
+          systemOnly.removeAll(goldSet);
+    
+          String text = jCas.getDocumentText().replaceAll("[\r\n]", " ");
+          if (!goldOnly.isEmpty() || !systemOnly.isEmpty()) {
+            this.logger.fine("Errors in : " + ViewURIUtil.getURI(jCas).toString());
+            Set<Annotation> errors = new TreeSet<Annotation>(bySpans);
+            errors.addAll(goldOnly);
+            errors.addAll(systemOnly);
+            for (Annotation annotation : errors) {
+              int begin = annotation.getBegin();
+              int end = annotation.getEnd();
+              int windowBegin = Math.max(0, begin - 50);
+              int windowEnd = Math.min(text.length(), end + 50);
+              String label = goldOnly.contains(annotation) ? "DROPPED:" : "ADDED:  ";
+              this.logger.fine(String.format(
+                  "%s  ...%s[!%s!]%s...",
+                  label,
+                  text.substring(windowBegin, begin),
+                  text.substring(begin, end),
+                  text.substring(end, windowEnd)));
+            }
+          }
         }
       }
     }

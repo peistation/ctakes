@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -93,12 +94,12 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
   }
 
   @Override
-  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, TimeMention.class);
+  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas, Segment segment) {
+    return JCasUtil.selectCovered(jCas, TimeMention.class, segment);
   }
 
   @Override
-  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, Time.class);
+  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas, Segment segment) {
+    return JCasUtil.selectCovered(jCas, Time.class, segment);
   }
 }

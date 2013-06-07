@@ -423,9 +423,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     return aggregateBuilder;
   }
 
-  public static <T extends TOP> List<T> selectExact(JCas jCas, Class<T> annotationClass) {
+  public static <T extends Annotation> List<T> selectExact(JCas jCas, Class<T> annotationClass, Segment segment) {
     List<T> annotations = Lists.newArrayList();
-    for (T annotation : JCasUtil.select(jCas, annotationClass)) {
+    for (T annotation : JCasUtil.selectCovered(jCas, annotationClass, segment)) {
       if (annotation.getClass().equals(annotationClass)) {
         annotations.add(annotation);
       }

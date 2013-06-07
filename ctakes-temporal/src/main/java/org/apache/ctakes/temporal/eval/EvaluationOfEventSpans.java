@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import org.apache.ctakes.temporal.ae.EventAnnotator;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -134,12 +135,12 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
   }
 
   @Override
-  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas) {
-    return selectExact(jCas, EventMention.class);
+  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas, Segment segment) {
+    return selectExact(jCas, EventMention.class, segment);
   }
 
   @Override
-  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas) {
-    return selectExact(jCas, EventMention.class);
+  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas, Segment segment) {
+    return selectExact(jCas, EventMention.class, segment);
   }
 }

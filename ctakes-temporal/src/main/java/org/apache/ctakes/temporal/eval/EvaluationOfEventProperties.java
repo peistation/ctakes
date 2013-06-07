@@ -34,6 +34,7 @@ import org.apache.ctakes.temporal.ae.DocTimeRelAnnotator;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
@@ -130,32 +131,36 @@ public class EvaluationOfEventProperties extends
       JCas goldView = jCas.getView(GOLD_VIEW_NAME);
       JCas systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
       String text = goldView.getDocumentText();
-      List<EventMention> goldEvents = selectExact(goldView, EventMention.class);
-      List<EventMention> systemEvents = selectExact(systemView, EventMention.class);
-      for (String name : PROPERTY_NAMES) {
-        Function<EventMention, String> getProperty = propertyGetters.get(name);
-        statsMap.get(name).add(
-            goldEvents,
-            systemEvents,
-            eventMentionToSpan,
-            getProperty);
-        for (int i = 0; i < goldEvents.size(); ++i) {
-          String goldOutcome = getProperty.apply(goldEvents.get(i));
-          String systemOutcome = getProperty.apply(systemEvents.get(i));
-          if (!goldOutcome.equals(systemOutcome)) {
-            EventMention event = goldEvents.get(i);
-            int begin = event.getBegin();
-            int end = event.getEnd();
-            int windowBegin = Math.max(0, begin - 50);
-            int windowEnd = Math.min(text.length(), end + 50);
-            this.loggers.get(name).fine(String.format(
-                "%s was %s but should be %s, in  ...%s[!%s!]%s...",
-                name,
-                systemOutcome,
-                goldOutcome,
-                text.substring(windowBegin, begin).replaceAll("[\r\n]", " "),
-                text.substring(begin, end),
-                text.substring(end, windowEnd).replaceAll("[\r\n]", " ")));
+      for (Segment segment : JCasUtil.select(jCas, Segment.class)) {
+        if (!THYMEData.SEGMENTS_TO_SKIP.contains(segment.getId())) {
+          List<EventMention> goldEvents = selectExact(goldView, EventMention.class, segment);
+          List<EventMention> systemEvents = selectExact(systemView, EventMention.class, segment);
+          for (String name : PROPERTY_NAMES) {
+            Function<EventMention, String> getProperty = propertyGetters.get(name);
+            statsMap.get(name).add(
+                goldEvents,
+                systemEvents,
+                eventMentionToSpan,
+                getProperty);
+            for (int i = 0; i < goldEvents.size(); ++i) {
+              String goldOutcome = getProperty.apply(goldEvents.get(i));
+              String systemOutcome = getProperty.apply(systemEvents.get(i));
+              if (!goldOutcome.equals(systemOutcome)) {
+                EventMention event = goldEvents.get(i);
+                int begin = event.getBegin();
+                int end = event.getEnd();
+                int windowBegin = Math.max(0, begin - 50);
+                int windowEnd = Math.min(text.length(), end + 50);
+                this.loggers.get(name).fine(String.format(
+                    "%s was %s but should be %s, in  ...%s[!%s!]%s...",
+                    name,
+                    systemOutcome,
+                    goldOutcome,
+                    text.substring(windowBegin, begin).replaceAll("[\r\n]", " "),
+                    text.substring(begin, end),
+                    text.substring(end, windowEnd).replaceAll("[\r\n]", " ")));
+              }
+            }
           }
         }
       }

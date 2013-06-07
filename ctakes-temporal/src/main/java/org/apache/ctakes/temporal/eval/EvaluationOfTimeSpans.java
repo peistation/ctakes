@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import org.apache.ctakes.temporal.ae.ConstituencyBasedTimeAnnotator;
 import org.apache.ctakes.temporal.ae.TimeAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -144,13 +145,13 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   }
 
   @Override
-  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas) {
-    return selectExact(jCas, TimeMention.class);
+  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas, Segment segment) {
+    return selectExact(jCas, TimeMention.class, segment);
   }
 
   @Override
-  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas) {
-    return selectExact(jCas, TimeMention.class);
+  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas, Segment segment) {
+    return selectExact(jCas, TimeMention.class, segment);
   }
   
   private File getModelDirectory(File directory) {
