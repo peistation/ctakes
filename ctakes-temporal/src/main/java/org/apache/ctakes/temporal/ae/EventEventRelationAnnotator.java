@@ -10,6 +10,7 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.features.PartOfSpeechFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
+import org.apache.ctakes.temporal.ae.feature.DependencyPathFeaturesExtractor;
 import org.apache.ctakes.temporal.ae.feature.EventArgumentPropertyExtractor;
 import org.apache.ctakes.temporal.ae.feature.UmlsFeatureExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
@@ -66,14 +67,7 @@ public class EventEventRelationAnnotator extends RelationExtractorAnnotator {
 	    						, new PartOfSpeechFeaturesExtractor()
 	    						, new EventArgumentPropertyExtractor()
 	    						, new UmlsFeatureExtractor()
-//	    						, new DependencyTreeFeaturesExtractor()
-//	    						, new DependencyPathFeaturesExtractor()
-	    						
-//	    						, new TemporalAttributeFeatureExtractor()
-//	    						, new EventTimeFlatTreeFeatureExtractor()
-//	    						, new TemporalPETExtractor()
-//	    						, new TemporalPathExtractor()
-//	    						, new TemporalFTExtractor()
+	    						, new DependencyPathFeaturesExtractor()
 	    						);
 	  }
 
@@ -117,5 +111,4 @@ public class EventEventRelationAnnotator extends RelationExtractorAnnotator {
 		}
 		return category;
 	}
-
 }
