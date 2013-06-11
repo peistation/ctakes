@@ -23,8 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.eval.XMIReader;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -83,51 +85,47 @@ public class RelationAnnotationViewer {
       }   
       
       for(BinaryTextRelation binaryTextRelation : JCasUtil.select(systemView, BinaryTextRelation.class)) {
-        IdentifiedAnnotation entity1; // entity whose role is "Argument"
-        IdentifiedAnnotation entity2; // entity whose role is "Related_to"
-        
-        if(binaryTextRelation.getArg1().getRole().equals("Argument")) {
-          entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
-          entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
-        } else {
-          entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
-          entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+
+        IdentifiedAnnotation entity1 = (IdentifiedAnnotation) binaryTextRelation.getArg1().getArgument();
+        IdentifiedAnnotation entity2 = (IdentifiedAnnotation) binaryTextRelation.getArg2().getArgument();
+
+        String category = binaryTextRelation.getCategory();
+        if(! category.equals("location_of")) {
+          continue;
         }
         
-        String category = binaryTextRelation.getCategory();
         String arg1 = entity1.getCoveredText().toLowerCase();
         String arg2 = entity2.getCoveredText().toLowerCase();
         int type1 = entity1.getTypeID();
         int type2 = entity2.getTypeID();
         
         // first argument has to be an anatomical site
-        if(type1 != 6) {
+        if(type1 != CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
           continue;
         }
         // skip location_of(anatomical site, anatomical site)
-        if(type1 == 6 && type2 == 6) {
+        if(type1 == CONST.NE_TYPE_ID_ANATOMICAL_SITE && type2 == CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
           continue; 
         }
-        // "to" is not a valid disease/disorder
-        if(type2 == 3 && arg2.equals("to")) {
-          continue;
-        }
         
-        // print relation and its arguments: location_of(colon/6, colon cancer/2)
-        System.out.format("%s(%s/%d, %s/%d)\n", category, arg1, type1, arg2, type2);
+        List<Sentence> enclosingSentences = JCasUtil.selectCovering(
+            systemView, 
+            Sentence.class,
+            entity1.getBegin(), 
+            entity2.getEnd());
+        
+        System.out.format("%s|%s|%s\n", arg1, arg2, enclosingSentences.get(0).getCoveredText());
       }
     }
   }
   
   private static CollectionReader getCollectionReader(List<File> items) throws Exception {
 
-    // convert the List<File> to a String[]
     String[] paths = new String[items.size()];
     for (int i = 0; i < paths.length; ++i) {
       paths[i] = items.get(i).getPath();
     }
     
-    // return a reader that will load each of the XMI files
     return CollectionReaderFactory.createCollectionReader(
         XMIReader.class,
         XMIReader.PARAM_FILES,
