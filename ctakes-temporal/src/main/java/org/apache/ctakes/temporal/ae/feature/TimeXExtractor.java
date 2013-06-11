@@ -32,6 +32,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.feature.extractor.CleartkExtractorException;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
@@ -42,14 +43,16 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
   private String name;
   private EventTimeFlatTreeFeatureExtractor path;
   private TemporalAttributeFeatureExtractor attr;
+  private TimeWordTypeExtractor timewd;
 
 //  private Logger logger = Logger.getLogger(this.getClass().getName());
 
-  public TimeXExtractor() {
+  public TimeXExtractor() throws ResourceInitializationException {
     super();
     this.name = "TimeXFeature";
     this.path = new EventTimeFlatTreeFeatureExtractor();
     this.attr = new TemporalAttributeFeatureExtractor();
+    this.timewd = new TimeWordTypeExtractor();
   }
 
   @Override
@@ -84,6 +87,7 @@ public class TimeXExtractor implements SimpleFeatureExtractor {
 			  try {
 				  features.addAll(this.path.extract(view, targetTokenAnnotation, entry.getValue()));//add path between timex and event
 				  features.addAll(this.attr.extract(view, targetTokenAnnotation, entry.getValue()));//add temporal attribute features
+				  features.addAll(this.timewd.extract(view, entry.getValue()));
 			  } catch (AnalysisEngineProcessException e) {
 				  throw new IllegalArgumentException(String.format("error in gererating path feature:", features));
 			  }
