@@ -22,14 +22,9 @@ import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
-import org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention;
-import org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.LabMention;
-import org.apache.ctakes.typesystem.type.textsem.MedicationMention;
-import org.apache.ctakes.typesystem.type.textsem.ProcedureMention;
-import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
+import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
@@ -112,22 +107,11 @@ public class NamedEntityLookupConsumerImpl extends BaseLookupConsumerImpl implem
                codes.add( code );
             }
          }
-         
-         IdentifiedAnnotation neAnnot = new IdentifiedAnnotation(jcas);
-         if ( typeId == CONST.NE_TYPE_ID_DRUG ) {
-            neAnnot = new MedicationMention( jcas );
-         } else if ( typeId == CONST.NE_TYPE_ID_ANATOMICAL_SITE ) {
-             neAnnot = new AnatomicalSiteMention( jcas );
-         } else if ( typeId == CONST.NE_TYPE_ID_DISORDER ) {
-             neAnnot = new DiseaseDisorderMention( jcas );
-         } else if ( typeId == CONST.NE_TYPE_ID_FINDING ) {
-             neAnnot = new SignSymptomMention( jcas );
-         } else if ( typeId == CONST.NE_TYPE_ID_LAB ) {
-             neAnnot = new LabMention( jcas );
-         } else if ( typeId == CONST.NE_TYPE_ID_PROCEDURE ) {
-             neAnnot = new ProcedureMention( jcas );
+         IdentifiedAnnotation neAnnot;
+         if ( typeId == CONST.NE_TYPE_ID_DRUG || typeId == CONST.NE_TYPE_ID_UNKNOWN ) {
+            neAnnot = new MedicationEventMention( jcas );
          } else {
-             neAnnot = new EntityMention( jcas );
+            neAnnot = new EntityMention( jcas );
          }
          final int neBegin = entry.getKey().__start;
          final int neEnd = entry.getKey().__end;

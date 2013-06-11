@@ -80,7 +80,7 @@
       <nameValuePair>
         <name>ctakes.umlsaddr</name>
         <value>
-          <string>https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser</string>
+          <string>https://uts-ws.nlm.nih.gov/restful/isValidctakes.umlsuser</string>
         </value>
       </nameValuePair>    
       <nameValuePair>
