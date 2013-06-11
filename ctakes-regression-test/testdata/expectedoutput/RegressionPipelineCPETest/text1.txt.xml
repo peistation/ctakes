@@ -217,7 +217,7 @@
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="1382" _ref_sofa="3" begin="47" end="58"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="1386" _ref_sofa="3" begin="61" end="75"/>
     <org.apache.ctakes.typesystem.type.textsem.MedicationEventMention _indexed="1" _id="1402" _ref_sofa="3" begin="61" end="68" id="1" _ref_ontologyConceptArr="1394" typeID="1" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="1439" _ref_sofa="3" begin="23" end="27" id="0" _ref_ontologyConceptArr="1436" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.SignSymptomMention _indexed="1" _id="1439" _ref_sofa="3" begin="23" end="27" id="0" _ref_ontologyConceptArr="1436" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
     <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1429" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
     <uima.cas.FSArray _id="1436" size="1">
         <i>1429</i>

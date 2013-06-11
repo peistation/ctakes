@@ -1942,11 +1942,11 @@
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="12367" _ref_sofa="3" begin="592" end="621"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="12371" _ref_sofa="3" begin="623" end="635"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="12375" _ref_sofa="3" begin="637" end="670"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="12393" _ref_sofa="3" begin="439" end="443" id="2" _ref_ontologyConceptArr="12390" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="12421" _ref_sofa="3" begin="464" end="468" id="3" _ref_ontologyConceptArr="12418" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="12411" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
-    <uima.cas.FSArray _id="12418" size="1">
-        <i>12411</i>
+    <org.apache.ctakes.typesystem.type.textsem.SignSymptomMention _indexed="1" _id="12393" _ref_sofa="3" begin="439" end="443" id="2" _ref_ontologyConceptArr="12390" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.SignSymptomMention _indexed="1" _id="12432" _ref_sofa="3" begin="464" end="468" id="3" _ref_ontologyConceptArr="12429" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="12422" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
+    <uima.cas.FSArray _id="12429" size="1">
+        <i>12422</i>
     </uima.cas.FSArray>
     <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="12383" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
     <uima.cas.FSArray _id="12390" size="1">

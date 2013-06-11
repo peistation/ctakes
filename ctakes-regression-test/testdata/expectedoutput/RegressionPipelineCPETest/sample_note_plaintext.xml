@@ -14,7 +14,7 @@
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="86" _ref_sofa="3" begin="4" end="9" tokenNumber="3" normalizedForm="right" partOfSpeech="JJ" _ref_lemmaEntries="376" capitalization="0" numPosition="0" canonicalForm="right"/>
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="98" _ref_sofa="3" begin="10" end="14" tokenNumber="4" normalizedForm="knee" partOfSpeech="NN" _ref_lemmaEntries="467" capitalization="0" numPosition="0" canonicalForm="knee"/>
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="110" _ref_sofa="3" begin="15" end="26" tokenNumber="5" normalizedForm="arthroscopy" partOfSpeech="NN" _ref_lemmaEntries="579" capitalization="0" numPosition="0" canonicalForm="arthroscopy"/>
-    <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="130" _ref_sofa="3" begin="28" end="32" tokenNumber="8" normalizedForm="varicose" partOfSpeech="NN" _ref_lemmaEntries="691" capitalization="1" numPosition="0" canonicalForm="varicose"/>
+    <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="130" _ref_sofa="3" begin="28" end="32" tokenNumber="8" normalizedForm="knee" partOfSpeech="NN" _ref_lemmaEntries="691" capitalization="1" numPosition="0" canonicalForm="knee"/>
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="142" _ref_sofa="3" begin="33" end="38" tokenNumber="9" normalizedForm="x-ray" partOfSpeech="NN" _ref_lemmaEntries="803" capitalization="0" numPosition="0" canonicalForm="x-ray"/>
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="162" _ref_sofa="3" begin="41" end="48" tokenNumber="11" normalizedForm="patient" partOfSpeech="NN" _ref_lemmaEntries="897" capitalization="1" numPosition="0" canonicalForm="patient"/>
     <org.apache.ctakes.typesystem.type.syntax.WordToken _indexed="1" _id="174" _ref_sofa="3" begin="49" end="55" tokenNumber="12" normalizedForm="denie" partOfSpeech="VBZ" _ref_lemmaEntries="1012" capitalization="0" numPosition="0" canonicalForm="denie"/>
@@ -213,16 +213,16 @@
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="1331" _ref_sofa="3" begin="28" end="38"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="1335" _ref_sofa="3" begin="41" end="48"/>
     <org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation _indexed="1" _id="1339" _ref_sofa="3" begin="56" end="65"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="1353" _ref_sofa="3" begin="28" end="32" id="0" _ref_ontologyConceptArr="1350" typeID="6" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="1381" _ref_sofa="3" begin="61" end="65" id="2" _ref_ontologyConceptArr="1378" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.textsem.EntityMention _indexed="1" _id="1409" _ref_sofa="3" begin="56" end="60" id="1" _ref_ontologyConceptArr="1406" typeID="6" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
-    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1399" codingScheme="SNOMED" code="100002" oid="100002#SNOMED" cui="Cui0002" tui="T_AS"/>
-    <uima.cas.FSArray _id="1406" size="1">
-        <i>1399</i>
+    <org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention _indexed="1" _id="1353" _ref_sofa="3" begin="28" end="32" id="0" _ref_ontologyConceptArr="1350" typeID="6" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention _indexed="1" _id="1422" _ref_sofa="3" begin="56" end="60" id="1" _ref_ontologyConceptArr="1419" typeID="6" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.textsem.SignSymptomMention _indexed="1" _id="1383" _ref_sofa="3" begin="61" end="65" id="2" _ref_ontologyConceptArr="1380" typeID="3" segmentID="SIMPLE_SEGMENT" discoveryTechnique="1" confidence="0.0" polarity="0" uncertainty="0" conditional="false" generic="false" historyOf="0"/>
+    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1373" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
+    <uima.cas.FSArray _id="1380" size="1">
+        <i>1373</i>
     </uima.cas.FSArray>
-    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1371" codingScheme="SNOMED" code="100206" oid="100206#SNOMED" cui="Cui0206" tui="T_SS"/>
-    <uima.cas.FSArray _id="1378" size="1">
-        <i>1371</i>
+    <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1412" codingScheme="SNOMED" code="100002" oid="100002#SNOMED" cui="Cui0002" tui="T_AS"/>
+    <uima.cas.FSArray _id="1419" size="1">
+        <i>1412</i>
     </uima.cas.FSArray>
     <org.apache.ctakes.typesystem.type.refsem.UmlsConcept _id="1343" codingScheme="SNOMED" code="100002" oid="100002#SNOMED" cui="Cui0002" tui="T_AS"/>
     <uima.cas.FSArray _id="1350" size="1">
