@@ -61,7 +61,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     annotatorClasses.add(ConstituencyBasedTimeAnnotator.class);
     Map<Class<? extends CleartkAnnotator<String>>, String[]> annotatorTrainingArguments = Maps.newHashMap();
     annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
-    annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "1"});
+    annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
