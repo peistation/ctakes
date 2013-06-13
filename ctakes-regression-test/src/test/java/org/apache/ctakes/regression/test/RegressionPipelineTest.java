@@ -65,7 +65,7 @@ import org.xml.sax.SAXException;
  */
 public class RegressionPipelineTest extends XMLTestCase {
 
-	private static final int MAX_TIMEOUT_MS = 15 * 60 * 1000; // 15 mins
+	private static final int MAX_TIMEOUT_MS = 60 * 60 * 1000; // 60 mins
 	// LOG4J logger based on class name
 	Logger logger = Logger.getLogger(getClass().getName());
 	private static final File CPEDIR = new File(
