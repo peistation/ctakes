@@ -141,6 +141,10 @@
 			<artifactId>cleartk-type-system</artifactId>
 			<version>1.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.cleartk</groupId>
+			<artifactId>cleartk-ml-crfsuite</artifactId>
+		</dependency>
 	</dependencies>
 	<!-- The below is all necessary to unpack the UMLS resources since they 
 		can't be used from the classpath -->
