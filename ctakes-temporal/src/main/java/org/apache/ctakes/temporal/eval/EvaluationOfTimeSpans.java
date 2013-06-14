@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.ctakes.temporal.ae.CRFTimeAnnotator;
 import org.apache.ctakes.temporal.ae.ConstituencyBasedTimeAnnotator;
 import org.apache.ctakes.temporal.ae.TimeAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -33,12 +34,16 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
+import org.cleartk.classifier.CleartkSequenceAnnotator;
+import org.cleartk.classifier.crfsuite.CRFSuiteStringOutcomeDataWriter;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
+import org.cleartk.classifier.jar.DefaultSequenceDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
+import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
 
 import com.google.common.base.Function;
@@ -56,16 +61,18 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     
     // specify the annotator classes to use
-    List<Class<? extends CleartkAnnotator<String>>> annotatorClasses = Lists.newArrayList();
+    List<Class<? extends JCasAnnotator_ImplBase>> annotatorClasses = Lists.newArrayList();
     annotatorClasses.add(TimeAnnotator.class);
     annotatorClasses.add(ConstituencyBasedTimeAnnotator.class);
-    Map<Class<? extends CleartkAnnotator<String>>, String[]> annotatorTrainingArguments = Maps.newHashMap();
+    annotatorClasses.add(CRFTimeAnnotator.class);
+    Map<Class<? extends JCasAnnotator_ImplBase>, String[]> annotatorTrainingArguments = Maps.newHashMap();
     annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
+    annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
-    for (Class<? extends CleartkAnnotator<String>> annotatorClass : annotatorClasses) {
+    for (Class<? extends JCasAnnotator_ImplBase> annotatorClass : annotatorClasses) {
       EvaluationOfTimeSpans evaluation = new EvaluationOfTimeSpans(
           new File("target/eval/time-spans"),
           options.getRawTextDirectory(),
@@ -82,11 +89,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     }
 
     // allow ordering of models by F1
-    Ordering<Class<? extends CleartkAnnotator<String>>> byF1 = Ordering.natural().onResultOf(
-      new Function<Class<? extends CleartkAnnotator<String>>, Double>() {
+    Ordering<Class<? extends JCasAnnotator_ImplBase>> byF1 = Ordering.natural().onResultOf(
+      new Function<Class<? extends JCasAnnotator_ImplBase>, Double>() {
         @Override
         public Double apply(
-            Class<? extends CleartkAnnotator<String>> annotatorClass) {
+            Class<? extends JCasAnnotator_ImplBase> annotatorClass) {
           return annotatorStats.get(annotatorClass).f1();
         }
       });
@@ -98,7 +105,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     }
   }
 
-  private Class<? extends CleartkAnnotator<String>> annotatorClass;
+  private Class<? extends JCasAnnotator_ImplBase> annotatorClass;
 
   private String[] trainingArguments;
 
@@ -108,7 +115,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
       File knowtatorXMLDirectory,
       File xmiDirectory,
       File treebankDirectory,
-      Class<? extends CleartkAnnotator<String>> annotatorClass,
+      Class<? extends JCasAnnotator_ImplBase> annotatorClass,
       String[] trainingArguments) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory, TimeMention.class);
     this.annotatorClass = annotatorClass;
@@ -118,14 +125,27 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-    return AnalysisEngineFactory.createPrimitiveDescription(
-        this.annotatorClass,
-        CleartkAnnotator.PARAM_IS_TRAINING,
-        true,
-        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        LIBLINEARStringOutcomeDataWriter.class,
-        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-        this.getModelDirectory(directory));
+    if(CleartkAnnotator.class.isAssignableFrom(this.annotatorClass)){
+      return AnalysisEngineFactory.createPrimitiveDescription(
+          this.annotatorClass,
+          CleartkAnnotator.PARAM_IS_TRAINING,
+          true,
+          DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          LIBLINEARStringOutcomeDataWriter.class,
+          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+          this.getModelDirectory(directory));
+    }else if(CleartkSequenceAnnotator.class.isAssignableFrom(this.annotatorClass)){
+      return AnalysisEngineFactory.createPrimitiveDescription(
+          this.annotatorClass,
+          CleartkSequenceAnnotator.PARAM_IS_TRAINING,
+          true,
+          DefaultSequenceDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          CRFSuiteStringOutcomeDataWriter.class,
+          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+          this.getModelDirectory(directory));
+    }else{
+      throw new ResourceInitializationException("Annotator class was not recognized as an acceptable class!", new Object[]{});
+    }
   }
 
   @Override
