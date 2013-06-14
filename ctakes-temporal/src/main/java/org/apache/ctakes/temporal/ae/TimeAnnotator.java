@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.temporal.ae.feature.ParseSpanFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -80,7 +81,10 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
   protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
 
   protected List<CleartkExtractor> contextFeatureExtractors;
-
+  
+//  protected List<SimpleFeatureExtractor> parseFeatureExtractors;
+  protected ParseSpanFeatureExtractor parseExtractor;
+  
   private BIOChunking<BaseToken, TimeMention> timeChunking;
 
   @Override
@@ -97,6 +101,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
         new TimeWordTypeExtractor());
 
+//    CombinedExtractor parseExtractors = new CombinedExtractor(
+//        new ParseSpanFeatureExtractor()
+//        );
     this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
     this.tokenFeatureExtractors.add(allExtractors);
 
@@ -106,6 +113,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         allExtractors,
         new Preceding(3),
         new Following(3)));
+//    this.parseFeatureExtractors = new ArrayList<ParseSpanFeatureExtractor>();
+//    this.parseFeatureExtractors.add(new ParseSpanFeatureExtractor());
+    parseExtractor = new ParseSpanFeatureExtractor();
   }
 
   @Override
@@ -146,6 +156,18 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
           String previousOutcome = index < 0 ? "O" : outcomes.get(index);
           features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
         }
+        // features from dominating parse tree
+//        for(SimpleFeatureExtractor extractor : this.parseFeatureExtractors){
+        BaseToken startToken = token;
+        for(int i = tokenIndex-1; i >= 0; --i){
+          String outcome = outcomes.get(i);
+          if(outcome.equals("O")){
+            break;
+          }
+          startToken = tokens.get(i);
+        }
+        features.addAll(parseExtractor.extract(jCas, startToken.getBegin(), token.getEnd()));
+//        }
         // if training, write to data file
         if (this.isTraining()) {
           String outcome = outcomes.get(tokenIndex);
