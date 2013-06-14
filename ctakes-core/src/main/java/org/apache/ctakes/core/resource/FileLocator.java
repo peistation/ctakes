@@ -19,7 +19,9 @@
 package org.apache.ctakes.core.resource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,6 +33,25 @@ import java.net.URL;
  */
 public class FileLocator
 {
+    public static InputStream getAsStream(String location) throws FileNotFoundException
+    {
+        try
+        {
+        	//Get from classpath
+        	return FileLocator.class.getClassLoader().getResourceAsStream(location);
+        }
+        catch (Exception e)
+        {
+        	//Try to get from filestream
+        	File f = new File(location);
+        	FileInputStream fs = new FileInputStream(f);
+        	return fs;
+        }
+    }
+	
+    /**
+     * @deprecated  As of release 3.1, replaced by {@link #getAsStream()}
+     */    
     public static File locateFile(String location)
             throws FileNotFoundException
     {

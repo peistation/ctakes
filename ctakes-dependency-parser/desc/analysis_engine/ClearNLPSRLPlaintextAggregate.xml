@@ -466,6 +466,13 @@
                             <multiValued>true</multiValued>
                             <mandatory>false</mandatory>
                         </configurationParameter>
+						<configurationParameter>
+							<name>SentenceModelFile</name>
+							<description>The file that contains the MaxEnt model used by the Sentence Dectector</description>
+							<type>String</type>
+							<multiValued>false</multiValued>
+							<mandatory>true</mandatory>
+						</configurationParameter>                             
                     </configurationParameters>
                     <configurationParameterSettings>
                         <nameValuePair>
@@ -474,6 +481,12 @@
                                 <array/>
                             </value>
                         </nameValuePair>
+						<nameValuePair>
+						<name>SentenceModelFile</name>
+						<value>
+						<string>org/apache/ctakes/core/sentdetect/sd-med-model.zip</string>
+						</value>
+						</nameValuePair>        
                     </configurationParameterSettings>
                     <typeSystemDescription/>
                     <typePriorities/>
@@ -495,32 +508,6 @@
                         <outputsNewCASes>false</outputsNewCASes>
                     </operationalProperties>
                 </analysisEngineMetaData>
-                <externalResourceDependencies>
-                    <externalResourceDependency>
-                        <key>MaxentModel</key>
-                        <description/>
-                        <interfaceName>org.apache.ctakes.core.resource.MaxentModelResource</interfaceName>
-                        <optional>false</optional>
-                    </externalResourceDependency>
-                </externalResourceDependencies>
-                <resourceManagerConfiguration>
-                    <externalResources>
-                        <externalResource>
-                            <name>MaxentModelFile</name>
-                            <description/>
-                            <fileResourceSpecifier>
-                                <fileUrl>file:org/apache/ctakes/core/sentdetect/sdmed.mod</fileUrl>
-                            </fileResourceSpecifier>
-                            <implementationName>org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl</implementationName>
-                        </externalResource>
-                    </externalResources>
-                    <externalResourceBindings>
-                        <externalResourceBinding>
-                            <key>MaxentModel</key>
-                            <resourceName>MaxentModelFile</resourceName>
-                        </externalResourceBinding>
-                    </externalResourceBindings>
-                </resourceManagerConfiguration>
             </taeDescription>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="SimpleSegmentAnnotator">

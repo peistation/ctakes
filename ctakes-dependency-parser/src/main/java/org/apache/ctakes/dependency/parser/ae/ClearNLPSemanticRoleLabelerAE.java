@@ -18,6 +18,7 @@
  */
 package org.apache.ctakes.dependency.parser.ae;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.core.util.ListFactory;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
@@ -123,20 +125,20 @@ final String language = AbstractReader.LANG_EN;
     
     try {
     	
-    	URL srlPredURL = (this.srlPredUri == null)
-                ? this.getClass().getClassLoader().getResource(DEFAULT_PRED_MODEL_FILE_NAME).toURI().toURL()
-                : this.srlPredUri.toURL();
-        this.identifier = EngineGetter.getComponent(srlPredURL.openStream(), this.language, NLPLib.MODE_PRED);
+    	InputStream srlPred = (this.srlPredUri == null)
+                ? FileLocator.getAsStream(DEFAULT_PRED_MODEL_FILE_NAME)
+                : FileLocator.getAsStream(this.srlPredUri.getPath());
+        this.identifier = EngineGetter.getComponent(srlPred, this.language, NLPLib.MODE_PRED);
         
-    	URL srlRoleURL = (this.srlRoleUri == null)
-                ? this.getClass().getClassLoader().getResource(DEFAULT_ROLE_MODEL_FILE_NAME).toURI().toURL()
-                : this.srlRoleUri.toURL();
-        this.classifier = EngineGetter.getComponent(srlRoleURL.openStream(), this.language, NLPLib.MODE_ROLE);
+    	InputStream srlRole = (this.srlRoleUri == null)
+                ? FileLocator.getAsStream(DEFAULT_ROLE_MODEL_FILE_NAME)
+                : FileLocator.getAsStream(this.srlRoleUri.getPath());
+        this.classifier = EngineGetter.getComponent(srlRole, this.language, NLPLib.MODE_ROLE);
     	
-    	URL srlModelURL = (this.srlModelUri == null)
-                ? this.getClass().getClassLoader().getResource(DEFAULT_SRL_MODEL_FILE_NAME).toURI().toURL()
-                : this.srlModelUri.toURL();
-        this.srlabeler = EngineGetter.getComponent(srlModelURL.openStream(), this.language, NLPLib.MODE_SRL);       		 
+    	InputStream srlModel = (this.srlModelUri == null)
+                ? FileLocator.getAsStream(DEFAULT_SRL_MODEL_FILE_NAME)
+                : FileLocator.getAsStream(this.srlModelUri.getPath());
+        this.srlabeler = EngineGetter.getComponent(srlModel, this.language, NLPLib.MODE_SRL);       		 
 
     } catch (Exception e) {
       throw new ResourceInitializationException(e);

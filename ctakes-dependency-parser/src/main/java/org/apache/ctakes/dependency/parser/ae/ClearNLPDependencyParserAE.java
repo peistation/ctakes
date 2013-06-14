@@ -21,6 +21,7 @@ package org.apache.ctakes.dependency.parser.ae;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.dependency.parser.util.ClearDependencyUtility;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
@@ -125,17 +127,17 @@ public class ClearNLPDependencyParserAE extends JCasAnnotator_ImplBase {
 				// Note: If lemmatizer data file is not specified, then use lemmas from the BaseToken normalizedToken field.
 				// Initialize lemmatizer
 				
-                URL lemmatizerModelURL = (this.lemmatizerDataFile == null)
-                        ? this.getClass().getClassLoader().getResource(ENG_LEMMATIZER_DATA_FILE).toURI().toURL()
-                        : this.lemmatizerDataFile.toURL();
+                InputStream lemmatizerModel = (this.lemmatizerDataFile == null)
+                        ? FileLocator.getAsStream(ENG_LEMMATIZER_DATA_FILE)
+                        : FileLocator.getAsStream(this.lemmatizerDataFile.getPath());
                         
-                    this.lemmatizer = EngineGetter.getMPAnalyzer(language, lemmatizerModelURL.openStream());
+                    this.lemmatizer = EngineGetter.getMPAnalyzer(language, lemmatizerModel);
 			}
-            	URL parserModelURL = (this.parserModelUri == null)
-                    ? this.getClass().getClassLoader().getResource(DEFAULT_MODEL_FILE_NAME).toURI().toURL()
-                    : this.parserModelUri.toURL();
+				InputStream parserModel = (this.parserModelUri == null)
+                    ? FileLocator.getAsStream(DEFAULT_MODEL_FILE_NAME)
+                    : FileLocator.getAsStream(this.parserModelUri.getPath());
                  
-                    this.parser = EngineGetter.getComponent(parserModelURL.openStream(), this.language, NLPLib.MODE_DEP);
+                    this.parser = EngineGetter.getComponent(parserModel, this.language, NLPLib.MODE_DEP);
 
         } catch (Exception e) {
             throw new ResourceInitializationException(e);

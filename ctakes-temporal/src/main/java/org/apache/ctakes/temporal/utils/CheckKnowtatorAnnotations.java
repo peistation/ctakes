@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.ctakes.core.ae.SentenceDetector;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
-import org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl;
 import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.temporal.eval.CommandLine;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.SegmentsFromBracketedSectionTagsAnnotator;
@@ -79,11 +78,9 @@ public class CheckKnowtatorAnnotations {
         options.getKnowtatorXMLDirectory()));
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(SegmentsFromBracketedSectionTagsAnnotator.class));
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(
-        SentenceDetector.class,
-        "MaxentModel",
-        ExternalResourceFactory.createExternalResourceDescription(
-            SuffixMaxentModelResourceImpl.class,
-            SentenceDetector.class.getResource("../sentdetect/sdmed.mod"))));
+            SentenceDetector.class,
+            SentenceDetector.SD_MODEL_FILE_PARAM,
+            "org/apache/ctakes/core/sentdetect/sd-med-model.zip"));
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
     for (JCas jCas : new JCasIterable(reader, builder.createAggregate())) {
       for (EventMention event : JCasUtil.select(jCas, EventMention.class)) {

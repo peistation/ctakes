@@ -23,12 +23,14 @@ package org.apache.ctakes.core.ci;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.junit.Test;
 
 import org.apache.ctakes.core.ci.HyphenTextModifierImpl;
+import org.apache.ctakes.core.resource.FileLocator;
 
 /**
  * @author Mayo Clinic
@@ -92,10 +94,10 @@ public class HyphenTextModifierImplTests {
 			System.out.println(s);
 		}
 		
-		String filename = null;
+		InputStream filename = null;
 		try {
-			filename = this.getClass().getClassLoader().getResource("org/apache/ctakes/core/tokenizer/hyphenated.txt").toURI().getRawPath();
-		} catch (URISyntaxException e) {
+			filename = FileLocator.getAsStream("org/apache/ctakes/core/tokenizer/hyphenated.txt");
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		HyphenTextModifierImpl tm = new HyphenTextModifierImpl(filename, 7);

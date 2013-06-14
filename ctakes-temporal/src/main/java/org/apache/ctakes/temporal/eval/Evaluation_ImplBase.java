@@ -41,7 +41,6 @@ import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.core.resource.FileResourceImpl;
 import org.apache.ctakes.core.resource.JdbcConnectionResourceImpl;
 import org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl;
-import org.apache.ctakes.core.resource.SuffixMaxentModelResourceImpl;
 import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
 import org.apache.ctakes.dependency.parser.ae.ClearNLPSemanticRoleLabelerAE;
 import org.apache.ctakes.dictionary.lookup.ae.UmlsDictionaryLookupAnnotator;
@@ -239,10 +238,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     // identify sentences
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
         SentenceDetector.class,
-        "MaxentModel",
-        ExternalResourceFactory.createExternalResourceDescription(
-            SuffixMaxentModelResourceImpl.class,
-            FileLocator.locateFile("org/apache/ctakes/core/sentdetect/sdmed.mod").toURI().toURL())));
+        SentenceDetector.SD_MODEL_FILE_PARAM,
+        "org/apache/ctakes/core/sentdetect/sd-med-model.zip"));
     // identify tokens
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TokenizerAnnotatorPTB.class));
     // merge some tokens
