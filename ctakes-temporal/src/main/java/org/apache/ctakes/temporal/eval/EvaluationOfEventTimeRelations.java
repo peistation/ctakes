@@ -111,7 +111,7 @@ public class EvaluationOfEventTimeRelations extends
     List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
     List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
-    ParameterSettings params = defaultParams;
+    ParameterSettings params = allParams;
 
     //    List<ParameterSettings> possibleParams = Lists.newArrayList();
     //    Map<ParameterSettings, Double> scoredParams = new HashMap<ParameterSettings, Double>();
@@ -149,22 +149,12 @@ public class EvaluationOfEventTimeRelations extends
       }
       params.stats = evaluation.trainAndTest(training, testing);
       //      System.err.println(options.getKernelParams() == null ? params : options.getKernelParams());
-      //      System.err.println(params.stats);
+      System.err.println(params.stats);
       tempModelDir.delete();
     }catch(ResourceInitializationException e){
       System.err.println("Error with parameter settings: " + params);
       e.printStackTrace();
     }
-
-    // print performance of each set of parameters
-    System.err.printf(
-        "F1=%.3f P=%.3f R=%.3f %s\n",
-        params.stats.f1(),
-        params.stats.precision(),
-        params.stats.recall(),
-        options.getKernelParams() == null ? params : options.getKernelParams());
-    System.err.println();
-
   }
 
   private ParameterSettings params;

@@ -10,6 +10,10 @@ import org.apache.ctakes.relationextractor.ae.features.PartOfSpeechFeaturesExtra
 import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
 import org.apache.ctakes.temporal.ae.feature.TemporalAttributeFeatureExtractor;
+import org.apache.ctakes.temporal.ae.feature.treekernel.EventTimeFlatTreeFeatureExtractor;
+import org.apache.ctakes.temporal.ae.feature.treekernel.TemporalFTExtractor;
+import org.apache.ctakes.temporal.ae.feature.treekernel.TemporalPETExtractor;
+import org.apache.ctakes.temporal.ae.feature.treekernel.TemporalPathExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -63,10 +67,10 @@ public class EventTimeRelationAnnotator extends RelationExtractorAnnotator {
     return Lists.newArrayList(
     						  new TokenFeaturesExtractor()
     						, new PartOfSpeechFeaturesExtractor()
-    						, new TemporalAttributeFeatureExtractor()
-//    						, new EventTimeFlatTreeFeatureExtractor()
-//    						, new TemporalPETExtractor()
-//    						, new TemporalPathExtractor()
+//    						, new TemporalAttributeFeatureExtractor()
+    						, new EventTimeFlatTreeFeatureExtractor()
+    						, new TemporalPETExtractor()
+    						, new TemporalPathExtractor()
 //    						, new TemporalFTExtractor()
     						);
   }
