@@ -12,6 +12,7 @@ import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
+import org.cleartk.classifier.TreeFeature;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
@@ -34,8 +35,8 @@ public class EventTimeFlatTreeFeatureExtractor implements RelationFeaturesExtrac
 		SimpleTree bopTree = getTree(jcas, arg1, arg2, "BOP", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getPartOfSpeech();}});
 		SimpleTree bowTree = getTree(jcas, arg1, arg2, "BOW", new Function<BaseToken,String>(){public String apply(BaseToken t){ return t.getCoveredText();}});
 		
-		feats.add(new Feature("TK_BOP_Tree", bopTree.toString()));
-		feats.add(new Feature("TK_BOW_Tree", bowTree.toString()));
+		feats.add(new TreeFeature("TK_BOP_Tree", bopTree.toString()));
+		feats.add(new TreeFeature("TK_BOW_Tree", bowTree.toString()));
 		return feats;
 	}
 

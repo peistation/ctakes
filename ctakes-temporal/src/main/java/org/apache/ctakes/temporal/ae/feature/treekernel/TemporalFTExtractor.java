@@ -15,6 +15,7 @@ import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
+import org.cleartk.classifier.TreeFeature;
 
 public class TemporalFTExtractor implements RelationFeaturesExtractor {
 
@@ -29,7 +30,7 @@ public class TemporalFTExtractor implements RelationFeaturesExtractor {
 		
 		if(root == null){
 			SimpleTree fakeTree = new SimpleTree("(S (NN null))");
-			features.add(new Feature(FEAT_NAME, fakeTree.toString()));
+			features.add(new TreeFeature(FEAT_NAME, fakeTree.toString()));
 			return features;
 		}
 		
@@ -79,7 +80,7 @@ public class TemporalFTExtractor implements RelationFeaturesExtractor {
 
 		TemporalPETExtractor.moveTimexDownToNP(tree);
 		
-		features.add(new Feature(FEAT_NAME, tree.toString()));
+		features.add(new TreeFeature(FEAT_NAME, tree.toString()));
 		return features;
 	}
 

@@ -15,6 +15,7 @@ import org.apache.ctakes.utils.tree.SimpleTree;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.cleartk.classifier.Feature;
+import org.cleartk.classifier.TreeFeature;
 
 public class TemporalPathExtractor implements RelationFeaturesExtractor {
 
@@ -26,7 +27,7 @@ public class TemporalPathExtractor implements RelationFeaturesExtractor {
 		TopTreebankNode root = AnnotationTreeUtils.getTreeCopy(jcas, AnnotationTreeUtils.getAnnotationTree(jcas, arg1));
 		if(root == null){
 			SimpleTree fakeTree = new SimpleTree("(S (NN null))");
-			features.add(new Feature("TK_PATH", fakeTree.toString()));
+			features.add(new TreeFeature("TK_PATH", fakeTree.toString()));
 			return features;
 		}
 		// swap the order if necessary:
@@ -70,7 +71,7 @@ public class TemporalPathExtractor implements RelationFeaturesExtractor {
 		tree = TreeExtractor.extractPathTree(t1, t2);
 //		}
 
-		features.add(new Feature("TK_PATH", tree.toString()));
+		features.add(new TreeFeature("TK_PATH", tree.toString()));
 		return features;
 	}
 
