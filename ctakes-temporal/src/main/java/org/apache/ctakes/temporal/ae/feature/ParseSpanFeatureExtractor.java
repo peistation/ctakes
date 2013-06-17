@@ -20,14 +20,14 @@ public class ParseSpanFeatureExtractor  {
       if(domNode.getNodeTags() != null){
         for(int ind = 0; ind < domNode.getNodeTags().size(); ind++){
           String tag = domNode.getNodeTags(ind);
-//          if(tag.equals("TMP")){
+          if(tag.equals("TMP")){
             feats.add(new Feature("DominatingTmpTag", tag));
-//          }
+          }
         }
       }
       TreebankNode parent = domNode.getParent();
       if(parent != null){
-        feats.add(new Feature("DominatingTreeParent", domNode.getNodeType()));
+        feats.add(new Feature("DominatingTreeParent", parent.getNodeType()));
         do{
           if(parent.getNodeTags() != null){
             for(int ind = 0; ind < parent.getNodeTags().size(); ind++){
