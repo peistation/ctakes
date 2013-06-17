@@ -3,7 +3,7 @@ package org.apache.ctakes.temporal.eval;
 import java.io.File;
 import java.util.Collection;
 
-import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
+import org.apache.ctakes.temporal.eval.EvaluationOfEventTimeRelations.ParameterSettings;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -12,6 +12,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.cleartk.classifier.tksvmlight.model.CompositeKernel.ComboOperator;
 import org.cleartk.eval.AnnotationStatistics;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -44,8 +45,8 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 	  protected static double DEFAULT_TK = 0.5;
 	  protected static double DEFAULT_LAMBDA = 0.5;
 	  
-	  protected static ParameterSettings defaultParams = null; //new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "linear",
-	  		  //DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
+	  protected static ParameterSettings defaultParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "linear",
+	  		  DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
 
 	  
 	  protected ParameterSettings params = null;

@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
-import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
 import org.apache.ctakes.temporal.ae.EventEventRelationAnnotator;
-import org.apache.ctakes.temporal.eval.EvaluationOfTemporalRelations.RemoveCrossSentenceRelations;
-import org.apache.ctakes.temporal.eval.EvaluationOfTemporalRelations.RemoveNonContainsRelations;
-import org.apache.ctakes.temporal.eval.EvaluationOfTemporalRelations.RemoveRelations;
+import org.apache.ctakes.temporal.eval.EvaluationOfEventTimeRelations.ParameterSettings;
+import org.apache.ctakes.temporal.eval.EvaluationOfEventTimeRelations.RemoveCrossSentenceRelations;
+import org.apache.ctakes.temporal.eval.EvaluationOfEventTimeRelations.RemoveNonContainsRelations;
+import org.apache.ctakes.temporal.eval.EvaluationOfEventTimeRelations.RemoveRelations;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
@@ -40,6 +40,7 @@ import com.lexicalscope.jewel.cli.CliFactory;
 public class EvaluationOfEventEventRelations extends
 EvaluationOfTemporalRelations_ImplBase {
 
+	private boolean baseline = false;
   public EvaluationOfEventEventRelations(      
       File baseDirectory,
       File rawTextDirectory,
@@ -48,10 +49,11 @@ EvaluationOfTemporalRelations_ImplBase {
       File treebankDirectory,
       boolean printErrors,
       boolean printRelations,
+      boolean baseline,
       ParameterSettings params){
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory,
         treebankDirectory, printErrors, printRelations, params);
-
+    this.baseline = baseline;
   }
 
   @Override
@@ -115,9 +117,6 @@ EvaluationOfTemporalRelations_ImplBase {
         GOLD_VIEW_NAME);
 
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(RemoveRelations.class));
-    // TODO -- if we implement a baseline
-    //	    aggregateBuilder.add(this.baseline ? RecallBaselineEventTimeRelationAnnotator.createAnnotatorDescription(directory) :
-    //	    	EventTimeRelationAnnotator.createAnnotatorDescription(directory));
     aggregateBuilder.add(
         EventEventRelationAnnotator.createAnnotatorDescription(directory));
 
@@ -194,6 +193,7 @@ EvaluationOfTemporalRelations_ImplBase {
         options.getTreebankDirectory(),
         options.getPrintErrors(),
         options.getPrintFormattedRelations(),
+        options.getBaseline(),
         params);
     evaluation.prepareXMIsFor(patientSets);
     List<Integer> training = trainItems;

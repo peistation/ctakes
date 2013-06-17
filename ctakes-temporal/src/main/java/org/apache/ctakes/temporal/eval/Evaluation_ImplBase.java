@@ -124,7 +124,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     public boolean getPrintErrors();
     
     @Option(longName = "kernelParams", defaultToNull=true)
-    public String getKernelParams();    
+    public String getKernelParams();
   }
 
   protected File rawTextDirectory;

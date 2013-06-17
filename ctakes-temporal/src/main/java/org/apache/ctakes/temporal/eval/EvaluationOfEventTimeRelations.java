@@ -20,12 +20,11 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import java.util.Set;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
 import org.apache.ctakes.temporal.ae.EventTimeRelationAnnotator;
 import org.apache.ctakes.temporal.ae.baselines.RecallBaselineEventTimeRelationAnnotator;
+import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.CopyFromGold;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -63,18 +63,16 @@ import org.uimafit.testing.util.HideOutput;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
 
-public class EvaluationOfTemporalRelations extends
-	Evaluation_ImplBase<AnnotationStatistics<String>>{
+public class EvaluationOfEventTimeRelations extends
+	EvaluationOfTemporalRelations_ImplBase{
   static interface TempRelOptions extends Evaluation_ImplBase.Options{
 	  @Option
 	  public boolean getTest();
@@ -89,15 +87,15 @@ public class EvaluationOfTemporalRelations extends
     public boolean getClosure();
   }
   
-  protected static boolean DEFAULT_BOTH_DIRECTIONS = false;
-  protected static float DEFAULT_DOWNSAMPLE = 1.0f;
-  private static double DEFAULT_SVM_C = 1.0;
-  private static double DEFAULT_SVM_G = 1.0;
-  private static double DEFAULT_TK = 0.5;
-  private static double DEFAULT_LAMBDA = 0.5;
+//  protected static boolean DEFAULT_BOTH_DIRECTIONS = false;
+//  protected static float DEFAULT_DOWNSAMPLE = 1.0f;
+//  private static double DEFAULT_SVM_C = 1.0;
+//  private static double DEFAULT_SVM_G = 1.0;
+//  private static double DEFAULT_TK = 0.5;
+//  private static double DEFAULT_LAMBDA = 0.5;
   
-  protected static ParameterSettings defaultParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "tk",
-  		  DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
+//  defaultParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "tk",
+//  		  DEFAULT_SVM_C, DEFAULT_SVM_G, "polynomial", ComboOperator.SUM, DEFAULT_TK, DEFAULT_LAMBDA);
   protected static ParameterSettings flatParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "linear",
 		  10.0, 1.0, "linear", ComboOperator.VECTOR_ONLY, DEFAULT_TK, DEFAULT_LAMBDA);
   protected static ParameterSettings allBagsParams = new ParameterSettings(DEFAULT_BOTH_DIRECTIONS, DEFAULT_DOWNSAMPLE, "tk", 
@@ -128,7 +126,7 @@ public class EvaluationOfTemporalRelations extends
       File tempModelDir = File.createTempFile("temporal", null, workingDir);
       tempModelDir.delete();
       tempModelDir.mkdir();
-      EvaluationOfTemporalRelations evaluation = new EvaluationOfTemporalRelations(
+      EvaluationOfEventTimeRelations evaluation = new EvaluationOfEventTimeRelations(
           tempModelDir,
           options.getRawTextDirectory(),
           options.getKnowtatorXMLDirectory(),
@@ -174,7 +172,7 @@ public class EvaluationOfTemporalRelations extends
   protected boolean useClosure; 
   protected boolean printRelations = false;
   
-  public EvaluationOfTemporalRelations(
+  public EvaluationOfEventTimeRelations(
       File baseDirectory,
       File rawTextDirectory,
       File knowtatorXMLDirectory,
@@ -191,7 +189,10 @@ public class EvaluationOfTemporalRelations extends
         rawTextDirectory,
         knowtatorXMLDirectory,
         xmiDirectory,
-        treebankDirectory);
+        treebankDirectory,
+        printErrors,
+        printRelations,
+        params);
     this.params = params;
     this.useClosure = useClosure;
     this.printErrors = printErrors;
@@ -200,13 +201,13 @@ public class EvaluationOfTemporalRelations extends
     this.kernelParams = kernelParams == null ? null : kernelParams.split(" ");
   }
 
-  public EvaluationOfTemporalRelations(File baseDirectory, File rawTextDirectory,
-      File knowtatorXMLDirectory, File xmiDirectory) {
-
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null);
-    this.params = defaultParams;
-    this.printErrors = false;
-  }
+//  public EvaluationOfTemporalRelations(File baseDirectory, File rawTextDirectory,
+//      File knowtatorXMLDirectory, File xmiDirectory) {
+//
+//    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null);
+//    this.params = defaultParams;
+//    this.printErrors = false;
+//  }
 
   @Override
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
@@ -346,6 +347,7 @@ public class EvaluationOfTemporalRelations extends
     return stats;
   }
 
+  /*
   private static String formatRelation(BinaryTextRelation relation) {
 	  IdentifiedAnnotation arg1 = (IdentifiedAnnotation)relation.getArg1().getArgument();
 	  IdentifiedAnnotation arg2 = (IdentifiedAnnotation)relation.getArg2().getArgument();
@@ -385,7 +387,8 @@ public class EvaluationOfTemporalRelations extends
 				  fileName, category, arg1Type, arg1Begin, arg1End, arg2Type, arg2Begin, arg2End);
 	  }
   }
-
+*/
+  
   public static class RemoveEventEventRelations extends JCasAnnotator_ImplBase {
     public static final String PARAM_RELATION_VIEW = "RelationView";
 	@ConfigurationParameter(name = PARAM_RELATION_VIEW)
