@@ -121,7 +121,7 @@ public class EvaluationOfEventTimeRelations extends
 
     //    for(ParameterSettings params : possibleParams){
     try{
-      File workingDir = new File("target/eval/temporal-relations");
+      File workingDir = new File("target/eval/temporal-relations/event-time");
       if(!workingDir.exists()) workingDir.mkdirs();
       File tempModelDir = File.createTempFile("temporal", null, workingDir);
       tempModelDir.delete();
