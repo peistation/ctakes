@@ -68,7 +68,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     Map<Class<? extends JCasAnnotator_ImplBase>, String[]> annotatorTrainingArguments = Maps.newHashMap();
     annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
-    annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{});
+    annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();

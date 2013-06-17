@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.constituency.parser.util.AnnotationTreeUtils;
 import org.apache.ctakes.temporal.ae.feature.ParseSpanFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -18,7 +20,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.Instances;
 import org.cleartk.classifier.chunking.BIOChunking;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
@@ -77,8 +78,8 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
     this.timeChunking = new BIOChunking<BaseToken, TimeMention>(BaseToken.class, TimeMention.class);
     CombinedExtractor allExtractors = new CombinedExtractor(
         new CoveredTextExtractor(),
-        new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
-        new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
+//        new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
+//        new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
         new TypePathExtractor(BaseToken.class, "partOfSpeech"),
         new TimeWordTypeExtractor());
 
@@ -92,8 +93,8 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
     this.contextFeatureExtractors.add(new CleartkExtractor(
         BaseToken.class,
         allExtractors,
-        new Preceding(3),
-        new Following(3)));
+        new Preceding(2),
+        new Following(2)));
 //    this.parseFeatureExtractors = new ArrayList<ParseSpanFeatureExtractor>();
 //    this.parseFeatureExtractors.add(new ParseSpanFeatureExtractor());
     parseExtractor = new ParseSpanFeatureExtractor();
@@ -152,7 +153,11 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
 //          }
 //          startToken = tokens.get(i);
 //        }
-//        features.addAll(parseExtractor.extract(jCas, startToken.getBegin(), token.getEnd()));
+        TreebankNode preTerm = AnnotationTreeUtils.annotationNode(jCas, token);
+        features.addAll(parseExtractor.extract(jCas, token.getBegin(), token.getEnd()));
+        //if(preTerm != null && preTerm.getParent() != null){
+        //  features.addAll(parseExtractor.extract(jCas, preTerm.getParent().getBegin(), preTerm.getParent().getEnd()));
+        //}
         
         // if training, write to data file
 //        if (this.isTraining()) {
