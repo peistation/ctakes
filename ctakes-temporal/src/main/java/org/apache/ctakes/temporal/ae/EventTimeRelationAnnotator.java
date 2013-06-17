@@ -9,6 +9,7 @@ import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.features.PartOfSpeechFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.RelationFeaturesExtractor;
 import org.apache.ctakes.relationextractor.ae.features.TokenFeaturesExtractor;
+import org.apache.ctakes.temporal.ae.feature.TemporalAttributeFeatureExtractor;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -60,9 +61,14 @@ public class EventTimeRelationAnnotator extends RelationExtractorAnnotator {
   @Override
   protected List<RelationFeaturesExtractor> getFeatureExtractors() {
     return Lists.newArrayList(
-        new TokenFeaturesExtractor(), 
-        new PartOfSpeechFeaturesExtractor()
-        );
+    						  new TokenFeaturesExtractor()
+    						, new PartOfSpeechFeaturesExtractor()
+    						, new TemporalAttributeFeatureExtractor()
+//    						, new EventTimeFlatTreeFeatureExtractor()
+//    						, new TemporalPETExtractor()
+//    						, new TemporalPathExtractor()
+//    						, new TemporalFTExtractor()
+    						);
   }
 
   @Override

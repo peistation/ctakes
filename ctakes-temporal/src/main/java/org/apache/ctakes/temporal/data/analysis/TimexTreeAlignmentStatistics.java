@@ -53,7 +53,7 @@ public class TimexTreeAlignmentStatistics {
     //List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     //List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
 
-    CollectionReader reader = UriCollectionReader.getCollectionReaderFromFiles(getFilesFor(trainItems, options.getRawTextDirectory()));
+    CollectionReader reader = UriCollectionReader.getCollectionReaderFromFiles(THYMEData.getFilesFor(trainItems, options.getRawTextDirectory()));
     AggregateBuilder aggregateBuilder = new AggregateBuilder();
     aggregateBuilder.add(UriToDocumentTextAnnotator.getDescription());
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
@@ -103,24 +103,5 @@ public class TimexTreeAlignmentStatistics {
     System.out.printf("Found %d mentions, %d match with node spans\n", numMentions, numMatches);
   }
 
-  private static List<File> getFilesFor(List<Integer> patientSets, File rawTextDirectory) {
-    if ( !rawTextDirectory.exists() ) {
-      return Collections.emptyList();
-    }
-    List<File> files = new ArrayList<File>();
-    for (Integer set : patientSets) {
-      final int setNum = set;
-      for (File file : rawTextDirectory.listFiles(new FilenameFilter(){
-        @Override
-        public boolean accept(File dir, String name) {
-          return name.contains(String.format("ID%03d", setNum));
-        }})) {
-        // skip hidden files like .svn
-        if (!file.isHidden()) {
-          files.add(file);
-        } 
-      }
-    }
-    return files;
-  }
+
 }
