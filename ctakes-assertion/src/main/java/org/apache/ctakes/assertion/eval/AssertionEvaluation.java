@@ -116,7 +116,7 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
         name = "--train-dir",
         usage = "specify the directory containing the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
         required = true)
-    public File trainDirectory;
+    public String trainDirectory;
     
     @Option(
         name = "--test-dir",
@@ -250,7 +250,13 @@ protected static Options options = new Options();
 //    System.err.println("forcing skipping of conditional processing!!!");
 //    options.runConditional = false;
     printOptionsForDebugging(options);
-    List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
+    String[] dirs = options.trainDirectory.split("[;:]");
+    List<File> trainFiles = new ArrayList<File>();
+    for (String dir : dirs) {
+    	File trainDir = new File(dir);
+    	trainFiles.addAll(Arrays.asList(trainDir.listFiles()));
+    	System.out.println(trainFiles.toString());
+    }
     //File modelsDir = new File("models/modifier");
     File modelsDir = options.modelsDirectory;
     File evaluationOutputDirectory = options.evaluationOutputDirectory;
@@ -364,7 +370,7 @@ protected static Options options = new Options();
 	    "ignore generic: %b%n" +
 	    "ignore history: %b%n" +
 	    "%n%n",
-	    options.trainDirectory.getAbsolutePath(),
+	    options.trainDirectory,
 	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
 	    options.modelsDirectory.getAbsolutePath(),
 	    options.crossValidationFolds,
@@ -429,8 +435,18 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 
   public static void preprocess(File preprocessDir ) throws ResourceInitializationException, UIMAException, IOException {
 //	  File devDirectory = new File(options.trainDirectory.getParentFile() + File.separator + "dev");
-	  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readSharpUmlsCem(
-			  preprocessDir, options.trainDirectory, options.testDirectory, options.devDirectory);
+	  File trainDir = null;
+	  if (options.trainDirectory.split("[;:]").length>1) {
+		  throw new IOException("Assertion preprocess wants to write to one train directory, but you've supplied multiple.");
+	  } else {
+		  trainDir = new File(options.trainDirectory);
+	  }
+	  if (preprocessDir.getName().contains("i2b2")) {
+		  
+	  } else {
+		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readSharpUmlsCem(
+				  preprocessDir, trainDir, options.testDirectory, options.devDirectory);
+	  }
   }
   
   @Override

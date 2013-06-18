@@ -91,19 +91,20 @@ public abstract class AssertionCleartkAnalysisEngine extends
   protected Random coin = new Random(0);
 
   
-  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
-		
-	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
-	    	
-	    	ConllDependencyNode head = depNode.getHead();
-	    	if (head == null || head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
-	    		// The head is outside the bounds of the annotation, so this node must be the annotation's head
-	    		return depNode;
-	    	}
-	    }
-	    // Can this happen?
-	    return null;
-	}
+/* DEPRECATED: STW 2013/03/28.  Use DependencyUtility:getNominalHeadNode(jCas,annotation) instead */
+//  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
+//		
+//	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
+//	    	
+//	    	ConllDependencyNode head = depNode.getHead();
+//	    	if (head == null || head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
+//	    		// The head is outside the bounds of the annotation, so this node must be the annotation's head
+//	    		return depNode;
+//	    	}
+//	    }
+//	    // Can this happen?
+//	    return null;
+//	}
 
   
 	
