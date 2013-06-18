@@ -37,6 +37,7 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 
 import org.apache.ctakes.assertion.cr.GoldEntityAndAttributeReader;
+import org.apache.ctakes.assertion.cr.I2B2Challenge2010CollectionReader;
 import org.apache.ctakes.core.ae.SHARPKnowtatorXMLReader;
 import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
 
@@ -207,4 +208,46 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 
 		logger.info("Finished!");
 	}
+	
+	public static void readI2B2Challenge2010(File parentDirectory, File trainDirectory)
+	throws ResourceInitializationException, UIMAException, IOException {
+
+		TypeSystemDescription typeSystemDescription = 
+			// use the uimafit method of finding available type system
+			// descriptor via META-INF/org.uimafit/types.txt 
+			// (found in ctakes-type-system/src/main/resources)
+			TypeSystemDescriptionFactory.createTypeSystemDescription();
+
+		AggregateBuilder aggregate = new AggregateBuilder();
+
+		CollectionReaderDescription collectionReader = CollectionReaderFactory.createDescription(
+				I2B2Challenge2010CollectionReader.class,
+				typeSystemDescription,
+				"inputDir",
+				parentDirectory
+		);
+
+		// fill in other values that are necessary for preprocessing
+		AnalysisEngineDescription preprocessAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription(
+				"desc/analysis_engine/AttributeDiscoveryPreprocessor"
+		);
+		aggregate.add(preprocessAnnotator);
+
+		if (trainDirectory!=null) {
+			AnalysisEngineDescription xWriter2 = AnalysisEngineFactory.createPrimitiveDescription(
+					XWriter.class,
+					typeSystemDescription,
+					XWriter.PARAM_OUTPUT_DIRECTORY_NAME,
+					trainDirectory,
+					XWriter.PARAM_FILE_NAMER_CLASS_NAME,
+					CtakesFileNamer.class.getName()
+			);
+			aggregate.add(xWriter2);
+			//		SimplePipeline.runPipeline(collectionReader, goldAnnotator, xWriter, xWriter2);
+		}
+
+		SimplePipeline.runPipeline(collectionReader, aggregate.createAggregateDescription());
+		logger.info("Finished!");
+	}
+
 }

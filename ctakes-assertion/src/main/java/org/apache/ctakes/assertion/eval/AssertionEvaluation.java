@@ -237,7 +237,8 @@ protected static Options options = new Options();
   
   public static void main(String[] args) throws Exception {
     //Options options = new Options();
-    options.parseOptions(args);
+	  resetOptions();
+	  options.parseOptions(args);
     
 //    System.err.println("forcing skipping of subject processing!!!");
 //    options.runSubject = false;
@@ -342,21 +343,48 @@ protected static Options options = new Options();
     	  CollectionReader trainCollectionReader = evaluation.getCollectionReader(trainFiles);
     	  evaluation.train(trainCollectionReader, modelsDir);
       }
-      if (testFiles==null || testFiles.size()==0) {
-    	  throw new RuntimeException("testFiles = " + testFiles + " testFiles.size() = " + (testFiles==null ? "null": testFiles.size())) ;
-      }
-      logger.debug("testFiles.size() = " + testFiles.size());
-      CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
-      Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
       
-      AssertionEvaluation.printScore(stats,  modelsDir.getAbsolutePath());
+      if (!options.trainOnly) {
+    	  if (testFiles==null || testFiles.size()==0) {
+    		  throw new RuntimeException("testFiles = " + testFiles + " testFiles.size() = " + (testFiles==null ? "null": testFiles.size())) ;
+    	  }
+    	  logger.debug("testFiles.size() = " + testFiles.size());
+    	  CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
+    	  Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
+
+    	  AssertionEvaluation.printScore(stats,  modelsDir.getAbsolutePath());
+      }
     }
     
     System.out.println("Finished assertion module.");
     
   }
   
-  private static void printOptionsForDebugging(Options options)
+  private static void resetOptions() {
+	  options.ignoreConditional = false;
+	  options.ignoreGeneric = false;
+	  options.ignoreHistory = false;
+	  options.ignorePolarity = false;
+	  options.ignoreSubject = false;
+	  options.ignoreUncertainty = false;
+	  
+	  options.trainOnly = false;
+	  options.testOnly = false;
+	  options.noCleartk = false;
+	  options.printErrors = false;
+	  options.evalOnly = false;
+	  
+	  options.evaluationOutputDirectory = null;
+	  options.trainDirectory = null;
+	  options.testDirectory = null;
+	  options.devDirectory = null;
+	  options.modelsDirectory = null;
+	  options.preprocessDir = null;
+	  
+	  options.crossValidationFolds = null;
+  }
+
+private static void printOptionsForDebugging(Options options)
   {
 	System.out.format(
 		"training dir: %s%n" +
@@ -442,6 +470,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 		  trainDir = new File(options.trainDirectory);
 	  }
 	  if (preprocessDir.getName().contains("i2b2")) {
+		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readI2B2Challenge2010(preprocessDir, trainDir);
 		  
 	  } else {
 		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readSharpUmlsCem(
