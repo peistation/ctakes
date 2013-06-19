@@ -115,7 +115,7 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
     @Option(
         name = "--train-dir",
         usage = "specify the directory containing the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
-        required = true)
+        required = false)
     public String trainDirectory;
     
     @Option(
@@ -133,7 +133,7 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
     @Option(
         name = "--models-dir",
         usage = "specify the directory where the models will be placed",
-        required = true)
+        required = false)
     public File modelsDirectory;
     
     @Option(
@@ -251,12 +251,14 @@ protected static Options options = new Options();
 //    System.err.println("forcing skipping of conditional processing!!!");
 //    options.runConditional = false;
     printOptionsForDebugging(options);
-    String[] dirs = options.trainDirectory.split("[;:]");
     List<File> trainFiles = new ArrayList<File>();
-    for (String dir : dirs) {
-    	File trainDir = new File(dir);
-    	trainFiles.addAll(Arrays.asList(trainDir.listFiles()));
-    	System.out.println(trainFiles.toString());
+    if (null != options.trainDirectory) {
+    	String[] dirs = options.trainDirectory.split("[;:]");
+    	for (String dir : dirs) {
+    		File trainDir = new File(dir);
+    		trainFiles.addAll(Arrays.asList(trainDir.listFiles()));
+    		//    	System.out.println(trainFiles.toString());
+    	}
     }
     //File modelsDir = new File("models/modifier");
     File modelsDir = options.modelsDirectory;
@@ -304,7 +306,7 @@ protected static Options options = new Options();
     }
     
     // run cross-validation
-    else if(options.testDirectory == null || options.crossValidationFolds != null) {
+    else if(options.crossValidationFolds != null) {
       // run n-fold cross-validation
       List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, options.crossValidationFolds);
       //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
@@ -335,6 +337,8 @@ protected static Options options = new Options();
       if (options.evalOnly) {
     	  testFiles = Arrays.asList(options.evaluationOutputDirectory.listFiles());
     	  logger.debug("evalOnly using files in directory " + evaluationOutputDirectory.getName() + " aka " + evaluationOutputDirectory.getCanonicalPath());
+      } else if (options.trainOnly){
+    	  testFiles = new ArrayList<File>();
       } else {
     	  testFiles = Arrays.asList(options.testDirectory.listFiles());
       }
@@ -400,7 +404,7 @@ private static void printOptionsForDebugging(Options options)
 	    "%n%n",
 	    options.trainDirectory,
 	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
-	    options.modelsDirectory.getAbsolutePath(),
+	    (options.modelsDirectory!=null) ? options.modelsDirectory.getAbsolutePath() : "",
 	    options.crossValidationFolds,
 	    options.ignorePolarity,
 	    options.ignoreConditional,
@@ -469,7 +473,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	  } else {
 		  trainDir = new File(options.trainDirectory);
 	  }
-	  if (preprocessDir.getName().contains("i2b2")) {
+	  if (preprocessDir.getAbsolutePath().contains("i2b2")) {
 		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readI2B2Challenge2010(preprocessDir, trainDir);
 		  
 	  } else {

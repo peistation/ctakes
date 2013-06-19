@@ -28,9 +28,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.ctakes.typesystem.type.refsem.Entity;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -138,31 +138,34 @@ public class I2B2Challenge2010CollectionReader extends CollectionReader_ImplBase
 					if(word2char.containsKey(pair)){
 						int charOffset = word2char.get(pair);
 						int end = charOffset + m.group(1).length();
-						Entity entity = new Entity(jcas);
-						EntityMention mention = new EntityMention(jcas, charOffset, end);
+//						Entity entity = new Entity(jcas);
+						EventMention mention = new EventMention(jcas, charOffset, end);
+
 						// set default values...
-						mention.setPolarity(1);
-						mention.setConditional(false);
-						mention.setUncertainty(-1);
-						mention.setGeneric(false);
-						mention.setSubject("patient");
+						mention.setPolarity(CONST.NE_POLARITY_NEGATION_ABSENT);
+						mention.setConditional(CONST.NE_CONDITIONAL_FALSE);
+						mention.setUncertainty(CONST.NE_UNCERTAINTY_ABSENT);
+						mention.setGeneric(CONST.NE_GENERIC_FALSE);
+						mention.setSubject(CONST.ATTR_SUBJECT_PATIENT);
+
+						// set non-default values. mappings follow MITRE's conventions (see AssertionAnalysisEngine)
 						if(m.group(7).equals("absent")){
 //							negSet.add(charOffset+"-"+end);
-							mention.setPolarity(-1);
+							mention.setPolarity(CONST.NE_POLARITY_NEGATION_PRESENT);
 						}else if(m.group(7).equals("hypothetical")){
 //							hypothSet.add(charOffset+"-"+end);
-							mention.setGeneric(true);
+							mention.setConditional(CONST.NE_CONDITIONAL_TRUE);
 						}else if(m.group(7).equals("possible")){
 //							possSet.add(charOffset+"-"+end);
-							mention.setUncertainty(1);
+							mention.setUncertainty(CONST.NE_UNCERTAINTY_PRESENT);
 						}else if(m.group(7).equals("associated_with_someone_else")){
 //							nasSet.add(charOffset+"-"+end);
-							mention.setSubject("other");
-						}else if(m.group(7).equals("conditional")){
-//							condSet.add(charOffset+"-"+end);
-							mention.setConditional(true);
-//						}else if(m.group(7).equals("present")){
-//							presSet.add(charOffset+"-"+end);    // NOTE: There is no "present" setting, it is an inference from other things not being set.
+							mention.setSubject(CONST.ATTR_SUBJECT_FAMILY_MEMBER); // the most common non-patient case
+						}else if(m.group(7).equals("conditional")){ // no good mapping.
+////							condSet.add(charOffset+"-"+end);
+//							mention.setConditional(true);
+////						}else if(m.group(7).equals("present")){
+////							presSet.add(charOffset+"-"+end);    // NOTE: There is no "present" setting, it is an inference from other things not being set.
 						}
 						mention.addToIndexes();
 					}
