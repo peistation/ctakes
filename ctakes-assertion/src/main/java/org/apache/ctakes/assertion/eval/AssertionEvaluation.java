@@ -965,14 +965,16 @@ private static void printErrors(JCas jCas,
 			  if(!goldLabel.equals(systemLabel)){
 				  if(trueCategory == null){
 					  // used for multi-class case:
-					  System.out.println("Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
 				  }else if(systemLabel.equals(trueCategory)){
 					  System.out.println(classifierType+" FP: " + formatError(jCas, systemAnnotation));
 				  }else{
 					  System.out.println(classifierType+" FN: " + formatError(jCas, goldAnnotation));
 				  }
 			  }else{
-				  if(systemLabel.equals(trueCategory)){
+			    if(trueCategory == null){
+			      // multi-class case -- probably don't want to print anything?
+			    }else if(systemLabel.equals(trueCategory)){
 					  System.out.println(classifierType+" TP: " + formatError(jCas, systemAnnotation));
 				  }else{
 					  System.out.println(classifierType+" TN: " + formatError(jCas, systemAnnotation));
@@ -1455,7 +1457,8 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 
         // copying non-assertion fields
         newGoldEntityMention.setConfidence(oldSystemEntityMention.getConfidence());
-
+        newGoldEntityMention.setTypeID(oldSystemEntityMention.getTypeID());
+        
         newGoldEntityMention.addToIndexes();
       }
 
@@ -1474,6 +1477,7 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 
         // copying non-assertion fields
         newGoldEventMention.setConfidence(oldSystemEventMention.getConfidence());
+        newGoldEventMention.setTypeID(oldSystemEventMention.getTypeID());
 
         newGoldEventMention.addToIndexes();
       }
