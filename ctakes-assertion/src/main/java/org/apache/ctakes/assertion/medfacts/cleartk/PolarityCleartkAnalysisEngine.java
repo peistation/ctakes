@@ -20,9 +20,10 @@ package org.apache.ctakes.assertion.medfacts.cleartk;
 
 import java.util.ArrayList;
 
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveLeftFragmentExtractor;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveRightFragmentExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.NegationDependencyFeatureExtractor;
-import org.apache.ctakes.assertion.medfacts.cleartk.extractors.TreeFragmentFeatureExtractor;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -43,7 +44,8 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 		}
 		this.entityFeatureExtractors.add(new NegationDependencyFeatureExtractor());
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/polarity.txt"));
-		this.entityFeatureExtractors.add(new TreeFragmentFeatureExtractor("org/apache/ctakes/assertion/models/sharpPolarityFrags.txt"));
+		this.entityFeatureExtractors.add(new AboveLeftFragmentExtractor("AL_Polarity","org/apache/ctakes/assertion/models/sharpPolarityFrags.txt"));
+		this.entityFeatureExtractors.add(new AboveRightFragmentExtractor("AR_Polarity","org/apache/ctakes/assertion/models/sharpArPolarityFrags.txt"));
 	}
 
 	@Override

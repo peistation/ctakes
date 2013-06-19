@@ -45,14 +45,15 @@ import org.cleartk.util.CleartkInitializationException;
  * Model location is hardcoded as of right now.
  * TODO: Parameterize & unstaticize this so that, e.g., multiple projects could use this feature if necessary.
  */
-public class TreeFragmentFeatureExtractor implements SimpleFeatureExtractor {
+public abstract class TreeFragmentFeatureExtractor implements SimpleFeatureExtractor {
 	public static final String PARAM_OUTPUTDIR = "outputDir";
 	public static final String PARAM_SEMDIR = "semDir";
-	static HashSet<SimpleTree> frags = null;
-	private SemanticClasses sems = null;
+	protected static HashSet<SimpleTree> frags = null;
+	protected SemanticClasses sems = null;
+	protected String prefix = null;
 
-	public TreeFragmentFeatureExtractor(String resourceFilename) throws CleartkInitializationException{
-		if(frags == null) initializeFrags(resourceFilename);
+	public TreeFragmentFeatureExtractor(String prefix, String resourceFilename) throws CleartkInitializationException{
+		initializeFrags(resourceFilename);
 		try{
 			sems = new SemanticClasses(FileLocator.locateFile("org/apache/ctakes/assertion/semantic_classes").getAbsolutePath());
 		}catch(Exception e){
@@ -74,18 +75,5 @@ public class TreeFragmentFeatureExtractor implements SimpleFeatureExtractor {
 	}
 
 	@Override
-	public List<Feature> extract(JCas jcas, Annotation annotation)
-			throws CleartkExtractorException {
-		List<Feature> features = new ArrayList<Feature>();
-		SimpleTree tree = extractAboveLeftConceptTree(jcas, annotation, sems);
-		
-		for(SimpleTree frag : frags){
-			if(TreeUtils.containsIgnoreCase(tree, frag)){
-				features.add(new Feature("TreeFrag", frag.toString()));
-			}
-		}
-	
-		return features;
-	}
-
+	public abstract List<Feature> extract(JCas jcas, Annotation annotation);
 }

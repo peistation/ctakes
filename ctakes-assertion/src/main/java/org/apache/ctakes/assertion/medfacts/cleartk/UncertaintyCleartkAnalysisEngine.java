@@ -18,12 +18,16 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.util.ArrayList;
+
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveLeftFragmentExtractor;
+import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
-
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
 public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEngine {
 
@@ -31,6 +35,11 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
 		probabilityOfKeepingADefaultExample = 0.1;
+		if(this.entityFeatureExtractors == null){
+			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+		}
+		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/uncertainty.txt"));
+		this.entityFeatureExtractors.add(new AboveLeftFragmentExtractor("ALUncertainty", "org/apache/ctakes/assertion/models/sharpUncertaintyFrags.txt"));
 	}
 	
 	@Override
