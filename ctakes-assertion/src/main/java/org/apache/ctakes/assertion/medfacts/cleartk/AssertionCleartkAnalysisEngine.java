@@ -32,6 +32,7 @@ import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseA
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -48,8 +49,6 @@ import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
-import org.cleartk.classifier.feature.function.FeatureFunctionExtractor;
-import org.cleartk.classifier.feature.function.LowerCaseFeatureFunction;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
@@ -116,7 +115,6 @@ public abstract class AssertionCleartkAnalysisEngine extends
   protected List<CleartkExtractor> tokenContextFeatureExtractors;
   protected List<CleartkExtractor> tokenCleartkExtractors;
   protected List<SimpleFeatureExtractor> entityFeatureExtractors;
-
   protected CleartkExtractor cuePhraseInWindowExtractor;
   
   @Override
@@ -190,14 +188,17 @@ public abstract class AssertionCleartkAnalysisEngine extends
           );
     
     cuePhraseInWindowExtractor = new CleartkExtractor(
-          AssertionCuePhraseAnnotation.class,
-          baseExtractorCuePhraseCategory,
-          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
-          new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
-          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
-          new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
-          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
-          new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
+        BaseToken.class,
+        new CoveredTextExtractor(),
+        new CleartkExtractor.Bag(new CleartkExtractor.Covered())
+//          AssertionCuePhraseAnnotation.class,
+//          baseExtractorCuePhraseCategory,
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
           );
     
   }
@@ -245,8 +246,10 @@ public abstract class AssertionCleartkAnalysisEngine extends
 
     Map<IdentifiedAnnotation, Collection<Zone>> coveringZoneMap =
         JCasUtil.indexCovering(jCas, IdentifiedAnnotation.class, Zone.class);
+//    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSents =
+//        JCasUtil.indexCovering(jCas, IdentifiedAnnotation.class, Sentence.class);
     
-    List<Instance<String>> instances = new ArrayList<Instance<String>>();
+//    List<Instance<String>> instances = new ArrayList<Instance<String>>();
     // generate a list of training instances for each sentence in the document
     Collection<IdentifiedAnnotation> entities = JCasUtil.select(identifiedAnnotationView, IdentifiedAnnotation.class);
     for (IdentifiedAnnotation identifiedAnnotation : entities)
@@ -296,17 +299,38 @@ public abstract class AssertionCleartkAnalysisEngine extends
     	  instance.addAll(extractor.extract(identifiedAnnotationView, entityOrEventMention));
         }
       
-      List<Feature> cuePhraseFeatures = null;
+//      List<Feature> cuePhraseFeatures = null;
 //          cuePhraseInWindowExtractor.extract(jCas, entityOrEventMention);
           //cuePhraseInWindowExtractor.extractWithin(jCas, entityMention, firstCoveringSentence);
-      
-      if (cuePhraseFeatures != null && !cuePhraseFeatures.isEmpty())
-      {
-        instance.addAll(cuePhraseFeatures);
+//      List<Sentence> sents = new ArrayList<Sentence>(coveringSents.get(entityOrEventMention));
+      List<Sentence> sents = new ArrayList<Sentence>(JCasUtil.selectCovering(jCas, Sentence.class, entityOrEventMention.getBegin(), entityOrEventMention.getEnd()));
+      if(sents.size() > 0){
+        Sentence sentence = sents.get(0);
+        List<AssertionCuePhraseAnnotation> cues = JCasUtil.selectCovered(AssertionCuePhraseAnnotation.class, sentence);
+        int closest = Integer.MAX_VALUE;
+        AssertionCuePhraseAnnotation closestCue = null;
+        for(AssertionCuePhraseAnnotation cue : cues){
+          List<BaseToken> tokens = JCasUtil.selectBetween(BaseToken.class, cue, entityOrEventMention);
+          if(tokens.size() < closest){
+            closestCue = cue;
+            closest = tokens.size();
+          }
+//          instance.addAll(cuePhraseInWindowExtractor.extractBetween(jCas, cue, entityOrEventMention));
+        }
+        if(closestCue != null){
+          instance.add(new Feature("ClosestCue_Word", closestCue.getCoveredText()));
+//          instance.add(new Feature("ClosestCue_Phrase", closestCue.getCuePhrase()));
+          instance.add(new Feature("ClosestCue_PhraseFamily", closestCue.getCuePhraseAssertionFamily()));
+          instance.add(new Feature("ClosestCue_PhraseCategory", closestCue.getCuePhraseCategory()));
+        }
       }
+//      if (cuePhraseFeatures != null && !cuePhraseFeatures.isEmpty())
+//      {
+//        instance.addAll(cuePhraseFeatures);
+//      }
 
 
-        
+      instance.add(new Feature("ENTITY_TYPE", entityOrEventMention.getTypeID()));
       
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
         instance.addAll(extractor.extract(jCas, entityOrEventMention));
