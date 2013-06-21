@@ -156,6 +156,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
           String previousOutcome = index < 0 ? "O" : outcomes.get(index);
           features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
         }
+        //add segment ID as a features:
+        features.add(new Feature("SegmentID", segment.getId()));
+        
         // features from dominating parse tree
 //        for(SimpleFeatureExtractor extractor : this.parseFeatureExtractors){
         BaseToken startToken = token;
