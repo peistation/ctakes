@@ -3,6 +3,9 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="ConstituencyParserAnnotator">
+      <import location="../../../ctakes-constituency-parser/desc/ConstituencyParserAnnotator.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="DependencyParser">
       <import location="../../../ctakes-dependency-parser/desc/analysis_engine/ClearNLPDependencyParserAE.xml"/>
     </delegateAnalysisEngine>
@@ -24,17 +27,17 @@
     <delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingNP">
       <import location="../../../ctakes-chunker/desc/AdjustNounPhraseToIncludeFollowingNP.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
-      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="AdjustNounPhraseToIncludeFollowingPPNP">
       <import location="../../../ctakes-chunker/desc/AdjustNounPhraseToIncludeFollowingPPNP.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="LvgAnnotator">
-      <import location="../../../ctakes-lvg/desc/analysis_engine/LvgAnnotator.xml"/>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="POSTagger">
       <import location="../../../ctakes-pos-tagger/desc/POSTagger.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LvgAnnotator">
+      <import location="../../../ctakes-lvg/desc/analysis_engine/LvgAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -81,6 +84,7 @@ and requires an UMLS license.  Please update DictionaryLookupAnnotatorUMLS.xml f
         <node>ContextDependentTokenizerAnnotator</node>
         <node>POSTagger</node>
         <node>DependencyParser</node>
+        <node>ConstituencyParserAnnotator</node>
       </fixedFlow>
     </flowConstraints>
     <typePriorities>
