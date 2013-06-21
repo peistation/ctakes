@@ -45,7 +45,7 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 		this.entityFeatureExtractors.add(new NegationDependencyFeatureExtractor());
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/polarity.txt"));
 		this.entityFeatureExtractors.add(new AboveLeftFragmentExtractor("AL_Polarity","org/apache/ctakes/assertion/models/sharpPolarityFrags.txt"));
-		this.entityFeatureExtractors.add(new AboveRightFragmentExtractor("AR_Polarity","org/apache/ctakes/assertion/models/sharpArPolarityFrags.txt"));
+//		this.entityFeatureExtractors.add(new AboveRightFragmentExtractor("AR_Polarity","org/apache/ctakes/assertion/models/sharpArPolarityFrags.txt"));
 	}
 
 	@Override
