@@ -30,7 +30,6 @@ import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
@@ -46,8 +45,6 @@ import org.apache.uima.jcas.cas.FSArray;
 /**
  * Implementation that takes Rxnorm dictionary lookup hits and stores only the
  * ones that are also present in the Orange Book.
- * 
- * @author Mayo Clinic
  */
 public class AssertionCuePhraseConsumerImpl extends BaseLookupConsumerImpl
 		implements LookupConsumer
@@ -156,7 +153,7 @@ public class AssertionCuePhraseConsumerImpl extends BaseLookupConsumerImpl
 //			if (validCodeCol.size() > 0)
 //			{
 //				FSArray ocArr = createOntologyConceptArr(jcas, validCodeCol);
-//				IdentifiedAnnotation neAnnot = new MedicationEventMention(jcas); // medication NEs are EventMention
+//				IdentifiedAnnotation neAnnot = new MedicationMention(jcas); // medication NEs are EventMention
 //				neAnnot.setTypeID(CONST.NE_TYPE_ID_DRUG);
 //				neAnnot.setBegin(neBegin);
 //				neAnnot.setEnd(neEnd);
