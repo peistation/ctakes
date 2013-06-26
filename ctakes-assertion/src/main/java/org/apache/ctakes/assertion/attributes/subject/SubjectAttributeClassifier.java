@@ -121,7 +121,7 @@ public class SubjectAttributeClassifier {
 //				vfeat.put(feat, null);
 //			}
 //			return vfeat;
-			return null;
+			return new HashMap<String,Boolean>();
 		}
 				
 		// get any SRL arguments

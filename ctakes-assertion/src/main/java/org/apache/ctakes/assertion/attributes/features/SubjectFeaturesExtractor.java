@@ -56,11 +56,12 @@ public class SubjectFeaturesExtractor implements SimpleFeatureExtractor {
 	    
 	    HashMap<String, Boolean> featsMap = SubjectAttributeClassifier.extract(jCas, arg);
 
-	    // Pull in all the features that were used for the rule-based module
-	    features.addAll( hashToFeatureList(featsMap) );
-	    // Pull in the result of the rule-based module as well
-	    features.add(new Feature("SUBJECT_CLASSIFIER_LOGIC", SubjectAttributeClassifier.classifyWithLogic(featsMap)));
-
+	    if (!featsMap.isEmpty()) {
+	    	// Pull in all the features that were used for the rule-based module
+	    	features.addAll( hashToFeatureList(featsMap) );
+	    	// Pull in the result of the rule-based module as well
+	    	features.add(new Feature("SUBJECT_CLASSIFIER_LOGIC", SubjectAttributeClassifier.classifyWithLogic(featsMap)));
+	    }
 	    
 	    return features;
 	}

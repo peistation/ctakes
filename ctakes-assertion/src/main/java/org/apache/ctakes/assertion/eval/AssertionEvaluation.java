@@ -256,8 +256,10 @@ protected static Options options = new Options();
     	String[] dirs = options.trainDirectory.split("[;:]");
     	for (String dir : dirs) {
     		File trainDir = new File(dir);
-    		trainFiles.addAll(Arrays.asList(trainDir.listFiles()));
-    		//    	System.out.println(trainFiles.toString());
+    		if (trainDir.listFiles()!=null) {
+    			trainFiles.addAll(Arrays.asList(trainDir.listFiles()));
+        		//    	System.out.println(trainFiles.toString());
+    		}
     	}
     }
     //File modelsDir = new File("models/modifier");

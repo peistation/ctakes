@@ -55,17 +55,18 @@ public class HistoryCleartkAnalysisEngine extends
 
 	private void initialize_history_extractor() throws ResourceInitializationException {
 		
-		if (this.contextFeatureExtractors==null) {
-			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
-		}
-		this.contextFeatureExtractors.add( 
-				new CleartkExtractor(
-						IdentifiedAnnotation.class, new HistoryFeaturesExtractor()) );
-		
+//		if (this.contextFeatureExtractors==null) {
+//			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
+//		}
+//		this.contextFeatureExtractors.add( 
+//				new CleartkExtractor(
+//						IdentifiedAnnotation.class, new HistoryFeaturesExtractor()) );
+//		
 		if(this.entityFeatureExtractors == null){
 			this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
 		}
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/history.txt"));
+		this.entityFeatureExtractors.add(new HistoryFeaturesExtractor());
 	}
 	
 	@Override

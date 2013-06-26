@@ -54,13 +54,14 @@ public class SubjectCleartkAnalysisEngine extends
 
 	private void initialize_subject_extractor() {
 		
-		if (this.contextFeatureExtractors==null) {
-			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
-		}
-		this.contextFeatureExtractors.add( 
-				new CleartkExtractor(
-						IdentifiedAnnotation.class, new SubjectFeaturesExtractor()) );
+//		if (this.contextFeatureExtractors==null) {
+//			this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
+//		}
+//		this.contextFeatureExtractors.add( 
+//				new CleartkExtractor(
+//						IdentifiedAnnotation.class, new SubjectFeaturesExtractor()) );
 				
+		this.entityFeatureExtractors.add( new SubjectFeaturesExtractor());
 	}
 	
 	@Override

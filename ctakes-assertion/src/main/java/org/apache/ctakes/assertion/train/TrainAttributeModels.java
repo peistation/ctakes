@@ -18,7 +18,7 @@ public class TrainAttributeModels {
 
 			params.add("--train-dir"); 	params.add(AssertionConst.trainingDirectories.get(attribute));
 //			params.add("--test-dir"); 	params.add("sharp_data/dev");
-			params.add("--models-dir"); params.add("sharp_data/model/eval.model");
+			params.add("--models-dir"); params.add(AssertionConst.modelDirectory);
 //			params.add("--evaluation-output-dir");	params.add("sharp_data/output"); 
 			params.add("--train-only"); 
 			

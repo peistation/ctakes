@@ -1,5 +1,6 @@
 package org.apache.ctakes.assertion.train;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,14 +18,26 @@ public class ReadAndPreprocessForAttributeModels {
 			ArrayList<String> params = new ArrayList<String>();
 
 			// Always preprocess something to a main directory, usually for training
-			params.add("--train-dir"); 		params.add(AssertionConst.preprocessRootDirectory.get(source));
+			String froot = AssertionConst.preprocessRootDirectory.get(source);
+			if (!(new File(froot).exists())) {
+				(new File(froot)).createNewFile();
+			}
+			params.add("--train-dir"); 		params.add(froot);
 
 			// Some corpora (SHARP) may have predetermined dev/test splits. Check AssertionConst.
 			if (AssertionConst.preprocessForDev.containsKey(source) ) {
-				params.add("--dev-dir"); 	params.add(AssertionConst.preprocessForDev.get(source));
+				String fdev = AssertionConst.preprocessRootDirectory.get(source);
+				if (!(new File(fdev).exists())) {
+					(new File(fdev)).createNewFile();
+				}
+				params.add("--dev-dir"); 	params.add(fdev);
 			}
 			if (AssertionConst.preprocessForTest.containsKey(source) ) {
-				params.add("--test-dir"); 	params.add(AssertionConst.preprocessForTest.get(source));
+				String ftest = AssertionConst.preprocessRootDirectory.get(source);
+				if (!(new File(ftest).exists())) {
+					(new File(ftest)).createNewFile();
+				}
+				params.add("--test-dir"); 	params.add(ftest);
 			}
 			
 			// Specify preprocessing directory (See AssertionConst)

@@ -17,7 +17,7 @@ public class CrossValidateAttributeModels {
 			ArrayList<String> params = new ArrayList<String>();
 
 			params.add("--train-dir"); 			params.add(AssertionConst.trainingDirectories.get(attribute));
-			params.add("--models-dir"); 		params.add("sharp_data/model/eval.model");
+			params.add("--models-dir"); 		params.add(AssertionConst.modelDirectory);
 			params.add("--cross-validation"); 	params.add("5");
 			
 			// Build up an "ignore" string
