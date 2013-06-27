@@ -4,17 +4,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ctakes.constituency.parser.util.AnnotationTreeUtils;
 import org.apache.ctakes.temporal.ae.feature.ParseSpanFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
@@ -25,12 +24,10 @@ import org.cleartk.classifier.chunking.BIOChunking;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.Following;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.Preceding;
-import org.cleartk.classifier.feature.extractor.simple.CharacterCategoryPatternExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
-import org.cleartk.classifier.feature.extractor.simple.CharacterCategoryPatternExtractor.PatternType;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
@@ -119,10 +116,10 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
       }
 
       // extract features for all tokens
-      int tokenIndex = -1;
+//      int tokenIndex = -1;
       List<List<Feature>> allFeatures = new ArrayList<List<Feature>>();
       for (BaseToken token : tokens) {
-        ++tokenIndex;
+//        ++tokenIndex;
 
         List<Feature> features = new ArrayList<Feature>();
         // features from token attributes
@@ -153,7 +150,7 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
 //          }
 //          startToken = tokens.get(i);
 //        }
-        TreebankNode preTerm = AnnotationTreeUtils.annotationNode(jCas, token);
+//        TreebankNode preTerm = AnnotationTreeUtils.annotationNode(jCas, token);
         features.addAll(parseExtractor.extract(jCas, token.getBegin(), token.getEnd()));
         //if(preTerm != null && preTerm.getParent() != null){
         //  features.addAll(parseExtractor.extract(jCas, preTerm.getParent().getBegin(), preTerm.getParent().getEnd()));
@@ -176,7 +173,13 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
       }else{
 //        outcomes.add(this.classifier.classify(features));
         outcomes = this.classifier.classify(allFeatures);
-        this.timeChunking.createChunks(jCas, tokens, outcomes);
+        JCas timexCas;
+        try {
+          timexCas = jCas.getView(TimeAnnotator.TIMEX_VIEW);
+        } catch (CASException e) {
+          throw new AnalysisEngineProcessException(e);
+        }
+        this.timeChunking.createChunks(timexCas, tokens, outcomes);
       }
     }
   }

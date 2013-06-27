@@ -31,6 +31,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
@@ -55,6 +56,8 @@ import org.uimafit.util.JCasUtil;
 
 public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 
+  public static final String TIMEX_VIEW = "TimexView";
+  
   public static AnalysisEngineDescription createDataWriterDescription(
       Class<? extends DataWriter<String>> dataWriterClass,
       File outputDirectory) throws ResourceInitializationException {
@@ -185,7 +188,13 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 
       // during prediction, convert chunk labels to times and add them to the CAS
       if (!this.isTraining()) {
-        this.timeChunking.createChunks(jCas, tokens, outcomes);
+        JCas timexCas;
+        try {
+          timexCas = jCas.getView(TIMEX_VIEW);
+        } catch (CASException e) {
+          throw new AnalysisEngineProcessException(e);
+        }
+        this.timeChunking.createChunks(timexCas, tokens, outcomes);
       }
     }
   }

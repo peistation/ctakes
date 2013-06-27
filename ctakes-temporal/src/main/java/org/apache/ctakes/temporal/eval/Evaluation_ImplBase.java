@@ -123,6 +123,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option
     public boolean getPrintErrors();
     
+    @Option
+    public boolean getPrintOverlappingSpans();
+    
     @Option(longName = "kernelParams", defaultToNull=true)
     public String getKernelParams();
   }
@@ -138,6 +141,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   protected File treebankDirectory;
   
   protected boolean printErrors = false;
+  
+  protected boolean printOverlapping = false;
   
   protected String[] kernelParams;
   

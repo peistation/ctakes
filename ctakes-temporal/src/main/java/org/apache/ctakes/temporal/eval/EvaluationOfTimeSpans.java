@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.ctakes.temporal.ae.BackwardsTimeAnnotator;
 import org.apache.ctakes.temporal.ae.CRFTimeAnnotator;
 import org.apache.ctakes.temporal.ae.ConstituencyBasedTimeAnnotator;
+import org.apache.ctakes.temporal.ae.MetaTimeAnnotator;
 import org.apache.ctakes.temporal.ae.TimeAnnotator;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
@@ -62,13 +64,17 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     
     // specify the annotator classes to use
     List<Class<? extends JCasAnnotator_ImplBase>> annotatorClasses = Lists.newArrayList();
+    annotatorClasses.add(BackwardsTimeAnnotator.class);
     annotatorClasses.add(TimeAnnotator.class);
     annotatorClasses.add(ConstituencyBasedTimeAnnotator.class);
     annotatorClasses.add(CRFTimeAnnotator.class);
+    annotatorClasses.add(MetaTimeAnnotator.class);
     Map<Class<? extends JCasAnnotator_ImplBase>, String[]> annotatorTrainingArguments = Maps.newHashMap();
+    annotatorTrainingArguments.put(BackwardsTimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
+    annotatorTrainingArguments.put(MetaTimeAnnotator.class, new String[]{"-c", "1.0"});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
@@ -80,6 +86,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
           options.getXMIDirectory(),
           options.getTreebankDirectory(),
           annotatorClass,
+          options.getPrintOverlappingSpans(),
           annotatorTrainingArguments.get(annotatorClass));
       evaluation.prepareXMIsFor(patientSets);
       String name = String.format("%s.errors", annotatorClass.getSimpleName());
@@ -116,16 +123,20 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
       File xmiDirectory,
       File treebankDirectory,
       Class<? extends JCasAnnotator_ImplBase> annotatorClass,
+      boolean printOverlapping,
       String[] trainingArguments) {
     super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory, TimeMention.class);
     this.annotatorClass = annotatorClass;
     this.trainingArguments = trainingArguments;
+    this.printOverlapping = printOverlapping;
   }
 
   @Override
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
-    if(CleartkAnnotator.class.isAssignableFrom(this.annotatorClass)){
+    if(MetaTimeAnnotator.class.isAssignableFrom(this.annotatorClass)){
+      return MetaTimeAnnotator.getDataWriterDescription(LIBLINEARStringOutcomeDataWriter.class, directory);          
+    }else if(CleartkAnnotator.class.isAssignableFrom(this.annotatorClass)){
       return AnalysisEngineFactory.createPrimitiveDescription(
           this.annotatorClass,
           CleartkAnnotator.PARAM_IS_TRAINING,
@@ -156,6 +167,9 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   @Override
   protected AnalysisEngineDescription getAnnotatorDescription(File directory)
       throws ResourceInitializationException {
+    if(MetaTimeAnnotator.class.isAssignableFrom(this.annotatorClass)){
+      return MetaTimeAnnotator.getAnnotatorDescription(directory);
+    }
     return AnalysisEngineFactory.createPrimitiveDescription(
         this.annotatorClass,
         CleartkAnnotator.PARAM_IS_TRAINING,

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -98,7 +99,7 @@ protected abstract AnalysisEngineDescription getDataWriterDescription(File direc
   protected void train(CollectionReader collectionReader, File directory) throws Exception {
     AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
     aggregateBuilder.add(CopyFromGold.getDescription(this.annotationClass));
-    aggregateBuilder.add(this.getDataWriterDescription(directory));
+    aggregateBuilder.add(this.getDataWriterDescription(directory), "TimexView", CAS.NAME_DEFAULT_SOFA);
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
     this.trainAndPackage(directory);
   }
@@ -114,7 +115,7 @@ protected abstract AnalysisEngineDescription getDataWriterDescription(File direc
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
     AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
-    aggregateBuilder.add(this.getAnnotatorDescription(directory));
+    aggregateBuilder.add(this.getAnnotatorDescription(directory), "TimexView", CAS.NAME_DEFAULT_SOFA);
 
     AnnotationStatistics<String> stats = new AnnotationStatistics<String>();
     Ordering<Annotation> bySpans = Ordering.<Integer> natural().lexicographical().onResultOf(
@@ -172,6 +173,45 @@ protected abstract AnalysisEngineDescription getDataWriterDescription(File direc
                   text.substring(windowBegin, begin),
                   text.substring(begin, end),
                   text.substring(end, windowEnd)));
+            }
+          }
+          Set<Annotation> partialGold = new HashSet<Annotation>();
+          Set<Annotation> partialSystem = new HashSet<Annotation>();
+
+          // get overlapping spans
+          if(this.printOverlapping){
+            // iterate over all remaining gold annotations
+            for(Annotation gold : goldOnly){
+              Annotation bestSystem = null;
+              int bestOverlap = 0;
+              for(Annotation system : systemOnly){
+                if(system.getBegin() >= gold.getBegin() && system.getEnd() <= gold.getEnd()){
+                  // system completely contained by gold
+                  int overlap = system.getEnd() - system.getBegin();
+                  if(overlap > bestOverlap){
+                    bestOverlap = overlap;
+                    bestSystem = system;
+                  }
+                }else if(gold.getBegin() >= system.getBegin() && gold.getEnd() <= system.getEnd()){
+                  // gold completely contained by gold
+                  int overlap = gold.getEnd() - gold.getBegin();
+                  if(overlap > bestOverlap){
+                    bestOverlap = overlap;
+                    bestSystem = system;
+                  }
+                }
+              }
+              if(bestSystem != null){
+                this.logger.info(String.format("Allowed overlapping annotation: Gold(%s) => System(%s)\n", gold.getCoveredText(), bestSystem.getCoveredText()));
+                partialGold.add(gold);
+                partialSystem.add(bestSystem);
+              }
+            }
+            if(partialGold.size() > 0){
+              goldOnly.removeAll(partialGold);
+              systemOnly.removeAll(partialSystem);
+              assert partialGold.size() == partialSystem.size();
+              this.logger.info(String.format("Found %d overlapping spans and removed from gold/system errors\n", partialGold.size()));
             }
           }
         }
