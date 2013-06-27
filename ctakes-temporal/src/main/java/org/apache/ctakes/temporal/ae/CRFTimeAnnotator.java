@@ -35,18 +35,18 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
-  public static AnalysisEngineDescription createDataWriterDescription(
-      Class<? extends DataWriter<String>> dataWriterClass,
-      File outputDirectory) throws ResourceInitializationException {
-    return AnalysisEngineFactory.createPrimitiveDescription(
-        CRFTimeAnnotator.class,
-        CleartkAnnotator.PARAM_IS_TRAINING,
-        true,
-        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        dataWriterClass,
-        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-        outputDirectory);
-  }
+//  public static AnalysisEngineDescription createDataWriterDescription(
+//      Class<? extends DataWriter<String>> dataWriterClass,
+//      File outputDirectory) throws ResourceInitializationException {
+//    return AnalysisEngineFactory.createPrimitiveDescription(
+//        CRFTimeAnnotator.class,
+//        CleartkAnnotator.PARAM_IS_TRAINING,
+//        true,
+//        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+//        dataWriterClass,
+//        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+//        outputDirectory);
+//  }
 
   public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
       throws ResourceInitializationException {

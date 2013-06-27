@@ -74,7 +74,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
     annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
     annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
-    annotatorTrainingArguments.put(MetaTimeAnnotator.class, new String[]{"-c", "1.0"});
+    annotatorTrainingArguments.put(MetaTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
     
     // run one evaluation per annotator class
     final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
@@ -135,7 +135,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   protected AnalysisEngineDescription getDataWriterDescription(File directory)
       throws ResourceInitializationException {
     if(MetaTimeAnnotator.class.isAssignableFrom(this.annotatorClass)){
-      return MetaTimeAnnotator.getDataWriterDescription(LIBLINEARStringOutcomeDataWriter.class, directory);          
+      return MetaTimeAnnotator.getDataWriterDescription(CRFSuiteStringOutcomeDataWriter.class, directory);          
     }else if(CleartkAnnotator.class.isAssignableFrom(this.annotatorClass)){
       return AnalysisEngineFactory.createPrimitiveDescription(
           this.annotatorClass,

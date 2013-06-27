@@ -18,11 +18,12 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.DataWriter;
+import org.cleartk.classifier.CleartkSequenceAnnotator;
 import org.cleartk.classifier.Feature;
-import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.Instances;
+import org.cleartk.classifier.SequenceDataWriter;
 import org.cleartk.classifier.chunking.BIOChunking;
-import org.cleartk.classifier.jar.DefaultDataWriterFactory;
+import org.cleartk.classifier.jar.DefaultSequenceDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.uimafit.component.ViewCreatorAnnotator;
@@ -30,14 +31,14 @@ import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
-public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
+public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
 
   private BIOChunking<BaseToken, TimeMention> timeChunking;
 
   static Class[] components = new Class[]{ BackwardsTimeAnnotator.class, TimeAnnotator.class, ConstituencyBasedTimeAnnotator.class, CRFTimeAnnotator.class };
   
   public static AnalysisEngineDescription getDataWriterDescription(
-      Class<? extends DataWriter<String>> dataWriterClass,
+      Class<? extends SequenceDataWriter<String>> dataWriterClass,
       File directory) throws ResourceInitializationException {
     AggregateBuilder builder = new AggregateBuilder();
     
@@ -57,13 +58,20 @@ public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
     builder.add(CRFTimeAnnotator.createAnnotatorDescription(
                       new File(directory, CRFTimeAnnotator.class.getSimpleName())), 
                       TimeAnnotator.TIMEX_VIEW, CRFTimeAnnotator.class.getSimpleName());
-    builder.add(AnalysisEngineFactory.createPrimitiveDescription(MetaTimeAnnotator.class, 
-        CleartkAnnotator.PARAM_IS_TRAINING,
-        true,
-        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        dataWriterClass,
-        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-        new File(directory, MetaTimeAnnotator.class.getSimpleName())));   
+//    builder.add(AnalysisEngineFactory.createPrimitiveDescription(MetaTimeAnnotator.class, 
+//        CleartkAnnotator.PARAM_IS_TRAINING,
+//        true,
+//        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+//        dataWriterClass,
+//        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+//        new File(directory, MetaTimeAnnotator.class.getSimpleName())));
+    builder.add(AnalysisEngineFactory.createPrimitiveDescription(MetaTimeAnnotator.class,
+          CleartkSequenceAnnotator.PARAM_IS_TRAINING,
+          true,
+          DefaultSequenceDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          dataWriterClass,
+          DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+          new File(directory, MetaTimeAnnotator.class.getSimpleName())));
     return builder.createAggregateDescription();
   }
 
@@ -87,7 +95,7 @@ public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
                       TimeAnnotator.TIMEX_VIEW, CRFTimeAnnotator.class.getSimpleName());
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(
         MetaTimeAnnotator.class,
-        CleartkAnnotator.PARAM_IS_TRAINING,
+        CleartkSequenceAnnotator.PARAM_IS_TRAINING,
         false,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(directory, MetaTimeAnnotator.class.getSimpleName() + File.separator + "model.jar")));
@@ -106,6 +114,7 @@ public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
       throws AnalysisEngineProcessException {
     // classify tokens within each sentence
     for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
+      List<List<Feature>> sequenceFeatures = new ArrayList<List<Feature>>();
       List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
       // during training, the list of all outcomes for the tokens
       List<String> outcomes;
@@ -146,7 +155,7 @@ public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         for(int componentNum = 0; componentNum < componentOutcomes.size(); componentNum++){
           String outcome = componentOutcomes.get(componentNum).get(tokenIndex);
           if(tokenIndex > 0){
-            features.add(new Feature("PreviousOutcome", outcomes.get(tokenIndex-1)));
+//            features.add(new Feature("PreviousOutcome", outcomes.get(tokenIndex-1)));
             features.add(new Feature(String.format("Component%d_PreviousLabel", componentNum), componentOutcomes.get(componentNum).get(tokenIndex-1)));
           }
           features.add(new Feature(String.format("Component%d_Label", componentNum), outcome));
@@ -158,17 +167,23 @@ public class MetaTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
           }
         }
         
-        if (this.isTraining()) {
-          String outcome = outcomes.get(tokenIndex);
-          this.dataWriter.write(new Instance<String>(outcome, features));
-        }
+//        if (this.isTraining()) {
+//          String outcome = outcomes.get(tokenIndex);
+//          outcomes.add(outcome);
+//          instances.add(new Instance<String>(outcome, features));
+//          this.dataWriter.write(new Instance<String>(outcome, features));
+//        }
         // if predicting, add prediction to outcomes
-        else {
-          outcomes.add(this.classifier.classify(features));
-        }
+//        else {
+//          outcomes.add(this.classifier.classify(features));
+//        }
+        sequenceFeatures.add(features);
       }
       
-      if (!this.isTraining()) {
+      if (this.isTraining()) {
+        this.dataWriter.write(Instances.toInstances(outcomes, sequenceFeatures));
+      }else{
+        outcomes = this.classifier.classify(sequenceFeatures);
         this.timeChunking.createChunks(jCas, tokens, outcomes);
       }
 
