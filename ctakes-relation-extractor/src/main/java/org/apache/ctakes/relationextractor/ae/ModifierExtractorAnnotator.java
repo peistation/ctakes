@@ -115,6 +115,7 @@ public class ModifierExtractorAnnotator extends CleartkAnnotator<String> {
 
       // convert classifications to Modifiers
       if (!this.isTraining()) {
+        // TODO: don't just create Modifiers, create the XXXModifier subtypes
         this.chunking.createChunks(jCas, tokens, outcomes);
       }
     }

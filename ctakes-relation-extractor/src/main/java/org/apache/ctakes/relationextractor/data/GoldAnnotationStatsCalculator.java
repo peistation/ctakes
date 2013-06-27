@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
+import org.apache.ctakes.relationextractor.ae.LocationOfRelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator.IdentifiedAnnotationPair;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
@@ -150,7 +150,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
       if(targetRelationType.equals("location_of")) {
-        EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
+        LocationOfRelationExtractorAnnotator emPairAnnot = new LocationOfRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         entityMentionPairCount += pairs.size();
       } 
@@ -167,7 +167,7 @@ public class GoldAnnotationStatsCalculator extends JCasAnnotator_ImplBase {
     for(Sentence sentence : JCasUtil.select(jCas, Sentence.class)) {
          
       if(targetRelationType.equals("location_of")) {
-        EntityMentionPairRelationExtractorAnnotator emPairAnnot = new EntityMentionPairRelationExtractorAnnotator();
+        LocationOfRelationExtractorAnnotator emPairAnnot = new LocationOfRelationExtractorAnnotator();
         List<IdentifiedAnnotationPair> pairs = emPairAnnot.getCandidateRelationArgumentPairs(goldView, sentence);
         for(IdentifiedAnnotationPair pair : pairs) {
           String type1 = getEntityType(pair.getArg1().getTypeID());

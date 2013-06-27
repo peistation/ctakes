@@ -18,7 +18,8 @@
  */
 package org.apache.ctakes.relationextractor.ae;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
@@ -26,8 +27,11 @@ import java.util.Iterator;
 
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
+import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention;
+import org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UIMAFramework;
@@ -50,27 +54,24 @@ public class RelationExtractorAnnotatorsTest {
     AggregateBuilder builder = new AggregateBuilder();
     builder.add(findDescription(ModifierExtractorAnnotator.class));
     builder.add(findDescription(DegreeOfRelationExtractorAnnotator.class));
-    builder.add(findDescription(EntityMentionPairRelationExtractorAnnotator.class));
+    builder.add(findDescription(LocationOfRelationExtractorAnnotator.class));
     AnalysisEngine engine = builder.createAggregate();
     JCas jCas = engine.newJCas();
 
     // populate the CAS with an example sentence
     // TODO: add annotations to support phrase chunk and dependency features
-    TokenBuilder<BaseToken, Sentence> tokenBuilder = new TokenBuilder<BaseToken, Sentence>(
-        BaseToken.class,
-        Sentence.class,
-        "partOfSpeech",
-        null);
+    TokenBuilder<BaseToken, Sentence> tokenBuilder =
+        new TokenBuilder<BaseToken, Sentence>(BaseToken.class, Sentence.class, "partOfSpeech", null);
     tokenBuilder.buildTokens(
         jCas,
         "He had a slight fracture in the proximal right fibula.",
         "He had a slight fracture in the proximal right fibula .",
         "PRP VBD DT JJ NN IN DT JJ JJ NN .");
-    EntityMention fracture = new EntityMention(jCas, 16, 24);
+    DiseaseDisorderMention fracture = new DiseaseDisorderMention(jCas, 16, 24);
     fracture.setTypeID(CONST.NE_TYPE_ID_DISORDER);
     fracture.addToIndexes();
     assertEquals("fracture", fracture.getCoveredText());
-    EntityMention fibula = new EntityMention(jCas, 32, 53);
+    AnatomicalSiteMention fibula = new AnatomicalSiteMention(jCas, 32, 53);
     fibula.setTypeID(CONST.NE_TYPE_ID_ANATOMICAL_SITE);
     fibula.addToIndexes();
     assertEquals("proximal right fibula", fibula.getCoveredText());
@@ -80,27 +81,39 @@ public class RelationExtractorAnnotatorsTest {
 
     // test the modifier annotator
     Collection<Modifier> modifiers = JCasUtil.select(jCas, Modifier.class);
-    assertEquals(1, modifiers.size());
-    Modifier slight = modifiers.iterator().next();
+    assertEquals(3, modifiers.size());
+    Iterator<Modifier> modifierIterator = modifiers.iterator();
+    Modifier slight = modifierIterator.next();
     assertEquals("slight", slight.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS, slight.getTypeID());
+    //assertTrue(slight instanceof SeverityModifier);
+    Modifier proximal = modifierIterator.next();
+    assertEquals("proximal", proximal.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, proximal.getTypeID());
+    //assertTrue(proximal instanceof BodyLateralityModifier);
+    Modifier right = modifierIterator.next();
+    assertEquals("right", right.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, right.getTypeID());
+    //assertTrue(right instanceof BodySideModifier);
 
     // test the relation annotators
     Collection<BinaryTextRelation> relations = JCasUtil.select(jCas, BinaryTextRelation.class);
     assertEquals(2, relations.size());
     Iterator<BinaryTextRelation> iterator = relations.iterator();
     BinaryTextRelation slightFracture = iterator.next();
+    assertTrue(slightFracture instanceof DegreeOfTextRelation);
     assertEquals("degree_of", slightFracture.getCategory());
     assertEquals(fracture, slightFracture.getArg1().getArgument());
     assertEquals(slight, slightFracture.getArg2().getArgument());
     BinaryTextRelation fractureFibula = iterator.next();
     assertEquals("location_of", fractureFibula.getCategory());
-    // TODO: this seems backwards, but maybe that's how it's supposed to be?
-    assertEquals(fibula, fractureFibula.getArg1().getArgument());
-    assertEquals(fracture, fractureFibula.getArg2().getArgument());
+    assertTrue(fractureFibula instanceof LocationOfTextRelation);
+    assertEquals(fracture, fractureFibula.getArg1().getArgument());
+    assertEquals(fibula, fractureFibula.getArg2().getArgument());
   }
 
-  private static AnalysisEngineDescription findDescription(Class<? extends JCasAnnotator_ImplBase> cls)
-      throws Exception {
+  private static AnalysisEngineDescription findDescription(
+      Class<? extends JCasAnnotator_ImplBase> cls) throws Exception {
     File directory = new File("desc/analysis_engine");
     File file = new File(directory, cls.getSimpleName() + ".xml");
     XMLParser parser = UIMAFramework.getXMLParser();

@@ -22,25 +22,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
+import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 
 /**
- * Identifies Degree_Of relations between {@link EventMention}s and
- * {@link Modifier}s.
+ * Identifies Location_Of relations between {@link EventMention}s and
+ * {@link AnatomicalSiteMention}s.
  */
-public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
+public class LocationOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
 
   @Override
   protected Class<? extends BinaryTextRelation> getRelationClass() {
-    return DegreeOfTextRelation.class;
+    return LocationOfTextRelation.class;
   }
 
   @Override
@@ -50,13 +50,13 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
 
     List<EventMention> events =
         JCasUtil.selectCovered(identifiedAnnotationView, EventMention.class, sentence);
-    List<Modifier> modifiers =
-        JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
+    List<AnatomicalSiteMention> sites =
+        JCasUtil.selectCovered(identifiedAnnotationView, AnatomicalSiteMention.class, sentence);
 
     List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
     for (EventMention event : events) {
-      for (Modifier modifier : modifiers) {
-        pairs.add(new IdentifiedAnnotationPair(event, modifier));
+      for (AnatomicalSiteMention site : sites) {
+        pairs.add(new IdentifiedAnnotationPair(event, site));
       }
     }
     return pairs;
@@ -76,7 +76,7 @@ public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotat
     relArg2.setArgument(arg2);
     relArg2.setRole("Related_to");
     relArg2.addToIndexes();
-    DegreeOfTextRelation relation = new DegreeOfTextRelation(jCas);
+    LocationOfTextRelation relation = new LocationOfTextRelation(jCas);
     relation.setArg1(relArg1);
     relation.setArg2(relArg2);
     relation.setCategory(predictedCategory);
