@@ -186,9 +186,13 @@ public class SubjectAttributeClassifier {
 				// check if there are one-removed dependencies on the dependency path
 				DependencyPath path = DependencyUtility.getPath(jCas, DependencyUtility.getNominalHeadNode(jCas,tok), 
 						DependencyUtility.getNominalHeadNode(jCas,mention));
-				int commonInd = path.indexOf(path.getCommonNode());
-				if (commonInd==1 || commonInd==path.size()-2) {
-					vfeat.put(FAMILY_DEPTOK, true);
+				
+				// 6/28/13 srh fixing for null pointer exception
+				if (path != null) {
+					int commonInd = path.indexOf(path.getCommonNode());
+					if (commonInd==1 || commonInd==path.size()-2) {
+						vfeat.put(FAMILY_DEPTOK, true);
+					}
 				}
 			}
 			
