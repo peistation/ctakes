@@ -140,8 +140,7 @@ Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
         </featureDescription>
         <featureDescription>
           <name>oui</name>
-          <description>holds the rxnorm unique identifier for a given drug
-							mention.
+          <description>holds the rxnorm unique identifier for a given drug mention.
 							TODO: change this attribute because of name clash (UMLS/SNOMED)</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
@@ -1628,7 +1627,7 @@ More qualifying information on how the procedure was done.</description>
     </typeDescription>
     <typeDescription>
       <name>org.apache.ctakes.typesystem.type.textsem.MedicationEventMention</name>
-      <description>A text string (EventMention and therefore IdentifiedAnnotation) that refers to a (Medication) Event.</description>
+      <description>As of cTAKEs 3.1, see org.apache.ctakes.typesystem.type.textsem.MedicationMention.</description>
       <supertypeName>org.apache.ctakes.typesystem.type.textsem.EventMention</supertypeName>
       <features>
         <featureDescription>
