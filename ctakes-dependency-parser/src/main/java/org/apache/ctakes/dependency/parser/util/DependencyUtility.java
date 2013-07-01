@@ -257,8 +257,26 @@ public abstract class DependencyUtility {
 		if (sent1.equals(sent2)) {
 			return getPath( getDependencyNodes(jCas, sent1), node1, node2);
 		} else {
-			logger.debug("Cannot find path between nodes in different sentences. Node1: "
-					+ node1.getCoveredText() + "  Node2: " + node2.getCoveredText());			
+			
+			// 6/28/13 shalgrim
+			// nodes can be null so check before calling getCoveredText
+			String node1txt, node2txt;
+			
+			if (node1 == null) {
+				node1txt = "null";
+			} else {
+				node1txt = node1.getCoveredText();
+			}
+			
+			if (node2 == null)
+			{
+				node2txt = "null";
+			} else {
+				node2txt = node2.getCoveredText();
+			}
+			
+			logger.debug(String.format("Cannot find path between nodes in different sentences. Node1: %s  Node2: %s",
+					node1txt, node2txt));			
 		}
 		return null;
 	}
