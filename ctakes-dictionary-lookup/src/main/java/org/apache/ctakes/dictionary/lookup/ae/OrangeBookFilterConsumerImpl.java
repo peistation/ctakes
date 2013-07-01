@@ -24,7 +24,7 @@ import org.apache.ctakes.dictionary.lookup.vo.LookupHit;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
+import org.apache.ctakes.typesystem.type.textsem.MedicationMention;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
@@ -99,7 +99,7 @@ public class OrangeBookFilterConsumerImpl extends BaseLookupConsumerImpl impleme
                validCodes.add( code );
             }
             final FSArray ocArr = createOntologyConceptArr( jcas, validCodes );
-            IdentifiedAnnotation neAnnot = new MedicationEventMention( jcas ); // medication NEs are EventMention
+            IdentifiedAnnotation neAnnot = new MedicationMention( jcas ); // medication NEs are EventMention
             neAnnot.setTypeID( CONST.NE_TYPE_ID_DRUG );
             neAnnot.setBegin( neBegin );
             neAnnot.setEnd( neEnd );
