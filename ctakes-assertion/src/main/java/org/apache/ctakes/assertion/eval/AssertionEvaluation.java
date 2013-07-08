@@ -362,7 +362,7 @@ protected static Options options = new Options();
       }
     }
     
-    System.out.println("Finished assertion module.");
+    System.out.println("Finished assertion module.\n");
     
   }
   
@@ -392,10 +392,14 @@ protected static Options options = new Options();
 
 private static void printOptionsForDebugging(Options options)
   {
-	System.out.format(
+	String message;
+	message = String.format(
+		"Printing options: %n" +
 		"training dir: %s%n" +
 	    "test dir: %s%n" + 
 	    "model dir: %s%n" +
+	    "preprocess dir: %s%n" +
+	    "evaluation output dir: %s%n" +
 	    "cross-validation: %d%n" +
 	    "ignore polarity: %b%n" +
 	    "ignore conditional: %b%n" +
@@ -403,18 +407,31 @@ private static void printOptionsForDebugging(Options options)
 	    "ignore subject: %b%n" +
 	    "ignore generic: %b%n" +
 	    "ignore history: %b%n" +
+	    "train only: %b%n" +
+	    "test only: %b%n" +
+	    "eval only: %b%n" +
+	    //"crossValidationFolds: %s%n" +
+	    "noCleartk: %b%n" +
 	    "%n%n",
-	    options.trainDirectory,
-	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
+	    options.trainDirectory, // just a String so no need to check for null because not using getAbsolutePath()
+   	    (options.testDirectory != null) ? options.testDirectory.getAbsolutePath() : "",
 	    (options.modelsDirectory!=null) ? options.modelsDirectory.getAbsolutePath() : "",
+   		(options.preprocessDir!=null) ? options.preprocessDir.getAbsolutePath() : "",
+	    (options.evaluationOutputDirectory!=null) ? options.evaluationOutputDirectory.getAbsolutePath() : "",
 	    options.crossValidationFolds,
 	    options.ignorePolarity,
 	    options.ignoreConditional,
 	    options.ignoreUncertainty,
 	    options.ignoreSubject,
 	    options.ignoreGeneric,
-	    options.ignoreHistory
+	    options.ignoreHistory,
+		options.trainOnly,
+		options.testOnly,
+		options.evalOnly,
+		//(options.crossValidationFolds != null) ? options.crossValidationFolds.intValue()+"" : "",
+		options.noCleartk
 	    );
+	logger.info(message);
   }
 
 public static void printScore(Map<String, AnnotationStatistics> map, String directory)
@@ -471,7 +488,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //	  File devDirectory = new File(options.trainDirectory.getParentFile() + File.separator + "dev");
 	  File trainDir = null;
 	  if (options.trainDirectory.split("[;:]").length>1) {
-		  throw new IOException("Assertion preprocess wants to write to one train directory, but you've supplied multiple.");
+		  throw new IOException("Assertion preprocess wants to write to one train directory, but you've supplied multiple: " + options.trainDirectory);
 	  } else {
 		  trainDir = new File(options.trainDirectory);
 	  }
