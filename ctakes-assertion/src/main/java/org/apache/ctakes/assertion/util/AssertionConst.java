@@ -12,7 +12,7 @@ public class AssertionConst {
 
 	// Locally-stored data models
 	
-	public static final String BASE_DIRECTORY =  "/Users/m081914/"; //"/usr/data/work/data/assertion/";  // "/usr/data";
+	public static final String BASE_DIRECTORY = "/usr/data/work/data/assertion/";// "/Users/m081914/"; // "/usr/data/work/data/assertion/";  // "/usr/data";
 	static {
 		if (!BASE_DIRECTORY.endsWith("/") && !BASE_DIRECTORY.endsWith("\\")) {
 			throw new RuntimeException("BASE_DIRECTORY should end with a slash");
@@ -27,7 +27,7 @@ public class AssertionConst {
 	public static final String I2B2_2010_TEST_CORPUS = BASE_DIRECTORY + "work/data/i2b2Challenge2010/Data/Test/reports/";
 
 	// raw and processed text, expects subdirectories for different sources, then subsubdirectories for train/test/dev
-	public static final String DATA_DIR = BASE_DIRECTORY + "work/data/assertion/";
+	public static final String DATA_DIR = BASE_DIRECTORY; // + "work/data/assertion/";
 	
 	// specify the model to write (train/crossvalidate) or read (test/crossvalidate).
 	//  please rename for different configurations of training data 
