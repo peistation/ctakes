@@ -256,11 +256,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
         TypeSystemDescriptionFactory.createTypeSystemDescription(),
         TypePrioritiesFactory.createTypePriorities(Segment.class, Sentence.class, BaseToken.class),
         POSTagger.POS_MODEL_FILE_PARAM,
-        "org/apache/ctakes/postagger/models/mayo-pos.zip",
-        POSTagger.TAG_DICTIONARY_PARAM,
-        "org/apache/ctakes/postagger/models/tag.dictionary.txt",
-        POSTagger.CASE_SENSITIVE_PARAM,
-        true));
+        "org/apache/ctakes/postagger/models/mayo-pos.zip"));
 
     // identify chunks
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
