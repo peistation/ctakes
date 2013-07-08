@@ -37,6 +37,7 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader_ImplBase;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
@@ -59,13 +60,15 @@ public class I2B2Challenge2010CollectionReader extends CollectionReader_ImplBase
 	
 	
 	@Override
-	public void initialize() throws org.apache.uima.resource.ResourceInitializationException {
+	public void initialize() throws ResourceInitializationException {
 		String inputDir = (String) getConfigParameterValue(PARAM_INPUTDIR);
 		File docDir = new File(inputDir + File.separator + "txt");
 		match = (String) getConfigParameterValue(PARAM_FNMATCH);
 		if(match != null) fnMatch = true;
 		if(docDir.exists() && docDir.isDirectory()){
 			docs = docDir.listFiles(new FilenameFilter(){ public boolean accept(File dir, String name){ return (name.endsWith("txt") && (!fnMatch || name.contains(match)));}});
+		} else {
+			throw new ResourceInitializationException(new RuntimeException("Unable to get list of files within " + docDir.getAbsolutePath()));
 		}
 //		conDir = new String(inputDir + File.separator + "concept");
 		astDir = new String(inputDir + File.separator + "ast");
@@ -179,6 +182,9 @@ public class I2B2Challenge2010CollectionReader extends CollectionReader_ImplBase
 
 	@Override
 	public boolean hasNext() throws IOException, CollectionException {
+		if (docs==null) {
+			throw new RuntimeException("docs == null");
+		}
 		return (index < docs.length);
 	}
 
