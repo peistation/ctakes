@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -243,9 +244,12 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
 
   private String sharpCorpusDirectory;
 
-protected static Options options = new Options();
+  protected static Options options = new Options();
   
   public static void main(String[] args) throws Exception {
+	  
+    System.out.println("Started assertion module at " + new Date());
+    
     //Options options = new Options();
 	  resetOptions();
 	  options.parseOptions(args);
@@ -372,7 +376,7 @@ protected static Options options = new Options();
       }
     }
     
-    System.out.println("Finished assertion module.\n");
+    System.out.println("Finished assertion module at " + new Date());
     
   }
   
@@ -995,6 +999,12 @@ private static void printErrors(JCas jCas,
 			  //  Integer systemLabel = systemAnnotation.getIntValue(feature);
 		  }
 		  
+		  String typeId;
+		  if (systemAnnotation!=null) {
+			  typeId = systemAnnotation.getTypeID()+"";
+		  } else  {
+			  typeId = "X";
+		  }
 		  
 		  if (goldLabel==null) {
 			  // skip counting the attribute value since we have no gold label to compare to
@@ -1005,17 +1015,17 @@ private static void printErrors(JCas jCas,
 					  // used for multi-class case:
 					  System.out.println(classifierType+" Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
 				  }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" FP: " + formatError(jCas, systemAnnotation));
+					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
 				  }else{
-					  System.out.println(classifierType+" FN: " + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" FN: " + typeId + " " + formatError(jCas, goldAnnotation)+ "| system:|" + formatError(jCas, systemAnnotation));
 				  }
 			  }else{
 			    if(trueCategory == null){
 			      // multi-class case -- probably don't want to print anything?
 			    }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" TP: " + formatError(jCas, systemAnnotation));
+					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
 				  }else{
-					  System.out.println(classifierType+" TN: " + formatError(jCas, systemAnnotation));
+					  System.out.println(classifierType+" TN: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
 				  }
 			  }
 		  }
