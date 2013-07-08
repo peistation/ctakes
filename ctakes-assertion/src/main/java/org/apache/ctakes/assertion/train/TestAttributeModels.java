@@ -25,6 +25,7 @@ public class TestAttributeModels {
 			params.add("--test-dir"); 	params.add(AssertionConst.testDirectories.get(attribute));
 			params.add("--models-dir"); params.add(AssertionConst.modelDirectory);
 			params.add("--evaluation-output-dir");	params.add(AssertionConst.evalOutputDir);
+			params.add("--test-only");	
 			
 			// Build up an "ignore" string
 			for (String ignoreAttribute : AssertionConst.annotationTypes) {
