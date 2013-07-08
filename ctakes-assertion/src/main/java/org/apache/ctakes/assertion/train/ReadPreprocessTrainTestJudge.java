@@ -50,7 +50,7 @@ public class ReadPreprocessTrainTestJudge {
 		RunJudgeAttributeInstances.main(parmsAsArray);
 
 		// Run the actual assertion preprocessing on just one data source
-		if (true) /** TODO Should this be done here? **/ AssertionEvaluation.main(parmsAsArray);
+		// if (true) /** TODO Should this be done here? **/ AssertionEvaluation.main(parmsAsArray);
 
 	}
 }
