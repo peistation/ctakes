@@ -109,7 +109,9 @@ import com.google.common.collect.Sets;
 
 public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
   
-  private static Logger logger = Logger.getLogger(AssertionEvaluation.class); 
+private static Logger logger = Logger.getLogger(AssertionEvaluation.class); 
+
+  private static final String YTEX_NEGATION_DESCRIPTOR = "ytex/uima/NegexAnnotator.xml";
 
   public static class Options extends Options_ImplBase {
     @Option(
@@ -221,6 +223,14 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
     		usage = "Evaluate a CASes (supply the directory as an argument) with both system and gold in them.",
     		required = false)
     public boolean evalOnly;
+
+    @Option(
+    		name = "--ytex-negation",
+    		usage = "Use the negation detection from ytex, which is based on a more recent NegEx than the original cTAKES used." +
+    		" Note that using this requires adding the directory for YTEX_NEGATION_DESCRIPTOR to the classpath as well" +
+    		" as the annotator class itself, since ytex is under a different license than Apache cTAKES.",
+    		required = false)
+    public boolean useYtexNegation;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -558,17 +568,22 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     if (!options.ignorePolarity)
     {
-	    AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-	    ConfigurationParameterFactory.addConfigurationParameters(
-	        polarityAnnotator,
-	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-	        AssertionEvaluation.GOLD_VIEW_NAME,
-	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-	        this.dataWriterFactoryClass.getName(),
-	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-	        new File(directory, "polarity").getPath()
-	        );
-	    builder.add(polarityAnnotator);
+    	if (options.useYtexNegation) {
+    		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription(YTEX_NEGATION_DESCRIPTOR);
+    		builder.add(polarityAnnotator);
+    	} else {
+    		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+    		ConfigurationParameterFactory.addConfigurationParameters(
+    				polarityAnnotator,
+    				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+    				AssertionEvaluation.GOLD_VIEW_NAME,
+    				CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+    				this.dataWriterFactoryClass.getName(),
+    				DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+    				new File(directory, "polarity").getPath()
+    				);
+    		builder.add(polarityAnnotator);
+    	}
     }
 
     if (!options.ignoreConditional)
@@ -1154,20 +1169,26 @@ private void addCleartkAttributeAnnotatorsToAggregate(File directory,
 		);
 //	builder.add(mayoZonerAnnotator);
 
-	// RUN THE CLEARTK CLASSIFIERS
+	// Add the ClearTk or the ytex negation (polarity) classifier
 	if (!options.ignorePolarity)
 	{
-		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
-		ConfigurationParameterFactory.addConfigurationParameters(
-				polarityAnnotator,
-				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
-				AssertionEvaluation.GOLD_VIEW_NAME,
-				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-				new File(new File(directory, "polarity"), "model.jar").getPath()
-		);
-		builder.add(polarityAnnotator);
+    	if (options.useYtexNegation) {
+    		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createAnalysisEngineDescription(YTEX_NEGATION_DESCRIPTOR);
+    		builder.add(polarityAnnotator);
+    	} else {
+    		AnalysisEngineDescription polarityAnnotator = AnalysisEngineFactory.createPrimitiveDescription(PolarityCleartkAnalysisEngine.class); //,  this.additionalParamemters);
+    		ConfigurationParameterFactory.addConfigurationParameters(
+    				polarityAnnotator,
+    				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
+    				AssertionEvaluation.GOLD_VIEW_NAME,
+    				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+    				new File(new File(directory, "polarity"), "model.jar").getPath()
+    				);
+    		builder.add(polarityAnnotator);
+    	}
 	}
 
+	// Add the rest of the ClearTk classifiers
 	if (!options.ignoreConditional)
 	{
 		AnalysisEngineDescription conditionalAnnotator = AnalysisEngineFactory.createPrimitiveDescription(ConditionalCleartkAnalysisEngine.class); //,  this.additionalParamemters);
