@@ -7,7 +7,11 @@ import org.apache.ctakes.assertion.eval.AssertionEvaluation;
 import org.apache.ctakes.assertion.util.AssertionConst;
 
 import scala.actors.threadpool.Arrays;
-
+/**
+ * For each assertion attribute (polarity, conditional, etc), train a model using the data
+ * in the training directories for that attribute, and store the model under the models-dir
+ * Note that this uses constants within {@link AssertionConst} for the directory names.
+ */
 public class TrainAttributeModels {
 
 	public static void main(String[] args) throws Exception {
@@ -19,7 +23,7 @@ public class TrainAttributeModels {
 			params.add("--train-dir"); 	params.add(AssertionConst.trainingDirectories.get(attribute));
 //			params.add("--test-dir"); 	params.add("sharp_data/dev");
 			params.add("--models-dir"); params.add(AssertionConst.modelDirectory);
-//			params.add("--evaluation-output-dir");	params.add("sharp_data/output"); 
+//			params.add("--evaluation-output-dir");	params.add(AssertionConst.evalOutputDir); 
 			params.add("--train-only"); 
 			
 			// Build up an "ignore" string
