@@ -27,7 +27,7 @@ public class ReadAndPreprocessForAttributeModels {
 				if (!f.getParentFile().isDirectory()) {
 					throw new RuntimeException("What should be the parent is not a directory " + f.getParentFile().getPath());
 				}
-				(new File(froot)).createNewFile();
+				(new File(froot)).mkdir();
 			}
 			params.add("--train-dir"); 		params.add(froot);
 
@@ -35,14 +35,14 @@ public class ReadAndPreprocessForAttributeModels {
 			if (AssertionConst.preprocessForDev.containsKey(source) ) {
 				String fdev = AssertionConst.preprocessRootDirectory.get(source);
 				if (!(new File(fdev).exists())) {
-					(new File(fdev)).createNewFile();
+					(new File(fdev)).mkdir();
 				}
 				params.add("--dev-dir"); 	params.add(fdev);
 			}
 			if (AssertionConst.preprocessForTest.containsKey(source) ) {
 				String ftest = AssertionConst.preprocessRootDirectory.get(source);
 				if (!(new File(ftest).exists())) {
-					(new File(ftest)).createNewFile();
+					(new File(ftest)).mkdir();
 				}
 				params.add("--test-dir"); 	params.add(ftest);
 			}
