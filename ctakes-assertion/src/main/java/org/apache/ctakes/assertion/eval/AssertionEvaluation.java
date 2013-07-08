@@ -20,7 +20,6 @@ package org.apache.ctakes.assertion.eval;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,14 +73,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCopier;
-import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.DataWriterFactory;
+import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
-import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
+import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
@@ -238,7 +235,9 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
 
   private Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass;
 
-  private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
+//  private Class<? extends DataWriterFactory<String>> dataWriterFactoryClass;
+  
+  private Class<? extends DataWriter<String>> dataWriterClass;
   
   private File evaluationOutputDirectory;
 
@@ -281,7 +280,7 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     File evaluationOutputDirectory = options.evaluationOutputDirectory;
 
     // determine the type of classifier to be trained
-    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMaxentDataWriterFactory.class;
+//    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMaxentDataWriterFactory.class;
 //    Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultMultiClassLIBSVMDataWriterFactory.class;
     
     // TODO Class<? extends DataWriterFactory<String>> dataWriterFactoryClass = DefaultDataWriterFactory.class;
@@ -309,11 +308,13 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
         evaluationOutputDirectory,
         annotationTypes,
         annotatorClass,
-        dataWriterFactoryClass,
-//        "-c",
-//        "1"
-        "100",
-        "2"
+        LIBLINEARStringOutcomeDataWriter.class,
+        "-c",
+        "1"
+//        "-t",
+//        "0"
+//        "100",
+//        "2"
         );
     
     // if preprocessing, don't do anything else
@@ -470,7 +471,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       File evaluationOutputDirectory,
       ArrayList<String> annotationTypes,
       Class<? extends AssertionCleartkAnalysisEngine> classifierAnnotatorClass,
-      Class<? extends DataWriterFactory<String>> dataWriterFactoryClass,
+      Class<? extends DataWriter<String>> dataWriterClass,
       String... trainingArguments
       ) {
     super(modelDirectory);
@@ -478,7 +479,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     this.annotationTypes = annotationTypes;
 
     this.classifierAnnotatorClass = classifierAnnotatorClass;
-    this.dataWriterFactoryClass = dataWriterFactoryClass;
+    this.dataWriterClass = dataWriterClass;
 
     this.trainingArguments = trainingArguments;
     this.evaluationOutputDirectory = evaluationOutputDirectory;
@@ -581,8 +582,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     				polarityAnnotator,
     				AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
     				AssertionEvaluation.GOLD_VIEW_NAME,
-    				CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-    				this.dataWriterFactoryClass.getName(),
+//    				CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//    				this.dataWriterFactoryClass.getName(),
+    				DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+    				this.dataWriterClass,
     				DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
     				new File(directory, "polarity").getPath()
     				);
@@ -597,8 +600,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	        conditionalAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
 	        AssertionEvaluation.GOLD_VIEW_NAME,
-	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-	        this.dataWriterFactoryClass.getName(),
+//	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//	        this.dataWriterFactoryClass.getName(),
+          DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          this.dataWriterClass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 	        new File(directory, "conditional").getPath()
 	        );
@@ -612,8 +617,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	        uncertaintyAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
 	        AssertionEvaluation.GOLD_VIEW_NAME,
-	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-	        this.dataWriterFactoryClass.getName(),
+//	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//	        this.dataWriterFactoryClass.getName(),
+          DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          this.dataWriterClass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 	        new File(directory, "uncertainty").getPath()
 	        );
@@ -627,8 +634,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 	        subjectAnnotator,
 	        AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
 	        AssertionEvaluation.GOLD_VIEW_NAME,
-	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-	        this.dataWriterFactoryClass.getName(),
+//	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//	        this.dataWriterFactoryClass.getName(),
+          DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          this.dataWriterClass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 	        new File(directory, "subject").getPath()
 	        );
@@ -642,8 +651,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 		    genericAnnotator,
 		    AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
 		    AssertionEvaluation.GOLD_VIEW_NAME,
-		    CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-		    this.dataWriterFactoryClass.getName(),
+//		    CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//		    this.dataWriterFactoryClass.getName(),
+        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+        this.dataWriterClass,
 		    DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 		    new File(directory, "generic").getPath()
 		    );
@@ -657,8 +668,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     			historyAnnotator,
     			AssertionCleartkAnalysisEngine.PARAM_GOLD_VIEW_NAME,
     			AssertionEvaluation.GOLD_VIEW_NAME,
-    			CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
-    			this.dataWriterFactoryClass.getName(),
+//    			CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
+//    			this.dataWriterFactoryClass.getName(),
+          DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+          this.dataWriterClass,
     			DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
     			new File(directory, "historyOf").getPath()
     			);
