@@ -82,7 +82,7 @@ public class GoldEntityAndAttributeReaderPipelineForSeedCorpus {
 //		File parentDirectory = new File(parentDirectoryString);
 		if (!parentDirectory.exists())
 		{
-			logger.fatal("parent directory does not exist! exiting! parentDirectory = " + parentDirectory.getAbsolutePath());
+			logger.fatal(String.format("parent directory %s does not exist! exiting!", parentDirectory.getAbsolutePath()));
 			return;
 		}
 		
