@@ -63,12 +63,12 @@ public class SentenceDetectorCtakes {
 	  /**
 	   * Constant indicates a sentence split.
 	   */
-	  public static final String SPLIT ="T";
+	  public static final String SPLIT ="s";
 
 	  /**
 	   * Constant indicates no sentence split.
 	   */
-	  public static final String NO_SPLIT ="F";
+	  public static final String NO_SPLIT ="n";
 	  
 	  private static final Double ONE = new Double(1);
 
