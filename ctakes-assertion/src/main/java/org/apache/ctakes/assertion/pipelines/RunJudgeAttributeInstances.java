@@ -2,12 +2,11 @@ package org.apache.ctakes.assertion.pipelines;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ctakes.assertion.cc.JudgeAttributeInstances;
 import org.apache.ctakes.assertion.eval.XMIReader;
-import org.apache.ctakes.core.cr.FilesInDirectoryCollectionReader;
+import org.apache.ctakes.assertion.util.AssertionConst;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
@@ -15,8 +14,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
-import org.uimafit.component.xwriter.XWriter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
@@ -30,12 +27,12 @@ public class RunJudgeAttributeInstances {
 				name = "--input-dir",
 				usage = "where to read the fully-annotated xmi data from",
 				required = true)
-				public String inputDir = "sharp_data/output";
+				public String inputDir = AssertionConst.evalOutputDir;
 		@Option(
 				name = "--output-dir",
 				usage = "where to write the 'adjudicated' instances in xmi format to",
 				required = true)
-				public String outputDir = "sharp_data/output_instancegathering";
+				public String outputDir = AssertionConst.instanceGatheringOutputDir;
 //		@Option(
 //				name = "--ignore-polarity",
 //				usage = "specify whether polarity processing should be ignored (true or false). default: false",
