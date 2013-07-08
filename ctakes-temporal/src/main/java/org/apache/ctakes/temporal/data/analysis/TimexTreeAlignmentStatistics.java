@@ -1,11 +1,8 @@
 package org.apache.ctakes.temporal.data.analysis;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.ctakes.constituency.parser.util.TreeUtils;

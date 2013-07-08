@@ -36,7 +36,6 @@ import org.cleartk.util.ae.UriToDocumentTextAnnotator;
 import org.cleartk.util.cr.UriCollectionReader;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.ExternalResourceFactory;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.util.JCasUtil;
 

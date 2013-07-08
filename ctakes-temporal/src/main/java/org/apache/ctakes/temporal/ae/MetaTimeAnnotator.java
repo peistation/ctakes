@@ -17,7 +17,6 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
-import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.CleartkSequenceAnnotator;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instances;
@@ -35,14 +34,14 @@ public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
 
   private BIOChunking<BaseToken, TimeMention> timeChunking;
 
-  static Class[] components = new Class[]{ BackwardsTimeAnnotator.class, TimeAnnotator.class, ConstituencyBasedTimeAnnotator.class, CRFTimeAnnotator.class };
+  static Class<?>[] components = new Class<?>[]{ BackwardsTimeAnnotator.class, TimeAnnotator.class, ConstituencyBasedTimeAnnotator.class, CRFTimeAnnotator.class };
   
   public static AnalysisEngineDescription getDataWriterDescription(
       Class<? extends SequenceDataWriter<String>> dataWriterClass,
       File directory) throws ResourceInitializationException {
     AggregateBuilder builder = new AggregateBuilder();
     
-    for(Class component : components){
+    for(Class<?> component : components){
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ViewCreatorAnnotator.class, ViewCreatorAnnotator.PARAM_VIEW_NAME, component.getSimpleName()));
     }
     
@@ -78,7 +77,7 @@ public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
   public static AnalysisEngineDescription getAnnotatorDescription(File directory) throws ResourceInitializationException{
     AggregateBuilder builder = new AggregateBuilder();
     
-    for(Class component : components){
+    for(Class<?> component : components){
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ViewCreatorAnnotator.class, ViewCreatorAnnotator.PARAM_VIEW_NAME, component.getSimpleName()));
     }
     builder.add(TimeAnnotator.createAnnotatorDescription(
@@ -129,7 +128,7 @@ public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
       }
       
       List<List<String>> componentOutcomes = new ArrayList<List<String>>();
-      for(Class component : components){
+      for(Class<?> component : components){
         JCas componentView;
         try {
           componentView = jCas.getView(component.getSimpleName());
