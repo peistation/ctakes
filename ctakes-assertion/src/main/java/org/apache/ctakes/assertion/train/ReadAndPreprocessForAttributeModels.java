@@ -20,6 +20,13 @@ public class ReadAndPreprocessForAttributeModels {
 			// Always preprocess something to a main directory, usually for training
 			String froot = AssertionConst.preprocessRootDirectory.get(source);
 			if (!(new File(froot).exists())) {
+				File f = new File(froot);
+				if (!f.getParentFile().exists()) {
+					throw new RuntimeException("Can't find parent " + f.getParentFile().getPath());
+				}
+				if (!f.getParentFile().isDirectory()) {
+					throw new RuntimeException("What should be the parent is not a directory " + f.getParentFile().getPath());
+				}
 				(new File(froot)).createNewFile();
 			}
 			params.add("--train-dir"); 		params.add(froot);
