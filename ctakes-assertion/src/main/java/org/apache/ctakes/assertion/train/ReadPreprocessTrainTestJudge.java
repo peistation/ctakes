@@ -22,9 +22,8 @@ public class ReadPreprocessTrainTestJudge {
 		TestAttributeModels.main(null);
 
 
-
-		// Set up parameters for judging test
-		// output of test step becomes input for runjudge
+		// Set up parameters for judging test.
+		// Output of test step becomes input for runjudge
 		ArrayList<String> params;
 		params = new ArrayList<String>();
 		
@@ -48,9 +47,6 @@ public class ReadPreprocessTrainTestJudge {
 		parmsAsArray = params.toArray(new String[] {});
 		
 		RunJudgeAttributeInstances.main(parmsAsArray);
-
-		// Run the actual assertion preprocessing on just one data source
-		// if (true) /** TODO Should this be done here? **/ AssertionEvaluation.main(parmsAsArray);
 
 	}
 }
