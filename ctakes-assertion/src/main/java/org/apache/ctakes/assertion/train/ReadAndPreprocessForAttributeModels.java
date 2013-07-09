@@ -31,16 +31,16 @@ public class ReadAndPreprocessForAttributeModels {
 			}
 			params.add("--train-dir"); 		params.add(froot);
 
-			// Some corpora (SHARP) may have predetermined dev/test splits. Check AssertionConst.
+			// Some corpora (SHARP) may have predetermined dev/test splits. Check {link: AssertionConst}.
 			if (AssertionConst.preprocessForDev.containsKey(source) ) {
-				String fdev = AssertionConst.preprocessRootDirectory.get(source);
+				String fdev = AssertionConst.preprocessForDev.get(source);
 				if (!(new File(fdev).exists())) {
 					(new File(fdev)).mkdir();
 				}
 				params.add("--dev-dir"); 	params.add(fdev);
 			}
 			if (AssertionConst.preprocessForTest.containsKey(source) ) {
-				String ftest = AssertionConst.preprocessRootDirectory.get(source);
+				String ftest = AssertionConst.preprocessForTest.get(source);
 				if (!(new File(ftest).exists())) {
 					(new File(ftest)).mkdir();
 				}
