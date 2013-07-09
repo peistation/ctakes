@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.ctakes.assertion.util.AssertionConst;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -65,7 +66,11 @@ public class MergeGoldViewFromOneCasIntoInitialViewOfAnotherCas extends JCasAnno
 	static final Logger LOGGER = Logger.getLogger(MergeGoldViewFromOneCasIntoInitialViewOfAnotherCas.class.getName());
 
 
-	private static final String dirWithGoldViews = "/SHARP-data/assertion/UMLS_CEM-gold-combined"; // TODO parameterize this
+	private static final String dirWithGoldViews = AssertionConst.testDirectories.get("polarity");// TODO parameterize this
+	static {
+		LOGGER.info("Copying information from gold views in " + dirWithGoldViews);
+	}
+	
 	private static final File goldViewDir = new File(dirWithGoldViews);
 	
 	@Override
@@ -78,6 +83,10 @@ public class MergeGoldViewFromOneCasIntoInitialViewOfAnotherCas extends JCasAnno
 	 */
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
+		
+		if (!goldViewDir.exists()) throw new AnalysisEngineProcessException(new RuntimeException("Directory with gold view annotations not found:" + dirWithGoldViews));
+		if (!goldViewDir.isDirectory()) throw new AnalysisEngineProcessException(new RuntimeException("What is supposed to be a directory with gold view annotations is not a directory:" + dirWithGoldViews));
+		
 		String docId = DocumentIDAnnotationUtil.getDocumentID(jCas);
 		JCas correspondingCasThatHasGoldAnnotations = getCorrespondingCasThatHasGoldAnnotations(docId);
 		JCas viewWithPreexistingGoldAnnotations = null;
@@ -91,8 +100,11 @@ public class MergeGoldViewFromOneCasIntoInitialViewOfAnotherCas extends JCasAnno
 
 		//newGoldView = jCas.createView(AssertionEvaluation.GOLD_VIEW_NAME);
 		newGoldView = ViewCreatorAnnotator.createViewSafely(jCas, AssertionEvaluation.GOLD_VIEW_NAME);
+		try {
 		newGoldView.setSofaDataString(jCas.getSofaDataString(), jCas.getSofaMimeType());
-			
+		} catch (org.apache.uima.cas.CASRuntimeException e) {
+			LOGGER.info("Warning, error setting sofa string - ignore if using TestAttributeModels");
+		}
 		
 		int countCopied = 0;
 		int countSkipped = 0;
