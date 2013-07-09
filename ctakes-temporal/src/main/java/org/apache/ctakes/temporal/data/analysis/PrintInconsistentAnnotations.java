@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.ctakes.temporal.eval.CommandLine;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.XMIReader;
 import org.apache.ctakes.temporal.eval.THYMEData;
@@ -20,9 +22,11 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.util.JCasUtil;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
 
@@ -114,7 +118,14 @@ public class PrintInconsistentAnnotations {
           } else {
             System.err.printf("Container: \"%s\"\n", container.getCoveredText());
           }
-          for (EventMention event : containers.get(container)) {
+          Ordering<EventMention> byBegin =
+              Ordering.natural().onResultOf(new Function<EventMention, Integer>() {
+                @Override
+                public Integer apply(@Nullable EventMention event) {
+                  return event.getBegin();
+                }
+              });
+          for (EventMention event : byBegin.sortedCopy(containers.get(container))) {
             System.err.printf(
                 "* \"%s\" (docTimeRel=%s)\n",
                 event.getCoveredText(),
