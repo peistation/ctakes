@@ -52,7 +52,11 @@ public class HistoryFeaturesExtractor implements SimpleFeatureExtractor {
 		// Pull in general dependency-based features -- externalize to another extractor?
 	    ConllDependencyNode node = DependencyUtility.getNominalHeadNode(jCas, arg);
 	    if (node!= null) {
-	    	features.add(new Feature("DEPENDENCY_HEAD", node));
+//	      features.add(new Feature("DEPENDENCY_HEAD", node));
+	    	features.add(new Feature("DEPENDENCY_HEAD_word", node.getCoveredText()));
+//	    	features.add(new Feature("DEPENDENCY_HEAD_pos", node.getPostag()));
+	    	features.add(new Feature("DEPENDENCY_HEAD_deprel", node.getDeprel()));
+//	    	features.add(new Feature("DEPENDENCY_HEAD_lemma", node.getLemma()));
 		}
 	    
 	    HashMap<String, Boolean> featsMap = HistoryAttributeClassifier.extract(jCas, arg);
