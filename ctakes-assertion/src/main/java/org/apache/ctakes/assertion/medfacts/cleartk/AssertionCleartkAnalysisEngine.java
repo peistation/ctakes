@@ -89,6 +89,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
   
   protected Random coin = new Random(0);
 
+  protected String lastLabel;
   
 /* DEPRECATED: STW 2013/03/28.  Use DependencyUtility:getNominalHeadNode(jCas,annotation) instead */
 //  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
@@ -217,6 +218,9 @@ public abstract class AssertionCleartkAnalysisEngine extends
     {
       logger.warn("processing next doc (doc id is null)");
     }
+    
+    this.lastLabel = "<BEGIN>";
+    
 //    // get gold standard relation instances during testing for error analysis
 //    if (! this.isTraining() && printErrors) {
 //      JCas goldView;
@@ -317,7 +321,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
           }
 //          instance.addAll(cuePhraseInWindowExtractor.extractBetween(jCas, cue, entityOrEventMention));
         }
-        if(closestCue != null){
+        if(closestCue != null && closest < 21){
           instance.add(new Feature("ClosestCue_Word", closestCue.getCoveredText()));
 //          instance.add(new Feature("ClosestCue_Phrase", closestCue.getCuePhrase()));
           instance.add(new Feature("ClosestCue_PhraseFamily", closestCue.getCuePhraseAssertionFamily()));
@@ -330,7 +334,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
 //      }
 
 
-      instance.add(new Feature("ENTITY_TYPE", entityOrEventMention.getTypeID()));
+      instance.add(new Feature("ENTITY_TYPE_" + entityOrEventMention.getTypeID()));
       
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
         instance.addAll(extractor.extract(jCas, entityOrEventMention));
@@ -344,17 +348,14 @@ public abstract class AssertionCleartkAnalysisEngine extends
       }
       
       List<Feature> feats = instance.getFeatures();
-//      List<Feature> lcFeats = new ArrayList<Feature>();
       
       for(Feature feat : feats){
     	  if(feat.getName() != null && (feat.getName().startsWith("TreeFrag") || feat.getName().startsWith("WORD") || feat.getName().startsWith("NEG"))) continue;
     	  if(feat.getValue() instanceof String){
     		  feat.setValue(((String)feat.getValue()).toLowerCase());
-//    		  lcFeats.add(new Feature("LC_" + feat.getName(), ((String)feat.getValue()).toLowerCase()));
     	  }
       }
-//      instance.addAll(lcFeats);
-
+      
       setClassLabel(entityOrEventMention, instance);
       
     }

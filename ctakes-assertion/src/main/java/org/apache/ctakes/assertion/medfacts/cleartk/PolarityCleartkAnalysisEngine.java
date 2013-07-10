@@ -24,6 +24,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveLeftFragment
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveRightFragmentExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.NegationDependencyFeatureExtractor;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -34,6 +35,9 @@ import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
 
 public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngine {
 
+  public static final String NEGATED = "NEGATED";
+  public static final String NOT_NEGATED = "NOT_NEGATED";
+  
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
@@ -52,13 +56,14 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	public void setClassLabel(IdentifiedAnnotation entityOrEventMention, Instance<String> instance) throws AnalysisEngineProcessException {
 	      if (this.isTraining())
 	      {
-	        String polarity = (entityOrEventMention.getPolarity() == -1) ? "negated" : "present";
+	        String polarity = (entityOrEventMention.getPolarity() == CONST.NE_POLARITY_NEGATION_PRESENT) ? NEGATED : NOT_NEGATED; // "negated" : "present";
+	        this.lastLabel = polarity;
 	        // downsampling. initialize probabilityOfKeepingADefaultExample to 1.0 for no downsampling
-	        if ("negated".equals(polarity))
+	        if (NEGATED.equals(polarity))
 	        {
 	          logger.debug("TRAINING: " + polarity);
 	        }
-	        if ("present".equals(polarity) 
+	        if (NOT_NEGATED.equals(polarity) 
 	        		&& coin.nextDouble() >= this.probabilityOfKeepingADefaultExample) {
 	        	return;
 	        }
@@ -67,19 +72,17 @@ public class PolarityCleartkAnalysisEngine extends AssertionCleartkAnalysisEngin
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
-	        int polarity = 1;
-	        if (label!= null && label.equals("present"))
+	        this.lastLabel = label;
+	        int polarity = CONST.NE_POLARITY_NEGATION_ABSENT;
+	        if (NOT_NEGATED.equals(label))
 	        {
-	          polarity = 1;
-	        } else if (label != null && label.equals("negated"))
+	          polarity = CONST.NE_POLARITY_NEGATION_ABSENT;
+	        } else if (NEGATED.equals(label))
 	        {
-	          polarity = -1;
+	          polarity = CONST.NE_POLARITY_NEGATION_PRESENT;
+            logger.debug(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityOrEventMention.getBegin(), entityOrEventMention.getEnd(), entityOrEventMention.getClass().getName()));
 	        }
 	        entityOrEventMention.setPolarity(polarity);
-	        if ("negated".equals(label))
-	        {
-	          logger.debug(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityOrEventMention.getBegin(), entityOrEventMention.getEnd(), entityOrEventMention.getClass().getName()));
-	        }
 	      }
 	}
 }
