@@ -12,54 +12,56 @@ public class AssertionConst {
 
 	// Locally-stored data models
 	
-	public static final String BASE_DIRECTORY = "/usr/data/work/data/assertion/";// "/Users/m081914/"; // "/usr/data/work/data/assertion/";  // "/usr/data";
+	// Note that on Windows, by default, /sharp-home/assertion/ the same as C:/sharp-home/assertion/
+	public static final String BASE_DIRECTORY = "/sharp-home/assertion/"; // "/usr/data/work/data/assertion/";// "/Users/m081914/"; // "/usr/data/work/data/assertion/";  // "/usr/data";
 	static {
 		if (!BASE_DIRECTORY.endsWith("/") && !BASE_DIRECTORY.endsWith("\\")) {
 			throw new RuntimeException("BASE_DIRECTORY should end with a slash");
 		}
 	}
 
-	// expects subdirectories: "Mayo/UMLS_CEM/*batch*/Knowtator*" "Seattle Group Health/UMLS_CEM/*batch*/Knowtator*"
-	public static final String SHARP_SEED_CORPUS = BASE_DIRECTORY + "work/data/sharp/Seed Corpus/";
-	// expects subdirectories: ast, txt 
-	public static final String I2B2_2010_CORPUS = BASE_DIRECTORY + "work/data/i2b2Challenge2010/Data/i2b2Challenge2010AllTrain/";
-	// expects subdirectories: ast, txt
-	public static final String I2B2_2010_TEST_CORPUS = BASE_DIRECTORY + "work/data/i2b2Challenge2010/Data/Test/reports/";
-
 	// raw and processed text, expects subdirectories for different sources, then subsubdirectories for train/test/dev
-	public static final String DATA_DIR = BASE_DIRECTORY; // + "work/data/assertion/";
+	public static final String DATA_DIR = BASE_DIRECTORY + "data/"; // + "work/data/assertion/";
 	
+
+	// expects subdirectories: "Mayo/UMLS_CEM/*batch*/Knowtator*" "Seattle Group Health/UMLS_CEM/*batch*/Knowtator*"
+	public static final String SHARP_SEED_CORPUS = DATA_DIR + "gold_standard/sharp/Seed Corpus/";
+	// expects subdirectories: ast, txt 
+	public static final String I2B2_2010_CORPUS = DATA_DIR + "gold_standard/i2b2Challenge2010/Data/i2b2Challenge2010AllTrain/";
+	// expects subdirectories: ast, txt
+	public static final String I2B2_2010_TEST_CORPUS = DATA_DIR + "gold_standard/i2b2Challenge2010/Data/Test/reports/";
+
 	// specify the model to write (train/crossvalidate) or read (test/crossvalidate).
 	//  please rename for different configurations of training data 
-	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharptrain-xval";
+	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharp-sprint-train";
 //	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharptrain-xval";
 //	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharptrain";
 //	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharptrain+i2b2train";
 //	public static String modelDirectory = "../ctakes-assertion-res/resources/model/i2b2train";
 
 	
-	// Specify training directories for each attribute in a (semi)colon-separated list, e.g., "sharp_data/dev:sharp_data/train"
+	// Specify training directories for each attribute in a (semi)colon-separated list, e.g., "preprocessed_data/dev:preprocessed_data/train"
 	public static HashMap<String,String> trainingDirectories = new HashMap<String,String>();
 	static { 
-		trainingDirectories.put("polarity", DATA_DIR + "fromtim_sharp_data/train");
 //		trainingDirectories.put("polarity","sharp_data/train");
 //		trainingDirectories.put("polarity","i2b2_data/train");
-		trainingDirectories.put("conditional", DATA_DIR + "fromtim_sharp_data/train");
-		trainingDirectories.put("uncertainty", DATA_DIR + "fromtim_sharp_data/train");
-		trainingDirectories.put("subject", DATA_DIR + "fromtim_sharp_data/train");
-		trainingDirectories.put("generic", DATA_DIR + "fromtim_sharp_data/train");
-		trainingDirectories.put("historyOf", DATA_DIR + "fromtim_sharp_data/train");
+		trainingDirectories.put("polarity", DATA_DIR +  "preprocessed_data/train");
+		trainingDirectories.put("conditional", DATA_DIR +  "preprocessed_data/train");
+		trainingDirectories.put("uncertainty", DATA_DIR +  "preprocessed_data/train");
+		trainingDirectories.put("subject", DATA_DIR +  "preprocessed_data/train");
+		trainingDirectories.put("generic", DATA_DIR +  "preprocessed_data/train");
+		trainingDirectories.put("historyOf", DATA_DIR +  "preprocessed_data/train");
 	}
 		
 	public static HashMap<String,String> testDirectories = new HashMap<String,String>();
 	static { 
-		testDirectories.put("polarity", DATA_DIR + "fromtim_sharp_data/test");
 //		testDirectories.put("polarity","i2b2_data/test");
-		testDirectories.put("conditional", DATA_DIR + "fromtim_sharp_data/test");
-		testDirectories.put("uncertainty", DATA_DIR + "fromtim_sharp_data/test");
-		testDirectories.put("subject", DATA_DIR + "fromtim_sharp_data/test");
-		testDirectories.put("generic", DATA_DIR + "fromtim_sharp_data/test");
-		testDirectories.put("historyOf", DATA_DIR + "fromtim_sharp_data/test");
+		testDirectories.put("polarity", DATA_DIR +  "preprocessed_data/test");
+		testDirectories.put("conditional", DATA_DIR +  "preprocessed_data/test");
+		testDirectories.put("uncertainty", DATA_DIR +  "preprocessed_data/test");
+		testDirectories.put("subject", DATA_DIR +  "preprocessed_data/test");
+		testDirectories.put("generic", DATA_DIR +  "preprocessed_data/test");
+		testDirectories.put("historyOf", DATA_DIR +  "preprocessed_data/test");
 	}
 		
 	// If you don't want to train/cross-validate everything, comment these out
@@ -79,10 +81,10 @@ public class AssertionConst {
 	// Specify input and output data locations for preprocessing.  Results will be used for model training
 	public static HashMap<String,String> preprocessRootDirectory = new HashMap<String,String>();
 	static { 
-		preprocessRootDirectory.put(SHARP_SEED_CORPUS+"Mayo/UMLS_CEM", DATA_DIR + "sharp_data/train");
-		preprocessRootDirectory.put(SHARP_SEED_CORPUS+"Seattle Group Health/UMLS_CEM", DATA_DIR + "sharp_data/train");
-		preprocessRootDirectory.put(I2B2_2010_CORPUS, DATA_DIR + "i2b2_data/train");
-		preprocessRootDirectory.put(I2B2_2010_TEST_CORPUS, DATA_DIR + "i2b2_data/test");
+		preprocessRootDirectory.put(SHARP_SEED_CORPUS + "Mayo/UMLS_CEM", DATA_DIR + "preprocessed_data/train");
+		preprocessRootDirectory.put(SHARP_SEED_CORPUS + "Seattle Group Health/UMLS_CEM", DATA_DIR + "preprocessed_data/train");
+		//preprocessRootDirectory.put(I2B2_2010_CORPUS, DATA_DIR + "i2b2_data/train");
+		//preprocessRootDirectory.put(I2B2_2010_TEST_CORPUS, DATA_DIR + "i2b2_data/test");
 		
 		// If one of the preprocessRootDirectory entries above is commented out, warn user with a popup
 		if (preprocessRootDirectory.keySet().size()<4) {
@@ -102,20 +104,22 @@ public class AssertionConst {
 	
 	
 	// Specify input and output data locations for preprocessing.  Results will be used for model test
+	// The map maps input dir to output dir
 	public static HashMap<String,String> preprocessForTest = new HashMap<String,String>();
 	static { 
-		preprocessForTest.put(SHARP_SEED_CORPUS+"/Mayo/UMLS_CEM", DATA_DIR + "sharp_data/test");
-		preprocessForTest.put(SHARP_SEED_CORPUS+"/Seattle Group Health/UMLS_CEM", DATA_DIR + "sharp_data/test");
+		preprocessForTest.put(SHARP_SEED_CORPUS + "Mayo/UMLS_CEM", DATA_DIR + "preprocessed_data/test");
+		preprocessForTest.put(SHARP_SEED_CORPUS + "Seattle Group Health/UMLS_CEM", DATA_DIR + "preprocessed_data/test");
 	}
 
 	// Specify input and output data locations for preprocessing.  Results will be used for model dev
+	// The map maps input dir to output dir
 	public static HashMap<String,String> preprocessForDev = new HashMap<String,String>();
 	static { 
-		preprocessForDev.put(SHARP_SEED_CORPUS+"/Mayo/UMLS_CEM", DATA_DIR + "sharp_data/dev");
-		preprocessForDev.put(SHARP_SEED_CORPUS+"/Seattle Group Health/UMLS_CEM", DATA_DIR + "sharp_data/dev");
+		preprocessForDev.put(SHARP_SEED_CORPUS + "Mayo/UMLS_CEM", DATA_DIR + "preprocessed_data/dev");
+		preprocessForDev.put(SHARP_SEED_CORPUS + "Seattle Group Health/UMLS_CEM", DATA_DIR + "preprocessed_data/dev");
 	}
 		
-	public static String evalOutputDir = "sharp_data/output";
+	public static String evalOutputDir =  DATA_DIR + "processing_output_aka_eval_output";
 	
-	public static String instanceGatheringOutputDir = "sharp_data/output_instancegathering";
+	public static String instanceGatheringOutputDir =  DATA_DIR + "q_output_instance_gathering";
 }
