@@ -54,6 +54,7 @@ public abstract class TreeFragmentFeatureExtractor implements SimpleFeatureExtra
 
 	public TreeFragmentFeatureExtractor(String prefix, String resourceFilename) throws CleartkInitializationException{
 		initializeFrags(resourceFilename);
+		this.prefix = prefix;
 		try{
 			sems = new SemanticClasses(FileLocator.locateFile("org/apache/ctakes/assertion/semantic_classes").getAbsolutePath());
 		}catch(Exception e){
