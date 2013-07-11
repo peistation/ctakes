@@ -312,11 +312,11 @@ public class NegationDepRegex {
 		regnodes_VBNEG_OBJ[1].setLabel(DEPLibEn.DEP_DOBJ);  /* was "OBJ" in clearparser */
 		int cVBNEG_OBJ = 0;
 		
-		// Recognizes phrases like "was not FOCUS"
+		// Recognizes phrases like "was not FOCUS" -- in dependency order: not was 
 		DEPNode[] regnodes_PRT_VB_PRD = new DEPNode[3];
 		regnodes_PRT_VB_PRD[0]          = new DEPNode(DEPLib.NULL_ID, fromSet(iv_negParticlesSet));
 //		regnodes_PRT_VB_PRD[0].form     = DependencyRegex.fromSet(iv_negParticlesSet);
-		regnodes_PRT_VB_PRD[0].setLabel(DEPLibEn.DEP_ADV); // was: ("ADV");
+		regnodes_PRT_VB_PRD[0].setLabel(DEPLibEn.DEP_NEG); // was: ("ADV");
 		regnodes_PRT_VB_PRD[1]          = new DEPNode(DEPLib.NULL_ID, fromSet(iv_copulaSet));
 //		regnodes_PRT_VB_PRD[1].form     = DependencyRegex.fromSet(iv_copulaSet);
 		regnodes_PRT_VB_PRD[2]          = new DEPNode(DEPLib.NULL_ID, ANY_TOKEN);
@@ -460,54 +460,54 @@ public class NegationDepRegex {
 		
 		// Add the verb-ish rules to the set of regexes to search
 		DependencyRegex regex_VBNEG_OBJ = 
-				(new DependencyRegex(regnodes_VBNEG_OBJ, cVBNEG_OBJ+1))
+				(new DependencyRegex(regnodes_VBNEG_OBJ, cVBNEG_OBJ+1, "NegVerb->Dobj"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_VBNEG_OBJ);
 		DependencyRegex regex_PRT_VB_PRD = 
-				(new DependencyRegex(regnodes_PRT_VB_PRD, cPRT_VB_PRD+1))
+				(new DependencyRegex(regnodes_PRT_VB_PRD, cPRT_VB_PRD+1, "PRT_VB_PRD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_PRT_VB_PRD);
 		DependencyRegex regex_PRT_MOD_VB_OBJ = 
-				(new DependencyRegex(regnodes_PRT_MOD_VB_OBJ, cPRT_MOD_VB_OBJ+1))
+				(new DependencyRegex(regnodes_PRT_MOD_VB_OBJ, cPRT_MOD_VB_OBJ+1, "PRT_MOD_VB_OBJ"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_PRT_MOD_VB_OBJ);
 		DependencyRegex regex_PRT_MOD_VB_OBJ_IN_PMOD = 
-				(new DependencyRegex(regnodes_PRT_MOD_VB_OBJ_IN_PMOD, cPRT_MOD_VB_OBJ_IN_PMOD+1))
+				(new DependencyRegex(regnodes_PRT_MOD_VB_OBJ_IN_PMOD, cPRT_MOD_VB_OBJ_IN_PMOD+1, "cPRT_MOD_VB_OBJ_IN_PMOD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_PRT_MOD_VB_OBJ_IN_PMOD);
 		DependencyRegex regex_VBN_SBJ = 
-				(new DependencyRegex(regnodes_VBN_SBJ, cVBN_SBJ+1))
+				(new DependencyRegex(regnodes_VBN_SBJ, cVBN_SBJ+1, "VBN_SBJ"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_VBN_SBJ);
 		
 		DependencyRegex regex_PRT_rule_OBJ = 
-				(new DependencyRegex(regnodes_PRT_rule_OBJ, cPRT_rule_OBJ+1))
+				(new DependencyRegex(regnodes_PRT_rule_OBJ, cPRT_rule_OBJ+1, "PRT_rule_OBJ"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_PRT_rule_OBJ);
 
 		// Add the noun-ish rules to the set of regexes to search
 		DependencyRegex regex_DT_NMOD = 
-				(new DependencyRegex(regnodes_DT_NMOD, cDT_NMOD+1))
+				(new DependencyRegex(regnodes_DT_NMOD, cDT_NMOD+1, "DT_NMOD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_DT_NMOD);
 		DependencyRegex regex_IN_PMOD = 
-				(new DependencyRegex(regnodes_IN_PMOD, cIN_PMOD+1))
+				(new DependencyRegex(regnodes_IN_PMOD, cIN_PMOD+1, "IN_PMOD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_IN_PMOD);
 		DependencyRegex regex_DT_NN_IN_PMOD = 
-				(new DependencyRegex(regnodes_DT_NN_IN_PMOD, cDT_NN_IN_PMOD+1))
+				(new DependencyRegex(regnodes_DT_NN_IN_PMOD, cDT_NN_IN_PMOD+1, "DT_NN_IN_PMOD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_DT_NN_IN_PMOD);
 		DependencyRegex regex_JJNEG_AMOD_PMOD = 
-				(new DependencyRegex(regnodes_JJNEG_AMOD_PMOD, cJJNEG_AMOD_PMOD+1))
+				(new DependencyRegex(regnodes_JJNEG_AMOD_PMOD, cJJNEG_AMOD_PMOD+1, "JJNEG_AMOD_PMOD"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_JJNEG_AMOD_PMOD);
 		DependencyRegex regex_JJNEG_AMOD_IM_OBJ = 
-				(new DependencyRegex(regnodes_JJNEG_AMOD_IM_OBJ, cJJNEG_AMOD_IM_OBJ+1))
+				(new DependencyRegex(regnodes_JJNEG_AMOD_IM_OBJ, cJJNEG_AMOD_IM_OBJ+1, "JJNEG_AMOD_IM_OBJ"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_JJNEG_AMOD_IM_OBJ);
 		DependencyRegex regex_JJNEG_NN = 
-				(new DependencyRegex(regnodes_JJNEG_NN, cJJNEG_NN+1))
+				(new DependencyRegex(regnodes_JJNEG_NN, cJJNEG_NN+1, "JJNEG_NN"))
 					.appendOptional( regnodes_NN_CONJ_NN );
 		regexSet.add(regex_JJNEG_NN);
 //		DependencyRegex regex_INNEG_NN = (
@@ -517,7 +517,7 @@ public class NegationDepRegex {
 		// Print out the regexSet for the fun of it!
 		System.out.println("### here are the regexes");
 		for (DependencyRegex dreg : regexSet) {
-			System.out.println(dreg.toString());
+			System.out.println(dreg.getName() + " :: " + dreg.toString());
 		}
 		
 	}

@@ -154,4 +154,8 @@ public class NegationManualDepContextAnalyzer {
 	public int getNumFeatures(){
 		return regexes.regexSet.size();
 	}
+	
+	public String getRegexName(int i){
+	  return regexes.regexSet.get(i).getName();
+	}
 }

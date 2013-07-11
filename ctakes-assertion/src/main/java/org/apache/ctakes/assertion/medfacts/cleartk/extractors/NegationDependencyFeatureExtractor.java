@@ -42,7 +42,7 @@ public class NegationDependencyFeatureExtractor implements
 			boolean[] regexFeats = conAnal.findNegationContext(nodes, headNode);
 			for(int j = 0; j < regexFeats.length; j++){
 				if(regexFeats[j]){
-					feats.add(new Feature("NEG_DEP_REGEX_"+j));
+					feats.add(new Feature("DepPath_" + conAnal.getRegexName(j))); //"NEG_DEP_REGEX_"+j));
 				}
 			}
 		} catch (Exception e) {
