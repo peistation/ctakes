@@ -99,6 +99,11 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 //	@ConfigurationParameter(mandatory = true, description = "takes a path to directory into which output files will be written.")
 //	private String ignorableAttributesString;
 
+	
+	private static int DEFAULT_CONTEXT_LEN = 80;
+	private int currentContextLen = DEFAULT_CONTEXT_LEN; // start with default, increase if asked for more context
+	
+	
 	/**
 	 * The name of the XMI XML scheme. This is a valid value for the parameter
 	 * {@value #PARAM_XML_SCHEME_NAME}
@@ -323,7 +328,7 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 	}
 	
 	private void printContext(String text, IdentifiedAnnotation mention) {
-		printContext(text,mention,80);
+		printContext(text,mention, DEFAULT_CONTEXT_LEN);
 	}
 	
 	static public String prompt (String attr) {
@@ -372,11 +377,13 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 			}
 			else if (response.toLowerCase().startsWith("s")) {
 				deletableMentions.add(mention); // now redundant, all are being deleted
+				currentContextLen = DEFAULT_CONTEXT_LEN; // reset context length to default after done with this instance
 				return false;
 			}
 			else if (response.toLowerCase().startsWith("m")) {
 				// more context response
-				printContext(jCas.getDocumentText(),mention,160);
+				currentContextLen += DEFAULT_CONTEXT_LEN;
+				printContext(jCas.getDocumentText(), mention, currentContextLen);
 				response = prompt( msg.get(attr) + "=" + getAttrValueString(mention,attr));
 			}
 			else {
@@ -384,6 +391,8 @@ public class JudgeAttributeInstances extends JCasConsumer_ImplBase {
 						msg.get(attr) + "=" + getAttrValueString(mention,attr));
 			}
 		}
+		
+		currentContextLen = DEFAULT_CONTEXT_LEN; // reset context length to default after done with this instance
 		return true;
 	}
 
