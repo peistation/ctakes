@@ -72,19 +72,20 @@ public class DependencyRegex {
 	private static String DN_ARC_B    = metaReplace(Delim.DN_ARC_B); 
 
 	private Pattern regex;
-		
+  private String name = "";
 
-	public DependencyRegex() {
-		// TODO Auto-generated constructor stub
+	public DependencyRegex(String name, String dummy) {
+	  this.name = name;
 	}
 
 	/**
 	 * @param path a DependencyPath from which to make and/or modify a regex
 	 */
-	public DependencyRegex( DependencyPath path ) {
+	public DependencyRegex( DependencyPath path, String name) {
 		String str = path.toString();
 		Pattern regex = Pattern.compile(str,Pattern.CASE_INSENSITIVE);
 		this.regex = regex;
+		this.name = name;
 	}
 
 	/**
@@ -94,12 +95,19 @@ public class DependencyRegex {
 		this.regex = compile(str,Pattern.CASE_INSENSITIVE);
 	}
 
+	public String getName(){
+	  return this.name;
+	}
 	
 	/**
 	 * @param regnodes
 	 * @param commonNodeIndex The index (starting from 1) of the lowest common node in the dependency tree
 	 */
-	public DependencyRegex(DEPNode[] regnodes, int commonNodeIndex) {
+  public DependencyRegex(DEPNode[] regnodes, int commonNodeIndex) {
+    this(regnodes, commonNodeIndex, "");
+  }
+  
+  public DependencyRegex(DEPNode[] regnodes, int commonNodeIndex, String name) {
 		StringBuilder str = new StringBuilder();
 
 //		str.append(".*");
@@ -131,6 +139,7 @@ public class DependencyRegex {
 		
 //		str.append(".*");
 		this.regex = compile(str.toString(),Pattern.CASE_INSENSITIVE);
+		this.name = name;
 	}
 	
 	/**
@@ -213,7 +222,7 @@ public class DependencyRegex {
 	public boolean matches( String str ) {
 		Matcher matcher = regex.matcher( str );
 		boolean flag = matcher.matches();
-		if (flag) System.out.println(" matched: "+ matcher.group());
+//		if (flag) System.out.println(" matched: "+ matcher.group());
 		return flag;
 	}
 
@@ -251,28 +260,28 @@ public class DependencyRegex {
 
 	// Combine DependencyRegexes 
 	public DependencyRegex append( DependencyRegex dregex ) {
-		DependencyRegex newregex = new DependencyRegex();
+		DependencyRegex newregex = new DependencyRegex(this.name + "_mod", null);
 		newregex.regex = compile( this.toString() + dregex.toString(),
 				Pattern.CASE_INSENSITIVE);
 		return newregex;
 	}
 	
 	public DependencyRegex appendOptional( DependencyRegex dregex ) {
-		DependencyRegex newregex = new DependencyRegex();
+		DependencyRegex newregex = new DependencyRegex(this.name + "_mod", null);
 		newregex.regex = compile( this.toString() + "("+dregex.toString()+")*",
 				Pattern.CASE_INSENSITIVE);
 		return newregex;
 	}
 
 	public DependencyRegex prepend( DependencyRegex dregex ) {
-		DependencyRegex newregex = new DependencyRegex();
+		DependencyRegex newregex = new DependencyRegex(this.name + "_mod", null);
 		newregex.regex = compile( dregex.toString() + this.toString(),
 				Pattern.CASE_INSENSITIVE);
 		return newregex;
 	}
 	
 	public DependencyRegex prependOptional( DependencyRegex dregex ) {
-		DependencyRegex newregex = new DependencyRegex();
+		DependencyRegex newregex = new DependencyRegex(this.name + "_mod", null);
 		newregex.regex = compile( "("+dregex.toString()+")*?" + this.toString(),
 				Pattern.CASE_INSENSITIVE);
 		return newregex;
