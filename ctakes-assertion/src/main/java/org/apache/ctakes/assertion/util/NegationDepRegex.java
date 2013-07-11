@@ -324,11 +324,17 @@ public class NegationDepRegex {
 		regnodes_PRT_VB_PRD[2].pos      = DependencyRegex.ANY_ADJECTIVE;
 		int cPRT_VB_PRD = 1;
 		
-		// Recognizes phrases like "did not find FOCUS" 
-		DEPNode[] regnodes_PRT_MOD_VB_OBJ = new DEPNode[4];
+		// Recognizes phrases like "did not find FOCUS"  (don't think the modal verb will be on the path?)
+		DEPNode[] regnodes_PRT_MOD_VB_OBJ = new DEPNode[3];
 		regnodes_PRT_MOD_VB_OBJ[0]          = new DEPNode(DEPLib.NULL_ID,fromSet(iv_negParticlesSet));
 //		regnodes_PRT_MOD_VB_OBJ[0].form     = DependencyRegex.fromSet(iv_negParticlesSet);
-		regnodes_PRT_MOD_VB_OBJ[0].setLabel(DEPLibEn.DEP_ADV); // was: ("ADV");
+		regnodes_PRT_MOD_VB_OBJ[0].setLabel(DEPLibEn.DEP_NEG); // was: ("ADV");
+		regnodes_PRT_MOD_VB_OBJ[1]          = new DEPNode(DEPLib.NULL_ID, fromSet(iv_regVerbsSet));
+		regnodes_PRT_MOD_VB_OBJ[1].pos      = ANY_VERB;
+		regnodes_PRT_MOD_VB_OBJ[2]          = new DEPNode(DEPLib.NULL_ID,ANY_TOKEN);
+		regnodes_PRT_MOD_VB_OBJ[2].setLabel(DEPLibEn.DEP_DOBJ);	
+		// everything below here was replaced for this path:
+/*		// 
 		regnodes_PRT_MOD_VB_OBJ[1]          = new DEPNode(DEPLib.NULL_ID,fromSet(iv_modalVerbsSet));
 //		regnodes_PRT_MOD_VB_OBJ[1].form     = DependencyRegex.fromSet(iv_modalVerbsSet);
 		regnodes_PRT_MOD_VB_OBJ[2]          = new DEPNode(DEPLib.NULL_ID,fromSet(iv_regVerbsSet));
@@ -336,7 +342,7 @@ public class NegationDepRegex {
 //		regnodes_PRT_MOD_VB_OBJ[2].setLabel(DEPLibEn.DEP_CCOMP); // was: ("VC"); really a shot in the dark
 		regnodes_PRT_MOD_VB_OBJ[2].pos      = ANY_VERB;
 		regnodes_PRT_MOD_VB_OBJ[3]          = new DEPNode(DEPLib.NULL_ID,ANY_TOKEN);
-		regnodes_PRT_MOD_VB_OBJ[3].setLabel(DEPLibEn.DEP_DOBJ);  // was:("OBJ");
+		regnodes_PRT_MOD_VB_OBJ[3].setLabel(DEPLibEn.DEP_DOBJ);  // was:("OBJ"); */
 		int cPRT_MOD_VB_OBJ = 1;
 		
 		// Recognizes phrases like "did not find evidence of FOCUS"
@@ -363,7 +369,7 @@ public class NegationDepRegex {
 		DEPNode[] regnodes_VBN_SBJ = new DEPNode[2];
 		regnodes_VBN_SBJ[0]        = new DEPNode(DEPLib.NULL_ID, fromSet(iv_negVerbsSet));
 //		regnodes_VBN_SBJ[0].form   = DependencyRegex.fromSet(iv_negVerbsSet);
-		regnodes_VBN_SBJ[0].pos    = "VBN";
+		regnodes_VBN_SBJ[0].pos    = "VBG";  // was VBN
 		regnodes_VBN_SBJ[1]		   = new DEPNode(DEPLib.NULL_ID, ANY_TOKEN);
 		regnodes_VBN_SBJ[1].setLabel(DEPLibEn.DEP_DOBJ); // was: ("SBJ");
 		int cVBN_SBJ = 0;
