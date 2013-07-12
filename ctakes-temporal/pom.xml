@@ -136,6 +136,11 @@
 			<groupId>org.cleartk</groupId>
 			<artifactId>cleartk-ml-crfsuite</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>info.bethard</groupId>
+			<artifactId>timenorm</artifactId>
+			<version>0.9.0</version>
+		</dependency>
 	</dependencies>
 	<!-- The below is all necessary to unpack the UMLS resources since they 
 		can't be used from the classpath -->
