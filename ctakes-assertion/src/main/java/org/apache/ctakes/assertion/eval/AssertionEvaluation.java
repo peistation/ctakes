@@ -19,7 +19,9 @@
 package org.apache.ctakes.assertion.eval;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
 import org.apache.ctakes.assertion.medfacts.cleartk.AlternateCuePhraseAnnotator;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionCleartkAnalysisEngine;
 import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
@@ -75,6 +78,9 @@ import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCopier;
 import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
+import org.cleartk.classifier.Instance;
+import org.cleartk.classifier.feature.transform.InstanceDataWriter;
+import org.cleartk.classifier.feature.transform.InstanceStream;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
@@ -229,6 +235,12 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     		" as the annotator class itself, since ytex is under a different license than Apache cTAKES.",
     		required = false)
     public boolean useYtexNegation;
+
+    @Option(
+    		name = "--feature-selection",
+    		usage = "Takes an argument: {c,m} corresponding to Chi-square or Mutual Information-based feature selection",
+    		required = false)
+    public String featureSelectionAlgorithm = null;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -569,6 +581,15 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //    AnalysisEngineDescription cuePhraseLookupAnnotator =
 //        AnalysisEngineFactory.createAnalysisEngineDescription("org/apache/ctakes/dictionary/lookup/AssertionCuePhraseDictionaryLookupAnnotator");
 //    builder.add(cuePhraseLookupAnnotator);
+
+    // Set up Feature Selection parameters
+    Float featureSelectionThreshold = 0f;
+    Class<? extends DataWriter> dataWriterClassFirstPass = getDataWriterClass(); 
+    if (options.featureSelectionAlgorithm!=null) {
+    	featureSelectionThreshold = .1f;
+    }
+    
+    // Add each assertion Analysis Engine to the pipeline!
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(AlternateCuePhraseAnnotator.class, new Object[]{}));
     
     if (!options.ignorePolarity)
@@ -585,9 +606,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //    				CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //    				this.dataWriterFactoryClass.getName(),
     				DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-    				this.dataWriterClass,
+    				dataWriterClassFirstPass,
     				DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-    				new File(directory, "polarity").getPath()
+    				new File(directory, "polarity").getPath(),
+    				AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+    				PolarityCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "polarity")),
+    				AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+    				featureSelectionThreshold
     				);
     		builder.add(polarityAnnotator);
     	}
@@ -603,9 +628,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //	        this.dataWriterFactoryClass.getName(),
           DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-          this.dataWriterClass,
+			dataWriterClassFirstPass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-	        new File(directory, "conditional").getPath()
+	        new File(directory, "conditional").getPath(),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+			ConditionalCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "conditional")),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+			featureSelectionThreshold
 	        );
 	    builder.add(conditionalAnnotator);
     }
@@ -620,9 +649,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //	        this.dataWriterFactoryClass.getName(),
           DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-          this.dataWriterClass,
+			dataWriterClassFirstPass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-	        new File(directory, "uncertainty").getPath()
+	        new File(directory, "uncertainty").getPath(),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+			UncertaintyCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "uncertainty")),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+			featureSelectionThreshold
 	        );
 	    builder.add(uncertaintyAnnotator);
     }
@@ -637,9 +670,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //	        CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //	        this.dataWriterFactoryClass.getName(),
           DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-          this.dataWriterClass,
+			dataWriterClassFirstPass,
 	        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-	        new File(directory, "subject").getPath()
+	        new File(directory, "subject").getPath(),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+			SubjectCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "subject")),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+			featureSelectionThreshold
 	        );
 	    builder.add(subjectAnnotator);
     }
@@ -654,9 +691,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //		    CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //		    this.dataWriterFactoryClass.getName(),
         DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        this.dataWriterClass,
+			dataWriterClassFirstPass,
 		    DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-		    new File(directory, "generic").getPath()
+		    new File(directory, "generic").getPath(),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+			GenericCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "generic")),
+			AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+			featureSelectionThreshold
 		    );
 		builder.add(genericAnnotator);
     }
@@ -671,9 +712,13 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //    			CleartkAnnotator.PARAM_DATA_WRITER_FACTORY_CLASS_NAME,
 //    			this.dataWriterFactoryClass.getName(),
           DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-          this.dataWriterClass,
+			dataWriterClassFirstPass,
     			DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-    			new File(directory, "historyOf").getPath()
+    			new File(directory, "historyOf").getPath(),
+				AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_URI,
+				HistoryCleartkAnalysisEngine.createFeatureSelectionURI(new File(directory, "historyOf")),
+				AssertionCleartkAnalysisEngine.PARAM_FEATURE_SELECTION_THRESHOLD,
+				featureSelectionThreshold
     			);
     	builder.add(historyAnnotator);
     }
@@ -699,7 +744,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     for (String currentAssertionAttribute : annotationTypes)
     {
     	File currentDirectory = new File(directory, currentAssertionAttribute);
-    	JarClassifierBuilder.trainAndPackage(currentDirectory, trainingArguments);
+    	trainAndPackage(currentAssertionAttribute, currentDirectory, trainingArguments);
     }
     //hider.restoreOutput();
   }
@@ -907,6 +952,78 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     return map;
   }
 
+  protected void trainAndPackage(String currentAssertionAttribute, File directory, String[] arguments) throws Exception {
+	  if (options.featureSelectionAlgorithm!=null) {
+//		  InstanceDataWriter.INSTANCES_OUTPUT_FILENAME = "training-data.liblinear";
+		  // Extracting features and writing instances
+		  Iterable<Instance<String>> instances = InstanceStream.loadFromDirectory(directory);
+
+		  // Collect MinMax stats for feature normalization
+		  FeatureSelection<String> featureSelection; 
+		  if (currentAssertionAttribute.equals("polarity")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = PolarityCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(PolarityCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else if (currentAssertionAttribute.equals("uncertainty")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = UncertaintyCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(UncertaintyCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else if (currentAssertionAttribute.equals("conditional")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = ConditionalCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(ConditionalCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else if (currentAssertionAttribute.equals("subject")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = SubjectCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(SubjectCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else if (currentAssertionAttribute.equals("generic")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = GenericCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(GenericCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else if (currentAssertionAttribute.equals("historyOf")) {
+			  // TODO: parameterize the thresholds
+			  featureSelection = HistoryCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection.train(instances);
+			  featureSelection.save(HistoryCleartkAnalysisEngine.createFeatureSelectionURI(directory));
+		  }
+		  else {
+			  featureSelection = null;
+		  }
+
+
+	      // now write in the libsvm format
+//	      LIBLINEARStringOutcomeDataWriter dataWriter = new LIBLINEARStringOutcomeDataWriter(directory);
+		  Constructor c = this.dataWriterClass.getConstructor(File.class);
+	      DataWriter dataWriter = (DataWriter) c.newInstance(directory);
+	      
+	      // try filtering
+	      for (Instance<String> instance : instances) {
+	    	  dataWriter.write(featureSelection.transform(instance));
+	      }
+	      dataWriter.finish();
+	  }
+
+	  // train models based on instances
+	  JarClassifierBuilder.trainAndPackage(directory, "-c", "0.05");
+  }
+  
+  protected Class<? extends DataWriter> getDataWriterClass()
+      throws ResourceInitializationException {
+    return (options.featureSelectionAlgorithm!=null)
+        ? InstanceDataWriter.class
+        : LIBLINEARStringOutcomeDataWriter.class;
+  }
+  
   private static boolean DEBUG = false;
   private static void printViewNames(String message, JCas jcas) {
 	

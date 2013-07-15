@@ -18,16 +18,17 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
 import org.apache.ctakes.assertion.zoner.types.Zone;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -39,7 +40,6 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.Feature;
@@ -86,10 +86,29 @@ public abstract class AssertionCleartkAnalysisEngine extends
       mandatory = false,
       description = "probability that a default example should be retained for training")
   protected double probabilityOfKeepingADefaultExample = 1.0;
+
+  public static final String PARAM_FEATURE_SELECTION_THRESHOLD = "WhetherToDoFeatureSelection"; // Accurate name? Actually uses the threshold, right?
+
+  @ConfigurationParameter(
+		  name = PARAM_FEATURE_SELECTION_THRESHOLD,
+		  mandatory = false,
+		  description = "the Chi-squared threshold at which features should be removed")
+  protected Float featureSelectionThreshold = 0f;
+
+  public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
+
+  @ConfigurationParameter(
+      mandatory = false,
+      name = PARAM_FEATURE_SELECTION_URI,
+      description = "provides a URI where the feature selection data will be written")
+  protected URI featureSelectionURI;
   
   protected Random coin = new Random(0);
 
+  protected static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
+
   protected String lastLabel;
+  
   
 /* DEPRECATED: STW 2013/03/28.  Use DependencyUtility:getNominalHeadNode(jCas,annotation) instead */
 //  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
@@ -117,9 +136,17 @@ public abstract class AssertionCleartkAnalysisEngine extends
   protected List<CleartkExtractor> tokenCleartkExtractors;
   protected List<SimpleFeatureExtractor> entityFeatureExtractors;
   protected CleartkExtractor cuePhraseInWindowExtractor;
+
+  protected FeatureSelection<String> featureSelection;
   
+  public abstract void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException;
+
+  protected abstract void initializeFeatureSelection() throws ResourceInitializationException;
+//  public abstract FeatureSelection<String> createFeatureSelection(double threshold);
+//  public abstract URI createFeatureSelectionURI(File outputDirectoryName);
+
   @Override
-@SuppressWarnings("deprecation")
+  @SuppressWarnings("deprecation")
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
     
@@ -203,9 +230,6 @@ public abstract class AssertionCleartkAnalysisEngine extends
           );
     
   }
-
-  public abstract void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException;
-
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException
@@ -348,6 +372,7 @@ public abstract class AssertionCleartkAnalysisEngine extends
       }
       
       List<Feature> feats = instance.getFeatures();
+//      List<Feature> lcFeats = new ArrayList<Feature>();
       
       for(Feature feat : feats){
     	  if(feat.getName() != null && (feat.getName().startsWith("TreeFrag") || feat.getName().startsWith("WORD") || feat.getName().startsWith("NEG"))) continue;
@@ -355,9 +380,21 @@ public abstract class AssertionCleartkAnalysisEngine extends
     		  feat.setValue(((String)feat.getValue()).toLowerCase());
     	  }
       }
-      
+
+      // grab the output label
       setClassLabel(entityOrEventMention, instance);
-      
+
+      if (this.isTraining()) {
+    	  // apply feature selection, if necessary
+    	  if (this.featureSelection != null) {
+    		  feats = this.featureSelection.transform(feats);
+    	  }
+
+    	  // ensures that the (possibly) transformed feats are used
+    	  if (instance.getOutcome()!=null) {
+    		  this.dataWriter.write(new Instance<String>(instance.getOutcome(),feats));
+    	  }
+      }
     }
     
   }

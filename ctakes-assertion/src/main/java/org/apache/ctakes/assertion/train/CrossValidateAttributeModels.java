@@ -19,6 +19,7 @@ public class CrossValidateAttributeModels {
 			params.add("--train-dir"); 			params.add(AssertionConst.trainingDirectories.get(attribute));
 			params.add("--models-dir"); 		params.add(AssertionConst.modelDirectory);
 			params.add("--cross-validation"); 	params.add("5");
+			params.add("--feature-selection");	params.add("c");
 			
 			// Build up an "ignore" string
 			for (String ignoreAttribute : AssertionConst.annotationTypes) {

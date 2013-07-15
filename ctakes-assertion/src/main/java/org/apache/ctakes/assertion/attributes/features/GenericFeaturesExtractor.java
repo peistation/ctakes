@@ -51,7 +51,8 @@ public class GenericFeaturesExtractor implements SimpleFeatureExtractor {
 		// Pull in general dependency-based features -- externalize to another extractor?
 	    ConllDependencyNode node = DependencyUtility.getNominalHeadNode(jCas, arg);
 	    if (node!= null) {
-	    	features.add(new Feature("DEPENDENCY_HEAD", node));
+	    	features.add(new Feature("DEPENDENCY_HEAD", node.getCoveredText()));
+	    	features.add(new Feature("DEPENDENCY_HEAD_deprel", node.getDeprel()));
 		}
 	    
 	    HashMap<String, Boolean> featsMap = GenericAttributeClassifier.extract(jCas, arg);

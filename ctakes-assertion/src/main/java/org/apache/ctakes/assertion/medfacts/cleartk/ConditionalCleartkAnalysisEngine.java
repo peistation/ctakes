@@ -18,11 +18,17 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.Instance;
 
+import org.apache.ctakes.assertion.attributes.features.selection.Chi2FeatureSelection;
+import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class ConditionalCleartkAnalysisEngine extends
@@ -32,6 +38,8 @@ public class ConditionalCleartkAnalysisEngine extends
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
 		probabilityOfKeepingADefaultExample = 0.1;
+		initializeFeatureSelection();
+
 	}
 	
 	@Override
@@ -47,7 +55,7 @@ public class ConditionalCleartkAnalysisEngine extends
 	        	return;
 	        }
 	        instance.setOutcome(conditional);
-	        this.dataWriter.write(instance);
+//	        this.dataWriter.write(instance);
 
 	      } else
 	      {
@@ -63,4 +71,30 @@ public class ConditionalCleartkAnalysisEngine extends
 	        entityOrEventMention.setConditional(conditional);
 	      }
 	}
+	public static FeatureSelection<String> createFeatureSelection(double threshold) {
+		return new Chi2FeatureSelection<String>(AssertionCleartkAnalysisEngine.FEATURE_SELECTION_NAME, threshold);
+		//		  return new MutualInformationFeatureSelection<String>(AssertionCleartkAnalysisEngine.FEATURE_SELECTION_NAME);
+	}
+
+	public static URI createFeatureSelectionURI(File outputDirectoryName) {
+		return new File(outputDirectoryName, FEATURE_SELECTION_NAME + "_Chi2_extractor.dat").toURI();
+	}
+	  
+	@Override
+	protected void initializeFeatureSelection() throws ResourceInitializationException {
+	    if (featureSelectionThreshold == 0) {
+	    	this.featureSelection = null;
+	    } else {
+	    	this.featureSelection = this.createFeatureSelection(this.featureSelectionThreshold);
+
+//	    	if ( (new File(this.featureSelectionURI)).exists() ) {
+//	    		try {
+//	    			this.featureSelection.load(this.featureSelectionURI);
+//	    		} catch (IOException e) {
+//	    			throw new ResourceInitializationException(e);
+//	    		}
+//	    	}
+	    }		
+	}
+	  
 }

@@ -18,8 +18,13 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 
+import org.apache.ctakes.assertion.attributes.features.selection.Chi2FeatureSelection;
+import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.AboveLeftFragmentExtractor;
 import org.apache.ctakes.assertion.medfacts.cleartk.extractors.ContextWordWindowExtractor;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -40,8 +45,11 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 		}
 		this.entityFeatureExtractors.add(new ContextWordWindowExtractor("org/apache/ctakes/assertion/models/uncertainty.txt"));
 		this.entityFeatureExtractors.add(new AboveLeftFragmentExtractor("ALUncertainty", "org/apache/ctakes/assertion/models/sharpUncertaintyFrags.txt"));
+
+		initializeFeatureSelection();
+		
 	}
-	
+
 	@Override
 	public void setClassLabel(IdentifiedAnnotation entityOrEventMention, Instance<String> instance) throws AnalysisEngineProcessException {
 		if (this.isTraining())
@@ -54,7 +62,7 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 	        	return;
 	        }
 	        instance.setOutcome(uncertainty);
-	        this.dataWriter.write(instance);
+//	        this.dataWriter.write(instance);
 	      } else
 	      {
 	        String label = this.classifier.classify(instance.getFeatures());
@@ -69,5 +77,32 @@ public class UncertaintyCleartkAnalysisEngine extends AssertionCleartkAnalysisEn
 	        entityOrEventMention.setUncertainty(uncertainty);
 	      }
 	}
+	
+	public static FeatureSelection<String> createFeatureSelection(double threshold) {
+		return new Chi2FeatureSelection<String>(AssertionCleartkAnalysisEngine.FEATURE_SELECTION_NAME, threshold);
+		//		  return new MutualInformationFeatureSelection<String>(AssertionCleartkAnalysisEngine.FEATURE_SELECTION_NAME);
+	}
+
+	public static URI createFeatureSelectionURI(File outputDirectoryName) {
+		return new File(outputDirectoryName, FEATURE_SELECTION_NAME + "_Chi2_extractor.dat").toURI();
+	}
+	  
+	@Override
+	protected void initializeFeatureSelection() throws ResourceInitializationException {
+	    if (featureSelectionThreshold == 0) {
+	    	this.featureSelection = null;
+	    } else {
+	    	this.featureSelection = this.createFeatureSelection(this.featureSelectionThreshold);
+
+//	    	if ( (new File(this.featureSelectionURI)).exists() ) {
+//	    		try {
+//	    			this.featureSelection.load(this.featureSelectionURI);
+//	    		} catch (IOException e) {
+//	    			throw new ResourceInitializationException(e);
+//	    		}
+//	    	}
+	    }		
+	}
+	  
 
 }

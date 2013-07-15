@@ -25,9 +25,10 @@ public class TrainAttributeModels {
 			params.add("--models-dir"); params.add(AssertionConst.modelDirectory);
 //			params.add("--evaluation-output-dir");	params.add(AssertionConst.evalOutputDir); 
 			params.add("--train-only"); 
+			params.add("--feature-selection");	params.add("c");
 			
 			// Build up an "ignore" string
-			for (String ignoreAttribute : AssertionConst.annotationTypes) {
+			for (String ignoreAttribute : AssertionConst.allAnnotationTypes) {
 				if (!ignoreAttribute.equals(attribute)) { 
 
 					if (ignoreAttribute.equals("historyOf")) {
