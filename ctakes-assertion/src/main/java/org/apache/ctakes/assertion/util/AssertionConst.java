@@ -126,4 +126,15 @@ public class AssertionConst {
 	public static String evalOutputDir =  DATA_DIR + "processing_output_aka_eval_output";
 	
 	public static String instanceGatheringOutputDir =  DATA_DIR + "q_output_instance_gathering";
+
+    // If you don't want to train/cross-validate everything, comment these out
+	public static ArrayList<String> allAnnotationTypes = new ArrayList<String>();
+	static { 
+		allAnnotationTypes.add("polarity");
+		allAnnotationTypes.add("conditional");
+		allAnnotationTypes.add("uncertainty");
+		allAnnotationTypes.add("subject");
+		allAnnotationTypes.add("generic");
+		allAnnotationTypes.add("historyOf");
+	}
 }
