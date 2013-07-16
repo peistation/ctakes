@@ -238,9 +238,9 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
 
     @Option(
     		name = "--feature-selection",
-    		usage = "Takes an argument: {c,m} corresponding to Chi-square or Mutual Information-based feature selection",
+    		usage = "Takes an argument: the Chi^2 feature selection threshold",
     		required = false)
-    public String featureSelectionAlgorithm = null;
+    public Float featureSelectionThreshold = null;
   }
   
   protected ArrayList<String> annotationTypes;
@@ -583,10 +583,10 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 //    builder.add(cuePhraseLookupAnnotator);
 
     // Set up Feature Selection parameters
-    Float featureSelectionThreshold = 0f;
+    Float featureSelectionThreshold = options.featureSelectionThreshold;
     Class<? extends DataWriter> dataWriterClassFirstPass = getDataWriterClass(); 
-    if (options.featureSelectionAlgorithm!=null) {
-    	featureSelectionThreshold = .1f;
+    if (options.featureSelectionThreshold==null) {
+    	featureSelectionThreshold = 0f;
     }
     
     // Add each assertion Analysis Engine to the pipeline!
@@ -850,7 +850,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     // run on existing output that has both system (or instance gathering) and gold
     for (JCas jCas : new JCasIterable(collectionReader, aggregate)) {
     	
-    	printViewNames("Views found by JCasIterable:", jCas);
+//    	printViewNames("Views found by JCasIterable:", jCas);
     	
       JCas goldView;
       try {
@@ -953,7 +953,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
   }
 
   protected void trainAndPackage(String currentAssertionAttribute, File directory, String[] arguments) throws Exception {
-	  if (options.featureSelectionAlgorithm!=null) {
+	  if (options.featureSelectionThreshold!=null) {
 //		  InstanceDataWriter.INSTANCES_OUTPUT_FILENAME = "training-data.liblinear";
 		  // Extracting features and writing instances
 		  Iterable<Instance<String>> instances = InstanceStream.loadFromDirectory(directory);
@@ -1019,7 +1019,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
   
   protected Class<? extends DataWriter> getDataWriterClass()
       throws ResourceInitializationException {
-    return (options.featureSelectionAlgorithm!=null)
+    return (options.featureSelectionThreshold!=null)
         ? InstanceDataWriter.class
         : LIBLINEARStringOutcomeDataWriter.class;
   }

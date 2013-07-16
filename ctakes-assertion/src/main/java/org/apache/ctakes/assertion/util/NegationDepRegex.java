@@ -521,10 +521,10 @@ public class NegationDepRegex {
 //		regexSet.add(regex_INNEG_NN);
 	
 		// Print out the regexSet for the fun of it!
-		System.out.println("### here are the regexes");
-		for (DependencyRegex dreg : regexSet) {
-			System.out.println(dreg.getName() + " :: " + dreg.toString());
-		}
+//		System.out.println("### here are the regexes");
+//		for (DependencyRegex dreg : regexSet) {
+//			System.out.println(dreg.getName() + " :: " + dreg.toString());
+//		}
 		
 	}
 
