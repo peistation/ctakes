@@ -22,18 +22,18 @@ public class EvaluationOfNEPredicateEventSpans extends
 		EvaluationOfAnnotationSpans_ImplBase {
 
 	public EvaluationOfNEPredicateEventSpans(File baseDirectory,
-			File rawTextDirectory, File knowtatorXMLDirectory,
+			File rawTextDirectory, File xmlDirectory, XMLFormat xmlFormat,
 			File xmiDirectory, File treebankDirectory,
 			Class<? extends Annotation> annotationClass) {
-		super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory,
+		super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat,
 				xmiDirectory, treebankDirectory, annotationClass);
 		// TODO Auto-generated constructor stub
 	}
 
 	public EvaluationOfNEPredicateEventSpans(File baseDirectory,
-			File rawTextDirectory, File knowtatorXMLDirectory,
+			File rawTextDirectory, File xmlDirectory, XMLFormat xmlFormat,
 			File xmiDirectory) {
-		super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory,
+		super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat,
 				xmiDirectory, EventMention.class);
 		// TODO Auto-generated constructor stub
 	}
@@ -80,7 +80,8 @@ public class EvaluationOfNEPredicateEventSpans extends
 	    EvaluationOfNEPredicateEventSpans evaluation = new EvaluationOfNEPredicateEventSpans(
 	        new File("target/eval/event-spans"),
 	        options.getRawTextDirectory(),
-	        options.getKnowtatorXMLDirectory(),
+	        options.getXMLDirectory(),
+	        options.getXMLFormat(),
 	        options.getXMIDirectory());
 	    evaluation.prepareXMIsFor(patientSets);
 	    evaluation.setLogging(Level.FINE, new File("target/eval/ctakes-event-errors.log"));

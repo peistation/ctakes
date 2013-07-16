@@ -63,7 +63,8 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
     EvaluationOfEventSpans evaluation = new EvaluationOfEventSpans(
         new File("target/eval/event-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
         options.getXMIDirectory(),
         options.getProbabilityOfKeepingANegativeExample(),
         options.getFeatureSelectionThreshold(),
@@ -83,12 +84,13 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
   public EvaluationOfEventSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       float probabilityOfKeepingANegativeExample,
       float featureSelectionThreshold,
       float numOfSmoteNeighbors) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, EventMention.class);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, EventMention.class);
     this.probabilityOfKeepingANegativeExample = probabilityOfKeepingANegativeExample;
     this.featureSelectionThreshold = featureSelectionThreshold;
     this.smoteNeighborNumber = numOfSmoteNeighbors;

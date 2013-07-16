@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.HashableArguments;
 import org.apache.ctakes.temporal.ae.EventTimeRelationAnnotator;
 import org.apache.ctakes.temporal.ae.baselines.RecallBaselineEventTimeRelationAnnotator;
-import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.CopyFromGold;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -129,7 +128,8 @@ public class EvaluationOfEventTimeRelations extends
       EvaluationOfEventTimeRelations evaluation = new EvaluationOfEventTimeRelations(
           tempModelDir,
           options.getRawTextDirectory(),
-          options.getKnowtatorXMLDirectory(),
+          options.getXMLDirectory(),
+          options.getXMLFormat(),
           options.getXMIDirectory(),
           options.getTreebankDirectory(),
           options.getClosure(),
@@ -165,7 +165,8 @@ public class EvaluationOfEventTimeRelations extends
   public EvaluationOfEventTimeRelations(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       File treebankDirectory,
       boolean useClosure,
@@ -177,7 +178,8 @@ public class EvaluationOfEventTimeRelations extends
     super(
         baseDirectory,
         rawTextDirectory,
-        knowtatorXMLDirectory,
+        xmlDirectory,
+        xmlFormat,
         xmiDirectory,
         treebankDirectory,
         printErrors,

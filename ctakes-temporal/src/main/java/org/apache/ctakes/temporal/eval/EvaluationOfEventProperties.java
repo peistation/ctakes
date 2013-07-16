@@ -70,7 +70,8 @@ public class EvaluationOfEventProperties extends
     EvaluationOfEventProperties evaluation = new EvaluationOfEventProperties(
         new File("target/eval/event-properties"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
         options.getXMIDirectory());
     evaluation.prepareXMIsFor(patientSets);
     evaluation.logClassificationErrors(new File("target/eval"), "ctakes-event-property-errors");
@@ -88,9 +89,10 @@ public class EvaluationOfEventProperties extends
   public EvaluationOfEventProperties(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, null);
     for (String name : PROPERTY_NAMES) {
       this.loggers.put(name, Logger.getLogger(String.format("%s.%s", this.getClass().getName(), name)));
     }

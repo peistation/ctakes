@@ -82,7 +82,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
       EvaluationOfTimeSpans evaluation = new EvaluationOfTimeSpans(
           new File("target/eval/time-spans"),
           options.getRawTextDirectory(),
-          options.getKnowtatorXMLDirectory(),
+          options.getXMLDirectory(),
+          options.getXMLFormat(),
           options.getXMIDirectory(),
           options.getTreebankDirectory(),
           annotatorClass,
@@ -119,13 +120,14 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
   public EvaluationOfTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       File treebankDirectory,
       Class<? extends JCasAnnotator_ImplBase> annotatorClass,
       boolean printOverlapping,
       String[] trainingArguments) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory, TimeMention.class);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, treebankDirectory, TimeMention.class);
     this.annotatorClass = annotatorClass;
     this.trainingArguments = trainingArguments;
     this.printOverlapping = printOverlapping;

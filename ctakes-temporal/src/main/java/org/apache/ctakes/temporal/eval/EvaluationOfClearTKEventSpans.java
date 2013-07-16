@@ -54,7 +54,8 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
     EvaluationOfClearTKEventSpans evaluation = new EvaluationOfClearTKEventSpans(
         new File("target/eval/cleartk-event-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
         options.getXMIDirectory());
     evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-event-errors.log"));
@@ -65,9 +66,10 @@ public class EvaluationOfClearTKEventSpans extends EvaluationOfAnnotationSpans_I
   public EvaluationOfClearTKEventSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, EventMention.class);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, EventMention.class);
   }
 
   @Override

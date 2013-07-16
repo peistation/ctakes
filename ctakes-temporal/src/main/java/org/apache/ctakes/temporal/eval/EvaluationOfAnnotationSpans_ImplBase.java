@@ -73,21 +73,23 @@ public abstract class EvaluationOfAnnotationSpans_ImplBase extends
   public EvaluationOfAnnotationSpans_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       File treebankDirectory,
       Class<? extends Annotation> annotationClass) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, treebankDirectory);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, treebankDirectory);
     this.annotationClass = annotationClass;
   }
   
   public EvaluationOfAnnotationSpans_ImplBase(
 		File baseDirectory,
 		File rawTextDirectory, 
-		File knowtatorXMLDirectory, 
+		File xmlDirectory,
+		XMLFormat xmlFormat,
 		File xmiDirectory,
 		Class<? extends Annotation> annotationClass) {
-	  this(baseDirectory,rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, null, annotationClass);
+	  this(baseDirectory,rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, null, annotationClass);
   }
 
 protected abstract AnalysisEngineDescription getDataWriterDescription(File directory)

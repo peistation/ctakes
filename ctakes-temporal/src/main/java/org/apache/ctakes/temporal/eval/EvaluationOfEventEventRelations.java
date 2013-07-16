@@ -44,14 +44,15 @@ EvaluationOfTemporalRelations_ImplBase {
   public EvaluationOfEventEventRelations(      
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       File treebankDirectory,
       boolean printErrors,
       boolean printRelations,
       boolean baseline,
       ParameterSettings params){
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory,
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory,
         treebankDirectory, printErrors, printRelations, params);
     this.baseline = baseline;
   }
@@ -188,7 +189,8 @@ EvaluationOfTemporalRelations_ImplBase {
     EvaluationOfEventEventRelations evaluation = new EvaluationOfEventEventRelations(
         workingDir,
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
         options.getXMIDirectory(),
         options.getTreebankDirectory(),
         options.getPrintErrors(),

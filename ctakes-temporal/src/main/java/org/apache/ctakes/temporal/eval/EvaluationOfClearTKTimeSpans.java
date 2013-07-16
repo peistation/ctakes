@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -53,7 +54,8 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
         new File("target/eval/cleartk-time-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
         options.getXMIDirectory());
     evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
@@ -64,9 +66,10 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
   public EvaluationOfClearTKTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory) {
-    super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory, TimeMention.class);
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, EventMention.class);
   }
 
   @Override

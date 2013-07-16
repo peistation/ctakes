@@ -53,9 +53,9 @@ public abstract class EvaluationOfTemporalRelations_ImplBase extends
 	  protected boolean printRelations = false;
 
 	public EvaluationOfTemporalRelations_ImplBase(File baseDirectory,
-			File rawTextDirectory, File knowtatorXMLDirectory,
+			File rawTextDirectory, File xmlDirectory, XMLFormat xmlFormat,
 			File xmiDirectory, File treebankDirectory, boolean printErrors, boolean printRelations, ParameterSettings params) {
-		super(baseDirectory, rawTextDirectory, knowtatorXMLDirectory, xmiDirectory,
+		super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory,
 				treebankDirectory);
 		this.params = params;
 		this.printRelations = printRelations;

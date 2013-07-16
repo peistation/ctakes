@@ -47,6 +47,7 @@ import org.apache.ctakes.dictionary.lookup.ae.UmlsDictionaryLookupAnnotator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
 import org.apache.ctakes.postagger.POSTagger;
+import org.apache.ctakes.temporal.ae.THYMEAnaforaXMLReader;
 import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.temporal.ae.THYMETreebankReader;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
@@ -99,6 +100,8 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     org.cleartk.eval.Evaluation_ImplBase<Integer, STATISTICS_TYPE> {
 
   public static final String GOLD_VIEW_NAME = "GoldView";
+  
+  enum XMLFormat { Knowtator, Anafora }
 
   static interface Options {
 
@@ -106,7 +109,10 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     public File getRawTextDirectory();
 
     @Option(longName = "xml")
-    public File getKnowtatorXMLDirectory();
+    public File getXMLDirectory();
+
+    @Option(longName = "format")
+    public XMLFormat getXMLFormat();
 
     @Option(longName = "xmi")
     public File getXMIDirectory();
@@ -132,7 +138,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 
   protected File rawTextDirectory;
 
-  protected File knowtatorXMLDirectory;
+  protected File xmlDirectory;
+  
+  protected XMLFormat xmlFormat;
 
   protected File xmiDirectory;
 
@@ -149,12 +157,14 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
   public Evaluation_ImplBase(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
+      File xmlDirectory,
+      XMLFormat xmlFormat,
       File xmiDirectory,
       File treebankDirectory) {
     super(baseDirectory);
     this.rawTextDirectory = rawTextDirectory;
-    this.knowtatorXMLDirectory = knowtatorXMLDirectory;
+    this.xmlDirectory = xmlDirectory;
+    this.xmlFormat = xmlFormat;
     this.xmiDirectory = xmiDirectory;
     this.xmiExists = this.xmiDirectory.exists() && this.xmiDirectory.listFiles().length > 0;
     this.treebankDirectory = treebankDirectory;
@@ -233,10 +243,20 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
         CAS.NAME_DEFAULT_SOFA,
         ViewTextCopierAnnotator.PARAM_DESTINATION_VIEW_NAME,
         GOLD_VIEW_NAME));
-    aggregateBuilder.add(
-        THYMEKnowtatorXMLReader.getDescription(this.knowtatorXMLDirectory),
-        CAS.NAME_DEFAULT_SOFA,
-        GOLD_VIEW_NAME);
+    switch (this.xmlFormat) {
+    case Anafora:
+      aggregateBuilder.add(
+          THYMEAnaforaXMLReader.getDescription(this.xmlDirectory),
+          CAS.NAME_DEFAULT_SOFA,
+          GOLD_VIEW_NAME);
+      break;
+    case Knowtator:
+      aggregateBuilder.add(
+          THYMEKnowtatorXMLReader.getDescription(this.xmlDirectory),
+          CAS.NAME_DEFAULT_SOFA,
+          GOLD_VIEW_NAME);
+      break;
+    }
 
     // identify segments
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(SegmentsFromBracketedSectionTagsAnnotator.class));
