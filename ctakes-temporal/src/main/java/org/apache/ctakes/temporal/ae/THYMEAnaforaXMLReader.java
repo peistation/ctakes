@@ -56,7 +56,8 @@ public class THYMEAnaforaXMLReader extends JCasAnnotator_ImplBase {
           + "XML annotations file; only the first suffix corresponding to a file will be used")
   private String[] anaforaXMLSuffixes = new String[] {
       ".temporal.Temporal-Adjudication.gold.completed.xml",
-      ".temporal.Temporal-Entities.gold.completed.xml", };
+      ".temporal.Temporal-Entities.gold.completed.xml",
+      ".Temporal-Entity.gold.completed.xml" };
 
   public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
     return AnalysisEngineFactory.createPrimitiveDescription(THYMEAnaforaXMLReader.class);
