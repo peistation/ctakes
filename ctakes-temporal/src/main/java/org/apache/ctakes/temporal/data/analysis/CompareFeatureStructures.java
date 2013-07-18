@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -26,6 +27,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
 
@@ -98,7 +100,6 @@ public class CompareFeatureStructures {
                 case DELETE:
                 case INSERT:
                   log(fsDelta);
-                  log("=== fsDelta complete ===\n");
                   break;
                 case CHANGE:
                   List<String> originalLines = toLines(fsDelta.getOriginal().getLines());
@@ -106,14 +107,19 @@ public class CompareFeatureStructures {
                   Patch<String> linesPatch = stringDiff.diff(originalLines, revisedLines);
                   ListMultimap<Integer, String> deletes = ArrayListMultimap.create();
                   ListMultimap<Integer, String> inserts = ArrayListMultimap.create();
+                  Set<Integer> skips = Sets.newHashSet();
                   for (Delta<String> linesDelta : linesPatch.getDeltas()) {
                     Chunk<String> originalChunk = linesDelta.getOriginal();
                     Chunk<String> revisedChunk = linesDelta.getRevised();
-                    deletes.putAll(originalChunk.getPosition(), originalChunk.getLines());
-                    inserts.putAll(originalChunk.getPosition(), revisedChunk.getLines());
+                    int start = originalChunk.getPosition();
+                    deletes.putAll(start, originalChunk.getLines());
+                    inserts.putAll(start, revisedChunk.getLines());
+                    for (int i = start; i < start + originalChunk.size(); ++i) {
+                      skips.add(i);
+                    }
                   }
                   for (int i = 0; i < originalLines.size(); ++i) {
-                    if (!deletes.containsKey(i) && !inserts.containsKey(i)) {
+                    if (!skips.contains(i)) {
                       log(" %s\n", originalLines.get(i));
                     }
                     for (String line : deletes.get(i)) {
