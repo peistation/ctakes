@@ -186,10 +186,12 @@
       <groupId>net.sf.carafe.jcarafe</groupId>
       <artifactId>jcarafe-core_2.9.1</artifactId>
     </dependency>			
+    <!--
     <dependency>
       <groupId>net.sf.carafe.jcarafe</groupId>
       <artifactId>jcarafe-ext_2.9.1</artifactId>
     </dependency>			
+    -->
     <dependency>
       <groupId>net.sf.mastif</groupId>
       <artifactId>mastif-i2b2</artifactId>
