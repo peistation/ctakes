@@ -2,16 +2,12 @@ package org.apache.ctakes.temporal.data.analysis;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
@@ -24,15 +20,20 @@ import org.uimafit.factory.JCasFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.TreeMultimap;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
+
+import difflib.Chunk;
+import difflib.Delta;
+import difflib.Patch;
+import difflib.myers.Equalizer;
+import difflib.myers.MyersDiff;
 
 public class CompareFeatureStructures {
   static interface Options {
@@ -54,36 +55,75 @@ public class CompareFeatureStructures {
     for (String annotationClassName : options.getAnnotationClassNames()) {
       annotationClasses.add(Class.forName(annotationClassName));
     }
-    File dir1 = options.getDirectory1();
-    File dir2 = options.getDirectory2();
-    if (!Arrays.equals(dir1.list(), dir2.list())) {
-      System.err.printf("%s and %s contain different files", dir1, dir2);
+
+    MyersDiff<String> stringDiff = new MyersDiff<String>();
+    MyersDiff<FeatureStructure> fsDiff =
+        new MyersDiff<FeatureStructure>(new FeatureStructureEqualizer());
+
+    File originalDir = options.getDirectory1();
+    File revisedDir = options.getDirectory2();
+    Patch<String> dirPatch = stringDiff.diff(originalDir.list(), revisedDir.list());
+    if (!dirPatch.getDeltas().isEmpty()) {
+      log("--- %s files\n", originalDir);
+      log("+++ %s files\n", revisedDir);
+      log(dirPatch);
     } else {
-      for (String fileName : dir1.list()) {
-        System.err.printf("== Checking %s ===\n", fileName);
-        JCas jCas1 = readXMI(new File(dir1, fileName));
-        JCas jCas2 = readXMI(new File(dir2, fileName));
-        List<String> viewNames1 = getViewNames(jCas1);
-        List<String> viewNames2 = getViewNames(jCas2);
-        if (areEqual("view-names", viewNames1, viewNames2)) {
-          for (String viewName : viewNames1) {
-            JCas view1 = jCas1.getView(viewName);
-            JCas view2 = jCas2.getView(viewName);
-            for (Class<?> annotationClass : annotationClasses) {
-              Multimap<Type, FeatureStructure> fsMap1 = toSortedMultimap(view1, annotationClass);
-              Multimap<Type, FeatureStructure> fsMap2 = toSortedMultimap(view2, annotationClass);
-              if (areEqual("annotation-counts", fsMap1.keys(), fsMap2.keys())) {
-                for (Type type : fsMap1.keySet()) {
-                  Iterator<FeatureStructure> fsIter1 = fsMap1.get(type).iterator();
-                  Iterator<FeatureStructure> fsIter2 = fsMap2.get(type).iterator();
-                  while (fsIter1.hasNext() && fsIter2.hasNext()) {
-                    FeatureStructure fs1 = fsIter1.next();
-                    FeatureStructure fs2 = fsIter2.next();
-                    FSDiff diff = new FSDiff(fs1, fs2);
-                    if (diff.hasDifferences()) {
-                      System.err.println(diff);
+      for (String fileName : originalDir.list()) {
+        File originalFile = new File(originalDir, fileName);
+        File revisedFile = new File(revisedDir, fileName);
+        JCas originalJCas = readXMI(originalFile);
+        JCas revisedJCas = readXMI(revisedFile);
+        List<String> originalViews = getViewNames(originalJCas);
+        List<String> revisedViews = getViewNames(revisedJCas);
+        Patch<String> viewsPatch = stringDiff.diff(originalViews, revisedViews);
+        if (!viewsPatch.getDeltas().isEmpty()) {
+          log("--- %s views\n", originalFile);
+          log("+++ %s views\n", revisedFile);
+          log(viewsPatch);
+        } else {
+          for (String viewName : originalViews) {
+            JCas originalView = originalJCas.getView(viewName);
+            JCas revisedView = revisedJCas.getView(viewName);
+            List<FeatureStructure> originalFSes =
+                toFeatureStructures(originalView, annotationClasses);
+            List<FeatureStructure> revisedFSes =
+                toFeatureStructures(revisedView, annotationClasses);
+            Patch<FeatureStructure> fsPatch = fsDiff.diff(originalFSes, revisedFSes);
+            if (!fsPatch.getDeltas().isEmpty()) {
+              log("--- %s view %s\n", originalFile, viewName);
+              log("+++ %s view %s\n", revisedFile, viewName);
+              for (Delta<FeatureStructure> fsDelta : fsPatch.getDeltas()) {
+                logHeader(fsDelta);
+                switch (fsDelta.getType()) {
+                case DELETE:
+                case INSERT:
+                  log(fsDelta);
+                  log("=== fsDelta complete ===\n");
+                  break;
+                case CHANGE:
+                  List<String> originalLines = toLines(fsDelta.getOriginal().getLines());
+                  List<String> revisedLines = toLines(fsDelta.getRevised().getLines());
+                  Patch<String> linesPatch = stringDiff.diff(originalLines, revisedLines);
+                  ListMultimap<Integer, String> deletes = ArrayListMultimap.create();
+                  ListMultimap<Integer, String> inserts = ArrayListMultimap.create();
+                  for (Delta<String> linesDelta : linesPatch.getDeltas()) {
+                    Chunk<String> originalChunk = linesDelta.getOriginal();
+                    Chunk<String> revisedChunk = linesDelta.getRevised();
+                    deletes.putAll(originalChunk.getPosition(), originalChunk.getLines());
+                    inserts.putAll(originalChunk.getPosition(), revisedChunk.getLines());
+                  }
+                  for (int i = 0; i < originalLines.size(); ++i) {
+                    if (!deletes.containsKey(i) && !inserts.containsKey(i)) {
+                      log(" %s\n", originalLines.get(i));
+                    }
+                    for (String line : deletes.get(i)) {
+                      log("-%s\n", line);
+                    }
+                    for (String line : inserts.get(i)) {
+                      log("+%s\n", line);
                     }
                   }
+                  break;
                 }
               }
             }
@@ -92,6 +132,39 @@ public class CompareFeatureStructures {
       }
     }
 
+  }
+
+  private static <T> void log(String message, Object... args) {
+    System.err.printf(message, args);
+  }
+
+  private static <T> void log(Patch<T> patch) {
+    for (Delta<T> delta : patch.getDeltas()) {
+      logHeader(delta);
+      log(delta);
+    }
+  }
+
+  private static <T> void logHeader(Delta<T> delta) {
+    Chunk<T> original = delta.getOriginal();
+    Chunk<T> revised = delta.getRevised();
+    log(
+        "@@ -%d,%d +%d,%d @@\n",
+        original.getPosition(),
+        original.size(),
+        revised.getPosition(),
+        revised.size());
+  }
+
+  private static <T> void log(Delta<T> delta) {
+    Chunk<T> original = delta.getOriginal();
+    Chunk<T> revised = delta.getRevised();
+    for (T line : original.getLines()) {
+      log("-%s\n", line.toString().replaceAll("\n", "\n-"));
+    }
+    for (T line : revised.getLines()) {
+      log("+%s\n", line.toString().replaceAll("\n", "\n+"));
+    }
   }
 
   private static JCas readXMI(File xmiFile) throws Exception {
@@ -106,49 +179,39 @@ public class CompareFeatureStructures {
   }
 
   private static List<String> getViewNames(JCas jCas) throws CASException {
-    List<String> names = Lists.newArrayList();
-    Iterator<JCas> views = jCas.getViewIterator();
-    while (views.hasNext()) {
-      names.add(views.next().getViewName());
+    List<String> viewNames = Lists.newArrayList();
+    Iterator<JCas> viewIter = jCas.getViewIterator();
+    while (viewIter.hasNext()) {
+      viewNames.add(viewIter.next().getViewName());
     }
-    return names;
+    return viewNames;
   }
 
-  private static boolean areEqual(String name, Object o1, Object o2) {
-    boolean areEqual = Objects.equal(o1, o2);
-    if (!areEqual) {
-      System.err.printf("Difference in %s:\n-%s\n+%s\n", name, o1, o2);
-    }
-    return areEqual;
-  }
-
-  private static Multimap<Type, FeatureStructure> toSortedMultimap(
+  private static List<FeatureStructure> toFeatureStructures(
       JCas jCas,
-      Class<?> annotationClass) {
-    Type type = JCasUtil.getType(jCas, annotationClass);
-    FSIterator<FeatureStructure> fsIterator = jCas.getFSIndexRepository().getAllIndexedFS(type);
-    Multimap<Type, FeatureStructure> result = TreeMultimap.create(BY_NAME, BY_OFFSETS);
-    while (fsIterator.hasNext()) {
-      FeatureStructure fs = fsIterator.next();
-      result.put(fs.getType(), fs);
+      List<Class<?>> annotationClasses) {
+    List<FeatureStructure> fsList = Lists.newArrayList();
+    for (Class<?> annotationClass : annotationClasses) {
+      Type type = JCasUtil.getType(jCas, annotationClass);
+      Iterators.addAll(fsList, jCas.getFSIndexRepository().getAllIndexedFS(type));
     }
-    return result;
+    return BY_TYPE_AND_OFFSETS.sortedCopy(fsList);
   }
-  
-  private static final Ordering<Type> BY_NAME = Ordering.natural().onResultOf(
-      new Function<Type, String>() {
-        @Override
-        public String apply(@Nullable Type input) {
-          return input.getName();
-        }
-      });
 
-  private static final Ordering<FeatureStructure> BY_OFFSETS =
-      Ordering.natural().<Integer> lexicographical().onResultOf(
-          new Function<FeatureStructure, Iterable<Integer>>() {
+  private static final Ordering<FeatureStructure> BY_TYPE_AND_OFFSETS =
+      Ordering.natural().<Comparable<?>> lexicographical().onResultOf(
+          new Function<FeatureStructure, Iterable<Comparable<?>>>() {
             @Override
-            public Iterable<Integer> apply(@Nullable FeatureStructure input) {
+            public Iterable<Comparable<?>> apply(@Nullable FeatureStructure input) {
               List<Integer> offsets = Lists.newArrayList();
+              this.findOffsets(input, offsets);
+              List<Comparable<?>> result =
+                  Lists.<Comparable<?>> newArrayList(input.getType().getName());
+              result.addAll(Ordering.natural().sortedCopy(offsets));
+              return result;
+            }
+
+            private void findOffsets(FeatureStructure input, List<Integer> offsets) {
               if (input != null) {
                 if (input instanceof Annotation) {
                   Annotation annotation = (Annotation) input;
@@ -157,156 +220,75 @@ public class CompareFeatureStructures {
                 } else if (input instanceof FSArray) {
                   FSArray fsArray = (FSArray) input;
                   for (int i = 0; i < fsArray.size(); ++i) {
-                    Iterables.addAll(offsets, this.apply(fsArray.get(i)));
+                    this.findOffsets(fsArray.get(i), offsets);
                   }
                 } else if (input instanceof NonEmptyFSList) {
                   NonEmptyFSList fsList = (NonEmptyFSList) input;
-                  Iterables.addAll(offsets, this.apply(fsList.getHead()));
-                  Iterables.addAll(offsets, this.apply(fsList.getTail()));
+                  this.findOffsets(fsList.getHead(), offsets);
+                  this.findOffsets(fsList.getTail(), offsets);
                 } else {
                   for (Feature feature : input.getType().getFeatures()) {
                     if (!feature.getRange().isPrimitive()) {
-                      Iterables.addAll(offsets, this.apply(input.getFeatureValue(feature)));
+                      this.findOffsets(input.getFeatureValue(feature), offsets);
                     }
                   }
                 }
               }
-              return offsets;
             }
           });
 
-  public static class FSDiff {
-    private List<FSDifference> differences;
-    private FeatureStructure root1, root2;
-
-    public FSDiff(FeatureStructure root1, FeatureStructure root2) {
-      this.root1 = root1;
-      this.root2 = root2;
-      this.differences = Lists.newArrayList();
-      this.findDifferences(
-          this.root1,
-          this.root2,
-          Lists.<Feature> newArrayList(),
-          Lists.<FeatureStructure> newArrayList());
+  public static List<String> toLines(List<FeatureStructure> fsList) {
+    List<String> lines = Lists.newArrayList();
+    for (FeatureStructure fs : fsList) {
+      for (String line : fs.toString().split("\n")) {
+        lines.add(line);
+      }
     }
+    return lines;
+  }
 
-    public boolean hasDifferences() {
-      return !this.differences.isEmpty();
-    }
+  static class FeatureStructureEqualizer implements Equalizer<FeatureStructure> {
 
     @Override
-    public String toString() {
-      String diff;
-      if (!this.hasDifferences()) {
-        diff = "";
-      } else {
-        List<String> paths = Lists.newArrayList();
-        for (FSDifference difference : this.differences) {
-          List<String> featureNames = Lists.newArrayList();
-          for (Feature feature : difference.getPath()) {
-            featureNames.add(feature.getShortName());
-          }
-          paths.add(Joiner.on('/').join(featureNames));
-        }
-        diff = this.root1.toString();
-        for (FSDifference difference : this.differences) {
-          String value1 = difference.getValue1().toString().trim();
-          String value2 = difference.getValue2().toString().trim();
-          String value1space = value1.replaceAll("\\s+", "\\\\s+");
-          Pattern pattern =
-              Pattern.compile(String.format("^(.*?)(%s)", value1space), Pattern.MULTILINE);
-          Matcher matcher = pattern.matcher(diff);
-          StringBuffer buffer = new StringBuffer();
-          while (matcher.find()) {
-            String prefix = matcher.group(1);
-            String replacement;
-            // don't re-replace things that have already been taken care of
-            if (prefix.startsWith("-") || prefix.startsWith("+")) {
-              replacement = matcher.group();
-            }
-            // replace the current text with diff-style +/- text
-            else {
-              Matcher indentMatcher = Pattern.compile("^\\s*").matcher(prefix);
-              indentMatcher.find();
-              String indent = indentMatcher.group();
-              replacement =
-                  String.format(
-                      "%s%s\n%s%s",
-                      "-" + prefix,
-                      value1.replaceAll("\n", "\n-" + indent),
-                      "+" + prefix,
-                      value2.replaceAll("\n", "\n+" + indent));
-            }
-            matcher.appendReplacement(buffer, replacement);
-          }
-          matcher.appendTail(buffer);
-          diff = buffer.toString();
-        }
-        diff = diff.replaceAll("(?m)^(?![+-])", " ");
-        diff = String.format("Difference in %s:\n%s", paths, diff);
-      }
-      return diff;
+    public boolean equals(FeatureStructure original, FeatureStructure revised) {
+      return this.equals(original, revised, Lists.<FeatureStructure> newArrayList());
     }
 
-    private void findDifferences(
-        FeatureStructure fs1,
-        FeatureStructure fs2,
-        List<Feature> featurePath,
+    private boolean equals(
+        FeatureStructure original,
+        FeatureStructure revised,
         List<FeatureStructure> seen) {
-      if (!seen.contains(fs1) && !seen.contains(fs2)) {
-        seen.add(fs1);
-        seen.add(fs2);
-        for (Feature feature : fs1.getType().getFeatures()) {
+      if (!seen.contains(original) && !seen.contains(revised)) {
+        seen.add(original);
+        seen.add(revised);
+        for (Feature feature : original.getType().getFeatures()) {
           if (feature.getName().equals("uima.cas.AnnotationBase:sofa")) {
             continue;
           }
-          List<Feature> newPath = Lists.newArrayList(featurePath);
-          newPath.add(feature);
           if (feature.getRange().isPrimitive()) {
-            String value1 = fs1.getFeatureValueAsString(feature);
-            String value2 = fs2.getFeatureValueAsString(feature);
-            if (!Objects.equal(value1, value2)) {
-              this.differences.add(new FSDifference(newPath, value1, value2));
+            String originalValue = original.getFeatureValueAsString(feature);
+            String revisedValue = revised.getFeatureValueAsString(feature);
+            if (!Objects.equal(originalValue, revisedValue)) {
+              return false;
             }
           } else {
-            FeatureStructure value1 = fs1.getFeatureValue(feature);
-            FeatureStructure value2 = fs2.getFeatureValue(feature);
-            if (value1 == null
-                || value2 == null
-                || !value1.getType().getName().equals(value2.getType().getName())) {
-              if (!Objects.equal(value1, value2)) {
-                this.differences.add(new FSDifference(newPath, value1, value2));
+            FeatureStructure originalValue = original.getFeatureValue(feature);
+            FeatureStructure revisedValue = revised.getFeatureValue(feature);
+            if (originalValue == null
+                || revisedValue == null
+                || !originalValue.getType().getName().equals(revisedValue.getType().getName())) {
+              if (!Objects.equal(originalValue, revisedValue)) {
+                return false;
               }
             } else {
-              this.findDifferences(value1, value2, newPath, seen);
+              if (!this.equals(originalValue, revisedValue, seen)) {
+                return false;
+              }
             }
           }
         }
       }
-    }
-  }
-
-  public static class FSDifference {
-
-    private List<Feature> path;
-    private Object value1, value2;
-
-    public FSDifference(List<Feature> path, Object value1, Object value2) {
-      this.path = path;
-      this.value1 = value1;
-      this.value2 = value2;
-    }
-
-    public List<Feature> getPath() {
-      return path;
-    }
-
-    public Object getValue1() {
-      return value1;
-    }
-
-    public Object getValue2() {
-      return value2;
+      return true;
     }
   }
 }
