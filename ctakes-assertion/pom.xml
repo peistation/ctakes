@@ -182,36 +182,24 @@
 			<version>0.4.0</version>
 		</dependency>
 
+    <dependency>
+      <groupId>net.sf.carafe.jcarafe</groupId>
+      <artifactId>jcarafe-core_2.9.1</artifactId>
+    </dependency>			
+    <dependency>
+      <groupId>net.sf.carafe.jcarafe</groupId>
+      <artifactId>jcarafe-ext_2.9.1</artifactId>
+    </dependency>			
+    <dependency>
+      <groupId>net.sf.mastif</groupId>
+      <artifactId>mastif-i2b2</artifactId>
+    </dependency>			
+    <dependency>
+      <groupId>net.sf.mastif</groupId>
+      <artifactId>mastif-zoner</artifactId>
+    </dependency>			
 		<!-- Dependencies that still need to be uploaded to Maven Central; when 
 			done, the dependency versions should be moved into the parent pom -->
-		<dependency>
-			<groupId>org.mitre.medfacts</groupId>
-			<artifactId>medfacts-i2b2</artifactId>
-			<version>1.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/med-facts-i2b2-1.2-SNAPSHOT.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.mitre.medfacts</groupId>
-			<artifactId>medfacts-zoner</artifactId>
-			<version>1.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/med-facts-zoner-1.1.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.mitre.jcarafe.core</groupId>
-			<artifactId>jcarafe.core</artifactId>
-			<version>2.9.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/jcarafe-core_2.9.1-0.9.8.3.RC4.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.mitre.jcarafe.ext</groupId>
-			<artifactId>jcarafe.ext</artifactId>
-			<version>2.9.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-lvg</artifactId>
