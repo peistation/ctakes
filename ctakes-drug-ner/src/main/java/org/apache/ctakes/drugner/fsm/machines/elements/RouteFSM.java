@@ -129,12 +129,14 @@ public class RouteFSM {
 		iv_singleRectalWordSet.add("p.r");
 		
 		iv_singleInjectWordSet.add("subcutaneously");
-		iv_singleInjectWordSet.add("subcutaneously");
 		iv_singleInjectWordSet.add("intervenous");
 		iv_singleInjectWordSet.add("intervenously");
 		iv_singleInjectWordSet.add("injection");
 		iv_singleInjectWordSet.add("injections");
 		iv_singleInjectWordSet.add("injected");
+		iv_singleInjectWordSet.add("iv");	
+		iv_singleInjectWordSet.add("intravenous");
+		iv_singleInjectWordSet.add("intravenously");		
 
 		iv_middleTermSet.add("a");
 		iv_middleTermSet.add("an");
