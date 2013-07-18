@@ -19,11 +19,15 @@
 package org.apache.ctakes.temporal.ae;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ctakes.temporal.ae.feature.ParseSpanFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
+import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
+import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
@@ -35,7 +39,7 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.DataWriter;
+//import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.chunking.BIOChunking;
@@ -51,151 +55,203 @@ import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 
-  public static final String TIMEX_VIEW = "TimexView";
-  
-  public static AnalysisEngineDescription createDataWriterDescription(
-      Class<? extends DataWriter<String>> dataWriterClass,
-      File outputDirectory) throws ResourceInitializationException {
-    return AnalysisEngineFactory.createPrimitiveDescription(
-        TimeAnnotator.class,
-        CleartkAnnotator.PARAM_IS_TRAINING,
-        true,
-        DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-        dataWriterClass,
-        DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
-        outputDirectory);
-  }
+	public static final String PARAM_FEATURE_SELECTION_THRESHOLD = "WhetherToDoFeatureSelection";
 
-  public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
-      throws ResourceInitializationException {
-    return AnalysisEngineFactory.createPrimitiveDescription(
-        TimeAnnotator.class,
-        CleartkAnnotator.PARAM_IS_TRAINING,
-        false,
-        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-        new File(modelDirectory, "model.jar"));
-  }
+	@ConfigurationParameter(
+			name = PARAM_FEATURE_SELECTION_THRESHOLD,
+			mandatory = false,
+			description = "the Chi-squared threshold at which features should be removed")
+	protected Float featureSelectionThreshold = 0f;
+	
+	public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
 
-  protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
+	@ConfigurationParameter(
+			mandatory = false,
+			name = PARAM_FEATURE_SELECTION_URI,
+			description = "provides a URI where the feature selection data will be written")
+	protected URI featureSelectionURI;
 
-  protected List<CleartkExtractor> contextFeatureExtractors;
-  
-//  protected List<SimpleFeatureExtractor> parseFeatureExtractors;
-  protected ParseSpanFeatureExtractor parseExtractor;
-  
-  private BIOChunking<BaseToken, TimeMention> timeChunking;
+	public static final String TIMEX_VIEW = "TimexView";
 
-  @Override
-  public void initialize(UimaContext context) throws ResourceInitializationException {
-    super.initialize(context);
+	public static AnalysisEngineDescription createDataWriterDescription(
+			Class<?> dataWriterClass,
+					File outputDirectory,
+					float featureSelect) throws ResourceInitializationException {
+		return AnalysisEngineFactory.createPrimitiveDescription(
+				TimeAnnotator.class,
+				CleartkAnnotator.PARAM_IS_TRAINING,
+				true,
+				DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
+				dataWriterClass,
+				DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
+				outputDirectory,
+				TimeAnnotator.PARAM_FEATURE_SELECTION_THRESHOLD,
+		        featureSelect);
+	}
 
-    // define chunking
-    this.timeChunking = new BIOChunking<BaseToken, TimeMention>(BaseToken.class, TimeMention.class);
+	public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
+			throws ResourceInitializationException {
+		return AnalysisEngineFactory.createPrimitiveDescription(
+				TimeAnnotator.class,
+				CleartkAnnotator.PARAM_IS_TRAINING,
+				false,
+				GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+				new File(modelDirectory, "model.jar"),
+				TimeAnnotator.PARAM_FEATURE_SELECTION_URI,
+				TimeAnnotator.createFeatureSelectionURI(modelDirectory));
+	}
 
-    CombinedExtractor allExtractors = new CombinedExtractor(
-        new CoveredTextExtractor(),
-        new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
-        new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
-        new TypePathExtractor(BaseToken.class, "partOfSpeech"),
-        new TimeWordTypeExtractor());
+	protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
 
-//    CombinedExtractor parseExtractors = new CombinedExtractor(
-//        new ParseSpanFeatureExtractor()
-//        );
-    this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
-    this.tokenFeatureExtractors.add(allExtractors);
+	protected List<CleartkExtractor> contextFeatureExtractors;
 
-    this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
-    this.contextFeatureExtractors.add(new CleartkExtractor(
-        BaseToken.class,
-        allExtractors,
-        new Preceding(3),
-        new Following(3)));
-//    this.parseFeatureExtractors = new ArrayList<ParseSpanFeatureExtractor>();
-//    this.parseFeatureExtractors.add(new ParseSpanFeatureExtractor());
-    parseExtractor = new ParseSpanFeatureExtractor();
-  }
+	//  protected List<SimpleFeatureExtractor> parseFeatureExtractors;
+	protected ParseSpanFeatureExtractor parseExtractor;
 
-  @Override
-  public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
-    // classify tokens within each sentence
-    for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
-      List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
+	private BIOChunking<BaseToken, TimeMention> timeChunking;
+	
+	private FeatureSelection<String> featureSelection;
 
-      // during training, the list of all outcomes for the tokens
-      List<String> outcomes;
-      if (this.isTraining()) {
-        List<TimeMention> times = JCasUtil.selectCovered(jCas, TimeMention.class, sentence);
-        outcomes = this.timeChunking.createOutcomes(jCas, tokens, times);
-      }
-      // during prediction, the list of outcomes predicted so far
-      else {
-        outcomes = new ArrayList<String>();
-      }
+	private static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
 
-      // extract features for all tokens
-      int tokenIndex = -1;
-      for (BaseToken token : tokens) {
-        ++tokenIndex;
+	public static FeatureSelection<String> createFeatureSelection(double threshold) {
+		return new Chi2FeatureSelection<String>(TimeAnnotator.FEATURE_SELECTION_NAME, threshold);
+	}
+	
+	public static URI createFeatureSelectionURI(File outputDirectoryName) {
+		return new File(outputDirectoryName, FEATURE_SELECTION_NAME + "_Chi2_extractor.dat").toURI();
+	}
 
-        List<Feature> features = new ArrayList<Feature>();
-        // features from token attributes
-        for (SimpleFeatureExtractor extractor : this.tokenFeatureExtractors) {
-          features.addAll(extractor.extract(jCas, token));
-        }
-        // features from surrounding tokens
-        for (CleartkExtractor extractor : this.contextFeatureExtractors) {
-          features.addAll(extractor.extractWithin(jCas, token, sentence));
-        }
-        // features from previous classifications
-        int nPreviousClassifications = 2;
-        for (int i = nPreviousClassifications; i > 0; --i) {
-          int index = tokenIndex - i;
-          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
-          features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
-        }
-        //add segment ID as a features:
-        features.add(new Feature("SegmentID", segment.getId()));
-        
-        // features from dominating parse tree
-//        for(SimpleFeatureExtractor extractor : this.parseFeatureExtractors){
-        BaseToken startToken = token;
-        for(int i = tokenIndex-1; i >= 0; --i){
-          String outcome = outcomes.get(i);
-          if(outcome.equals("O")){
-            break;
-          }
-          startToken = tokens.get(i);
-        }
-        features.addAll(parseExtractor.extract(jCas, startToken.getBegin(), token.getEnd()));
-//        }
-        // if training, write to data file
-        if (this.isTraining()) {
-          String outcome = outcomes.get(tokenIndex);
-          this.dataWriter.write(new Instance<String>(outcome, features));
-        }
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
 
-        // if predicting, add prediction to outcomes
-        else {
-          outcomes.add(this.classifier.classify(features));
-        }
-      }
+		// define chunking
+		this.timeChunking = new BIOChunking<BaseToken, TimeMention>(BaseToken.class, TimeMention.class);
 
-      // during prediction, convert chunk labels to times and add them to the CAS
-      if (!this.isTraining()) {
-        JCas timexCas;
-        try {
-          timexCas = jCas.getView(TIMEX_VIEW);
-        } catch (CASException e) {
-          throw new AnalysisEngineProcessException(e);
-        }
-        this.timeChunking.createChunks(timexCas, tokens, outcomes);
-      }
-    }
-  }
+		CombinedExtractor allExtractors = new CombinedExtractor(
+				new CoveredTextExtractor(),
+				new CharacterCategoryPatternExtractor(PatternType.REPEATS_MERGED),
+				new CharacterCategoryPatternExtractor(PatternType.ONE_PER_CHAR),
+				new TypePathExtractor(BaseToken.class, "partOfSpeech"),
+				new TimeWordTypeExtractor());
+
+		//    CombinedExtractor parseExtractors = new CombinedExtractor(
+		//        new ParseSpanFeatureExtractor()
+		//        );
+		this.tokenFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
+		this.tokenFeatureExtractors.add(allExtractors);
+
+		this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
+		this.contextFeatureExtractors.add(new CleartkExtractor(
+				BaseToken.class,
+				allExtractors,
+				new Preceding(3),
+				new Following(3)));
+		//    this.parseFeatureExtractors = new ArrayList<ParseSpanFeatureExtractor>();
+		//    this.parseFeatureExtractors.add(new ParseSpanFeatureExtractor());
+		parseExtractor = new ParseSpanFeatureExtractor();
+
+		//initialize feature selection
+		if (featureSelectionThreshold == 0) {
+			this.featureSelection = null;
+		} else {
+			this.featureSelection = TimeAnnotator.createFeatureSelection(this.featureSelectionThreshold);
+
+			if (this.featureSelectionURI != null) {
+				try {
+					this.featureSelection.load(this.featureSelectionURI);
+				} catch (IOException e) {
+					throw new ResourceInitializationException(e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
+		// classify tokens within each sentence
+		for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
+			List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
+
+			// during training, the list of all outcomes for the tokens
+			List<String> outcomes;
+			if (this.isTraining()) {
+				List<TimeMention> times = JCasUtil.selectCovered(jCas, TimeMention.class, sentence);
+				outcomes = this.timeChunking.createOutcomes(jCas, tokens, times);
+			}
+			// during prediction, the list of outcomes predicted so far
+			else {
+				outcomes = new ArrayList<String>();
+			}
+
+			// extract features for all tokens
+			int tokenIndex = -1;
+			for (BaseToken token : tokens) {
+				++tokenIndex;
+
+				List<Feature> features = new ArrayList<Feature>();
+				// features from token attributes
+				for (SimpleFeatureExtractor extractor : this.tokenFeatureExtractors) {
+					features.addAll(extractor.extract(jCas, token));
+				}
+				// features from surrounding tokens
+				for (CleartkExtractor extractor : this.contextFeatureExtractors) {
+					features.addAll(extractor.extractWithin(jCas, token, sentence));
+				}
+				// features from previous classifications
+				int nPreviousClassifications = 2;
+				for (int i = nPreviousClassifications; i > 0; --i) {
+					int index = tokenIndex - i;
+					String previousOutcome = index < 0 ? "O" : outcomes.get(index);
+					features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
+				}
+				//add segment ID as a features:
+				features.add(new Feature("SegmentID", segment.getId()));
+
+				// features from dominating parse tree
+				//        for(SimpleFeatureExtractor extractor : this.parseFeatureExtractors){
+				BaseToken startToken = token;
+				for(int i = tokenIndex-1; i >= 0; --i){
+					String outcome = outcomes.get(i);
+					if(outcome.equals("O")){
+						break;
+					}
+					startToken = tokens.get(i);
+				}
+				features.addAll(parseExtractor.extract(jCas, startToken.getBegin(), token.getEnd()));
+				//        }
+				
+				// apply feature selection, if necessary
+		        if (this.featureSelection != null) {
+		          features = this.featureSelection.transform(features);
+		        }
+				
+				// if training, write to data file
+				if (this.isTraining()) {
+					String outcome = outcomes.get(tokenIndex);
+					this.dataWriter.write(new Instance<String>(outcome, features));
+				}else {// if predicting, add prediction to outcomes
+					outcomes.add(this.classifier.classify(features));
+				}
+			}
+
+			// during prediction, convert chunk labels to times and add them to the CAS
+			if (!this.isTraining()) {
+				JCas timexCas;
+				try {
+					timexCas = jCas.getView(TIMEX_VIEW);
+				} catch (CASException e) {
+					throw new AnalysisEngineProcessException(e);
+				}
+				this.timeChunking.createChunks(timexCas, tokens, outcomes);
+			}
+		}
+	}
 }
