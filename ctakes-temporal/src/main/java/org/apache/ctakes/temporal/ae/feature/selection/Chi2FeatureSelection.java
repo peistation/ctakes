@@ -38,9 +38,12 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
 
     protected Table<String, OUTCOME_T, Integer> featValueClassCount;
 
-    public Chi2Scorer() {
+	private boolean yates = false;
+
+    public Chi2Scorer(boolean yate) {
       this.classCounts = HashMultiset.<OUTCOME_T> create();
       this.featValueClassCount = HashBasedTable.<String, OUTCOME_T, Integer> create();
+      this.yates = yate;
     }
 
     public void update(String featureName, OUTCOME_T outcome, int occurrences) {
@@ -88,13 +91,12 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
         return chi2val;
       }
 
-      boolean yates = true;
       for (int lbl = 0; lbl < numOfClass; lbl++) {
         // for positive part of feature:
         double expected = (outcomeCounts[lbl] / (double) n) * (posiFeatCount);
         if (expected > 0) {
           double diff = Math.abs(posiOutcomeCounts[lbl] - expected);
-          if (yates) { // apply Yate's correction
+          if (this.yates ) { // apply Yate's correction
             diff -= 0.5;
           }
           if (diff > 0)
@@ -106,7 +108,7 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
         double observ = outcomeCounts[lbl] - posiOutcomeCounts[lbl];
         if (expected > 0) {
           double diff = Math.abs(observ - expected);
-          if (yates) { // apply Yate's correction
+          if (this.yates) { // apply Yate's correction
             diff -= 0.5;
           }
           if (diff > 0)
@@ -121,6 +123,8 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
   private double chi2Threshold;
 
   private Chi2Scorer<OUTCOME_T> chi2Function;
+  
+  private boolean yates = false;
 
   public Chi2FeatureSelection(String name) {
     this(name, 0.0);
@@ -131,6 +135,17 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
     this.chi2Threshold = threshold;
   }
 
+  /**
+   * Constructor that can let use control the yate's correction
+   * @param name
+   * @param threshold
+   * @param yates : true for using yate's correction, false for turn off yate's correction
+   */
+  public Chi2FeatureSelection(String name, double threshold, boolean yates) {
+	    super(name);
+	    this.chi2Threshold = threshold;
+	    this.yates = yates;
+	  }
   @Override
   public boolean apply(Feature feature) {
     return this.selectedFeatureNames.contains(this.getFeatureName(feature));
@@ -139,7 +154,7 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
   @Override
   public void train(Iterable<Instance<OUTCOME_T>> instances) {
     // aggregate statistics for all features
-    this.chi2Function = new Chi2Scorer<OUTCOME_T>();
+    this.chi2Function = new Chi2Scorer<OUTCOME_T>(this.yates);
     for (Instance<OUTCOME_T> instance : instances) {
       OUTCOME_T outcome = instance.getOutcome();
       for (Feature feature : instance.getFeatures()) {
