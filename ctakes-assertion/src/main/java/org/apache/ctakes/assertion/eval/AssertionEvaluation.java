@@ -18,8 +18,10 @@
  */
 package org.apache.ctakes.assertion.eval;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -255,6 +257,19 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
 
   private String sharpCorpusDirectory;
 
+  static public File evaluationLogFile;
+  static public BufferedWriter evaluationLogFileOut;
+  static {
+	  try {
+		evaluationLogFile = new File("eval_"+new Date().toString().replaceAll(" ","_") + ".txt");
+		evaluationLogFileOut = new BufferedWriter(new FileWriter(evaluationLogFile), 32768);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  }
+  static public boolean useEvaluationLogFile = false;
+
   protected static Options options = new Options();
   
   public static void main(String[] args) throws Exception {
@@ -472,8 +487,24 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     	    directory,
     	    annotationType.toUpperCase(),
     	    stats.toString());
+    	  
+    	  try {
+    		  if (useEvaluationLogFile) {
+    			  evaluationLogFileOut.write(
+    					  String.format("directory: \"%s\"; assertion type: %s%n%n%s%n%n",
+    							  directory,
+    							  annotationType.toUpperCase(),
+    							  stats.toString())
+    					  );
+    		  }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 	  }
-      
+
   }
 
   private String[] trainingArguments;

@@ -12,16 +12,20 @@ public class CrossValidateChi2GridSearch {
 
 	public static void main(String[] args) throws Exception {
 		
-		float[] threshs = {0.0001f, 0.001f, 0.01f, 0.1f, 1f, 10f};
+		AssertionEvaluation.useEvaluationLogFile = true;
+		
+		float[] threshs = {2f, 5f, 10f, 20f, 50f, 100f};
 		for (Float chi2threshold : threshs ) {
+			System.out.println("BEGIN Chi2 Grid Search with threshold = "+ Float.toString(chi2threshold));
+			AssertionEvaluation.evaluationLogFileOut.write("BEGIN Chi2 Grid Search with threshold = "+ Float.toString(chi2threshold));
+			AssertionEvaluation.evaluationLogFileOut.flush();
 			
-
 			for (String attribute : AssertionConst.annotationTypes) {
 
 				ArrayList<String> params = new ArrayList<String>();
 
 				params.add("--train-dir"); 			params.add(AssertionConst.trainingDirectories.get(attribute));
-				params.add("--models-dir"); 		params.add(AssertionConst.modelDirectory);
+				params.add("--models-dir"); 		params.add(AssertionConst.modelDirectory+Float.toString(chi2threshold));
 				params.add("--cross-validation"); 	params.add("5");
 				params.add("--feature-selection");	params.add(Float.toString(chi2threshold));
 
