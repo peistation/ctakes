@@ -38,11 +38,14 @@ public class FileLocator
         try
         {
         	//Get from classpath
-        	return FileLocator.class.getClassLoader().getResourceAsStream(location);
+        	InputStream is  = FileLocator.class.getClassLoader().getResourceAsStream(location);
+        	if (is==null) throw new RuntimeException("Unable to locate " + location + " on classpath.");
+        	return is;
         }
         catch (Exception e)
         {
-        	//Try to get from filestream
+        	//Try to get from filestream, locating relative to the current directory if 
+        	// location is a relative path
         	File f = new File(location);
         	FileInputStream fs = new FileInputStream(f);
         	return fs;
