@@ -96,7 +96,7 @@ public class HyphenTextModifierImplTests {
 		
 		InputStream filename = null;
 		try {
-			filename = FileLocator.getAsStream("org/apache/ctakes/core/tokenizer/hyphenated.txt");
+			filename = FileLocator.getAsStream("../ctakes-core-res/target/classes/org/apache/ctakes/core/tokenizer/hyphenated.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
