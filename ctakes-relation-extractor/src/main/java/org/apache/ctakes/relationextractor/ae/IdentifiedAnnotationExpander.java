@@ -68,4 +68,39 @@ public class IdentifiedAnnotationExpander extends JCasAnnotator_ImplBase {
 
     return originalSpan;
   }
+  
+  public static String getEnclosingNP(JCas jCas, IdentifiedAnnotation identifiedAnnotation) {
+
+    // map each covering treebank node to its character length
+    Map<TreebankNode, Integer> treebankNodeSizes = new HashMap<TreebankNode, Integer>();
+    for(TreebankNode treebankNode : JCasUtil.selectCovering(
+        jCas, 
+        TreebankNode.class, 
+        identifiedAnnotation.getBegin(), 
+        identifiedAnnotation.getEnd())) {
+
+      // only expand nouns (and not verbs or adjectives)
+      if(treebankNode instanceof TerminalTreebankNode) {
+        if(! treebankNode.getNodeType().startsWith("N")) {
+          return identifiedAnnotation.getCoveredText();
+        }
+      }
+
+      // because only nouns are expanded, look for covering NPs
+      if(treebankNode.getNodeType().equals("NP")) {
+        treebankNodeSizes.put(treebankNode, treebankNode.getCoveredText().length());
+      }
+    }
+
+    // find the shortest covering treebank node
+    List<TreebankNode> sortedTreebankNodes = new ArrayList<TreebankNode>(treebankNodeSizes.keySet());
+    Function<TreebankNode, Integer> getValue = Functions.forMap(treebankNodeSizes);
+    Collections.sort(sortedTreebankNodes, Ordering.natural().onResultOf(getValue));
+
+    if(sortedTreebankNodes.size() > 0) {
+      return sortedTreebankNodes.get(0).getCoveredText();
+    } 
+
+    return identifiedAnnotation.getCoveredText();
+  }
 }
