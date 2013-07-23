@@ -111,7 +111,7 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option(longName = "xml")
     public File getXMLDirectory();
 
-    @Option(longName = "format")
+    @Option(longName = "format", defaultValue="Anafora")
     public XMLFormat getXMLFormat();
 
     @Option(longName = "xmi")
