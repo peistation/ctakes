@@ -88,12 +88,12 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
   protected Float featureSelectionThreshold = 1f; //default is not using feature selection, i.e. select 100% of all features.
   
   public static final String PARAM_SMOTE_NUM_NEIGHBORS = "NumOfNeighborForSMOTE";
-  
+
   @ConfigurationParameter(
-	      name = PARAM_SMOTE_NUM_NEIGHBORS,
-	      mandatory = false,
-	      description = "the number of neighbors used for minority instances for SMOTE algorithm")
-	  protected Float smoteNumOfNeighbors = 0f;
+		  name = PARAM_SMOTE_NUM_NEIGHBORS,
+		  mandatory = false,
+		  description = "the number of neighbors used for minority instances for SMOTE algorithm")
+  protected Float smoteNumOfNeighbors = 0f;
 
   public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
 

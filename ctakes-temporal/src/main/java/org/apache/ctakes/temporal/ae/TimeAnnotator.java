@@ -28,6 +28,7 @@ import org.apache.ctakes.temporal.ae.feature.ParseSpanFeatureExtractor;
 import org.apache.ctakes.temporal.ae.feature.TimeWordTypeExtractor;
 import org.apache.ctakes.temporal.ae.feature.selection.Chi2FeatureSelection;
 import org.apache.ctakes.temporal.ae.feature.selection.FeatureSelection;
+import org.apache.ctakes.temporal.utils.SMOTEplus;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
@@ -67,7 +68,7 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 			name = PARAM_FEATURE_SELECTION_THRESHOLD,
 			mandatory = false,
 			description = "the Chi-squared threshold at which features should be removed")
-	protected Float featureSelectionThreshold = 0f;
+	protected Float featureSelectionThreshold = 1f;
 	
 	public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
 
@@ -76,13 +77,22 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 			name = PARAM_FEATURE_SELECTION_URI,
 			description = "provides a URI where the feature selection data will be written")
 	protected URI featureSelectionURI;
+	
+	public static final String PARAM_SMOTE_NUM_NEIGHBORS = "NumOfNeighborForSMOTE";
+
+	  @ConfigurationParameter(
+			  name = PARAM_SMOTE_NUM_NEIGHBORS,
+			  mandatory = false,
+			  description = "the number of neighbors used for minority instances for SMOTE algorithm")
+	  protected Float smoteNumOfNeighbors = 0f;
 
 	public static final String TIMEX_VIEW = "TimexView";
 
 	public static AnalysisEngineDescription createDataWriterDescription(
 			Class<?> dataWriterClass,
 					File outputDirectory,
-					float featureSelect) throws ResourceInitializationException {
+					float featureSelect,
+					float smoteNeighborNumber) throws ResourceInitializationException {
 		return AnalysisEngineFactory.createPrimitiveDescription(
 				TimeAnnotator.class,
 				CleartkAnnotator.PARAM_IS_TRAINING,
@@ -92,7 +102,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 				DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
 				outputDirectory,
 				TimeAnnotator.PARAM_FEATURE_SELECTION_THRESHOLD,
-		        featureSelect);
+		        featureSelect,
+		        EventAnnotator.PARAM_SMOTE_NUM_NEIGHBORS,
+		        smoteNeighborNumber);
 	}
 
 	public static AnalysisEngineDescription createAnnotatorDescription(File modelDirectory)
@@ -121,7 +133,7 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 	private static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
 
 	public static FeatureSelection<String> createFeatureSelection(double threshold) {
-		return new Chi2FeatureSelection<String>(TimeAnnotator.FEATURE_SELECTION_NAME, threshold);
+		return new Chi2FeatureSelection<String>(TimeAnnotator.FEATURE_SELECTION_NAME, threshold, true);
 	}
 	
 	public static URI createFeatureSelectionURI(File outputDirectoryName) {
@@ -159,7 +171,7 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 		parseExtractor = new ParseSpanFeatureExtractor();
 
 		//initialize feature selection
-		if (featureSelectionThreshold == 0) {
+		if (featureSelectionThreshold == 1) {
 			this.featureSelection = null;
 		} else {
 			this.featureSelection = TimeAnnotator.createFeatureSelection(this.featureSelectionThreshold);
@@ -176,10 +188,13 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jCas, Segment segment) throws AnalysisEngineProcessException {
+		//TRY SMOTE algorithm here to generate more minority class samples
+	    SMOTEplus smote = new SMOTEplus((int)Math.ceil(this.smoteNumOfNeighbors));
+	    
 		// classify tokens within each sentence
 		for (Sentence sentence : JCasUtil.selectCovered(jCas, Sentence.class, segment)) {
 			List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, sentence);
-
+			
 			// during training, the list of all outcomes for the tokens
 			List<String> outcomes;
 			if (this.isTraining()) {
@@ -234,12 +249,20 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 		        }
 				
 				// if training, write to data file
-				if (this.isTraining()) {
-					String outcome = outcomes.get(tokenIndex);
-					this.dataWriter.write(new Instance<String>(outcome, features));
-				}else {// if predicting, add prediction to outcomes
-					outcomes.add(this.classifier.classify(features));
-				}
+		        if (this.isTraining()) {
+		        	String outcome = outcomes.get(tokenIndex);
+		        	// if it is an "O" down-sample it
+		        	if (outcome.equals("O")) {
+		        		this.dataWriter.write(new Instance<String>(outcome, features));
+
+		        	}else{//for minority instances:
+		        		Instance<String> minorityInst = new Instance<String>(outcome, features);
+		        		this.dataWriter.write(minorityInst);
+		        		smote.addInstance(minorityInst);//add minority instances to SMOTE algorithm
+		        	}
+		        }else {// if predicting, add prediction to outcomes
+		        	outcomes.add(this.classifier.classify(features));
+		        }
 			}
 
 			// during prediction, convert chunk labels to times and add them to the CAS
@@ -253,5 +276,11 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 				this.timeChunking.createChunks(timexCas, tokens, outcomes);
 			}
 		}
+		if(this.isTraining() && this.smoteNumOfNeighbors >= 1){ //add synthetic instances to datawriter, if smote is selected
+	    	Iterable<Instance<String>> syntheticInsts = smote.populateMinorityClass();
+	    	for( Instance<String> sytheticInst: syntheticInsts){
+	    		this.dataWriter.write(sytheticInst);
+	    	}
+	    }
 	}
 }

@@ -64,8 +64,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 
 	static interface Options extends Evaluation_ImplBase.Options {
 
-		@Option(longName = "featureSelectionThreshold", defaultValue = "0")
+		@Option(longName = "featureSelectionThreshold", defaultValue = "1")
 		public float getFeatureSelectionThreshold();
+		
+		@Option(longName = "SMOTENeighborNumber", defaultValue = "0")
+	    public float getSMOTENeighborNumber();
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -99,6 +102,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 					options.getXMIDirectory(),
 					options.getTreebankDirectory(),
 					options.getFeatureSelectionThreshold(),
+					options.getSMOTENeighborNumber(),
 					annotatorClass,
 					options.getPrintOverlappingSpans(),
 					annotatorTrainingArguments.get(annotatorClass));
@@ -131,6 +135,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 	private String[] trainingArguments;
 	
 	private float featureSelectionThreshold;
+	
+	private float smoteNeighborNumber;
 
 	public EvaluationOfTimeSpans(
 			File baseDirectory,
@@ -140,6 +146,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 			File xmiDirectory,
 			File treebankDirectory,
 			float featureSelectionThreshold,
+			float numOfSmoteNeighbors,
 			Class<? extends JCasAnnotator_ImplBase> annotatorClass,
 					boolean printOverlapping,
 					String[] trainingArguments) {
@@ -148,6 +155,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 		this.featureSelectionThreshold = featureSelectionThreshold;
 		this.trainingArguments = trainingArguments;
 		this.printOverlapping = printOverlapping;
+		this.smoteNeighborNumber = numOfSmoteNeighbors;
 	}
 
 	@Override
@@ -164,7 +172,8 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 				return TimeAnnotator.createDataWriterDescription(
 						dataWriterClass,
 						this.getModelDirectory(directory),
-						this.featureSelectionThreshold);
+						this.featureSelectionThreshold,
+						this.smoteNeighborNumber);
 			}
 			return AnalysisEngineFactory.createPrimitiveDescription(
 					this.annotatorClass,
