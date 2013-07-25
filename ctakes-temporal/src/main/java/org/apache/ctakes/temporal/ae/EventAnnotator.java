@@ -85,7 +85,7 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
       name = PARAM_FEATURE_SELECTION_THRESHOLD,
       mandatory = false,
       description = "the Chi-squared threshold at which features should be removed")
-  protected Float featureSelectionThreshold = 0f;
+  protected Float featureSelectionThreshold = 1f; //default is not using feature selection, i.e. select 100% of all features.
   
   public static final String PARAM_SMOTE_NUM_NEIGHBORS = "NumOfNeighborForSMOTE";
   
@@ -151,7 +151,7 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
   private static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
 
   public static FeatureSelection<String> createFeatureSelection(double threshold) {
-    return new Chi2FeatureSelection<String>(EventAnnotator.FEATURE_SELECTION_NAME, threshold);
+    return new Chi2FeatureSelection<String>(EventAnnotator.FEATURE_SELECTION_NAME, threshold, false);
   }
   
   public static URI createFeatureSelectionURI(File outputDirectoryName) {
@@ -185,7 +185,7 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
         new Preceding(3),
         new Following(3));
 
-    if (featureSelectionThreshold == 0) {
+    if (featureSelectionThreshold == 1) {
       this.featureSelection = null;
     } else {
       this.featureSelection = EventAnnotator.createFeatureSelection(this.featureSelectionThreshold);
@@ -209,9 +209,11 @@ public class EventAnnotator extends TemporalEntityAnnotator_ImplBase {
     for (IdentifiedAnnotation entity : JCasUtil.select(jCas, IdentifiedAnnotation.class)) {
       if (!entity.getClass().equals(EventMention.class)) {
         List<BaseToken> tokens = JCasUtil.selectCovered(jCas, BaseToken.class, entity);
-        BaseToken lastToken = tokens.get(tokens.size() - 1);
-        String value = String.format("%s_%s", entity.getClass().getSimpleName(), entity.getTypeID());
-        endOfEntityFeatures.put(lastToken, new Feature("EndOf", value));
+        if (tokens.size() > 0){
+        	BaseToken lastToken = tokens.get(tokens.size() - 1);
+            String value = String.format("%s_%s", entity.getClass().getSimpleName(), entity.getTypeID());
+            endOfEntityFeatures.put(lastToken, new Feature("EndOf", value));
+        }       
       }
     }
 

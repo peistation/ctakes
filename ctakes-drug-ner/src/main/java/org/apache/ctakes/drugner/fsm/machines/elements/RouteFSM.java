@@ -96,7 +96,7 @@ public class RouteFSM {
 		iv_specifiedInjectWordSet.add("injection");
 		iv_specifiedInjectWordSet.add("injections");
 		iv_specifiedInjectWordSet.add("injected");
-		
+	
 		iv_specifiedPatchesWordSet.add("transdermal");
 
 		iv_specifiedGastricWordSet.add("gastric");
@@ -130,7 +130,7 @@ public class RouteFSM {
 		
 		iv_singleInjectWordSet.add("subcutaneously");
 		iv_singleInjectWordSet.add("intervenous");
-		iv_singleInjectWordSet.add("intervenously");
+		iv_singleInjectWordSet.add("intervenously");	
 		iv_singleInjectWordSet.add("injection");
 		iv_singleInjectWordSet.add("injections");
 		iv_singleInjectWordSet.add("injected");

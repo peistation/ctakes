@@ -3,6 +3,7 @@ package org.apache.ctakes.temporal.data.analysis;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -27,6 +28,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import com.lexicalscope.jewel.cli.CliFactory;
 import com.lexicalscope.jewel.cli.Option;
 
@@ -44,6 +46,8 @@ public class PrintInconsistentAnnotations {
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    int windowSize = 50;
+    
     List<Integer> patientSets = options.getPatients().getList();
     List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
     List<File> files = THYMEData.getFilesFor(trainItems, options.getRawTextDirectory());
@@ -56,6 +60,8 @@ public class PrintInconsistentAnnotations {
         XMIReader.PARAM_XMI_DIRECTORY,
         options.getXMIDirectory()));
 
+    int totalDocTimeRels = 0;
+    int totalInconsistentDocTimeRels = 0;
     for (JCas jCas : new JCasIterable(reader, aggregateBuilder.createAggregate())) {
       String text = jCas.getDocumentText();
       JCas goldView = jCas.getView("GoldView");
@@ -75,27 +81,44 @@ public class PrintInconsistentAnnotations {
 
       // check each container for inconsistent DocTimeRels
       for (Annotation container : containers.keySet()) {
-        String containerDocTimeRel =
-            container instanceof EventMention
-                ? ((EventMention) container).getEvent().getProperties().getDocTimeRel()
-                : null;
-        boolean inconsistentDocTimeRels = false;
-        String groupDocTimeRel = null;
+        Set<String> docTimeRels = Sets.newHashSet();
         for (EventMention event : containers.get(container)) {
-          String docTimeRel = event.getEvent().getProperties().getDocTimeRel();
-          if (groupDocTimeRel == null) {
-            groupDocTimeRel = docTimeRel;
-          } else if (!docTimeRel.equals(groupDocTimeRel)) {
+          docTimeRels.add(event.getEvent().getProperties().getDocTimeRel());
+        }
+        totalDocTimeRels += docTimeRels.size();
+        
+        boolean inconsistentDocTimeRels;
+        if (container instanceof EventMention) {
+          EventMention mention = ((EventMention) container);
+          String containerDocTimeRel = mention.getEvent().getProperties().getDocTimeRel();
+          inconsistentDocTimeRels = false;
+          for (String docTimeRel : docTimeRels) {
+            if (docTimeRel.equals(containerDocTimeRel)) {
+              continue;
+            }
+            if (containerDocTimeRel.equals("BEFORE/OVERLAP")
+                && (docTimeRel.equals("BEFORE") || docTimeRel.equals("OVERLAP"))) {
+              continue;
+            }
             inconsistentDocTimeRels = true;
             break;
-          } else if (containerDocTimeRel != null && !docTimeRel.equals(containerDocTimeRel)) {
+          }
+        } else {
+          if (docTimeRels.size() == 1) {
+            inconsistentDocTimeRels = false;
+          } else if (docTimeRels.contains("BEFORE/OVERLAP")) {
+            inconsistentDocTimeRels =
+                docTimeRels.size() == 1
+                    && (docTimeRels.contains("BEFORE") || docTimeRels.contains("OVERLAP"));
+          } else {
             inconsistentDocTimeRels = true;
-            break;
           }
         }
 
         // if inconsistent: print events, DocTimeRels and surrounding context
         if (inconsistentDocTimeRels) {
+          totalInconsistentDocTimeRels += docTimeRels.size();
+          
           List<Integer> offsets = Lists.newArrayList();
           offsets.add(container.getBegin());
           offsets.add(container.getEnd());
@@ -104,12 +127,12 @@ public class PrintInconsistentAnnotations {
             offsets.add(event.getEnd());
           }
           Collections.sort(offsets);
-          int begin = Math.max(offsets.get(0), 0);
-          int end = Math.min(offsets.get(offsets.size() - 1), text.length());
+          int begin = Math.max(offsets.get(0) - windowSize, 0);
+          int end = Math.min(offsets.get(offsets.size() - 1) + windowSize, text.length());
           System.err.printf(
               "Inconsistent DocTimeRels in %s, ...%s...\n",
               new File(ViewURIUtil.getURI(jCas)).getName(),
-              text.substring(begin, end));
+              text.substring(begin, end).replaceAll("([\r\n])[\r\n]+", "$1"));
           if (container instanceof EventMention) {
             System.err.printf(
                 "Container: \"%s\" (docTimeRel=%s)\n",
@@ -135,5 +158,11 @@ public class PrintInconsistentAnnotations {
         }
       }
     }
+    
+    System.err.printf(
+        "Inconsistent DocTimeRels: %.1f%% (%d/%d)\n",
+        100.0 * totalInconsistentDocTimeRels / totalDocTimeRels,
+        totalInconsistentDocTimeRels,
+        totalDocTimeRels);
   }
 }
