@@ -48,10 +48,10 @@ public class EvaluationOfEventSpans extends EvaluationOfAnnotationSpans_ImplBase
     @Option(longName = "downratio", defaultValue = "1")
     public float getProbabilityOfKeepingANegativeExample();
 
-    @Option(longName = "featureSelectionThreshold", defaultValue = "0")
+    @Option(longName = "featureSelectionThreshold", defaultValue = "1")
     public float getFeatureSelectionThreshold();
 
-    @Option(longName = "SMOTENeighborNumber", defaultValue = "1")
+    @Option(longName = "SMOTENeighborNumber", defaultValue = "0")
     public float getSMOTENeighborNumber();
   }
 
