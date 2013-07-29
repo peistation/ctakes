@@ -1128,6 +1128,9 @@ private static void output(Object o) {
 private static void printErrors(JCas jCas,
 		  Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
 		  Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, Object trueCategory, Class<? extends Object> categoryClass) throws ResourceProcessException {
+
+	String documentId = DocumentIDAnnotationUtil.getDocumentID(jCas);
+	
 	  Map<HashableAnnotation, IdentifiedAnnotation> goldMap = Maps.newHashMap();
 	  for (IdentifiedAnnotation mention : goldEntitiesAndEvents) {
 		  goldMap.put(new HashableAnnotation(mention), mention);
@@ -1176,17 +1179,17 @@ private static void printErrors(JCas jCas,
 					  // used for multi-class case:
 					  System.out.println(classifierType+" Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
 				  }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
-					  System.out.println(classifierType+" FN: " + typeId + " " + formatError(jCas, goldAnnotation)+ "| system:|" + formatError(jCas, systemAnnotation));
+					  System.out.println(classifierType+" FN: " + typeId + " " + formatError(jCas, goldAnnotation)+ "| system:|" + formatError(jCas, systemAnnotation) + " " + documentId);
 				  }
 			  }else{
 			    if(trueCategory == null){
 			      // multi-class case -- probably don't want to print anything?
 			    }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
-					  System.out.println(classifierType+" TN: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" TN: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }
 			  }
 		  }
