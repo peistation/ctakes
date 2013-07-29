@@ -38,6 +38,7 @@ import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
 import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.SemanticArgument;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
@@ -45,7 +46,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * @author shalgrim
- *
+ * tmiller says this is the MITRE stuff, ctakes 3.0
  */
 public class HistoryAttributeClassifier {
 
@@ -69,6 +70,18 @@ public class HistoryAttributeClassifier {
 		return classifyWithLogic(vfeat);
 			
 	}
+	
+	/**
+	 * 
+	 * @param jCas - the jcas of the document
+	 * @param arg - the node getting features added to it
+	 * @return whether or not arg is a token preceded by "h/o"
+	 */
+	public static Boolean precededByH_O(JCas jCas, Annotation arg) {
+		Boolean answer = false;
+
+		return answer;
+	}
 
 
 	public static Boolean classifyWithLogic(HashMap<String, Boolean> vfeat) {
@@ -80,9 +93,8 @@ public class HistoryAttributeClassifier {
 		Boolean subsume_summary = (subsumectr>0);
 		if (vfeat.get(DISCUSSION_DEPPATH) || subsume_summary) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 
@@ -109,19 +121,32 @@ public class HistoryAttributeClassifier {
 			
 
 			// 2) some other identified annotation subsumes this one?
-			List<IdentifiedAnnotation> lsmentions = JCasUtil.selectPreceding(jCas, IdentifiedAnnotation.class, arg, 5);
-			lsmentions.addAll(JCasUtil.selectFollowing(jCas, IdentifiedAnnotation.class, arg, 5));
+			List<IdentifiedAnnotation> lsmentions = JCasUtil.selectCovering(jCas, IdentifiedAnnotation.class, arg.getBegin(), arg.getEnd());
+			//lsmentions.addAll(JCasUtil.selectFollowing(jCas, IdentifiedAnnotation.class, arg, 5));
 			for (IdentifiedAnnotation annot : lsmentions) {
 				if ( annot.getBegin()>arg.getBegin()) {
+					// it's okay to break here b/c of the ordering?
 					break;
-				} else {
-					if ( annot.getEnd()<arg.getEnd()) {
-						continue;
-					} else if ( !DependencyUtility.equalCoverage(
-							DependencyUtility.getNominalHeadNode(jCas, annot),
-							DependencyUtility.getNominalHeadNode(jCas, arg)) ) {
-						// the case that annot is a superset
-						vfeat.put(SUBSUMED_ANNOT, true);
+				}
+				
+				// INVARIANT: arg starts at or after annot begins
+				if ( annot.getEnd()<arg.getEnd()) {
+					// INVARIANT: arg ends at or after annot ends
+					continue;
+				} else if ( !DependencyUtility.equalCoverage(
+						DependencyUtility.getNominalHeadNode(jCas, annot),
+						DependencyUtility.getNominalHeadNode(jCas, arg)) ) {
+					// INVARIANT: arg start at or before annot starts
+					// INVARIANT: arg ends at or before annot ends
+					// INVARIANT: arg falls within bounds of annot
+					// plus there's that deal that they don't have the same head node
+					// but now we have to verify that annot is an EventMention or EntityMention
+					if ((annot instanceof EntityMention) || (annot instanceof EventMention)) {
+						// Here annot has boundaries at or exceeding those of arg
+						// They also have different head nodes (I guess)
+						// and annot is either an EntityMention of EventMention
+						vfeat.put(SUBSUMED_ANNOT, true);		
+						break; // no reason to keep checking
 					}
 				}
 			}
