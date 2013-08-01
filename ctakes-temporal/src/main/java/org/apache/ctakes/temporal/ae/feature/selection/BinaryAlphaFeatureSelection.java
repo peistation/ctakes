@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.cleartk.classifier.Feature;
@@ -23,25 +24,31 @@ import com.google.common.collect.Table;
 
 /**
  * 
- * Selects features via Odds Ratio statistics between the features extracted from its sub-extractor
+ * Selects features via binary Krippendorff's Alpha-Reliability between the a extracted feature
  * and the outcome values they are paired with in classification instances.
+ * 
+ * Alpha-positive: when the positive feature value suggests positive label
+ * Alpha-negative: when the positive feature value suggests negative label
+ * Final Alpha = max(Alpha-positive, Alpha-negative)
+ * 
+ * Reference: Krippendorff, Klaus. "Computing Krippendorff's alpha reliability." Departmental Papers (ASC) (2007): 43.
  * 
  * @author Chen Lin
  * 
  */
-public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T> {
+public class BinaryAlphaFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T> {
 
 	/**
 	 * Helper class for aggregating and computing mutual Odds Ratio statistics
 	 */
-	private static class OddsRatioScorer<OUTCOME_T> implements Function<String, Double> {
+	private static class AlphaScorer<OUTCOME_T> implements Function<String, Double> {
 		protected Multiset<OUTCOME_T> classCounts;
 
 		protected Table<String, OUTCOME_T, Integer> featValueClassCount;
 
 		private String positiveClass = null;
 
-		public OddsRatioScorer(String posiClas) {
+		public AlphaScorer(String posiClas) {
 			this.classCounts = HashMultiset.<OUTCOME_T> create();
 			this.featValueClassCount = HashBasedTable.<String, OUTCOME_T, Integer> create();
 			this.positiveClass = posiClas;
@@ -62,50 +69,76 @@ public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCO
 
 		public double score(String featureName) {
 			// notation index of 0 means false, 1 mean true
-			// Contingency Table:
-			//       | Y = 1  | Y = 0  | 
-			// X = 1 | n11    | n10    | posiFeatCount
-			// X = 0 | n01    | n00    | negaFeatCount
+			// Coincidence matrix:
+			//       | Y = 0  | Y = 1  | 
+			// X = 0 | o00    | o01    | n0
+			// X = 1 | o10    | o11    | n1
+			//___________________________________________
+			//		 | n0	  | n1	   | n=2N
 
-			int n11 = 1, n10=1, n01=1, n00 = 1; //add one smoothing?
+			double o11 = 0, o01=0, o00 = 0; 
+			double on11 = 0, on01=0, on00 = 0; //on- occurrence if positive feature suggests negative label
+			double n0 =0, n1=0, n=0;
 
 			for (OUTCOME_T clas : this.classCounts.elementSet()) {
-				int numPositiveFeature = this.featValueClassCount.contains(featureName, clas)
+				int numAgreement = this.featValueClassCount.contains(featureName, clas)
 						? this.featValueClassCount.get(featureName, clas): 0;
-				int numNegativeFeature = this.classCounts.count(clas) - numPositiveFeature;
+				int numInstanceInThisClass = this.classCounts.count(clas);
+				int numDisagreement = numInstanceInThisClass - numAgreement;
+				n += numInstanceInThisClass;
 				if ( clas.toString().equals("B") || clas.toString().equals("I") || clas.toString().equals(this.positiveClass )){
-					n11 += numPositiveFeature;
-					n01 += numNegativeFeature;
+					o11 += 2* numAgreement;
+					o01 += numDisagreement;
+					on00 += 2* numDisagreement;
+					on01 += numAgreement;
 				}else if( this.positiveClass==null && clas.toString().equals("O")){
-					n10 += numPositiveFeature;
-					n00 += numNegativeFeature;
+					o00 += 2 * numDisagreement;
+					o01 += numAgreement;
+					on11 += 2* numAgreement;
+					on01 += numDisagreement;
 				}else{
 					System.err.println("Please define postive class label for odds ratio calculation.");
 					System.exit(0);
 				}
 			}
-			double oddsratio = Math.log(n11) + Math.log(n00) - Math.log(n10) - Math.log(n01);
+			
+			n0 = o00+o01;
+			n1 = o11+o01;
+			
+			
+			if( (n0+n1) != (2*n)){
+				System.err.println("Alpha Calculation is wrong.");
+				System.exit(0);
+			}
+			
+			double alpha_positive = 1 - (2*n -1)*o01/(n0*n1);
+			
+			n0 = on00+on01;
+			n1 = on11+on01;
+			double alpha_negative = 1 - (2*n -1)*on01/(n0*n1);
 
-			return oddsratio;
+			return Math.max(alpha_negative,alpha_positive);
 
 		}
 	}
 
-	private double oddsRatioThreshold;
+	private double featureSelectionThreshold;
 
 	private int numFeatures = 0;
 	
 	private String positiveClass = null;
 
-	private OddsRatioScorer<OUTCOME_T> oddsRatioFunction;
+	private AlphaScorer<OUTCOME_T> alphaFunction;
 
-	public OddsRatioFeatureSelection(String name) {
+	private LinkedHashSet<String> discardedFeatureNames;
+
+	public BinaryAlphaFeatureSelection(String name) {
 		this(name, 0.0);
 	}
 
-	public OddsRatioFeatureSelection(String name, double threshold) {
+	public BinaryAlphaFeatureSelection(String name, double threshold) {
 		super(name);
-		this.oddsRatioThreshold = threshold;
+		this.featureSelectionThreshold = threshold;
 	}
 
 	/**
@@ -114,9 +147,9 @@ public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCO
 	 * @param threshold: percentage threshold to control how many features to keep
 	 * @param posiClas: specify which class is the positive class
 	 */
-	public OddsRatioFeatureSelection(String name, double threshold, String posiClas) {
+	public BinaryAlphaFeatureSelection(String name, double threshold, String posiClas) {
 		super(name);
-		this.oddsRatioThreshold = threshold;
+		this.featureSelectionThreshold = threshold;
 		this.positiveClass = posiClas;
 	}
 
@@ -128,13 +161,13 @@ public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCO
 	@Override
 	public void train(Iterable<Instance<OUTCOME_T>> instances) {
 		// aggregate statistics for all features
-		this.oddsRatioFunction = new OddsRatioScorer<OUTCOME_T>(positiveClass);
+		this.alphaFunction = new AlphaScorer<OUTCOME_T>(positiveClass);
 		for (Instance<OUTCOME_T> instance : instances) {
 			OUTCOME_T outcome = instance.getOutcome();
 			for (Feature feature : instance.getFeatures()) {
 				if (this.isTransformable(feature)) {
 					for (Feature untransformedFeature : ((TransformableFeature) feature).getFeatures()) {
-						this.oddsRatioFunction.update(this.getFeatureName(untransformedFeature), outcome, 1);
+						this.alphaFunction.update(this.getFeatureName(untransformedFeature), outcome, 1);
 					}
 				}
 			}
@@ -142,16 +175,17 @@ public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCO
 
 
 		// sort features by Odds Ratio score
-		Set<String> featureNames = this.oddsRatioFunction.featValueClassCount.rowKeySet();
-		Ordering<String> ordering = Ordering.natural().onResultOf(this.oddsRatioFunction).reverse();
+		Set<String> featureNames = this.alphaFunction.featValueClassCount.rowKeySet();
+		Ordering<String> ordering = Ordering.natural().onResultOf(this.alphaFunction).reverse();
 
 		int totalFeatures = featureNames.size();
-		this.numFeatures = (int) Math.round(totalFeatures*this.oddsRatioThreshold);
+		this.numFeatures = (int) Math.round(totalFeatures*this.featureSelectionThreshold);
 
 		// keep only the top N features
 		this.selectedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(
 				0,
 				this.numFeatures));
+		this.discardedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(this.numFeatures, totalFeatures));
 
 		this.isTrained = true;
 	}
@@ -162,13 +196,23 @@ public class OddsRatioFeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCO
 			throw new IllegalStateException("Cannot save before training");
 		}
 		File out = new File(uri);
+		final String uriPath = uri.getPath();
+		final int lastIndex = uriPath.lastIndexOf('.');
+		final String discardPath = (lastIndex >= 0 ? uriPath.substring(0, lastIndex) : uriPath ) + "_discarded.dat";
+		final File discardOut = new File( discardPath );
 		BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+		BufferedWriter diswriter = new BufferedWriter(new FileWriter(discardOut));
 
 		for (String feature : this.selectedFeatureNames) {
-			writer.append(String.format("%s\t%f\n", feature, this.oddsRatioFunction.score(feature)));
+			writer.append(String.format("%s\t%f\n", feature, this.alphaFunction.score(feature)));
+		}
+		
+		for (String feature : this.discardedFeatureNames) {
+			diswriter.append(String.format("%s\t%f\n", feature, this.alphaFunction.score(feature)));
 		}
 
 		writer.close();
+		diswriter.close();
 	}
 
 	@Override
