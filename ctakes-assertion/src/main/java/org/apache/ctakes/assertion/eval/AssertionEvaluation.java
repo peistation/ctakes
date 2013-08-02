@@ -87,7 +87,6 @@ import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
-import org.cleartk.eval.AnnotationStatistics;
 import org.cleartk.eval.Evaluation_ImplBase;
 import org.cleartk.util.Options_ImplBase;
 import org.kohsuke.args4j.Option;
@@ -113,7 +112,7 @@ import com.google.common.collect.Sets;
 //import org.chboston.cnlp.ctakes.relationextractor.eval.RelationExtractorEvaluation;
 //import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 
-public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatistics>> {
+public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, AnnotationStatisticsCompact>> {
   
 private static Logger logger = Logger.getLogger(AssertionEvaluation.class); 
 
@@ -352,20 +351,20 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     // run cross-validation
     else if(options.crossValidationFolds != null) {
       // run n-fold cross-validation
-      List<Map<String, AnnotationStatistics>> foldStats = evaluation.crossValidation(trainFiles, options.crossValidationFolds);
-      //AnnotationStatistics overallStats = AnnotationStatistics.addAll(foldStats);
-      Map<String, AnnotationStatistics> overallStats = new TreeMap<String, AnnotationStatistics>();
+      List<Map<String, AnnotationStatisticsCompact>> foldStats = evaluation.crossValidation(trainFiles, options.crossValidationFolds);
+      //AnnotationStatisticsCompact overallStats = AnnotationStatisticsCompact.addAll(foldStats);
+      Map<String, AnnotationStatisticsCompact> overallStats = new TreeMap<String, AnnotationStatisticsCompact>();
       
       for (String currentAnnotationType : annotationTypes)
       {
-    	  AnnotationStatistics currentAnnotationStatistics = new AnnotationStatistics();
-    	  overallStats.put(currentAnnotationType, currentAnnotationStatistics);
+    	  AnnotationStatisticsCompact currentAnnotationStatisticsCompact = new AnnotationStatisticsCompact();
+    	  overallStats.put(currentAnnotationType, currentAnnotationStatisticsCompact);
       }
-      for (Map<String, AnnotationStatistics> singleFoldMap : foldStats)
+      for (Map<String, AnnotationStatisticsCompact> singleFoldMap : foldStats)
       {
     	  for (String currentAnnotationType : annotationTypes)
     	  {
-    	    AnnotationStatistics currentFoldStatistics = singleFoldMap.get(currentAnnotationType);
+    	    AnnotationStatisticsCompact currentFoldStatistics = singleFoldMap.get(currentAnnotationType);
     	    overallStats.get(currentAnnotationType).addAll(currentFoldStatistics);
     	  }
       }
@@ -398,7 +397,7 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     	  }
     	  logger.debug("testFiles.size() = " + testFiles.size());
     	  CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
-    	  Map<String, AnnotationStatistics> stats = evaluation.test(testCollectionReader, modelsDir);
+    	  Map<String, AnnotationStatisticsCompact> stats = evaluation.test(testCollectionReader, modelsDir);
 
     	  AssertionEvaluation.printScore(stats,  modelsDir.getAbsolutePath());
       }
@@ -476,12 +475,12 @@ private static void printOptionsForDebugging(Options options)
 	logger.info(message);
   }
 
-public static void printScore(Map<String, AnnotationStatistics> map, String directory)
+public static void printScore(Map<String, AnnotationStatisticsCompact> map, String directory)
   {
-      for (Map.Entry<String, AnnotationStatistics> currentEntry : map.entrySet())
+      for (Map.Entry<String, AnnotationStatisticsCompact> currentEntry : map.entrySet())
 	  {
     	  String annotationType = currentEntry.getKey();
-    	  AnnotationStatistics stats = currentEntry.getValue();
+    	  AnnotationStatisticsCompact stats = currentEntry.getValue();
     	  
     	  System.out.format("directory: \"%s\"; assertion type: %s%n%n%s%n%n",
     	    directory,
@@ -491,11 +490,12 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     	  try {
     		  if (useEvaluationLogFile) {
     			  evaluationLogFileOut.write(
-    					  String.format("directory: \"%s\"; assertion type: %s%n%n%s%n%n",
-    							  directory,
-    							  annotationType.toUpperCase(),
-    							  stats.toString())
+    					  String.format("%s\t%f\t%s",
+    							  annotationType,
+    							  options.featureSelectionThreshold,
+    							  stats.toTsv())
     					  );
+    			  evaluationLogFileOut.flush();
     		  }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -781,7 +781,7 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
   }
 
   @Override
-  protected Map<String, AnnotationStatistics> test(CollectionReader collectionReader, File directory)
+  protected Map<String, AnnotationStatisticsCompact> test(CollectionReader collectionReader, File directory)
       throws Exception {
 //    AnalysisEngine classifierAnnotator = AnalysisEngineFactory.createPrimitive(AssertionCleartkAnalysisEngine.getDescription(
 //        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
@@ -839,14 +839,14 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
     
     AnalysisEngine aggregate = builder.createAggregate();
     
-    AnnotationStatistics polarityStats = new AnnotationStatistics();
-    AnnotationStatistics conditionalStats = new AnnotationStatistics();
-    AnnotationStatistics uncertaintyStats = new AnnotationStatistics();
-    AnnotationStatistics subjectStats = new AnnotationStatistics();
-    AnnotationStatistics genericStats = new AnnotationStatistics();
-    AnnotationStatistics historyStats = new AnnotationStatistics();	// srh 3/6/13
+    AnnotationStatisticsCompact polarityStats = new AnnotationStatisticsCompact();
+    AnnotationStatisticsCompact conditionalStats = new AnnotationStatisticsCompact();
+    AnnotationStatisticsCompact uncertaintyStats = new AnnotationStatisticsCompact();
+    AnnotationStatisticsCompact subjectStats = new AnnotationStatisticsCompact();
+    AnnotationStatisticsCompact genericStats = new AnnotationStatisticsCompact();
+    AnnotationStatisticsCompact historyStats = new AnnotationStatisticsCompact();	// srh 3/6/13
     
-    Map<String, AnnotationStatistics> map = new TreeMap<String, AnnotationStatistics>(); 
+    Map<String, AnnotationStatisticsCompact> map = new TreeMap<String, AnnotationStatisticsCompact>(); 
     if (!options.ignorePolarity)
     {
       map.put("polarity",  polarityStats);
@@ -921,8 +921,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignorePolarity)
       {
 	      polarityStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("polarity"));
 	      if(options.printErrors){
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "polarity", CONST.NE_POLARITY_NEGATION_PRESENT, Integer.class);
 	      }
@@ -931,8 +931,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignoreConditional)
       {
 	      conditionalStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("conditional"));
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("conditional"));
 	      if(options.printErrors){
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "conditional", CONST.NE_CONDITIONAL_TRUE, Boolean.class);
 	      }
@@ -941,8 +941,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignoreUncertainty)
       {
 	      uncertaintyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("uncertainty"));
 	      if(options.printErrors){
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "uncertainty", CONST.NE_UNCERTAINTY_PRESENT, Integer.class);
 	      }
@@ -951,8 +951,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignoreSubject)
       {
 	      subjectStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("subject"));
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("subject"));
 	      if(options.printErrors){
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "subject", null, CONST.ATTR_SUBJECT_PATIENT.getClass());
 	      }
@@ -961,8 +961,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignoreGeneric)
       {
 	      genericStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("generic"));
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("generic"));
 	      if(options.printErrors){
 	    	  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "generic", CONST.NE_GENERIC_TRUE, Boolean.class);
 	      }
@@ -972,8 +972,8 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
       if (!options.ignoreHistory)
       {
     	  historyStats.add(goldEntitiesAndEvents, systemEntitiesAndEvents,
-    			  AnnotationStatistics.<IdentifiedAnnotation>annotationToSpan(),
-    			  AnnotationStatistics.<IdentifiedAnnotation>annotationToFeatureValue("historyOf"));
+    			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToSpan(),
+    			  AnnotationStatisticsCompact.<IdentifiedAnnotation>annotationToFeatureValue("historyOf"));
     	  if(options.printErrors){
     		  printErrors(jCas, goldEntitiesAndEvents, systemEntitiesAndEvents, "historyOf", CONST.NE_HISTORY_OF_PRESENT, Integer.class);
     	  }
@@ -993,37 +993,37 @@ public static void printScore(Map<String, AnnotationStatistics> map, String dire
 		  FeatureSelection<String> featureSelection; 
 		  if (currentAssertionAttribute.equals("polarity")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = PolarityCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = PolarityCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(PolarityCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
 		  else if (currentAssertionAttribute.equals("uncertainty")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = UncertaintyCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = UncertaintyCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(UncertaintyCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
 		  else if (currentAssertionAttribute.equals("conditional")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = ConditionalCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = ConditionalCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(ConditionalCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
 		  else if (currentAssertionAttribute.equals("subject")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = SubjectCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = SubjectCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(SubjectCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
 		  else if (currentAssertionAttribute.equals("generic")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = GenericCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = GenericCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(GenericCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
 		  else if (currentAssertionAttribute.equals("historyOf")) {
 			  // TODO: parameterize the thresholds
-			  featureSelection = HistoryCleartkAnalysisEngine.createFeatureSelection(1f);
+			  featureSelection = HistoryCleartkAnalysisEngine.createFeatureSelection(options.featureSelectionThreshold);
 			  featureSelection.train(instances);
 			  featureSelection.save(HistoryCleartkAnalysisEngine.createFeatureSelectionURI(directory));
 		  }
@@ -1128,6 +1128,9 @@ private static void output(Object o) {
 private static void printErrors(JCas jCas,
 		  Collection<IdentifiedAnnotation> goldEntitiesAndEvents,
 		  Collection<IdentifiedAnnotation> systemEntitiesAndEvents, String classifierType, Object trueCategory, Class<? extends Object> categoryClass) throws ResourceProcessException {
+
+	String documentId = DocumentIDAnnotationUtil.getDocumentID(jCas);
+	
 	  Map<HashableAnnotation, IdentifiedAnnotation> goldMap = Maps.newHashMap();
 	  for (IdentifiedAnnotation mention : goldEntitiesAndEvents) {
 		  goldMap.put(new HashableAnnotation(mention), mention);
@@ -1176,17 +1179,17 @@ private static void printErrors(JCas jCas,
 					  // used for multi-class case:
 					  System.out.println(classifierType+" Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
 				  }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
-					  System.out.println(classifierType+" FN: " + typeId + " " + formatError(jCas, goldAnnotation)+ "| system:|" + formatError(jCas, systemAnnotation));
+					  System.out.println(classifierType+" FN: " + typeId + " " + formatError(jCas, goldAnnotation)+ "| system:|" + formatError(jCas, systemAnnotation) + " " + documentId);
 				  }
 			  }else{
 			    if(trueCategory == null){
 			      // multi-class case -- probably don't want to print anything?
 			    }else if(systemLabel.equals(trueCategory)){
-					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
-					  System.out.println(classifierType+" TN: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation));
+					  System.out.println(classifierType+" TN: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }
 			  }
 		  }

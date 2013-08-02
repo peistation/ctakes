@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.cleartk.classifier.Feature;
@@ -133,6 +134,8 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
 
 	private boolean yates = false;
 
+	private LinkedHashSet<String> discardedFeatureNames;
+
 	public Chi2FeatureSelection(String name) {
 		this(name, 0.0);
 	}
@@ -199,6 +202,7 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
 		this.selectedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(
 				0,
 				this.numFeatures));
+		this.discardedFeatureNames = Sets.newLinkedHashSet(ordering.immutableSortedCopy(featureNames).subList(this.numFeatures, totalFeatures));
 
 		this.isTrained = true;
 	}
@@ -209,13 +213,24 @@ public class Chi2FeatureSelection<OUTCOME_T> extends FeatureSelection<OUTCOME_T>
 			throw new IllegalStateException("Cannot save before training");
 		}
 		File out = new File(uri);
+		final String uriPath = uri.getPath();
+		final int lastIndex = uriPath.lastIndexOf('.');
+		final String discardPath = (lastIndex >= 0 ? uriPath.substring(0, lastIndex) : uriPath ) + "_discarded.dat";
+		final File discardOut = new File( discardPath );
+//		File discardOut = new File(uri.getPath().substring(0,uri.getPath().lastIndexOf(".")) + "_discarded.dat");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+		BufferedWriter diswriter = new BufferedWriter(new FileWriter(discardOut));
 
 		for (String feature : this.selectedFeatureNames) {
 			writer.append(String.format("%s\t%f\n", feature, this.chi2Function.score(feature)));
 		}
+		
+		for (String feature : this.discardedFeatureNames ){
+			diswriter.append(String.format("%s\t%f\n", feature, this.chi2Function.score(feature)));
+		}
 
 		writer.close();
+		diswriter.close();
 	}
 
 	@Override

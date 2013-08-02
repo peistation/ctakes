@@ -14,11 +14,11 @@ public class CrossValidateChi2GridSearch {
 		
 		AssertionEvaluation.useEvaluationLogFile = true;
 		
-		float[] threshs = {2f, 5f, 10f, 20f, 50f, 100f};
+		float[] threshs = {1f, 5f, 10f, 50f, 100f};
 		for (Float chi2threshold : threshs ) {
 			System.out.println("BEGIN Chi2 Grid Search with threshold = "+ Float.toString(chi2threshold));
-			AssertionEvaluation.evaluationLogFileOut.write("BEGIN Chi2 Grid Search with threshold = "+ Float.toString(chi2threshold));
-			AssertionEvaluation.evaluationLogFileOut.flush();
+//			AssertionEvaluation.evaluationLogFileOut.write("BEGIN Chi2 Grid Search with threshold = "+ Float.toString(chi2threshold)+"\n");
+//			AssertionEvaluation.evaluationLogFileOut.flush();
 			
 			for (String attribute : AssertionConst.annotationTypes) {
 

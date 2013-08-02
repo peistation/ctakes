@@ -27,6 +27,7 @@ import java.util.Random;
 
 import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
 import org.apache.ctakes.assertion.zoner.types.Zone;
+import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
@@ -358,7 +359,18 @@ public abstract class AssertionCleartkAnalysisEngine extends
 //      }
 
 
-      instance.add(new Feature("ENTITY_TYPE_" + entityOrEventMention.getTypeID()));
+      // 7/9/13 SRH trying to make it work just for anatomical site
+      int eemTypeId = entityOrEventMention.getTypeID(); 
+      if (eemTypeId == CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
+          // 7/9/13 srh modified per tmiller so it's binary but not numeric feature
+          //instance.add(new Feature("ENTITY_TYPE_" + entityOrEventMention.getTypeID()));
+          instance.add(new Feature("ENTITY_TYPE_ANAT_SITE"));
+      } /* This hurts recall more than it helps precision
+      else if (eemTypeId == CONST.NE_TYPE_ID_DRUG) {
+    	  // 7/10 adding drug
+    	  instance.add(new Feature("ENTITY_TYPE_DRUG"));
+      }
+      */
       
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
         instance.addAll(extractor.extract(jCas, entityOrEventMention));

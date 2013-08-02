@@ -88,7 +88,7 @@ public class RegressionPipelineTest extends XMLTestCase {
 						+ file.getName().substring(0,
 								file.getName().indexOf(".")));
 
-				logger.info("Creating Dir" + generated);
+				logger.info("Creating directory: " + generated);
 
 				Assert.assertTrue(
 						"Unable to create " + generated.getAbsolutePath(),
