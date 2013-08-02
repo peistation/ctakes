@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -87,7 +87,7 @@ public class KnowtatorXMLParser {
         }
       }
     }
-    LOGGER.fine(String.format("Ignored annotators %s in %s", ignoredAnnotators, knowtatorXML));
+    LOGGER.debug(String.format("Ignored annotators %s in %s", ignoredAnnotators, knowtatorXML));
 
     // parse <stringSlotMention> elements
     Map<String, Slot<String>> stringSlots = new HashMap<String, Slot<String>>();
@@ -163,7 +163,7 @@ public class KnowtatorXMLParser {
     final Element child = element.getChild(cname);
     if (child == null) {
       String xml = this.xmlOutputter.outputString(element);
-      LOGGER.warning(String.format("no child <%s> for %s", cname, xml));
+      LOGGER.debug(String.format("no child <%s> for %s", cname, xml));
     }
     return new Option<Element>(child);
   }
@@ -172,7 +172,7 @@ public class KnowtatorXMLParser {
     final String value = element.getAttributeValue(attname);
     if (value == null) {
       String xml = this.xmlOutputter.outputString(element);
-      LOGGER.warning(String.format("no attribute %s for %s", attname, xml));
+      LOGGER.debug(String.format("no attribute %s for %s", attname, xml));
     }
     return new Option<String>(value);
   }

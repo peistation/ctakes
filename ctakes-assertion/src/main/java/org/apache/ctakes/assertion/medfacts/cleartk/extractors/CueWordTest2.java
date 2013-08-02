@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;
 import org.apache.ctakes.core.cr.XMIReader;

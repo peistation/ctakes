@@ -6,8 +6,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import org.apache.ctakes.assertion.zoner.types.Heading;
 import org.apache.ctakes.assertion.zoner.types.Subzone;
@@ -85,7 +85,7 @@ public class ZoneAnnotator extends JCasAnnotator_ImplBase {
       sectionRegexFileInClasspathUri = sectionRegexFileInClasspathUrl.toURI();
     } catch (URISyntaxException e1)
     {
-      logger.log(Level.SEVERE, String.format("section regex file not found [%s]", sectionRegexFileUriString), e1);
+      logger.error( String.format("section regex file not found [%s]", sectionRegexFileUriString), e1);
       throw new AnalysisEngineProcessException(e1);
     }
 	  ZonerCli zonerCli =

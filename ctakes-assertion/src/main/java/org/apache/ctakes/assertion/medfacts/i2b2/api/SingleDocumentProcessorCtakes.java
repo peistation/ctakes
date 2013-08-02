@@ -20,8 +20,8 @@ package org.apache.ctakes.assertion.medfacts.i2b2.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.uima.cas.ConstraintFactory;
@@ -253,7 +253,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     {
       String message = "First token in sentence not found [#1]!!";
       Exception e = new RuntimeException(message);
-      logger.log(Level.SEVERE, message, e);
+      logger.error(message,e);
       return null;
     }
     Annotation firstTokenAnnotation = tokensInSentenceIterator.next();
@@ -269,7 +269,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     {
         String message = "First token in sentence not found [#2]!!";
         Exception e = new RuntimeException(message);
-        logger.log(Level.SEVERE, message, e);
+        logger.error(message, e);
         return null;
     }
     Annotation beginTokenAnnotation = beginTokenInSentenceIterator.next();
@@ -283,7 +283,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     {
         String message = "First token in sentence not found [#3]!!";
         Exception e = new RuntimeException(message);
-        logger.log(Level.SEVERE, message, e);
+        logger.error(message, e);
         return null;
     }
     Annotation endTokenAnnotation = beginTokenInSentenceIterator.next();

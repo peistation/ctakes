@@ -1,7 +1,7 @@
 package org.apache.ctakes.core.ae;
 
 
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

@@ -20,7 +20,7 @@ package org.apache.ctakes.assertion.medfacts;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;

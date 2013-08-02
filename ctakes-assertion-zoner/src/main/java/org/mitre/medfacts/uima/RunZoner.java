@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.core.ae.DocumentIdPrinterAnalysisEngine;

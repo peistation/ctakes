@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
@@ -105,19 +105,19 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   
   public int adjustOffsetToBestMatch(int original)
   {
-	  logger.finest("inside adjustOffsetToBestMatch");
+	  logger.debug("inside adjustOffsetToBestMatch");
 	  Integer newValue = tokenBeginEndTreeSet.floor(original);
 	  
 	  if (newValue == null)
 	  {
-		  logger.finest("no previous token begin or end found. using begin of first token.");
+		  logger.debug("no previous token begin or end found. using begin of first token.");
 		  newValue = tokenBeginEndTreeSet.first();
 	  } else
 	  {
 		  if (original == newValue)
-			  logger.finest("value not adjusted: " + original);
+			  logger.debug("value not adjusted: " + original);
 		  else
-			  logger.finest("found previous token boundary. original: " + original + "; new value: " + newValue);
+			  logger.debug("found previous token boundary. original: " + original + "; new value: " + newValue);
 	  }
 	  
 	  if (newValue == null)
@@ -125,18 +125,18 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 		  logger.info("no previous and no first token found!!");
 	  }
 	  
-	  logger.finest("end adjustOffsetToBestMatch");
+	  logger.debug("end adjustOffsetToBestMatch");
 	  
 	  return newValue;
   }
   
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
-    logger.finest("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
+    logger.debug("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
     
-    logger.finest("before adjusting input character offset...");
+    logger.debug("before adjusting input character offset...");
     characterOffset = adjustOffsetToBestMatch(characterOffset);
-    logger.finest("after adjusting input character offset.");
+    logger.debug("after adjusting input character offset.");
     int baseTokenTypeId = BaseToken.type;
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
@@ -156,14 +156,14 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 //    Annotation sentenceAnnotation = filteredIterator.next();
 //    Sentence sentence = (Sentence)sentenceAnnotation;
     
-    logger.finest("finding current or previous sentence for character offset " + characterOffset);
+    logger.debug("finding current or previous sentence for character offset " + characterOffset);
     Sentence sentence = findPreviousOrCurrentSentence(characterOffset);
     if (sentence == null)
     {
     	logger.info("current or previous sentence IS NULL!");
     } else
     {
-    	logger.finest("current or previous sentence -- id: " + sentence.getAddress() +
+    	logger.debug("current or previous sentence -- id: " + sentence.getAddress() +
     			"; begin: " + sentence.getBegin() + 
     			"; end: " + sentence.getEnd());
     }
