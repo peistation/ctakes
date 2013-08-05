@@ -19,6 +19,7 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
 import org.cleartk.classifier.CleartkSequenceAnnotator;
 import org.cleartk.classifier.Instance;
-//import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.crfsuite.CRFSuiteStringOutcomeDataWriter;
 import org.cleartk.classifier.feature.transform.InstanceDataWriter;
 import org.cleartk.classifier.feature.transform.InstanceStream;
@@ -64,7 +64,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 
 	static interface Options extends Evaluation_ImplBase.Options {
 
-		@Option(longName = "featureSelectionThreshold", defaultValue = "1")
+	  @Option(longName = "featureSelectionThreshold", defaultValue = "1")
 		public float getFeatureSelectionThreshold();
 		
 		@Option(longName = "SMOTENeighborNumber", defaultValue = "0")
@@ -76,7 +76,18 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 		List<Integer> patientSets = options.getPatients().getList();
 		List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
 		List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
-
+		List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
+		
+		List<Integer> allTrain = new ArrayList<Integer>(trainItems);
+		List<Integer> allTest = null;
+		
+		if(options.getTest()){
+		  allTrain.addAll(devItems);
+		  allTest = new ArrayList<Integer>(testItems);
+		}else{
+		  allTest = new ArrayList<Integer>(devItems);
+		}
+		
 		// specify the annotator classes to use
 		List<Class<? extends JCasAnnotator_ImplBase>> annotatorClasses = Lists.newArrayList();
 		annotatorClasses.add(BackwardsTimeAnnotator.class);
@@ -85,11 +96,11 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 		annotatorClasses.add(CRFTimeAnnotator.class);
 		annotatorClasses.add(MetaTimeAnnotator.class);
 		Map<Class<? extends JCasAnnotator_ImplBase>, String[]> annotatorTrainingArguments = Maps.newHashMap();
-		annotatorTrainingArguments.put(BackwardsTimeAnnotator.class, new String[]{"-c", "0.1"});
+		annotatorTrainingArguments.put(BackwardsTimeAnnotator.class, new String[]{"-c", "0.3"});
 		annotatorTrainingArguments.put(TimeAnnotator.class, new String[]{"-c", "0.1"});
-		annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.1"});
-		annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
-		annotatorTrainingArguments.put(MetaTimeAnnotator.class, new String[]{"-p", "c2=0.1"});
+		annotatorTrainingArguments.put(ConstituencyBasedTimeAnnotator.class, new String[]{"-c", "0.3"});
+		annotatorTrainingArguments.put(CRFTimeAnnotator.class, new String[]{"-p", "c2=0.03"});
+		annotatorTrainingArguments.put(MetaTimeAnnotator.class, new String[]{"-p", "c2=0.3"});
 
 		// run one evaluation per annotator class
 		final Map<Class<?>, AnnotationStatistics<?>> annotatorStats = Maps.newHashMap();
@@ -109,7 +120,7 @@ public class EvaluationOfTimeSpans extends EvaluationOfAnnotationSpans_ImplBase 
 			evaluation.prepareXMIsFor(patientSets);
 			String name = String.format("%s.errors", annotatorClass.getSimpleName());
 			evaluation.setLogging(Level.FINE, new File("target/eval", name));
-			AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+			AnnotationStatistics<String> stats = evaluation.trainAndTest(allTrain, allTest);
 			annotatorStats.put(annotatorClass, stats);
 		}
 
