@@ -47,12 +47,10 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.svmlight.SVMlightStringOutcomeDataWriter;
 import org.cleartk.classifier.tksvmlight.TKSVMlightStringOutcomeDataWriter;
 import org.cleartk.classifier.tksvmlight.model.CompositeKernel;
 import org.cleartk.classifier.tksvmlight.model.CompositeKernel.ComboOperator;
 import org.cleartk.eval.AnnotationStatistics;
-import org.cleartk.ml.libsvm.tk.TKLIBSVMStringOutcomeDataWriter;
 import org.cleartk.util.ViewURIUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -167,10 +165,10 @@ public class EvaluationOfEventTimeRelations extends
     }
   }
 
-  private ParameterSettings params;
+//  private ParameterSettings params;
   private boolean baseline;
   protected boolean useClosure; 
-  protected boolean printRelations = false;
+//  protected boolean printRelations = false;
   
   public EvaluationOfEventTimeRelations(
       File baseDirectory,
