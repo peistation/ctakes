@@ -117,28 +117,28 @@ public class TestClearNLPAnalysisEngines{
 				INPUT_FILE
 				);
 		
-		// Load preprocessing pipeline (consists of 
-		//AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
-		
-		// Create dependency parsers analysis engine with the default models
-		// The dummy models from ClearParser haven't been updated to work with ClearNLP.
-		AnalysisEngine ClearNLPDepParser = AnalysisEngineFactory.createPrimitive(
-				ClearNLPDependencyParserAE.class,
-				typeSystem
-				);
-	
-				
-		// Create analysis engine for SRL
-		AnalysisEngine ClearNLPSRL = AnalysisEngineFactory.createPrimitive(
-				ClearNLPSemanticRoleLabelerAE.class,
-				typeSystem
-				);
-		
-		AnalysisEngine dumpClearNLPOutput = AnalysisEngineFactory.createPrimitive(
-				DumpClearNLPOutputAE.class,
-				typeSystem);
-		
-		SimplePipeline.runPipeline(reader1, /* preprocessingAE, */ ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
+//		// Load preprocessing pipeline (consists of 
+//		AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
+//		
+//		// Create dependency parsers analysis engine with the default models
+//		// The dummy models from ClearParser haven't been updated to work with ClearNLP.
+//		AnalysisEngine ClearNLPDepParser = AnalysisEngineFactory.createPrimitive(
+//				ClearNLPDependencyParserAE.class,
+//				typeSystem
+//				);
+//	
+//				
+//		// Create analysis engine for SRL
+//		AnalysisEngine ClearNLPSRL = AnalysisEngineFactory.createPrimitive(
+//				ClearNLPSemanticRoleLabelerAE.class,
+//				typeSystem
+//				);
+//		
+//		AnalysisEngine dumpClearNLPOutput = AnalysisEngineFactory.createPrimitive(
+//				DumpClearNLPOutputAE.class,
+//				typeSystem);
+//		
+//		SimplePipeline.runPipeline(reader1, preprocessingAE, ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
 	}
 	
 }
