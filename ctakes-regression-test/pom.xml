@@ -20,6 +20,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-core-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
 		<dependency>
@@ -40,6 +44,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-preprocessor</artifactId>
 		</dependency>
 		<dependency>
@@ -48,7 +56,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-lvg-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-chunker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-chunker-res</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -56,7 +72,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-ne-contexts-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-pos-tagger</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-pos-tagger-res</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -64,7 +88,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-assertion-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-dependency-parser</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dependency-parser-res</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -76,7 +108,15 @@
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-drug-ner-res</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-smoking-status</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-smoking-status-res</artifactId>
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
@@ -84,11 +124,23 @@
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-side-effect-res</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-constituency-parser</artifactId>
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-constituency-parser-res</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-coreference</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-coreference-res</artifactId>
 		</dependency>	
 		<dependency>
 			<groupId>xmlunit</groupId>
