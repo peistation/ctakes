@@ -118,7 +118,7 @@ public class TestClearNLPAnalysisEngines{
 				);
 		
 		// Load preprocessing pipeline (consists of 
-		AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
+		//AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
 		
 		// Create dependency parsers analysis engine with the default models
 		// The dummy models from ClearParser haven't been updated to work with ClearNLP.
@@ -138,7 +138,7 @@ public class TestClearNLPAnalysisEngines{
 				DumpClearNLPOutputAE.class,
 				typeSystem);
 		
-		SimplePipeline.runPipeline(reader1, preprocessingAE, ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
+		SimplePipeline.runPipeline(reader1, /* preprocessingAE, */ ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
 	}
 	
 }
