@@ -19,6 +19,7 @@
 package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,14 +44,26 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
 
 public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_ImplBase {
-
+ 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
     List<Integer> patientSets = options.getPatients().getList();
     List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
     List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
+    List<Integer> testItems = THYMEData.getTestPatientSets(patientSets);
+    
+    List<Integer> allTraining = new ArrayList<Integer>(trainItems);
+    List<Integer> allTest = null;
+    if(options.getTest()){
+      allTraining.addAll(devItems);
+      allTest = new ArrayList<Integer>(testItems);
+    }else{
+      allTest = new ArrayList<Integer>(devItems);
+    }
+    
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
         new File("target/eval/cleartk-time-spans"),
         options.getRawTextDirectory(),
@@ -59,7 +72,7 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
         options.getXMIDirectory());
     evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
-    AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+    AnnotationStatistics<String> stats = evaluation.trainAndTest(allTraining, allTest);
     System.err.println(stats);
   }
 
