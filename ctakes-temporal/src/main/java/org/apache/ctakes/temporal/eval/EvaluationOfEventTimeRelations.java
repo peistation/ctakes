@@ -47,10 +47,12 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
+import org.cleartk.classifier.svmlight.SVMlightStringOutcomeDataWriter;
 import org.cleartk.classifier.tksvmlight.TKSVMlightStringOutcomeDataWriter;
 import org.cleartk.classifier.tksvmlight.model.CompositeKernel;
 import org.cleartk.classifier.tksvmlight.model.CompositeKernel.ComboOperator;
 import org.cleartk.eval.AnnotationStatistics;
+import org.cleartk.ml.libsvm.tk.TKLIBSVMStringOutcomeDataWriter;
 import org.cleartk.util.ViewURIUtil;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
@@ -84,6 +86,9 @@ public class EvaluationOfEventTimeRelations extends
     
     @Option
     public boolean getClosure();
+    
+    @Option
+    public boolean getUseTmp();
   }
   
 //  protected static boolean DEFAULT_BOTH_DIRECTIONS = false;
@@ -122,11 +127,14 @@ public class EvaluationOfEventTimeRelations extends
     try{
       File workingDir = new File("target/eval/temporal-relations/event-time");
       if(!workingDir.exists()) workingDir.mkdirs();
-      File tempModelDir = File.createTempFile("temporal", null, workingDir);
-      tempModelDir.delete();
-      tempModelDir.mkdir();
+      if(options.getUseTmp()){
+        File tempModelDir = File.createTempFile("temporal", null, workingDir);
+        tempModelDir.delete();
+        tempModelDir.mkdir();
+        workingDir = tempModelDir;
+      }
       EvaluationOfEventTimeRelations evaluation = new EvaluationOfEventTimeRelations(
-          tempModelDir,
+          workingDir,
           options.getRawTextDirectory(),
           options.getXMLDirectory(),
           options.getXMLFormat(),
@@ -150,7 +158,9 @@ public class EvaluationOfEventTimeRelations extends
       params.stats = evaluation.trainAndTest(training, testing);
       //      System.err.println(options.getKernelParams() == null ? params : options.getKernelParams());
       System.err.println(params.stats);
-      tempModelDir.delete();
+      if(options.getUseTmp()){
+        workingDir.delete();
+      }
     }catch(ResourceInitializationException e){
       System.err.println("Error with parameter settings: " + params);
       e.printStackTrace();
@@ -216,6 +226,8 @@ public class EvaluationOfEventTimeRelations extends
     aggregateBuilder.add(EventTimeRelationAnnotator.createDataWriterDescription(
 //                LIBSVMStringOutcomeDataWriter.class,
         TKSVMlightStringOutcomeDataWriter.class,
+//        TKLIBSVMStringOutcomeDataWriter.class,
+//        SVMlightStringOutcomeDataWriter.class,        
         directory,
         params.probabilityOfKeepingANegativeExample));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
