@@ -52,6 +52,7 @@ import org.apache.ctakes.temporal.ae.THYMEKnowtatorXMLReader;
 import org.apache.ctakes.temporal.ae.THYMETreebankReader;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.syntax.Chunk;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.EntityMention;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -124,6 +125,9 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     public File getTreebankDirectory();
     
     @Option
+    public boolean getUseGoldTrees();
+    
+    @Option
     public boolean getGrid();
     
     @Option
@@ -132,8 +136,11 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     @Option
     public boolean getPrintOverlappingSpans();
     
+    @Option
+    public boolean getTest();
+
     @Option(longName = "kernelParams", defaultToNull=true)
-    public String getKernelParams();
+    public String getKernelParams();    
   }
 
   protected File rawTextDirectory;
@@ -200,7 +207,17 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
 			  }})) {
 			  // skip hidden files like .svn
 			  if (!file.isHidden()) {
-				  files.add(file);
+			    if(xmlFormat == XMLFormat.Knowtator){
+			      files.add(file);
+			    }else{
+			      // look for equivalent in xml directory:
+			      File xmlFile = new File(xmlDirectory, file.getName());
+			      if(xmlFile.exists()){
+			        files.add(file);
+			      }else{
+			        System.err.println("Missing patient file : " + xmlFile);
+			      }
+			    }
 			  } 
 		  }
 	  }
@@ -425,14 +442,14 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
     // add semantic role labeler
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearNLPSemanticRoleLabelerAE.class));
 
-    // add constituency parser (or gold standard treebank if we have it)
+    // add gold standard parses to gold view, and adjust gold view to correct a few annotation mis-steps
     if(this.treebankDirectory != null){
-    	aggregateBuilder.add(THYMETreebankReader.getDescription(this.treebankDirectory));
-    	aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TimexAnnotationCorrector.class));
+      aggregateBuilder.add(THYMETreebankReader.getDescription(this.treebankDirectory));
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(TimexAnnotationCorrector.class));
     }else{
-    	aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
+      // add ctakes constituency parses to system view
+      aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ConstituencyParser.class));
     }
-
     // write out the CAS after all the above annotations
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(
         XMIWriter.class,
@@ -602,6 +619,28 @@ public abstract class Evaluation_ImplBase<STATISTICS_TYPE> extends
               TreebankNode mentionNode = sameSpanNode.getChildren(numChildren-1);
               mention.setBegin(mentionNode.getBegin());
               mention.setEnd(mentionNode.getEnd());
+            }
+          }
+        }else{
+          // if there is no matching tree span, see if the DT to the left would help.
+          // now adjust for missing DT to the left
+          List<TerminalTreebankNode> precedingPreterms = JCasUtil.selectPreceding(systemView, TerminalTreebankNode.class, mention, 1);
+          if(precedingPreterms != null && precedingPreterms.size() == 1){
+            TerminalTreebankNode leftTerm = precedingPreterms.get(0);
+            if(leftTerm.getNodeType().equals("DT")){
+              // now see if adding this would make it match a tree
+              List<TreebankNode> matchingNodes = JCasUtil.selectCovered(systemView, TreebankNode.class, leftTerm.getBegin(), mention.getEnd());
+              for(TreebankNode node : matchingNodes){
+                if(node.getBegin() == leftTerm.getBegin() && node.getEnd() == mention.getEnd()){
+                  sameSpanNode = node;
+                  break;
+                }
+              }
+              if(sameSpanNode != null){
+                // adding the DT to the left of th emention made it match a tree:
+                System.err.println("Adding DT: " + leftTerm.getCoveredText() + " to TIMEX: " + mention.getCoveredText());
+                mention.setBegin(leftTerm.getBegin());
+              }
             }
           }
         }
