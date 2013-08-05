@@ -127,16 +127,6 @@ public class CRFTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
         for (CleartkExtractor extractor : this.contextFeatureExtractors) {
           features.addAll(extractor.extractWithin(jCas, token, sentence));
         }
-        // features from previous classifications
-        // not sure this makes sense in CRF context -- linear chain CRF uses this automatically?
-        // TODO - fix or delete
-//        int nPreviousClassifications = 2;
-//        for (int i = nPreviousClassifications; i > 0; --i) {
-//          int index = tokenIndex - i;
-//          String previousOutcome = index < 0 ? "O" : outcomes.get(index);
-//          features.add(new Feature("PreviousOutcome_" + i, previousOutcome));
-//        }
-        
         // features from dominating parse tree
         // TODO-  think abouot how to incorporate this - fix or delete
 //        BaseToken startToken = token;
