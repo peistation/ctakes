@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.apache.ctakes.temporal.ae.ContextualModalityAnnotator;
 import org.apache.ctakes.temporal.ae.DocTimeRelAnnotator;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
@@ -59,8 +60,9 @@ public class EvaluationOfEventProperties extends
     Evaluation_ImplBase<Map<String, AnnotationStatistics<String>>> {
 
   private static final String DOC_TIME_REL = "docTimeRel";
-
-  private static final List<String> PROPERTY_NAMES = Arrays.asList(DOC_TIME_REL);
+  private static final String CONTEXTUAL_MODALITY = "contextualModality";
+  
+  private static final List<String> PROPERTY_NAMES = Arrays.asList(DOC_TIME_REL, CONTEXTUAL_MODALITY);
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
@@ -105,9 +107,12 @@ public class EvaluationOfEventProperties extends
     aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
     aggregateBuilder.add(DocTimeRelAnnotator.createDataWriterDescription(
     		LIBSVMStringOutcomeDataWriter.class,
-        directory));
+        new File(directory, DOC_TIME_REL)));
+    aggregateBuilder.add(ContextualModalityAnnotator.createDataWriterDescription(LIBSVMStringOutcomeDataWriter.class, new File(directory, CONTEXTUAL_MODALITY)));
     SimplePipeline.runPipeline(collectionReader, aggregateBuilder.createAggregate());
-    JarClassifierBuilder.trainAndPackage(directory, "-h","0","-c", "1000");
+    for(String propertyName : PROPERTY_NAMES){
+      JarClassifierBuilder.trainAndPackage(new File(directory, propertyName), "-h","0","-c", "1000");
+    }
   }
 
   @Override
@@ -118,8 +123,9 @@ public class EvaluationOfEventProperties extends
     aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
     aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
     aggregateBuilder.add(AnalysisEngineFactory.createPrimitiveDescription(ClearEventProperties.class));
-    aggregateBuilder.add(DocTimeRelAnnotator.createAnnotatorDescription(directory));
-
+    aggregateBuilder.add(DocTimeRelAnnotator.createAnnotatorDescription(new File(directory, DOC_TIME_REL)));
+    aggregateBuilder.add(ContextualModalityAnnotator.createAnnotatorDescription(new File(directory, CONTEXTUAL_MODALITY)));
+    
     Function<EventMention, ?> eventMentionToSpan = AnnotationStatistics.annotationToSpan();
     Map<String, Function<EventMention, String>> propertyGetters;
     propertyGetters = new HashMap<String, Function<EventMention, String>>();
@@ -128,7 +134,11 @@ public class EvaluationOfEventProperties extends
     }
 
     Map<String, AnnotationStatistics<String>> statsMap = new HashMap<String, AnnotationStatistics<String>>();
-    statsMap.put(DOC_TIME_REL, new AnnotationStatistics<String>());
+    
+    for(String propertyName : PROPERTY_NAMES){
+      statsMap.put(propertyName, new AnnotationStatistics<String>());
+    }
+    
     for (JCas jCas : new JCasIterable(collectionReader, aggregateBuilder.createAggregate())) {
       JCas goldView = jCas.getView(GOLD_VIEW_NAME);
       JCas systemView = jCas.getView(CAS.NAME_DEFAULT_SOFA);
