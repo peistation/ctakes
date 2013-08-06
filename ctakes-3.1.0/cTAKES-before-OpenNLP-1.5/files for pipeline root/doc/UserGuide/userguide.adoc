@@ -1,0 +1,29 @@
+// Define some global attributes
+include::_globattr.adoc[]
+:userguide: true
+
+{osp-full} User Guide
+=====================
+Mayo Clinic
+v{rev}
+
+include::preface.adoc[]
+
+include::install.adoc[]
+
+include::compile.adoc[]
+
+include::resources.adoc[]
+
+include::compdesc.adoc[]
+
+include::glossary.adoc[]
+
+// ifdef::backend-docbook[]
+//Index
+//-----
+////////////////////////////////////////////////////////////////
+The index is normally left completely empty, it's contents being
+generated automatically by the DocBook toolchain.
+////////////////////////////////////////////////////////////////
+// endif::backend-docbook[]

@@ -1,0 +1,88 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+//not interested in the vein in the lower extremities. Interested in the arteries in the lower extremities.,,,,,
+,,cTAKES NE type,CUI,TUI,Notes
+anastomosis,anastomosis,6,C0332853,Acquired Abnormality,Dr. Kullo confirmed this is an anatomical site.
+anterior,anterior tibial artery,6,C0085816,"Body Part, Organ, or Organ Component",
+anterior,anterior tibial arteries,6,C0085816,"Body Part, Organ, or Organ Component",
+anterior,anterior tibial,6,C0085816,"Body Part, Organ, or Organ Component",
+aorto bifemoral,aorto bifemoral artery,6,null,,
+aorto bifemoral,aorto bifemoral arteries,6,null,,
+aorto bifemoral,aorto bifemoral,6,null,"Body Part, Organ, or Organ Component",
+aorto biiliac,aorto bi-iliac arteries,6,null,,
+aorto biiliac,aorto biiliac arteries,6,null,,
+aorto biiliac,aorto biiliac,6,null,"Body Part, Organ, or Organ Component",
+aorto bi-iliac,aorto bi-iliac,6,null,"Body Part, Organ, or Organ Component",
+aorto femoral,aorto femoral,6,C0545736,"Body Part, Organ, or Organ Component",
+AT,AT,6,C0085818,"Body Part, Organ, or Organ Component",
+axillobifemoral,axillobifemoral arteries,6,null,,
+axillobifemoral,axillobifemoral artery,6,null,,
+axillobifemoral,axillobifemoral,6,null,"Body Part, Organ, or Organ Component",
+calf,calf artery,6,null,,
+calf,calf arteries,6,null,,
+cardiod,cardiod,6,C0741968,"Body Part, Organ, or Organ Component","is this meant to be ""carotid""?"
+CFA,CFA,6,C0447105,"Body Part, Organ, or Organ Component",
+common,common femoral,6,C0447105,"Body Part, Organ, or Organ Component",
+common,common iliac,6,C1261084,"Body Part, Organ, or Organ Component",
+common,common iliac artery,6,C1261084,"Body Part, Organ, or Organ Component",
+extensive,extensive collaterals,6,C1275670,"Body Part, Organ, or Organ Component",Moved from Disorders to Anatomical sites. cTAKES NE type changed from 2 to 6
+external,external iliac,6,C1269019,"Body Part, Organ, or Organ Component",
+fem-fem,fem-fem,STAND_ALONE,null,,
+femoral,femoral artery,6,C1280173,"Body Part, Organ, or Organ Component",
+femoral,femoral-to-peroneal artery,STAND_ALONE,null,"Body Part, Organ, or Organ Component",
+femoral,femoral,6,C1280173,"Body Part, Organ, or Organ Component",
+femoral-femoral,femoral-femoral arteries,STAND_ALONE,null,,
+femoral-femoral,femoral-femoral,6,null,,
+femoral-popliteal,femoral-popliteal,6,null,,
+femoropopliteal,femoropopliteal artery,6,null,,
+femoropopliteal,femoropopliteal arteries,6,null,,
+femoropopliteal,femoropopliteal,6,null,,
+fem-pop,fem-pop,STAND_ALONE,null,,
+IFA,IFA,6,C0545728,"Body Part, Organ, or Organ Component",
+iliac,iliac artery,6,C1280172,"Body Part, Organ, or Organ Component",
+iliac,iliac systems,6,null,,
+iliac,iliac system,6,null,,
+iliac,iliac origin,6,null,,
+internal,internal iliac arteries,6,C0226364,"Body Part, Organ, or Organ Component",
+left,left femoral,6,C1281581,"Body Part, Organ, or Organ Component",
+left,left leg,6,C1279606,"Body Part, Organ, or Organ Component",
+left,left lower extremity,6,C0230416,"Body Part, Organ, or Organ Component",
+lower,lower extremity,6,C0023216,Body Location or Region,
+origin,origin of iliac,6,null,,asked Dr. Kullo
+peroneal,peroneal artery,6,C1278957,"Body Part, Organ, or Organ Component",
+peroneal,peroneal arteries,6,C1278957,"Body Part, Organ, or Organ Component",
+peroneal,peroneal,6,C1278957,"Body Part, Organ, or Organ Component",
+peroneal,peroneal trunk,6,null,,Asked Dr. Kullo
+peroneal,peroneal artery,6,C1278958,"Body Part, Organ, or Organ Component",
+popliteal,popliteal artery,6,C1278953,"Body Part, Organ, or Organ Component",
+popliteal,popliteal arteries,6,C1278953,"Body Part, Organ, or Organ Component",
+popliteal,popliteal,6,C1278953,"Body Part, Organ, or Organ Component",
+posterior,posterior tibial,6,C1269021,"Body Part, Organ, or Organ Component",
+posterior,posterior tibial artery,6,C1269021,"Body Part, Organ, or Organ Component",
+posterior,posterior tibial arteries,6,C1269021,"Body Part, Organ, or Organ Component",
+PT,PT,6,C1269021,"Body Part, Organ, or Organ Component",
+right,right leg,6,C1279605,"Body Part, Organ, or Organ Component",
+rigth,right femoral,6,C1281566,"Body Part, Organ, or Organ Component",
+rigth,right lower extremity,6,C0230415,"Body Part, Organ, or Organ Component",
+SFA,SFA,6,C0447106,"Body Part, Organ, or Organ Component",Superficial femoral artery
+tibial,tibial arteries,6,C0085427,"Body Part, Organ, or Organ Component",
+tibial,tibial artery,6,C0085427,"Body Part, Organ, or Organ Component",
+tibioperoneal,tibioperoneal trunk,6,C0447111,"Body Part, Organ, or Organ Component",
+vein,vein,6,C1278960,"Body Part, Organ, or Organ Component",
+veins,veins,6,C1278960,"Body Part, Organ, or Organ Component",
+one-vessel,one-vessel run-off,STAND_ALONE,null,,"Dr. Kullo: ""these are anatomic descriptors"""
+single,single vessel runoff,STAND_ALONE,null,,"Dr. Kullo: ""these are anatomic descriptors"""
+single,single vessel run-off,STAND_ALONE,null,,"Dr. Kullo: ""these are anatomic descriptors"""

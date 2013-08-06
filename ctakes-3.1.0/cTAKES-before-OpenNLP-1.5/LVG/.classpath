@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry kind="lib" path="lib/lvg2008dist.jar"/>
+	<classpathentry kind="lib" path="/core/lib/log4j-1.2.8.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

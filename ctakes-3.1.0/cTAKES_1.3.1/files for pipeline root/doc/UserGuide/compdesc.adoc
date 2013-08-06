@@ -1,0 +1,64 @@
+[[component_description]]
+Component Description
+---------------------
+{osp-short} provides two variants of the pipeline, one for processing
+plain text notes (+{inst-root-dir}/clinical documents
+pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml+), the
+other for Clinical Document Architecture (CDA) formatted notes
+(+{inst-root-dir}/clinical documents
+pipeline/desc/analysis_engine/AggregateCdaProcessor.xml+).
+
+{osp-short} consists of the following subprojects, in the order used
+in the CDA variant:
+
+- document preprocessor
+- core
+- LVG
+- context dependent tokenizer
+- POS tagger
+- chunker
+- dependency parser (optional)
+- dictionary lookup
+- NE contexts
+- clinical documents pipeline
+- PAD term spotter (optional)
+- Drug NER (optional)
+
+The plain text variant makes use of the same subprojects in the same
+order except that the first one is not included.
+
+NOTE: All relative paths in this chapter are relative to the root
+directory of their subproject. For example, if you see
++desc/AggregateAE.xml+ in the document preprocessor section, you can
+find the file at +{inst-root-dir}/document
+preprocessor/desc/AggregateAE.xml+.
+
+IMPORTANT: {osp-short} is 'not' designed for or tested for thread
+safety.
+
+include::_cd_docpre.adoc[]
+
+include::_cd_core.adoc[]
+
+include::_cd_lvg.adoc[]
+
+include::_cd_cdt.adoc[]
+
+include::_cd_postagger.adoc[]
+
+include::_cd_chunker.adoc[]
+
+include::_cd_depparser.adoc[]
+
+include::_cd_dictlookup.adoc[]
+
+include::_cd_necontexts.adoc[]
+
+include::_cd_pipeline.adoc[]
+
+include::_cd_padtermspotter.adoc[]
+
+include::_cd_drugner.adoc[]
+
+include::_cd_smokingstatus.adoc[]
+

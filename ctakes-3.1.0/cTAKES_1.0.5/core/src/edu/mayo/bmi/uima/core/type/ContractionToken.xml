@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<name>ContractionToken</name>
+<description></description>
+<version>1.0</version>
+<vendor></vendor>
+<imports>
+<import location="BaseToken.xml"/>
+</imports>
+<types>
+<typeDescription>
+<name>edu.mayo.bmi.uima.core.type.ContractionToken</name>
+<description></description>
+<supertypeName>edu.mayo.bmi.uima.core.type.BaseToken</supertypeName>
+</typeDescription>
+</types>
+</typeSystemDescription>
