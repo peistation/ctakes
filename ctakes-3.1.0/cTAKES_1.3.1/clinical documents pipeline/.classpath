@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/context dependent tokenizer"/>
+	<classpathentry kind="lib" path="resources"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/chunker"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/LVG"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dictionary lookup"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NE contexts"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/POS tagger"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/document preprocessor"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

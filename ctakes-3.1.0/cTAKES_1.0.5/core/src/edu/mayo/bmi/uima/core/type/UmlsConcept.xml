@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<name>UmlsConcept</name>
+<description></description>
+<version>1.0</version>
+<vendor></vendor>
+<imports>
+<import location="OntologyConcept.xml"/>
+</imports>
+<types>
+<typeDescription>
+<name>edu.mayo.bmi.uima.core.type.UmlsConcept</name>
+<description></description>
+<supertypeName>edu.mayo.bmi.uima.core.type.OntologyConcept</supertypeName>
+<features>
+<featureDescription>
+<name>cui</name>
+<description></description>
+<rangeTypeName>uima.cas.String</rangeTypeName>
+</featureDescription>
+<featureDescription>
+<name>tui</name>
+<description></description>
+<rangeTypeName>uima.cas.String</rangeTypeName>
+</featureDescription>
+</features>
+</typeDescription>
+</types>
+</typeSystemDescription>

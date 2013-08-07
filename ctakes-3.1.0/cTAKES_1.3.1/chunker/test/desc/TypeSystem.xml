@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>TypeSystem</name>
+  <description/>
+  <version>1.0</version>
+  <vendor/>
+  <imports>
+    <import name="edu.mayo.bmi.uima.core.type.Sentence"/>
+    <import name="edu.mayo.bmi.uima.core.type.BaseToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.Segment"/>
+    <import name="edu.mayo.bmi.uima.core.type.WordToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.ContractionToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.NewlineToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.NumToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.PunctuationToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.SymbolToken"/>
+    <import name="edu.mayo.bmi.uima.core.type.DocumentID"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.Chunk"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.ADJP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.ADVP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.CONJP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.INTJ"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.LST"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.NP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.PP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.PRT"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.SBAR"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.UCP"/>
+    <import name="edu.mayo.bmi.uima.chunker.type.VP"/>
+  </imports>
+</typeSystemDescription>

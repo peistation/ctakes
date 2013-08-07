@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+<primitive>false</primitive>
+<delegateAnalysisEngineSpecifiers>
+<delegateAnalysisEngine key="SimpleSegmentAnnotator">
+<import location="SimpleSegmentAnnotator.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="SentenceDetectorAnnotator">
+<import location="SentenceDetectorAnnotator.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="TokenizerAnnotator">
+<import location="TokenizerAnnotator.xml"/>
+</delegateAnalysisEngine>
+<delegateAnalysisEngine key="POSTagger">
+<import location="POSTagger.xml"/>
+</delegateAnalysisEngine>
+</delegateAnalysisEngineSpecifiers>
+<analysisEngineMetaData>
+<name>Tokens and sentences TAE</name>
+<description></description>
+<version>1.0</version>
+<vendor></vendor>
+<configurationParameters searchStrategy="language_fallback"/>
+<configurationParameterSettings/>
+<flowConstraints>
+<fixedFlow>
+<node>SimpleSegmentAnnotator</node>
+<node>TokenizerAnnotator</node>
+<node>SentenceDetectorAnnotator</node>
+<node>POSTagger</node>
+</fixedFlow>
+</flowConstraints>
+<typePriorities/>
+<fsIndexCollection/>
+<capabilities>
+<capability>
+<inputs/>
+<outputs/>
+<languagesSupported/>
+</capability>
+</capabilities>
+<operationalProperties>
+<modifiesCas>true</modifiesCas>
+<multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+<outputsNewCASes>false</outputsNewCASes>
+</operationalProperties>
+</analysisEngineMetaData>
+<resourceManagerConfiguration/>
+</analysisEngineDescription>
