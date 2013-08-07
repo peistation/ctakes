@@ -1,0 +1,3 @@
+
+dependency parser requires Java 6 for LinkedList.push 
+used by DependencyUtility.java

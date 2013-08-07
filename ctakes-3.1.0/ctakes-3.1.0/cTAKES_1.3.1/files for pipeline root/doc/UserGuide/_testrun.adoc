@@ -1,0 +1,13 @@
+// Previous step is to bring up the CVD.
++
+Depending on your computer's hardware configuration, this may take a
+few minutes before the CVD is responsive.
++
+. Copy the contents of a sample note from
++{inst-root-dir}/clinical documents pipeline/test/data/plain text+
+into the Text area of the CVD;
+. Click Menu -> Run -> Run AE.
+
+After a few seconds, you'll get a list of all the annotations in the
+Analysis Results frame. The named entities are listed under
+IdentifiedEntities annotations.
