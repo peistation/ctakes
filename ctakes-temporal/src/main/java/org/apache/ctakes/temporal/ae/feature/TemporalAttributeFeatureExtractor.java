@@ -31,13 +31,13 @@ public class TemporalAttributeFeatureExtractor implements
 		if(arg1 instanceof EventMention){
 			event = (EventMention) arg1;
 			time = (TimeMention) arg2;
-			feats.add(new Feature("ARG1-EVENT-" + event.getEvent().getProperties().getContextualModality()));
-			feats.add(new Feature("ARG2-TIMEX-" + time.getTimeClass()));
+			feats.add(new Feature("Arg1-Event-Modality", event.getEvent().getProperties().getContextualModality()));
+			feats.add(new Feature("Arg2-Time-Class-" + time.getTimeClass()));
 		}else{
 			time = (TimeMention) arg1;
 			event = (EventMention) arg2;
-			feats.add(new Feature("ARG1-TIMEX-" + time.getTimeClass()));
-			feats.add(new Feature("ARG2-EVENT-" + event.getEvent().getProperties().getContextualModality()));
+			feats.add(new Feature("Arg1-Timex-", time.getTimeClass()));
+			feats.add(new Feature("Arg2-Event-", event.getEvent().getProperties().getContextualModality()));
 		}
 		
 		
