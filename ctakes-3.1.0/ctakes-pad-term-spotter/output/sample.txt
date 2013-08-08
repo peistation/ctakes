@@ -1,0 +1,6 @@
+54321|prob|(419-433:419-439)(513-520:521-536)(-1:506-536)(513-520:445-453)|CT_EXAM|aortobifemoral|aortobifemoral graft|CT_EXAM|femoral|crossover graft|CT_EXAM| |Patent femoral crossover graft|CT_EXAM|femoral|occluded
+54321|3|(66-83:49-52)(128-144:101-122)(160-175:145-154)(218-233:322-330)(128-144:145-154)(101-114:101-122)|US_LOWER_EXT|femoral-popliteal|ASO|US_LOWER_EXT|posterior tibial|tibial artery disease|US_LOWER_EXT|anterior tibial|occlusion|US_LOWER_EXT|peroneal artery|stenosis|US_LOWER_EXT|posterior tibial|occlusion|US_LOWER_EXT|tibial artery|tibial artery disease
+54321|-1|
+12345|-1|(-1:298-314)(-1:298-307)|SIMPLE_SEGMENT|**NO TERM**|popliteal artery|SIMPLE_SEGMENT|**NO TERM**|popliteal
+12345|-1|
+12345|-1|
