@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.apache.ctakes</groupId>
     <artifactId>ctakes</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>ctakes-drug-ner-res</artifactId>
   <name>Apache cTAKES Resources drug-ner</name>
