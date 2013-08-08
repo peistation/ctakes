@@ -18,60 +18,52 @@
  */
 package org.apache.ctakes.dictionary.lookup.strtable;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.ctakes.dictionary.lookup.BaseDictionaryImpl;
+import org.apache.ctakes.dictionary.lookup.AbstractBaseDictionary;
 import org.apache.ctakes.dictionary.lookup.Dictionary;
 import org.apache.ctakes.dictionary.lookup.DictionaryException;
 import org.apache.ctakes.dictionary.lookup.MetaDataHit;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
- *
  * @author Mayo Clinic
  */
-public class StringTableDictionaryImpl
-    extends BaseDictionaryImpl
-    implements Dictionary
-{
-    private StringTable iv_strTable;
-    private String iv_lookupFieldName;
+public class StringTableDictionaryImpl extends AbstractBaseDictionary implements Dictionary {
+   final private StringTable iv_strTable;
+   final private String iv_lookupFieldName;
 
-    public StringTableDictionaryImpl(
-        StringTable strTable,
-        String lookupFieldName)
-    {
-        iv_strTable = strTable;
-        iv_lookupFieldName = lookupFieldName;
-    }
+   public StringTableDictionaryImpl( final StringTable strTable, final String lookupFieldName ) {
+      iv_strTable = strTable;
+      iv_lookupFieldName = lookupFieldName;
+   }
 
-    public boolean contains(String text) throws DictionaryException
-    {
-        if (iv_strTable.getRows(iv_lookupFieldName, text).length > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean contains( final String text ) throws DictionaryException {
+      return iv_strTable.getRows( iv_lookupFieldName, text ).length > 0;
+   }
 
-    public Collection getEntries(String str) throws DictionaryException
-    {
-        Set metaDataHitSet = new HashSet();
-        StringTableRow[] strTableRows =
-            iv_strTable.getRows(iv_lookupFieldName, str);
-        for (int i = 0; i < strTableRows.length; i++)
-        {
-            MetaDataHit mdh =
-                new StringTableRowMetaDataHitImpl(strTableRows[i]);
-            metaDataHitSet.add(mdh);
-        }
-
-        return metaDataHitSet;
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<MetaDataHit> getEntries( final String text ) throws DictionaryException {
+      final StringTableRow[] strTableRows = iv_strTable.getRows( iv_lookupFieldName, text );
+      if ( strTableRows.length == 0 ) {
+         return Collections.emptySet();
+      }
+      final Set<MetaDataHit> metaDataHitSet = new HashSet<MetaDataHit>();
+      for ( StringTableRow tableRow : strTableRows ) {
+         final MetaDataHit metaDataHit = new StringTableRowMetaDataHitImpl( tableRow );
+         metaDataHitSet.add( metaDataHit );
+      }
+      return metaDataHitSet;
+   }
 
 }

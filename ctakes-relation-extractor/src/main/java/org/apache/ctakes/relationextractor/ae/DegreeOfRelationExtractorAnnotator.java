@@ -19,48 +19,72 @@
 package org.apache.ctakes.relationextractor.ae;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
+import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.uimafit.util.JCasUtil;
 
-import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
-
 /**
- * Identifies Degree_Of relation between entities and modifiers
- *
+ * Identifies Degree_Of relations between {@link EventMention}s and
+ * {@link Modifier}s.
  */
 public class DegreeOfRelationExtractorAnnotator extends RelationExtractorAnnotator {
 
-	@Override
-	public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
-			JCas identifiedAnnotationView, Sentence sentence) {
-		
-		List<EntityMention> entities = JCasUtil.selectCovered(identifiedAnnotationView, EntityMention.class, sentence);
-		List<Modifier> modifiers = JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
-		
-		List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
-		for (EntityMention entity : entities) {
-			for (Modifier modifier : modifiers) {
-				pairs.add(new IdentifiedAnnotationPair(entity, modifier));
-			}
-		}
-		return pairs;
-	}
+  @Override
+  protected Class<? extends BinaryTextRelation> getRelationClass() {
+    return DegreeOfTextRelation.class;
+  }
 
-	@Override
-	protected String getRelationCategory(
-			Map<List<Annotation>, BinaryTextRelation> relationLookup,
-			IdentifiedAnnotation arg1, IdentifiedAnnotation arg2) {
-		BinaryTextRelation relation = relationLookup.get(Arrays.asList(arg1, arg2));
-		return (relation != null) ? relation.getCategory() : NO_RELATION_CATEGORY;
-	}
+  @Override
+  public List<IdentifiedAnnotationPair> getCandidateRelationArgumentPairs(
+      JCas identifiedAnnotationView,
+      Annotation sentence) {
 
+    List<EventMention> events =
+        JCasUtil.selectCovered(identifiedAnnotationView, EventMention.class, sentence);
+    List<Modifier> modifiers =
+        JCasUtil.selectCovered(identifiedAnnotationView, Modifier.class, sentence);
+
+    List<IdentifiedAnnotationPair> pairs = new ArrayList<IdentifiedAnnotationPair>();
+    for (EventMention event : events) {
+      for (Modifier modifier : modifiers) {
+        pairs.add(new IdentifiedAnnotationPair(event, modifier));
+      }
+    }
+    return pairs;
+  }
+
+  @Override
+  protected void createRelation(
+      JCas jCas,
+      IdentifiedAnnotation arg1,
+      IdentifiedAnnotation arg2,
+      String predictedCategory) {
+    RelationArgument relArg1 = new RelationArgument(jCas);
+    relArg1.setArgument(arg1);
+    relArg1.setRole("Argument");
+    relArg1.addToIndexes();
+    RelationArgument relArg2 = new RelationArgument(jCas);
+    relArg2.setArgument(arg2);
+    relArg2.setRole("Related_to");
+    relArg2.addToIndexes();
+    DegreeOfTextRelation relation = new DegreeOfTextRelation(jCas);
+    relation.setArg1(relArg1);
+    relation.setArg2(relArg2);
+    relation.setCategory(predictedCategory);
+    relation.addToIndexes();
+  }
+
+  @Override
+  protected Class<? extends Annotation> getCoveringClass() {
+    return Sentence.class;
+  }
 }

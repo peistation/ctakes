@@ -47,9 +47,6 @@
     <delegateAnalysisEngine key="SentenceDetectorAnnotator">
       <import location="../../../ctakes-core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="ODIEVectorFileWriterCasConsumer">
-      <import location="../cas_consumer/ODIEVectorFileWriterCasConsumer.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="SimpleSegmentAnnotator">
       <import location="../../../ctakes-clinical-pipeline/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -97,74 +94,12 @@
           <parameter>Chunker/ChunkCreatorClass</parameter>
         </overrides>
       </configurationParameter>
-      <configurationParameter>
-        <name>outputDir</name>
-        <description>Where the files will be written to</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-        <overrides>
-          <parameter>ODIEVectorFileWriterCasConsumer/outputDir</parameter>
-        </overrides>
-      </configurationParameter>
-      <configurationParameter>
-        <name>goldStandardDir</name>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-        <overrides>
-          <parameter>ODIEVectorFileWriterCasConsumer/goldStandardDir</parameter>
-        </overrides>
-      </configurationParameter>
-      <configurationParameter>
-        <name>writeVectors</name>
-        <description>Should the consumer print out the vector pairs for the coreferent markables?</description>
-        <type>Boolean</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-        <overrides>
-          <parameter>ODIEVectorFileWriterCasConsumer/writeVectors</parameter>
-        </overrides>
-      </configurationParameter>
-      <configurationParameter>
-        <name>writeTrees</name>
-        <type>Boolean</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-        <overrides>
-          <parameter>ODIEVectorFileWriterCasConsumer/writeTrees</parameter>
-        </overrides>
-      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
         <name>ChunkCreatorClass</name>
         <value>
           <string>org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>outputDir</name>
-        <value>
-          <string>change me</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>goldStandardDir</name>
-        <value>
-          <string>chang me</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>writeVectors</name>
-        <value>
-          <boolean>true</boolean>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>writeTrees</name>
-        <value>
-          <boolean>false</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -185,7 +120,6 @@
         <node>MipacqMarkableCreator</node>
         <node>MipacqMarkableExpander</node>
         <node>MipacqMarkablePairGenerator</node>
-        <node>ODIEVectorFileWriterCasConsumer</node>
       </fixedFlow>
     </flowConstraints>
     <typePriorities>

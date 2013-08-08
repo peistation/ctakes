@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,14 +18,23 @@
  */
 package org.apache.ctakes.assertion.medfacts.cleartk;
 
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import org.apache.log4j.Level;
+import org.apache.ctakes.assertion.attributes.features.selection.FeatureSelection;
+import org.apache.ctakes.assertion.zoner.types.Zone;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.temporary.assertion.AssertionCuePhraseAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -33,40 +42,21 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.cleartk.classifier.CleartkAnnotator;
-import org.cleartk.classifier.CleartkAnnotatorDescriptionFactory;
-import org.cleartk.classifier.CleartkSequenceAnnotator;
+import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
-import org.cleartk.classifier.feature.extractor.ContextExtractor;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Covered;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Preceding;
-import org.cleartk.classifier.feature.extractor.ContextExtractor.Following;
+import org.cleartk.classifier.feature.extractor.CleartkExtractor;
+import org.cleartk.classifier.feature.extractor.simple.CombinedExtractor;
 import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.cleartk.classifier.feature.extractor.simple.SpannedTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
-import org.cleartk.classifier.feature.proliferate.CapitalTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.CharacterNGramProliferator;
-import org.cleartk.classifier.feature.proliferate.LowerCaseProliferator;
-import org.cleartk.classifier.feature.proliferate.NumericTypeProliferator;
-import org.cleartk.classifier.feature.proliferate.ProliferatingExtractor;
-import org.cleartk.classifier.opennlp.DefaultMaxentDataWriterFactory;
-import org.cleartk.classifier.opennlp.MaxentDataWriterFactory_ImplBase;
-import org.cleartk.type.test.Token;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.util.JCasUtil;
+//import org.chboston.cnlp.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 
-import org.apache.ctakes.typesystem.type.structured.DocumentID;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.EntityMention;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
-
-public class AssertionCleartkAnalysisEngine extends
+public abstract class AssertionCleartkAnalysisEngine extends
     CleartkAnnotator<String>
 {
   Logger logger = Logger.getLogger(AssertionCleartkAnalysisEngine.class);
@@ -90,13 +80,74 @@ public class AssertionCleartkAnalysisEngine extends
      defaultValue = "false")
   boolean printErrors;
   
+  public static final String PARAM_PROBABILITY_OF_KEEPING_DEFAULT_EXAMPLE = "ProbabilityOfKeepingADefaultExample";
+
+  @ConfigurationParameter(
+      name = PARAM_PROBABILITY_OF_KEEPING_DEFAULT_EXAMPLE,
+      mandatory = false,
+      description = "probability that a default example should be retained for training")
+  protected double probabilityOfKeepingADefaultExample = 1.0;
+
+  public static final String PARAM_FEATURE_SELECTION_THRESHOLD = "WhetherToDoFeatureSelection"; // Accurate name? Actually uses the threshold, right?
+
+  @ConfigurationParameter(
+		  name = PARAM_FEATURE_SELECTION_THRESHOLD,
+		  mandatory = false,
+		  description = "the Chi-squared threshold at which features should be removed")
+  protected Float featureSelectionThreshold = 0f;
+
+  public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
+
+  @ConfigurationParameter(
+      mandatory = false,
+      name = PARAM_FEATURE_SELECTION_URI,
+      description = "provides a URI where the feature selection data will be written")
+  protected URI featureSelectionURI;
+  
+  protected Random coin = new Random(0);
+
+  protected static final String FEATURE_SELECTION_NAME = "SelectNeighborFeatures";
+
+  protected String lastLabel;
+  
+  
+/* DEPRECATED: STW 2013/03/28.  Use DependencyUtility:getNominalHeadNode(jCas,annotation) instead */
+//  public ConllDependencyNode findAnnotationHead(JCas jcas, Annotation annotation) {
+//		
+//	    for (ConllDependencyNode depNode : JCasUtil.selectCovered(jcas, ConllDependencyNode.class, annotation)) {
+//	    	
+//	    	ConllDependencyNode head = depNode.getHead();
+//	    	if (head == null || head.getEnd() <= annotation.getBegin() || head.getBegin() > annotation.getEnd()) {
+//	    		// The head is outside the bounds of the annotation, so this node must be the annotation's head
+//	    		return depNode;
+//	    	}
+//	    }
+//	    // Can this happen?
+//	    return null;
+//	}
+
+  
 	
 	
 //private SimpleFeatureExtractor tokenFeatureExtractor;
-  private List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
-  private List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
-  private List<SimpleFeatureExtractor> entityFeatureExtractors;
+//  protected List<ContextExtractor<IdentifiedAnnotation>> contextFeatureExtractors;
+//  protected List<ContextExtractor<BaseToken>> tokenContextFeatureExtractors;
+  protected List<CleartkExtractor> contextFeatureExtractors;
+  protected List<CleartkExtractor> tokenContextFeatureExtractors;
+  protected List<CleartkExtractor> tokenCleartkExtractors;
+  protected List<SimpleFeatureExtractor> entityFeatureExtractors;
+  protected CleartkExtractor cuePhraseInWindowExtractor;
+
+  protected FeatureSelection<String> featureSelection;
   
+  public abstract void setClassLabel(IdentifiedAnnotation entityMention, Instance<String> instance) throws AnalysisEngineProcessException;
+
+  protected abstract void initializeFeatureSelection() throws ResourceInitializationException;
+//  public abstract FeatureSelection<String> createFeatureSelection(double threshold);
+//  public abstract URI createFeatureSelectionURI(File outputDirectoryName);
+
+  @Override
+  @SuppressWarnings("deprecation")
   public void initialize(UimaContext context) throws ResourceInitializationException {
     super.initialize(context);
     
@@ -105,72 +156,81 @@ public class AssertionCleartkAnalysisEngine extends
     }
     
     // alias for NGram feature parameters
-    int fromRight = CharacterNGramProliferator.RIGHT_TO_LEFT;
+//    int fromRight = CharacterNGramProliferator.RIGHT_TO_LEFT;
 
     // a list of feature extractors that require only the token:
     // the stem of the word, the text of the word itself, plus
     // features created from the word text like character ngrams
-    this.entityFeatureExtractors = Arrays.asList(
-        new CoveredTextExtractor(),
-        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
-        new ProliferatingExtractor(
-            new SpannedTextExtractor(),
-            new LowerCaseProliferator(),    
-            new CapitalTypeProliferator(),
-            new NumericTypeProliferator(),
-            new CharacterNGramProliferator(fromRight, 0, 2),
-            new CharacterNGramProliferator(fromRight, 0, 3)));
-
-    // a list of feature extractors that require the token and the sentence
-    this.contextFeatureExtractors = new ArrayList<ContextExtractor<IdentifiedAnnotation>>();
-    this.contextFeatureExtractors.add(new ContextExtractor<IdentifiedAnnotation>(
-        IdentifiedAnnotation.class,
-        new CoveredTextExtractor(),
-        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
-        new Preceding(2),
-        new Following(2)));
-
-    ContextExtractor<BaseToken> tokenContextExtractor1 = new ContextExtractor<BaseToken>( 
-        BaseToken.class, 
-        new SpannedTextExtractor(), 
-        new ContextExtractor.Ngram(new Covered()),
-        
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        //new ContextExtractor.Ngram(new Preceding(1, 2)), 
-        new ContextExtractor.Ngram(new Preceding(3)), 
-        //new ContextExtractor.Ngram(new Preceding(2, 3)), 
-        new ContextExtractor.Ngram(new Following(1)), 
-        new ContextExtractor.Ngram(new Following(2)),
-        //new ContextExtractor.Ngram(new Following(1, 2)),
-        new ContextExtractor.Ngram(new Following(3))
-        //new ContextExtractor.Ngram(new Following(2,3))
-        ); 
-    tokenContextFeatureExtractors = new ArrayList<ContextExtractor<BaseToken>>();
-    tokenContextFeatureExtractors.add(tokenContextExtractor1);
+    this.entityFeatureExtractors = new ArrayList<SimpleFeatureExtractor>();
     
-    TypePathExtractor posExtractor = new TypePathExtractor(BaseToken.class, "partOfSpeech");
-    ContextExtractor<BaseToken> extractor2 = new ContextExtractor<BaseToken>( 
-        BaseToken.class, 
-        posExtractor, 
-        new ContextExtractor.Ngram(new Covered()), 
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        new ContextExtractor.Ngram(new Following(1)), 
-        new ContextExtractor.Ngram(new Following(2)) 
-        /*
-        new ContextExtractor.Covered(), 
-        new ContextExtractor.Ngram(new Covered()) 
-        
-        new ContextExtractor.Ngram(new Preceding(1)), 
-        new ContextExtractor.Ngram(new Preceding(2)), 
-        */
-        );
-    tokenContextFeatureExtractors.add(extractor2);
+    // a list of feature extractors that require the token and the sentence
+//    this.contextFeatureExtractors = new ArrayList<CleartkExtractor>();
+    
+    this.tokenCleartkExtractors = new ArrayList<CleartkExtractor>();
 
+    CleartkExtractor tokenExtraction1 = 
+    		new CleartkExtractor(
+    				BaseToken.class, 
+//    				new FeatureFunctionExtractor(new CoveredTextExtractor(), new LowerCaseFeatureFunction()),
+    				new CoveredTextExtractor(),
+    				//new CleartkExtractor.Covered(),
+    				new CleartkExtractor.LastCovered(2),
+    				new CleartkExtractor.Preceding(5),
+    				new CleartkExtractor.Following(4),
+    				new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
+    				new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
+            new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
+    				);
+    
+//    CleartkExtractor posExtraction1 = 
+//    		new CleartkExtractor(
+//    				BaseToken.class,
+//    				new TypePathExtractor(BaseToken.class, "partOfSpeech"),
+//    				new CleartkExtractor.LastCovered(2),
+//    				new CleartkExtractor.Preceding(3),
+//    				new CleartkExtractor.Following(2)
+//    				);
+
+    this.tokenCleartkExtractors.add(tokenExtraction1);
+    //this.tokenCleartkExtractors.add(posExtraction1);
+    
+//    this.contextFeatureExtractors.add(new CleartkExtractor(IdentifiedAnnotation.class,
+//        new CoveredTextExtractor(),
+//        //new TypePathExtractor(IdentifiedAnnotation.class, "stem"),
+//        new Preceding(2),
+//        new Following(2)));
+    
+    // stab at dependency-based features
+    //List<Feature> features = new ArrayList<Feature>();
+    //ConllDependencyNode node1 = findAnnotationHead(jCas, arg1);
+
+    CombinedExtractor baseExtractorCuePhraseCategory =
+        new CombinedExtractor
+          (
+           new CoveredTextExtractor(),
+           new TypePathExtractor(AssertionCuePhraseAnnotation.class, "cuePhrase"),
+           new TypePathExtractor(AssertionCuePhraseAnnotation.class, "cuePhraseCategory"),
+           new TypePathExtractor(AssertionCuePhraseAnnotation.class, "cuePhraseAssertionFamily")
+          );
+    
+    cuePhraseInWindowExtractor = new CleartkExtractor(
+        BaseToken.class,
+        new CoveredTextExtractor(),
+        new CleartkExtractor.Bag(new CleartkExtractor.Covered())
+//          AssertionCuePhraseAnnotation.class,
+//          baseExtractorCuePhraseCategory,
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(3)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(3)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(5)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(5)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Preceding(10)),
+//          new CleartkExtractor.Bag(new CleartkExtractor.Following(10))
+          );
+    
   }
-
-
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException
@@ -178,11 +238,14 @@ public class AssertionCleartkAnalysisEngine extends
     DocumentID documentId = JCasUtil.selectSingle(jCas, DocumentID.class);
     if (documentId != null)
     {
-      logger.info("processing next doc: " + documentId.getDocumentID());
+      logger.debug("processing next doc: " + documentId.getDocumentID());
     } else
     {
-      logger.info("processing next doc (doc id is null)");
+      logger.warn("processing next doc (doc id is null)");
     }
+    
+    this.lastLabel = "<BEGIN>";
+    
 //    // get gold standard relation instances during testing for error analysis
 //    if (! this.isTraining() && printErrors) {
 //      JCas goldView;
@@ -195,37 +258,43 @@ public class AssertionCleartkAnalysisEngine extends
 //      //categoryLookup = createCategoryLookup(goldView); 
 //    }
     
-    JCas identifiedAnnotationView, relationView;
+    JCas identifiedAnnotationView;
     if (this.isTraining()) {
       try {
-        identifiedAnnotationView = relationView = jCas.getView(this.goldViewName);
+        identifiedAnnotationView = jCas.getView(this.goldViewName);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
     } else {
-      identifiedAnnotationView = relationView = jCas;
+      identifiedAnnotationView = jCas;
     }
 
 
-    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentenceMap = JCasUtil.indexCovering(identifiedAnnotationView, IdentifiedAnnotation.class, Sentence.class);
-    Map<Sentence, Collection<BaseToken>> tokensCoveredInSentenceMap = JCasUtil.indexCovered(identifiedAnnotationView, Sentence.class, BaseToken.class);
+//    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentenceMap = JCasUtil.indexCovering(identifiedAnnotationView, IdentifiedAnnotation.class, Sentence.class);
+//    Map<Sentence, Collection<BaseToken>> tokensCoveredInSentenceMap = JCasUtil.indexCovered(identifiedAnnotationView, Sentence.class, BaseToken.class);
 
-    List<Instance<String>> instances = new ArrayList<Instance<String>>();
+    Map<IdentifiedAnnotation, Collection<Zone>> coveringZoneMap =
+        JCasUtil.indexCovering(jCas, IdentifiedAnnotation.class, Zone.class);
+//    Map<IdentifiedAnnotation, Collection<Sentence>> coveringSents =
+//        JCasUtil.indexCovering(jCas, IdentifiedAnnotation.class, Sentence.class);
+    
+//    List<Instance<String>> instances = new ArrayList<Instance<String>>();
     // generate a list of training instances for each sentence in the document
     Collection<IdentifiedAnnotation> entities = JCasUtil.select(identifiedAnnotationView, IdentifiedAnnotation.class);
-    for (IdentifiedAnnotation entityMention : entities)
+    for (IdentifiedAnnotation identifiedAnnotation : entities)
     {
-      if (!(entityMention instanceof EntityMention || entityMention instanceof EventMention))
+      if (!(identifiedAnnotation instanceof EntityMention || identifiedAnnotation instanceof EventMention))
       {
         continue;
       }
-      if (entityMention.getPolarity() == -1)
+      IdentifiedAnnotation entityOrEventMention = identifiedAnnotation;
+      if (entityOrEventMention.getPolarity() == -1)
       {
-        logger.info(String.format(" - identified annotation: [%d-%d] polarity %d (%s)",
-            entityMention.getBegin(),
-            entityMention.getEnd(),
-            entityMention.getPolarity(),
-            entityMention.getClass().getName()));
+        logger.debug(String.format(" - identified annotation: [%d-%d] polarity %d (%s)",
+            entityOrEventMention.getBegin(),
+            entityOrEventMention.getEnd(),
+            entityOrEventMention.getPolarity(),
+            entityOrEventMention.getClass().getName()));
       }
       Instance<String> instance = new Instance<String>();
       
@@ -233,26 +302,10 @@ public class AssertionCleartkAnalysisEngine extends
 //      instance.addAll(tokenFeatureExtractor.extract(jCas, entityMention));
 
       // extract all features that require the token and sentence annotations
-      Collection<Sentence> sentenceList = coveringSentenceMap.get(entityMention);
-      Sentence sentence = null;
-      if (sentenceList == null || sentenceList.isEmpty())
-      {
-        String message = "no surrounding sentence found";
-        Exception runtimeException = new RuntimeException(message);
-        AnalysisEngineProcessException aeException = new AnalysisEngineProcessException(runtimeException);
-        logger.log(Level.ERROR, message);
-      } else if (sentenceList.size() > 1)
-      {
-        String message = "more than one surrounding sentence found";
-        Exception runtimeException = new RuntimeException(message);
-        AnalysisEngineProcessException aeException = new AnalysisEngineProcessException(runtimeException);
-        logger.log(Level.ERROR, message);
-      } else
-      {
-        sentence = sentenceList.iterator().next();
-      }
+
       //Sentence sentence = sentenceList.iterator().next();
       
+      /*
       if (sentence != null)
       {
         for (ContextExtractor<IdentifiedAnnotation> extractor : this.contextFeatureExtractors) {
@@ -263,43 +316,124 @@ public class AssertionCleartkAnalysisEngine extends
         // TODO extract context features for annotations that don't fall within a sentence
         logger.log(Level.WARN, "FIXME/TODO: generate context features for entities that don't fall within a sentence");
       }
+      */
       
+      /*
       for (ContextExtractor<BaseToken> extractor : this.tokenContextFeatureExtractors) {
-        instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+          instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+        }
+        */
+      for (CleartkExtractor extractor : this.tokenCleartkExtractors) {
+          //instance.addAll(extractor.extractWithin(identifiedAnnotationView, entityMention, sentence));
+    	  instance.addAll(extractor.extract(identifiedAnnotationView, entityOrEventMention));
+        }
+      
+//      List<Feature> cuePhraseFeatures = null;
+//          cuePhraseInWindowExtractor.extract(jCas, entityOrEventMention);
+          //cuePhraseInWindowExtractor.extractWithin(jCas, entityMention, firstCoveringSentence);
+//      List<Sentence> sents = new ArrayList<Sentence>(coveringSents.get(entityOrEventMention));
+      List<Sentence> sents = new ArrayList<Sentence>(JCasUtil.selectCovering(jCas, Sentence.class, entityOrEventMention.getBegin(), entityOrEventMention.getEnd()));
+      if(sents.size() > 0){
+        Sentence sentence = sents.get(0);
+        List<AssertionCuePhraseAnnotation> cues = JCasUtil.selectCovered(AssertionCuePhraseAnnotation.class, sentence);
+        int closest = Integer.MAX_VALUE;
+        AssertionCuePhraseAnnotation closestCue = null;
+        for(AssertionCuePhraseAnnotation cue : cues){
+          List<BaseToken> tokens = JCasUtil.selectBetween(BaseToken.class, cue, entityOrEventMention);
+          if(tokens.size() < closest){
+            closestCue = cue;
+            closest = tokens.size();
+          }
+//          instance.addAll(cuePhraseInWindowExtractor.extractBetween(jCas, cue, entityOrEventMention));
+        }
+        if(closestCue != null && closest < 21){
+          instance.add(new Feature("ClosestCue_Word", closestCue.getCoveredText()));
+//          instance.add(new Feature("ClosestCue_Phrase", closestCue.getCuePhrase()));
+          instance.add(new Feature("ClosestCue_PhraseFamily", closestCue.getCuePhraseAssertionFamily()));
+          instance.add(new Feature("ClosestCue_PhraseCategory", closestCue.getCuePhraseCategory()));
+        }
       }
+//      if (cuePhraseFeatures != null && !cuePhraseFeatures.isEmpty())
+//      {
+//        instance.addAll(cuePhraseFeatures);
+//      }
+
+
+      // 7/9/13 SRH trying to make it work just for anatomical site
+      int eemTypeId = entityOrEventMention.getTypeID(); 
+      if (eemTypeId == CONST.NE_TYPE_ID_ANATOMICAL_SITE) {
+          // 7/9/13 srh modified per tmiller so it's binary but not numeric feature
+          //instance.add(new Feature("ENTITY_TYPE_" + entityOrEventMention.getTypeID()));
+          instance.add(new Feature("ENTITY_TYPE_ANAT_SITE"));
+      } /* This hurts recall more than it helps precision
+      else if (eemTypeId == CONST.NE_TYPE_ID_DRUG) {
+    	  // 7/10 adding drug
+    	  instance.add(new Feature("ENTITY_TYPE_DRUG"));
+      }
+      */
+      
       for (SimpleFeatureExtractor extractor : this.entityFeatureExtractors) {
-        instance.addAll(extractor.extract(identifiedAnnotationView, entityMention));
+        instance.addAll(extractor.extract(jCas, entityOrEventMention));
       }
       
-      if (this.isTraining())
+      
+      List<Feature> zoneFeatures = extractZoneFeatures(coveringZoneMap, entityOrEventMention);
+      if (zoneFeatures != null && !zoneFeatures.isEmpty())
       {
-        String polarity = (entityMention.getPolarity() == -1) ? "negated" : "present";
-        instance.setOutcome(polarity);
-        if ("negated".equals(polarity))
-        {
-          logger.info("TRAINING: " + polarity);
-        }
-        this.dataWriter.write(instance);
-      } else
-      {
-        String label = this.classifier.classify(instance.getFeatures());
-        int polarity = 1;
-        if (label!= null && label.equals("present"))
-        {
-          polarity = 0;
-        } else if (label != null && label.equals("negated"))
-        {
-          polarity = -1;
-        }
-        entityMention.setPolarity(polarity);
-        if ("negated".equals(label))
-        {
-          logger.info(String.format("DECODING/EVAL: %s//%s [%d-%d] (%s)", label, polarity, entityMention.getBegin(), entityMention.getEnd(), entityMention.getClass().getName()));
-        }
+//        instance.addAll(zoneFeatures);
       }
       
+      List<Feature> feats = instance.getFeatures();
+//      List<Feature> lcFeats = new ArrayList<Feature>();
+      
+      for(Feature feat : feats){
+    	  if(feat.getName() != null && (feat.getName().startsWith("TreeFrag") || feat.getName().startsWith("WORD") || feat.getName().startsWith("NEG"))) continue;
+    	  if(feat.getValue() instanceof String){
+    		  feat.setValue(((String)feat.getValue()).toLowerCase());
+    	  }
+      }
+
+      // grab the output label
+      setClassLabel(entityOrEventMention, instance);
+
+      if (this.isTraining()) {
+    	  // apply feature selection, if necessary
+    	  if (this.featureSelection != null) {
+    		  feats = this.featureSelection.transform(feats);
+    	  }
+
+    	  // ensures that the (possibly) transformed feats are used
+    	  if (instance.getOutcome()!=null) {
+    		  this.dataWriter.write(new Instance<String>(instance.getOutcome(),feats));
+    	  }
+      }
     }
     
+  }
+  
+  public List<Feature> extractZoneFeatures(Map<IdentifiedAnnotation, Collection<Zone>> coveringZoneMap, IdentifiedAnnotation entityOrEventMention)
+  {
+    final Collection<Zone> zoneList = coveringZoneMap.get(entityOrEventMention);
+    
+    if (zoneList == null || zoneList.isEmpty())
+    {
+      //logger.info("AssertionCleartkAnalysisEngine.extractZoneFeatures() early END (no zones)");
+      return new ArrayList<Feature>();
+    } else
+    {
+      logger.debug("AssertionCleartkAnalysisEngine.extractZoneFeatures() found zones and adding zone features");
+    }
+    
+    ArrayList<Feature> featureList = new ArrayList<Feature>();
+    for (Zone zone : zoneList)
+    {
+      Feature currentFeature = new Feature("zone", zone.getLabel());
+      logger.debug(String.format("zone: %s", zone.getLabel()));
+      logger.debug(String.format("zone feature: %s", currentFeature.toString()));
+      featureList.add(currentFeature);
+    }
+    
+    return featureList;
   }
 
   public static AnalysisEngineDescription getDescription(Object... additionalConfiguration)

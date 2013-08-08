@@ -61,9 +61,7 @@ public class CategoricalDistribution {
 		if(r >= p1 + p2) {
 			return OUTCOME3;
 		}
-		else {
-			return -1; // shouldn't happen
-		}
+		throw new RuntimeException("should be impossible");
 	}
 	
 	public static void main(String[] args) {

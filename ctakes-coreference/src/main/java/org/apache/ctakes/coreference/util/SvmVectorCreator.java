@@ -18,39 +18,44 @@
  */
 package org.apache.ctakes.coreference.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
 
-import opennlp.tools.parser.Parse;
-
 import org.apache.ctakes.constituency.parser.treekernel.TreeExtractor;
 import org.apache.ctakes.constituency.parser.util.TreeUtils;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.coreference.type.Markable;
 import org.apache.ctakes.utils.tree.FragmentUtils;
 import org.apache.ctakes.utils.tree.SimpleTree;
+import org.apache.ctakes.utils.wiki.WikiIndex;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.pear.util.FileUtil;
 
 public class SvmVectorCreator {
 	HashSet<String> stopwords = null;
 	private svm_model anaph_model = null;
 	ArrayList<SimpleTree> frags = new ArrayList<SimpleTree>();
+	WikiIndex wiki = null;
+	static final int NUM_WIKI_HITS = 5;
 	
 	public SvmVectorCreator(HashSet<String> stopwords){
 		this.stopwords = stopwords;
-	}
-
-	public SvmVectorCreator(HashSet<String> stopwords, svm_model anaph){
-		this.stopwords = stopwords;
-		anaph_model = anaph;
+		try{
+			wiki = new WikiIndex(NUM_WIKI_HITS, FileLocator.locateFile("org/apache/ctakes/coreference/models/index_med_5k").getAbsolutePath(), "text");
+			wiki.initialize();
+		}catch(IOException e){
+			e.printStackTrace();
+			wiki = null;
+		}
 	}
 
 	public svm_node[] createAnaphoricityVector(Markable m, JCas aJCas) {
@@ -118,7 +123,7 @@ public class SvmVectorCreator {
 	public svm_node[] getNodeFeatures(Markable anaphor, Markable antecedent, JCas aJCas, boolean needsAnaph) {
 		LinkedList<svm_node> nodes = new LinkedList<svm_node>();
 		String[] feats = FeatureVector.getNECorefFeatures();
-		SyntaxAttributeCalculator sac = new SyntaxAttributeCalculator(aJCas, antecedent, anaphor);
+		SyntaxAttributeCalculator sac = new SyntaxAttributeCalculator(aJCas, antecedent, anaphor, wiki);
 		sac.setStopWordsList(stopwords);
 		int ind = 0;
 		for (int i = 0; i < feats.length; i++, ind++) {
@@ -183,7 +188,15 @@ public class SvmVectorCreator {
 							n.value = (Double) val;
 							nodes.add(n);
 						}
+					}else if (val instanceof Boolean) {
+						if((Boolean) val == true){
+							svm_node n = new svm_node();
+							n.index = ind + 1;
+							n.value = 1.0;
+							nodes.add(n);
+						}
 					}
+
 				}
 			} catch (Exception e) { e.printStackTrace(); }
 		}

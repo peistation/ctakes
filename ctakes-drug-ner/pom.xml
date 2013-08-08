@@ -26,10 +26,13 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
-	
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-drug-ner-res</artifactId>
+		</dependency>	      
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
@@ -80,11 +83,8 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.openai</groupId>
-			<artifactId>fsm</artifactId>
-			<version>0.1a</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../ctakes-core/lib/OpenAI_FSM.jar</systemPath>
-		</dependency>
+			<artifactId>openaifsm</artifactId>
+		</dependency>	
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-chunker</artifactId>
@@ -94,8 +94,7 @@
 			<artifactId>ctakes-lvg</artifactId>
 		</dependency>
 	</dependencies>
-	
-	<build>
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.cleartk</groupId>
@@ -105,5 +104,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build>	
 </project>

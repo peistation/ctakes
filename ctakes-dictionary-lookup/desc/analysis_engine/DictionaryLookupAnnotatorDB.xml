@@ -238,7 +238,7 @@
               <nameValuePair>
                 <name>IndexDirectory</name>
                 <value>
-                  <string>lookup/OrangeBook</string>
+                  <string>org/apache/ctakes/dictionary/lookup/OrangeBook</string>
                 </value>
               </nameValuePair>
             </configurationParameterSettings>

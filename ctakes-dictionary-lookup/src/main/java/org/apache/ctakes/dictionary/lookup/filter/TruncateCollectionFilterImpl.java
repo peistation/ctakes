@@ -18,6 +18,8 @@
  */
 package org.apache.ctakes.dictionary.lookup.filter;
 
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,14 +54,14 @@ public class TruncateCollectionFilterImpl implements CollectionFilter
     /**
      * Implementation
      */
-    public Collection applyFilter(Collection metaDataHitCol) throws FilterException
+    public Collection<MetaDataHit> applyFilter(final Collection<MetaDataHit> metaDataHitCol) throws FilterException
     {
         if (iv_mdhCount >= metaDataHitCol.size())
         {
             return metaDataHitCol;
         }
         
-        List mdhList = new ArrayList(metaDataHitCol);
+        final List<MetaDataHit> mdhList = new ArrayList<MetaDataHit>(metaDataHitCol);
 
         // sort the hits
         Collections.sort(mdhList, iv_mdhComparator);

@@ -42,8 +42,6 @@
  * The following changes have been made:
  * - import of different sentence and token types.
  * - removed original comments
- * - added TAG_DICIONARY_PARAM
- * - added CASE_SENSITIVE_PARAM
  * - typed the collections used in process
  * - throws an exception instead of printing out an error message.
  * 
@@ -52,16 +50,12 @@
 
 package org.apache.ctakes.postagger;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//import opennlp.tools.lang.english.PosTagger;
-import opennlp.model.AbstractModel;
-import opennlp.tools.postag.POSDictionary;
 import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.TagDictionary;
 
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -88,78 +82,35 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 	 * resources/models/README.
 	 */
 	public static final String POS_MODEL_FILE_PARAM = "PosModelFile";
-
-	/**
-	 * "TagDictionary" is an optional, single, string parameter that contains
-	 * the file name of the part-of-speech tag dictionary. For relevant
-	 * discussion of the difference between a "tag dictionary" and a
-	 * "dictionary" see:
-	 * <p><ul>
-	 * <li>
-	 * <a href="https://sourceforge.net/forum/forum.php?thread_id=1720863&forum_id=9943">PosTagger - with/without dictionaries? and ..</a>
-	 * <li> 
-	 * </li>
-	 * <a href="https://sourceforge.net/forum/forum.php?thread_id=1894043&forum_id=9943">Create a new dict file</a>
-	 * </li>
-	 * </ul>
-	 * For information about how to create a TagDictionary, please see the
-	 * README in top-level directory of this project.
-	 * 
-	 * @see TagDictionary
-	 * @see POSDictionary
-	 */
-	public static final String TAG_DICTIONARY_PARAM = "TagDictionary";
-
-	/**
-	 * "CaseSensitive" is a required, single, boolean parameter that specifies
-	 * how to access entries in the tag dictionary. If you give the value
-	 * "false", then you should really have a tag dictionary that is also case
-	 * insensitive. Please see the README in top-level directory of this project
-	 * for details on how to create a case insensitive tag dictionary.
-	 * 
-	 * <br>
-	 * This parameter has no effect if no tag dictionary is provided but is
-	 * required if a tag dictionary is provided.
-	 * 
-	 * @see POSDictionary#POSDictionary(String, boolean)
-	 * 
-	 */
-	public static final String CASE_SENSITIVE_PARAM = "CaseSensitive";
-
 	private opennlp.tools.postag.POSTaggerME tagger;
 
-	public void initialize(UimaContext uimaContext)	throws ResourceInitializationException {
+	@Override
+	public void initialize(UimaContext uimaContext)
+			throws ResourceInitializationException {
 		super.initialize(uimaContext);
 
 		String posModelPath = null;
+		InputStream fis = null;
 
 		try {
-			posModelPath = (String) uimaContext.getConfigParameterValue(POS_MODEL_FILE_PARAM);
-			File posModelFile = FileLocator.locateFile(posModelPath);
-			String modelFileAbsPath = posModelFile.getAbsolutePath();
-			logger.info("POS tagger model file: " + modelFileAbsPath);
-
-			boolean caseSensitive = (Boolean) uimaContext.getConfigParameterValue(CASE_SENSITIVE_PARAM);
-			String tagDictionaryPath = (String) uimaContext.getConfigParameterValue(TAG_DICTIONARY_PARAM);
-
-			TagDictionary tagDictionary = null;
-			if (tagDictionaryPath != null && !tagDictionaryPath.trim().equals("")) {
-				File tagDictFile = FileLocator.locateFile(tagDictionaryPath);
-				String tagDictFileAbsPath = tagDictFile.getAbsolutePath();
-				logger.info("POS tagger tag-dictionary: " + tagDictFileAbsPath);
-
-				tagDictionary = new POSDictionary(tagDictFileAbsPath, caseSensitive);
-			} else {
-				logger.info("No POS tagger tag-dictionary.");
-			}
-
-			FileInputStream fis = new FileInputStream(posModelFile);
-			POSModel modelFile = new POSModel(fis); // skip using the tag dictionary for now since OpenNLP (1.5) changed
-			tagger = new opennlp.tools.postag.POSTaggerME(modelFile); //, tagDictionary);
-
+			posModelPath = (String) uimaContext
+					.getConfigParameterValue(POS_MODEL_FILE_PARAM);
+			logger.info("POS tagger model file: " + posModelPath);
+			fis = FileLocator.getAsStream(posModelPath);
+			POSModel modelFile = new POSModel(fis);
+			tagger = new opennlp.tools.postag.POSTaggerME(modelFile);
+			fis.close();
 		} catch (Exception e) {
-			logger.info("POS tagger model: " + posModelPath);
+			logger.info("Error loading POS tagger model: " + posModelPath);
 			throw new ResourceInitializationException(e);
+		} finally {
+			try {
+				if (fis != null) {
+					fis.close();
+				}
+			} catch (IOException e) {
+				throw new ResourceInitializationException(e);
+			}
 		}
 	}
 
@@ -170,9 +121,11 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 		List<BaseToken> tokens = new ArrayList<BaseToken>();
 		List<String> words = new ArrayList<String>();
 
-		AnnotationIndex baseTokenIndex = jCas.getAnnotationIndex(BaseToken.type);
+		AnnotationIndex baseTokenIndex = jCas
+				.getAnnotationIndex(BaseToken.type);
 
-		FSIterator sentences = jCas.getAnnotationIndex(Sentence.type).iterator();
+		FSIterator sentences = jCas.getAnnotationIndex(Sentence.type)
+				.iterator();
 
 		while (sentences.hasNext()) {
 			Sentence sentence = (Sentence) sentences.next();
@@ -192,8 +145,9 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 				wordTagList = tagger.tag(words);
 			}
 			// else {
-			// 	logger.info("sentence has no words = '" + sentence.getCoveredText()
-			// 		+ "' at (" +sentence.getBegin() + "," + sentence.getEnd() + ")");
+			// logger.info("sentence has no words = '" +
+			// sentence.getCoveredText()
+			// + "' at (" +sentence.getBegin() + "," + sentence.getEnd() + ")");
 			// }
 
 			try {
@@ -204,7 +158,8 @@ public class POSTagger extends JCasAnnotator_ImplBase {
 				}
 			} catch (IndexOutOfBoundsException e) {
 				throw new AnalysisEngineProcessException(
-						"sentence being tagged is: '" + sentence.getCoveredText() + "'", null, e);
+						"sentence being tagged is: '"
+								+ sentence.getCoveredText() + "'", null, e);
 			}
 		}
 	}

@@ -26,11 +26,14 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
-
 	<dependencies>
-		<dependency>
+	     <dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-core-res</artifactId>
+		</dependency>		    
+  		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
 		</dependency>
@@ -38,7 +41,15 @@
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.uimafit</groupId>
+			<artifactId>uimafit</artifactId>
+		</dependency>
+		<dependency>
+			<!-- needed for uimafit, but excluded in parent pom -->
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -71,29 +82,17 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
-		<!-- Dependencies that still need to be uploaded to Maven Central; when 
-			done, the dependency versions should be moved into the parent pom -->
+		<dependency>
+			<groupId>edu.mit.findstruct</groupId>
+			<artifactId>findstructapi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.armbrust-file-utils</groupId>
+			<artifactId>sqlwrapper</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.openai</groupId>
-			<artifactId>fsm</artifactId>
-			<version>0.1a</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/OpenAI_FSM.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>findstruct</groupId>
-			<artifactId>findstruct</artifactId>
-			<version>0.0.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/FindStructAPI.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>sqlWrapper</groupId>
-			<artifactId>sqlWrapper</artifactId>
-			<version>0.0.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/SQLWrapper.jar</systemPath>
-		</dependency>
+			<artifactId>openaifsm</artifactId>
+		</dependency>		
 	</dependencies>
 </project>

@@ -39,72 +39,66 @@ public class FeatureVector {
 	};
 
 	final static String[] ne_coref_feats = {
-			"SameSection",  // {yes, no}	 1
-			"TokenDistance"   , // numeric    
+			"TokenDistance"   , // numeric   1    
 			"SentenceDistance", // numeric
 			"ExactMatch"      , // {yes,no}
 			"StartMatch"      , // {yes,no}
-//			"MidMatch"        , // {yes,no}
 			"EndMatch"        , // {yes,no}
-//			"StringMatch"	  , // {yes,no}
 			"SoonStr"         , // {C,I}
 			"Pronoun1"        , // {Y,N}
 			"Pronoun2"        , // {Y,N}
-			"Definite2"       , // {Y,N}      10
-			"Demonstrative2"  , // {Y,N}      
-			//"NumberMatch"     , // {C,I,NA}
+			"Definite2"       , // {Y,N}      
+			"Demonstrative2"  , // {Y,N}      10
 			"NumberMatchC"    , // {Y,N}
 			"NumberMatchI"    , // {Y,N}
 			"NumberMatchNA"   , // {Y,N}
-			//"WnClass"         , // {C,I,NA}
 			"WnClassC"        , // {Y,N}
 			"WnClassI"        , // {Y,N}
 			"WnClassNA"       , // {Y,N}
 			"Alias"           , // {C,I}
 			"ProStr"          , // {C,I}
-			"SoonStrNonpro"   , // {C,I}      20
-			"WordOverlap"     , // {C,I}
+			"SoonStrNonpro"   , // {C,I}      
+			"WordOverlap"     , // {C,I}      20
 			"WordsSubstr"     , // {C,I}
-			//"BothDefinites"   , // {C,I,NA}
 			"BothDefinitesC"  , // {Y,N}
 			"BothDefinitesI"  , // {Y,N}
 			"BothDefinitesNA" , // {Y,N}
-			//"BothEmbedded"    , // {C,I,NA}
-			"BothEmbeddedC"   , // {Y,N}
-			"BothEmbeddedI"   , // {Y,N}
-			"BothEmbeddedNA"  , // {Y,N}
-			//"BothPronouns"    , // {C,I,NA}
 			"BothPronounsC"   , // {Y,N}
-			"BothPronounsI"   , // {Y,N}   30
+			"BothPronounsI"   , // {Y,N}   
 			"BothPronounsNA"  , // {Y,N}
 			"Indefinite"      , // {I,C}
 			"Pronoun"         , // {I,C}
-			"Definite1"       , // {Y,N}
+			"Definite1"       , // {Y,N}      30
 			"ClosestComp"     , // {C,I}
 			"IsDrug"           , // {Y,N}
 			"IsDisorder"       , // {Y,N}
 			"IsFinding"        , // {Y,N}
 			"IsProcedure"      , // {Y,N}
-			"IsAnatomicalSite" , // {Y,N}   40
+			"IsAnatomicalSite" , // {Y,N}   
 			"NPHead"          , // {yes, no}
 //			"Anaph"           , // numeric
 //			"PermStrDist"	  , //             
 			"PathLength"	  , // number of nodes in full path 37
 			"NPunderVP1"	  , // NP object?
-			"NPunderVP2"	  , //
+			"NPunderVP2"	  , //            40
 			"NPunderS1"		  , // NP subject?
 			"NPunderS2"       , //             
 			"NPunderPP1"	  , // PP object?  
 			"NPunderPP2"      , //             
 			"NPSubj1"		  , //			   
-			"NPSubj2"		  , //             50 
-			"NPSubjBoth"	  , //			   
-//			"NegatedBoth"	  , //
-//			"NonNegatedBoth"  ,
-			//"NPSubjBoth"    , //             
-//			"Cat:Ngrams"      , //			   :n-1
-//			"TK"			  ,
-//			"WordsStr"			// not used, why?		 
+			"NPSubj2"		  , //              
+			"NPSubjBoth"	  , //			
+			"WikiSim"		  ,
+//			"EntityWikiSim"   ,
+//			"SimSum"          , //            50
+			"AliasDrug"       ,
+			"AliasDisorder"   ,
+			"AliasFinding"    ,
+			"AliasProcedure"  ,
+			"AliasAnatomy"    ,
+			"EntityStartMatch",
+			"EntityExactMatch",
+			"EntityEndMatch",
 	};
 
 	final static String[] pron_coref_feats = ne_coref_feats;

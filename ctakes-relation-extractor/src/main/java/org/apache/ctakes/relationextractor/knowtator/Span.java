@@ -55,6 +55,7 @@ public class Span {
   	return Objects.hashCode(start, end);
   }
 	
+	@Override
 	public String toString() {
 		return String.format("%d -- %d", start, end);
 	}

@@ -18,20 +18,12 @@
  */
 package org.apache.ctakes.dictionary.lookup;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.ctakes.dictionary.lookup.filter.CollectionFilter;
 import org.apache.ctakes.dictionary.lookup.filter.FilterException;
 import org.apache.ctakes.dictionary.lookup.filter.PostLookupFilter;
 import org.apache.ctakes.dictionary.lookup.filter.PreLookupFilter;
 
+import java.util.*;
 
 /**
  * The engine adds additional functionality to executing a dictionary.
@@ -44,238 +36,171 @@ import org.apache.ctakes.dictionary.lookup.filter.PreLookupFilter;
  * <li>Caching. Caches dictionary hits.</li>
  * <li>Case Sensitivity. Keeps case or makes case irrelevant to lookup.</li>
  * </ol>
- * 
- * @author Mayo Clinic
  */
-public class DictionaryEngine
-{
-    private Dictionary iv_dict;
+public class DictionaryEngine {
+   final private Dictionary _dictionary;
+   final private boolean _keepCase;
 
-    // use Lists to store filters to maintain order
-    private List iv_preLookupFilterList = new ArrayList();
-    private List iv_postLookupFilterList = new ArrayList();
-    private List iv_collectionFilterList = new ArrayList();
+   // use Lists to store filters to maintain order
+   private List<PreLookupFilter> _preLookupFilterList = new ArrayList<PreLookupFilter>();
+   private List<PostLookupFilter> _postLookupFilterList = new ArrayList<PostLookupFilter>();
+   private List<CollectionFilter> _collectionFilterList = new ArrayList<CollectionFilter>();
 
-    // cache objs
-    // key = String text, value = Boolean
-    private Map iv_binaryLookupCacheMap = new HashMap();
-    // key = String text, value = Collection of MetaDataHits
-    private Map iv_metaLookupCacheMap = new HashMap();
+   // cache objs
+   // key = String text, value = Boolean
+   private Map<String, Boolean> _binaryLookupCacheMap = new HashMap<String, Boolean>();
+   // key = String text, value = Collection of MetaDataHits
+   private Map<String, Collection<MetaDataHit>> _metaLookupCacheMap = new HashMap<String, Collection<MetaDataHit>>();
 
-    private boolean iv_keepCase = false;
 
-    /**
-     * 
-     * Constructor
-     * 
-     * @param dict
-     *            Dictionary to use for lookup operations.
-     * @param keepCase
-     *            Determines whether to keep character Upper or Lower casing.
-     *            False indicates that casing will be ignored by lower casing
-     *            all lookups.
-     */
-    public DictionaryEngine(Dictionary dict, boolean keepCase)
-    {
-        iv_dict = dict;
-        iv_keepCase = keepCase;
-    }
+   /**
+    * @param dictionary Dictionary to use for lookup operations.
+    * @param keepCase   Determines whether to keep character Upper or Lower casing.
+    *                   False indicates that casing will be ignored by lower casing
+    *                   all lookups.
+    */
+   public DictionaryEngine( final Dictionary dictionary, final boolean keepCase ) {
+      _dictionary = dictionary;
+      _keepCase = keepCase;
+   }
 
-    /**
-     * Adds a Pre-lookup filter to the engine. Filters will be applied in the
-     * order of addition.
-     * 
-     * @param plf
-     *            PreLookupFilter to add.
-     */
-    public void addPreLookupFilter(PreLookupFilter plf)
-    {
-        iv_preLookupFilterList.add(plf);
-    }
+   /**
+    * Adds a Pre-lookup filter to the engine. Filters will be applied in the
+    * order of addition.
+    *
+    * @param preLookupFilter PreLookupFilter to add.
+    */
+   public void addPreLookupFilter( final PreLookupFilter preLookupFilter ) {
+      _preLookupFilterList.add( preLookupFilter );
+   }
 
-    /**
-     * Adds a Post-lookup filter to the engine. Filters will be applied in the
-     * order of addition.
-     * 
-     * @param plf
-     *            PostLookupFilter to add.
-     */
-    public void addPostLookupFilter(PostLookupFilter plf)
-    {
-        iv_postLookupFilterList.add(plf);
-    }
+   /**
+    * Adds a Post-lookup filter to the engine. Filters will be applied in the
+    * order of addition.
+    *
+    * @param postLookupFilter PostLookupFilter to add.
+    */
+   public void addPostLookupFilter( final PostLookupFilter postLookupFilter ) {
+      _postLookupFilterList.add( postLookupFilter );
+   }
 
-    /**
-     * Adds a Collection filter to the engine. Filters will be applied in the
-     * order of addition. Filter will be applied after PostLookupFiltering.
-     * 
-     * @param cf
-     *            CollectionFilter to add.
-     */
-    public void addCollectionFilter(CollectionFilter cf)
-    {
-        iv_collectionFilterList.add(cf);
-    }
+   /**
+    * Adds a Collection filter to the engine. Filters will be applied in the
+    * order of addition. Filter will be applied after PostLookupFiltering.
+    *
+    * @param collectionFilter CollectionFilter to add.
+    */
+   public void addCollectionFilter( final CollectionFilter collectionFilter ) {
+      _collectionFilterList.add( collectionFilter );
+   }
 
-    /**
-     * Adds an entry to the dictionary lookup cache. The given text will be
-     * cached immediately when this method is invoked. This cache does not
-     * expire.
-     * 
-     * @param text
-     */
-    public void addCacheEntry(String text)
-            throws DictionaryException, FilterException
-    {
-        if (!iv_keepCase)
-        {
-            text = text.toLowerCase();
-        }
+   /**
+    * Adds an entry to the dictionary lookup cache. The given text will be
+    * cached immediately when this method is invoked. This cache does not
+    * expire.
+    *
+    * @param text to add to the caches as a hit or miss
+    */
+   public void addCacheEntry( String text ) throws DictionaryException, FilterException {
+      if ( !_keepCase ) {
+         text = text.toLowerCase();
+      }
+      final boolean isHit = binaryLookup( text );
+      _binaryLookupCacheMap.put( text, isHit );
 
-        boolean isHit = binaryLookup(text);
-        iv_binaryLookupCacheMap.put(text, new Boolean(isHit));
+      final Collection<MetaDataHit> metaDataHits = metaLookup( text );
+      _metaLookupCacheMap.put( text, metaDataHits );
+   }
 
-        Collection c = metaLookup(text);
-        iv_metaLookupCacheMap.put(text, c);
-    }
-
-    /**
-     * Gets a collection of MetaDataHits from the Dictionary based on the input
-     * text. Both Pre-lookup and Post-lookup filtering are applied.
-     * 
-     * @param text
-     *            The input text.
-     * @return Collection of MetaDataHit objects
-     * @throws DictionaryException
-     * @throws FilterException
-     */
-    public Collection metaLookup(String text)
-            throws DictionaryException, FilterException
-    {
-        if (!iv_keepCase)
-        {
-            text = text.toLowerCase();
-        }
-
-        // apply pre-filtering
-        if (isFilteredByPreLookup(text))
-        {
-            // return empty Collection
-            return new HashSet();
-        }
-
-        // not part of filter
-        Collection metaDataHitCol = null;
-        boolean isCached = iv_metaLookupCacheMap.containsKey(text);
-        if (isCached)
-        {
-            metaDataHitCol = (Collection) iv_metaLookupCacheMap.get(text);
-        }
-        else
-        {
-            // not part of cache, go ahead and do lookup
-            metaDataHitCol = iv_dict.getEntries(text);
-        }
-
-        // apply post-filtering
-        if (iv_postLookupFilterList.size() > 0)
-        {
-            Set mdhRemovalSet = new HashSet();
-            Iterator mdhItr = metaDataHitCol.iterator();
-            while (mdhItr.hasNext())
-            {
-                MetaDataHit mdh = (MetaDataHit) mdhItr.next();
-                Iterator plfItr = iv_postLookupFilterList.iterator();
-                while (plfItr.hasNext())
-                {
-                    PostLookupFilter plf = (PostLookupFilter) plfItr.next();
-                    if (plf.contains(mdh))
-                    {
-                        mdhRemovalSet.add(mdh);
-                    }
-                }
+   /**
+    * Gets a collection of MetaDataHits from the Dictionary based on the input
+    * text. Both Pre-lookup and Post-lookup filtering are applied.
+    *
+    * @param text text to check for in the filters
+    * @return Collection of MetaDataHit objects
+    * @throws DictionaryException
+    * @throws FilterException
+    */
+   public Collection<MetaDataHit> metaLookup( String text ) throws DictionaryException, FilterException {
+      if ( !_keepCase ) {
+         text = text.toLowerCase();
+      }
+      // apply pre-filtering
+      if ( isFilteredByPreLookup( text ) ) {
+         // return empty Collection
+         return Collections.emptySet();
+      }
+      // not part of filter
+      Collection<MetaDataHit> metaDataHitCol = _metaLookupCacheMap.get( text );
+      if ( metaDataHitCol == null ) {
+         // not part of cache, go ahead and do lookup
+         metaDataHitCol = _dictionary.getEntries( text );
+      }
+      // apply post-filtering
+      if ( !_postLookupFilterList.isEmpty() ) {
+         final Set<MetaDataHit> mdhRemovalSet = new HashSet<MetaDataHit>();
+         for ( MetaDataHit metaDataHit : metaDataHitCol ) {
+            // check the mdhRemoval set before iterating over the entire filter list (and filter .contains calls)
+            if ( !mdhRemovalSet.contains( metaDataHit ) ) {
+               for ( PostLookupFilter postLookupFilter : _postLookupFilterList ) {
+                  if ( postLookupFilter.contains( metaDataHit ) ) {
+                     mdhRemovalSet.add( metaDataHit );
+                  }
+               }
             }
-            metaDataHitCol.removeAll(mdhRemovalSet);
-        }
+         }
+         metaDataHitCol.removeAll( mdhRemovalSet );
+      }
+      // apply collection filtering
+      if ( !_collectionFilterList.isEmpty() ) {
+         for  ( CollectionFilter collectionFilter : _collectionFilterList ) {
+            metaDataHitCol = collectionFilter.applyFilter( metaDataHitCol );
+         }
+      }
+      return metaDataHitCol;
+   }
 
-        // apply collection filtering
-        if (iv_collectionFilterList.size() > 0)
-        {
-            Iterator cfItr = iv_collectionFilterList.iterator();
-            while (cfItr.hasNext())
-            {
-                CollectionFilter cf = (CollectionFilter) cfItr.next();
-                metaDataHitCol = cf.applyFilter(metaDataHitCol);
-            }
-        }
+   /**
+    * Determines whether the input text is contained by the Dictionary. Only
+    * pre-lookup filtering is applied.
+    *
+    * @param text The input text.
+    * @return true if contained by Dictionary, false otherwise
+    * @throws DictionaryException
+    * @throws FilterException
+    */
+   public boolean binaryLookup( String text ) throws DictionaryException, FilterException {
+      if ( !_keepCase ) {
+         text = text.toLowerCase();
+      }
+      // apply pre-filtering
+      if ( isFilteredByPreLookup( text ) ) {
+         return false;
+      }
+      // not part of filter, go ahead and do lookup
+      final Boolean isHit = _binaryLookupCacheMap.get( text );
+      if ( isHit != null ) {
+         return isHit;
+      }
+      // not part of cache, go ahead and do lookup
+      return _dictionary.contains( text );
+   }
 
-        return metaDataHitCol;
-    }
+   /**
+    * Helper method that applies Pre-lookup filtering to the input text.
+    *
+    * @param text text to be filtered, possible case change must have already been accounted for by calling method.
+    * @return true if filtered, false otherwise
+    * @throws FilterException
+    */
+   private boolean isFilteredByPreLookup( final String text ) throws FilterException {
+      for  ( PreLookupFilter preLookupFilter : _preLookupFilterList ) {
+         if ( preLookupFilter.contains( text ) ) {
+            // text is part of filter
+            return true;
+         }
+      }
+      return false;
+   }
 
-    /**
-     * Determines whether the input text is contained by the Dictionary. Only
-     * pre-lookup filtering is applied.
-     * 
-     * @param text
-     *            The input text.
-     * @return true if contained by Dictionary, false otherwise
-     * @throws DictionaryException
-     * @throws FilterException
-     */
-    public boolean binaryLookup(String text)
-            throws DictionaryException, FilterException
-    {
-        if (!iv_keepCase)
-        {
-            text = text.toLowerCase();
-        }
-
-        // apply pre-filtering
-        if (isFilteredByPreLookup(text))
-        {
-            return false;
-        }
-
-        // not part of filter, go ahead and do lookup
-
-        Boolean isHit = null;
-        boolean isCached = iv_binaryLookupCacheMap.containsKey(text);
-        if (isCached)
-        {
-            isHit = (Boolean) iv_binaryLookupCacheMap.get(text);
-        }
-        else
-        {
-            // not part of cache, go ahead and do lookup
-            isHit = new Boolean(iv_dict.contains(text));
-        }
-
-        return isHit.booleanValue();
-    }
-
-    /**
-     * Helper method that applies Pre-lookup filtering to the input text.
-     * 
-     * @param text
-     *            The input text to be filtered.
-     * @return true if filtered, false otherwise
-     * @throws FilterException
-     */
-    private boolean isFilteredByPreLookup(String text) throws FilterException
-    {
-        if (iv_preLookupFilterList.size() > 0)
-        {
-            Iterator plfItr = iv_preLookupFilterList.iterator();
-            while (plfItr.hasNext())
-            {
-                PreLookupFilter plf = (PreLookupFilter) plfItr.next();
-                if (plf.contains(text))
-                {
-                    // text is part of filter
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

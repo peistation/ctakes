@@ -53,7 +53,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
+        <import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -87,7 +87,7 @@
         <name>templateFile</name>
         <description/>
         <fileResourceSpecifier>
-          <fileUrl>file:template.xml</fileUrl>
+          <fileUrl>file:org/apache/ctakes/core/template.xml</fileUrl>
         </fileResourceSpecifier>
         <implementationName>org.apache.ctakes.core.resource.FileResourceImpl</implementationName>
       </externalResource>

@@ -21,8 +21,15 @@ package org.apache.ctakes.relationextractor.ae.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.constituency.parser.util.AnnotationTreeUtils;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TerminalTreebankNode;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.Bag;
@@ -32,12 +39,10 @@ import org.cleartk.classifier.feature.extractor.CleartkExtractor.Following;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.LastCovered;
 import org.cleartk.classifier.feature.extractor.CleartkExtractor.Preceding;
 import org.cleartk.classifier.feature.extractor.annotationpair.DistanceExtractor;
+import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
 import org.cleartk.classifier.feature.extractor.simple.NamingExtractor;
 import org.cleartk.classifier.feature.extractor.simple.SimpleFeatureExtractor;
-import org.cleartk.classifier.feature.extractor.simple.CoveredTextExtractor;
-
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.uimafit.util.JCasUtil;
 
 public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
 
@@ -88,9 +93,22 @@ public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
   private DistanceExtractor nTokensBetween = new DistanceExtractor(null, BaseToken.class);
 
   @Override
-  public List<Feature> extract(JCas jCas, IdentifiedAnnotation arg1, IdentifiedAnnotation arg2)
+  public List<Feature> extract(JCas jCas, IdentifiedAnnotation mention1, IdentifiedAnnotation mention2)
       throws AnalysisEngineProcessException {
     List<Feature> features = new ArrayList<Feature>();
+    Annotation arg1 = mention1;
+    Annotation arg2 = mention2;
+    
+    if(arg1 instanceof EventMention){
+      arg1 = getExpandedEvent(jCas, mention1);
+      if(arg1 == null) arg1 = mention1;
+    }
+    
+    if(arg2 instanceof EventMention){
+      arg2 = getExpandedEvent(jCas, mention2);
+      if(arg2 == null) arg2 = mention2;
+    }
+    
     features.addAll(this.mention1FeaturesExtractor.extract(jCas, arg1));
     features.addAll(this.mention2FeaturesExtractor.extract(jCas, arg2));
     features.addAll(this.tokensBetween.extractBetween(jCas, arg1, arg2));
@@ -98,4 +116,31 @@ public class TokenFeaturesExtractor implements RelationFeaturesExtractor {
     return features;
   }
 
+  private static TreebankNode getExpandedEvent(JCas jCas, IdentifiedAnnotation mention){
+    // since events are single words, we are at a terminal node:
+    List<TerminalTreebankNode> terms = JCasUtil.selectCovered(TerminalTreebankNode.class, mention);
+    if(terms == null || terms.size() == 0){
+      return null;
+    }
+    
+    TreebankNode coveringNode = AnnotationTreeUtils.annotationNode(jCas, mention);
+    if(coveringNode == null) return terms.get(0);
+    
+    String pos =terms.get(0).getNodeType(); 
+    // do not expand Verbs
+    if(pos.startsWith("V")) return coveringNode;
+    
+    if(pos.startsWith("N")){
+      // get first NP node:
+      while(coveringNode != null && !coveringNode.getNodeType().equals("NP")){
+        coveringNode = coveringNode.getParent();
+      }
+    }else if(pos.startsWith("J")){
+      while(coveringNode != null && !coveringNode.getNodeType().equals("ADJP")){
+        coveringNode = coveringNode.getParent();
+      }
+    }
+    if(coveringNode == null) coveringNode = terms.get(0);
+    return coveringNode;    
+  }
 }

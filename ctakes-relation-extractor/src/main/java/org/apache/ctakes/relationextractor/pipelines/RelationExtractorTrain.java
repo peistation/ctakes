@@ -21,177 +21,200 @@ package org.apache.ctakes.relationextractor.pipelines;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.ctakes.relationextractor.ae.DegreeOfRelationExtractorAnnotator;
-import org.apache.ctakes.relationextractor.ae.EntityMentionPairRelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
 import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.relationextractor.eval.ModifierExtractorEvaluation;
+import org.apache.ctakes.relationextractor.eval.ParameterSettings;
 import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation;
-import org.apache.ctakes.relationextractor.eval.RelationExtractorEvaluation.ParameterSettings;
+import org.apache.ctakes.relationextractor.eval.SHARPXMI;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
+import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
+import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.util.XMLInputSource;
 import org.apache.uima.util.XMLParser;
-import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
-import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
-import org.cleartk.util.Options_ImplBase;
-import org.kohsuke.args4j.Option;
+import org.cleartk.classifier.jar.JarClassifierBuilder;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.ConfigurationParameterFactory;
+import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.ObjectArrays;
+import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
+
 /**
- * This class produces production models for the RelationExtractor module.  Specifically it produces model and descriptor files for the 
- * ModifierExtractor, DegreeOfRelationExtractor, and EntityMentionPairRelationExtractor.  Additionally it produces an aggregrate descriptor
- * for the entire pipeline from pre-processing to relation extraction.
+ * This class produces production models for the RelationExtractor module.
+ * Specifically it produces model and descriptor files for the
+ * ModifierExtractor, DegreeOfRelationExtractor, and
+ * EntityMentionPairRelationExtractor. Additionally it produces an aggregrate
+ * descriptor for the entire pipeline from pre-processing to relation
+ * extraction.
  * 
  * @author dmitriy dligach
- *
+ * 
  */
 public class RelationExtractorTrain {
 
-  public static class Options extends Options_ImplBase {
+  static interface Options extends RelationExtractorEvaluation.Options {
 
     @Option(
-        name = "--train-dir",
-        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/sharp/xmi/all)",
-        required = true)
-    public File trainDirectory;
+        longName = "resources-dir",
+        defaultValue = "../ctakes-relation-extractor-res/src/main/resources",
+        description = "the directory where resources (e.g. models) should be written")
+    public File getResourcesDirectory();
 
     @Option(
-        name = "--desc-dir",
-        usage = "specify the directory to write out description files",
-        required = false)
-    public File descDir = new File("desc/analysis_engine");
+        longName = "descriptors-dir",
+        defaultValue = "desc/analysis_engine",
+        description = "the directory where descriptors should be written")
+    public File getDescriptorsDirectory();
   }
-  
-  public static AnalysisEngineDescription trainModifierExtractor(
-		  File modelsDir,
-		  List<File> trainFiles) throws Exception {
-				  
-	  ModifierExtractorEvaluation evaluation = new ModifierExtractorEvaluation(
-			  modelsDir,
-			  "-t", "0",   // svm kernel index
-			  "-c", "1000" // svm cost
-			  );
-	  CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);
-	  evaluation.train(collectionReader, modelsDir);
-	  
-	  // create the description
-	  AnalysisEngineDescription modifierExtractorDescription = AnalysisEngineFactory.createPrimitiveDescription(
-			  ModifierExtractorAnnotator.class,
-			  GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-			  new File(modelsDir, "model.jar").getPath());
-	  
-	  return modifierExtractorDescription;
-  }
-  
-  public static AnalysisEngineDescription trainRelationExtractor(
-		  File modelsDir, 
-		  List<File> trainFiles,
-		  Class<? extends RelationExtractorAnnotator> annotatorClass, 
-		  Class<? extends DataWriter<String>> dataWriterClass,
-		  ParameterSettings params) throws Exception {
 
-	  // define additional configuration parameters for the annotator
-	  Object[] additionalParameters = new Object[] {
-			  RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-			  params.probabilityOfKeepingANegativeExample,
-        EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-			  params.classifyBothDirections,
-			  RelationExtractorAnnotator.PARAM_PRINT_ERRORS,
-			  false };
-  
-	  // define arguments to be passed to the classifier
-	  String[] trainingArguments = new String[] {
-			  "-t",
-			  String.valueOf(params.svmKernelIndex),
-			  "-c",
-			  String.valueOf(params.svmCost),
-			  "-g",
-			  String.valueOf(params.svmGamma) };
-	  
-	    RelationExtractorEvaluation evaluation = new RelationExtractorEvaluation(
-	    		modelsDir,
-	    		annotatorClass,
-	    		dataWriterClass,
-	    		additionalParameters,
-	    		trainingArguments);
-	    
-	    CollectionReader collectionReader = evaluation.getCollectionReader(trainFiles);
-	    evaluation.train(collectionReader, modelsDir);
-	    
-	    // create the description
-	    AnalysisEngineDescription relationExtractorDescription = AnalysisEngineFactory.createPrimitiveDescription(
-	        annotatorClass,
-	        RelationExtractorAnnotator.PARAM_PROBABILITY_OF_KEEPING_A_NEGATIVE_EXAMPLE,
-	        params.probabilityOfKeepingANegativeExample,
-	        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-	        new File(modelsDir, "model.jar").getPath());
-	    if (annotatorClass == EntityMentionPairRelationExtractorAnnotator.class) {
-	      ConfigurationParameterFactory.addConfigurationParameters(
-	          relationExtractorDescription,
-	          EntityMentionPairRelationExtractorAnnotator.PARAM_CLASSIFY_BOTH_DIRECTIONS,
-	          params.classifyBothDirections);
-	    }    
-	    
-	    return relationExtractorDescription;
-  }
-	
   public static void main(String[] args) throws Exception {
-		
-    Options options = new Options();
-    options.parseOptions(args);
-    List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-    
+    final Options options = CliFactory.parseArguments(Options.class, args);
+    if (!options.getResourcesDirectory().exists()) {
+      throw new IllegalArgumentException("directory not found: "
+          + options.getResourcesDirectory().getCanonicalPath());
+    }
+    if (!options.getDescriptorsDirectory().exists()) {
+      throw new IllegalArgumentException("directory not found: "
+          + options.getDescriptorsDirectory().getCanonicalPath());
+    }
+    File resourcesDirectory = options.getResourcesDirectory();
+    File descriptorsDirectory = options.getDescriptorsDirectory();
+
+    File preprocessDescFile = new File(descriptorsDirectory, "RelationExtractorPreprocessor.xml");
+    if (!preprocessDescFile.exists()) {
+      throw new IllegalArgumentException("Can't create aggregate without "
+          + preprocessDescFile.getCanonicalPath());
+    }
+
+    List<File> trainFiles = SHARPXMI.getAllTextFiles(options.getBatchesDirectory());
+    trainFiles = SHARPXMI.toXMIFiles(options, trainFiles);
+
     // Initialize model directories
-    File modelsDirBase = new File("resources/org/apache/ctakes/relationextractor/models");
-    File modelsDirModExtractor = new File(modelsDirBase, "modifier_extractor");
-    File modelsDirDegreeOf = new File(modelsDirBase, "degree_of");
-    File modelsDirEMPair = new File(modelsDirBase, "em_pair");
-    
-    // Initialize component parameters
-    ParameterSettings degreeOfParams = new ParameterSettings(false, 1.0f, "linear", 0.05, 1.0);
-    ParameterSettings emPairParams = new ParameterSettings(false, 0.5f, "linear", 0.05, 1.0);
+    String modelPathPrefix = "org/apache/ctakes/relationextractor/models/";
+    String modifierModelPath = modelPathPrefix + "modifier_extractor";
+    String degreeOfModelPath = modelPathPrefix + "degree_of";
+    String locationOfModelPath = modelPathPrefix + "location_of";
 
-    // For now all three components use MultiClass SVMs for classification
-    Class<? extends DataWriter<String>> dataWriterClass = LIBSVMStringOutcomeDataWriter.class;
-        
-    // Train and write models
-    AnalysisEngineDescription modifierExtractorDesc = trainModifierExtractor(modelsDirModExtractor, trainFiles);
-    writeDesc(options.descDir, "ModifierExtractorAnnotator", modifierExtractorDesc);
-    AnalysisEngineDescription degreeOfRelationExtractorDesc = trainRelationExtractor(modelsDirDegreeOf, trainFiles, DegreeOfRelationExtractorAnnotator.class, dataWriterClass, degreeOfParams);
-    writeDesc(options.descDir, "DegreeOfRelationExtractorAnnotator", degreeOfRelationExtractorDesc);
-    AnalysisEngineDescription emPairRelationExtractorDesc = trainRelationExtractor(modelsDirEMPair, trainFiles, EntityMentionPairRelationExtractorAnnotator.class, dataWriterClass, emPairParams);
-    writeDesc(options.descDir, "EntityMentionPairRelationExtractorAnnotator", emPairRelationExtractorDesc);
+    // create the modifier extractor
+    System.err.println("Training modifier extractor");
+    File modifierTrainDirectory = new File(resourcesDirectory, modifierModelPath);
+    ModifierExtractorEvaluation evaluation =
+        new ModifierExtractorEvaluation(
+            modifierTrainDirectory,
+            ModifierExtractorEvaluation.BEST_PARAMETERS);
+    evaluation.train(evaluation.getCollectionReader(trainFiles), modifierTrainDirectory);
+    AnalysisEngineDescription modifierExtractorDesc =
+        AnalysisEngineFactory.createPrimitiveDescription(
+            ModifierExtractorAnnotator.class,
+            GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+            "/" + modifierModelPath + "/model.jar");
+    writeDesc(descriptorsDirectory, ModifierExtractorAnnotator.class, modifierExtractorDesc);
 
-    // create the aggregate description
+    // create the degree_of extractor
+    System.err.println("Training degree_of extractor");
+    AnalysisEngineDescription degreeOfRelationExtractorDesc =
+        trainRelationExtractor(
+            resourcesDirectory,
+            degreeOfModelPath,
+            trainFiles,
+            DegreeOfTextRelation.class,
+            descriptorsDirectory);
+
+    // create the location_of extractor
+    System.err.println("Training location_of extractor");
+    AnalysisEngineDescription locationOfRelationExtractorDesc =
+        trainRelationExtractor(
+            resourcesDirectory,
+            locationOfModelPath,
+            trainFiles,
+            LocationOfTextRelation.class,
+            descriptorsDirectory);
+
+    // create the aggregate
+    System.err.println("Assembling relation extraction aggregate");
     AggregateBuilder builder = new AggregateBuilder();
-    File preprocessDescFile = new File("desc/analysis_engine/RelationExtractorPreprocessor.xml");
     XMLParser parser = UIMAFramework.getXMLParser();
     XMLInputSource source = new XMLInputSource(preprocessDescFile);
     builder.add(parser.parseAnalysisEngineDescription(source));
     builder.add(modifierExtractorDesc);
     builder.add(degreeOfRelationExtractorDesc);
-    builder.add(emPairRelationExtractorDesc);
+    builder.add(locationOfRelationExtractorDesc);
     AnalysisEngineDescription aggregateDescription = builder.createAggregateDescription();
-    
-    // write out the XML version of the aggregate description
-    writeDesc(options.descDir, "RelationExtractorAggregate", aggregateDescription);
+    writeDesc(descriptorsDirectory, "RelationExtractorAggregate", aggregateDescription);
+
+    // cleanup unnecessary model files
+    for (File modelDir : new File(resourcesDirectory, modelPathPrefix).listFiles()) {
+      File modelFile = JarClassifierBuilder.getModelJarFile(modelDir);
+      for (File file : modelDir.listFiles()) {
+        if (!file.equals(modelFile)) {
+          file.delete();
+        }
+      }
+    }
   }
 
-  private static void writeDesc(File descDir, String filePrefix, AnalysisEngineDescription desc)
-      throws SAXException, IOException {
-    File descFile = new File(descDir, filePrefix + ".xml");
+  private static AnalysisEngineDescription trainRelationExtractor(
+      File resourcesDirectory,
+      String modelPath,
+      List<File> trainFiles,
+      Class<? extends BinaryTextRelation> relationClass,
+      File descriptorsDirectory) throws Exception {
+
+    // get the annotator class and best parameters for this relation
+    Class<? extends RelationExtractorAnnotator> annotatorClass =
+        RelationExtractorEvaluation.ANNOTATOR_CLASSES.get(relationClass);
+    ParameterSettings params = RelationExtractorEvaluation.BEST_PARAMETERS.get(relationClass);
+
+    // train the relation extractor
+    File trainDirectory = new File(resourcesDirectory, modelPath);
+    RelationExtractorEvaluation evaluation =
+        new RelationExtractorEvaluation(trainDirectory, relationClass, annotatorClass, params);
+    evaluation.train(evaluation.getCollectionReader(trainFiles), trainDirectory);
+
+    // create the description
+    Object[] pathParameters =
+        new Object[] { GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+            "/" + modelPath + "/model.jar" };
+    AnalysisEngineDescription relationExtractorDescription =
+        AnalysisEngineFactory.createPrimitiveDescription(
+            annotatorClass,
+            ObjectArrays.concat(params.configurationParameters, pathParameters, Object.class));
+
+    // write the description
+    writeDesc(descriptorsDirectory, annotatorClass, relationExtractorDescription);
+
+    // return the description (for use in an aggregate)
+    return relationExtractorDescription;
+  }
+
+  private static void writeDesc(
+      File descDir,
+      Class<?> annotatorClass,
+      AnalysisEngineDescription desc) throws SAXException, IOException {
+    // set the type system (uimaFIT expands all imports, so this simplifies the
+    // descriptor)
+    desc.getAnalysisEngineMetaData().setTypeSystem(
+        TypeSystemDescriptionFactory.createTypeSystemDescription("org.apache.ctakes.typesystem.types.TypeSystem"));
+    writeDesc(descDir, annotatorClass.getSimpleName(), desc);
+  }
+
+  private static void writeDesc(File descDir, String name, AnalysisEngineDescription desc)
+      throws SAXException,
+      IOException {
+    // set the name (not done by uimaFIT)
+    desc.getMetaData().setName(name);
+    File descFile = new File(descDir, name + ".xml");
+    System.err.println("Writing description to " + descFile);
     FileOutputStream output = new FileOutputStream(descFile);
     desc.toXML(output);
     output.close();
-    System.out.println("description written to " + descFile);
   }
 }

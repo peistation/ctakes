@@ -53,8 +53,7 @@ public class AnaphoricityAttributeCalculator extends AttributeCalculator {
 			TreebankNode node = MarkableTreeUtils.markableNode(jcas, m.getBegin(), m.getEnd());
 //			TerminalTreebankNode wordNode = (TerminalTreebankNode) node.getRoot().getTerminals().get(node.getHeadIndex());
 			TerminalTreebankNode wordNode = MarkableTreeUtils.getHead(node);
-			String pos = wordNode.getParent().getNodeType();
-			return pos;
+			return wordNode.getNodeType();
 		}catch(Exception e){
 
 			return null;

@@ -21,6 +21,12 @@ package org.apache.ctakes.temporal.ae;
 import java.io.File;
 import java.util.List;
 
+import org.apache.ctakes.temporal.ae.feature.ClosestVerbExtractor;
+import org.apache.ctakes.temporal.ae.feature.DateAndMeasurementExtractor;
+import org.apache.ctakes.temporal.ae.feature.EventPropertyExtractor;
+import org.apache.ctakes.temporal.ae.feature.NearbyVerbTenseXExtractor;
+import org.apache.ctakes.temporal.ae.feature.SectionHeaderExtractor;
+import org.apache.ctakes.temporal.ae.feature.TimeXExtractor;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.uima.UimaContext;
@@ -71,6 +77,12 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
   }
 
   private CleartkExtractor contextExtractor;
+  private NearbyVerbTenseXExtractor verbTensePatternExtractor;
+  private SectionHeaderExtractor sectionIDExtractor;
+  private ClosestVerbExtractor closestVerbExtractor;
+  private TimeXExtractor timeXExtractor;
+  private EventPropertyExtractor genericExtractor;
+  private DateAndMeasurementExtractor dateExtractor;
 
   @Override
   public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -84,18 +96,32 @@ public class DocTimeRelAnnotator extends CleartkAnnotator<String> {
         new Preceding(3),
         new Covered(),
         new Following(3));
+    this.verbTensePatternExtractor = new NearbyVerbTenseXExtractor();
+    this.sectionIDExtractor = new SectionHeaderExtractor();
+    this.closestVerbExtractor = new ClosestVerbExtractor();
+    this.timeXExtractor = new TimeXExtractor();
+    this.genericExtractor = new EventPropertyExtractor();
+    this.dateExtractor = new DateAndMeasurementExtractor();
   }
 
   @Override
   public void process(JCas jCas) throws AnalysisEngineProcessException {
     for (EventMention eventMention : JCasUtil.select(jCas, EventMention.class)) {
-      List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
-      if (this.isTraining()) {
-        String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
-        this.dataWriter.write(new Instance<String>(outcome, features));
-      } else {
-        String outcome = this.classifier.classify(features);
-        eventMention.getEvent().getProperties().setDocTimeRel(outcome);
+      if (eventMention.getEvent() != null) {
+        List<Feature> features = this.contextExtractor.extract(jCas, eventMention);
+        features.addAll(this.verbTensePatternExtractor.extract(jCas, eventMention));//add nearby verb POS pattern feature
+        features.addAll(this.sectionIDExtractor.extract(jCas, eventMention)); //add section heading
+        features.addAll(this.closestVerbExtractor.extract(jCas, eventMention)); //add closest verb
+        features.addAll(this.timeXExtractor.extract(jCas, eventMention)); //add the closest time expression types
+        features.addAll(this.genericExtractor.extract(jCas, eventMention)); //add the closest time expression types
+        features.addAll(this.dateExtractor.extract(jCas, eventMention)); //add the closest NE type
+        if (this.isTraining()) {
+          String outcome = eventMention.getEvent().getProperties().getDocTimeRel();
+          this.dataWriter.write(new Instance<String>(outcome, features));
+        } else {
+          String outcome = this.classifier.classify(features);
+          eventMention.getEvent().getProperties().setDocTimeRel(outcome);
+        }
       }
     }
   }

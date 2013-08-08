@@ -26,17 +26,33 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-assertion-res</artifactId>
+		</dependency>	    
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-assertion-zoner</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
 		</dependency>
+    <dependency>
+      <groupId>org.apache.ctakes</groupId>
+      <artifactId>ctakes-dictionary-lookup</artifactId>
+    </dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-core</artifactId>
 		</dependency>
+    <dependency>
+      <groupId>org.apache.ctakes</groupId>
+      <artifactId>ctakes-constituency-parser</artifactId>
+    </dependency>
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-utils</artifactId>
@@ -67,24 +83,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.cleartk</groupId>
-			<artifactId>cleartk-test-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.cleartk</groupId>
 			<artifactId>cleartk-eval</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.cleartk</groupId>
-			<artifactId>cleartk-examples</artifactId>
-			<exclusions>
-				<exclusion>
-				<!-- Excluding mallet/trove4j dependencies due to 
-				licence in compatible until we could remove the
-				cleartk-examples dependency. -->
-					<groupId>org.cleartk</groupId>
-	          		<artifactId>cleartk-ml-mallet</artifactId>
-	          	</exclusion>
-			</exclusions>
 		</dependency>			
 		<dependency>
 			<groupId>args4j</groupId>
@@ -213,7 +212,19 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/jcarafe-ext_2.9.1-0.9.8.3.RC4.jar</systemPath>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-lvg</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-context-tokenizer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-chunker</artifactId>
+		</dependency>
+	</dependencies>	
 	<build>
 		<plugins>
 			<plugin>
@@ -224,5 +235,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build>    	
 </project>

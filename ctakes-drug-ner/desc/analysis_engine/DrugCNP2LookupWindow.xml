@@ -73,7 +73,7 @@
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
-        <import name="org.apache.ctakes.drugner.types.Typesystem"/>
+        <import name="org.apache.ctakes.drugner.types.TypeSystem"/>
       </imports>
       <types>
         <typeDescription>

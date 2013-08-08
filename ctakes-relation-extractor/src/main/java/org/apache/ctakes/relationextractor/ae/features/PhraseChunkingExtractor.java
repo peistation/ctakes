@@ -31,7 +31,7 @@ import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 	  
-	  List<TerminalTreebankNode> extractPhraseHeadByTreenode(JCas jCas, List<TreebankNode> treenodesList) throws AnalysisEngineProcessException {
+	  List<TerminalTreebankNode> extractPhraseHeadByTreenode(JCas jCas, List<TreebankNode> treenodesList) {
 		  List<TerminalTreebankNode> rTNodeList = new ArrayList<TerminalTreebankNode>();
 		  // get head index from phrase
 		  for(TreebankNode tb : treenodesList) {
@@ -39,7 +39,7 @@ public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 				  	int headIndex = tb.getHeadIndex();
 				  	for(TerminalTreebankNode ttb : JCasUtil.selectCovered(jCas, TerminalTreebankNode.class, tb)) {
 				  		if(ttb.getIndex() == headIndex) {
-				  			this.addPhraseHead(rTNodeList, ttb);
+				  			addPhraseHead(rTNodeList, ttb);
 				  			break;
 				  		}
 				  	}		  
@@ -48,7 +48,7 @@ public class PhraseChunkingExtractor implements RelationFeaturesExtractor {
 		  return rTNodeList;
 	  }
 	  
-		private void addPhraseHead(List<TerminalTreebankNode> headList,
+		private static void addPhraseHead(List<TerminalTreebankNode> headList,
 				TerminalTreebankNode newHead) {
 			
 			int insertPos = 0;

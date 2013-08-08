@@ -33,6 +33,7 @@ import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.syntax.TopTreebankNode;
+import org.apache.ctakes.utils.wiki.WikiIndex;
 import org.apache.ctakes.coreference.type.Markable;
 import org.apache.ctakes.coreference.type.DemMarkable;
 import org.apache.ctakes.coreference.type.NEMarkable;
@@ -47,6 +48,9 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 	ConllDependencyNode depLca=null;
 	String path = null;
 	String depPath = null;
+	WikiIndex wiki = null;
+	double sim1=-1.0;
+	double sim2=-1.0;
 	private static int numNEFeats = 0;
 	private static int numDemFeats = 0;
 	private static int numPronFeats = 0;
@@ -77,16 +81,14 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 	static int[] selFeats = {0};
 	static int[] pronSelFeats = {0};
 	
-	static{
-		// TODO initialize feature types...
-		// read in feature files for each classifier type
-		// TODO don't hard code these file names or at least not the assumption they are not in a subdir of what's on the path
-		featSet = loadFeatures(selFeats, "ngramids.mayo.txt");
-		pronFeatSet = loadFeatures(pronSelFeats, "pronngramids.mayo.txt");
-		numNEFeats = selFeats.length;
-		numDemFeats = 0;
-		numPronFeats = pronSelFeats.length;
-	}
+//	static{
+//		// read in feature files for each classifier type
+//		featSet = loadFeatures(selFeats, "ngramids.mayo.txt");
+//		pronFeatSet = loadFeatures(pronSelFeats, "pronngramids.mayo.txt");
+//		numNEFeats = selFeats.length;
+//		numDemFeats = 0;
+//		numPronFeats = pronSelFeats.length;
+//	}
 
 	static ArrayList<String> loadFeatures(int[] featInds, String filename){
 		ArrayList<String> feats = new ArrayList<String>();
@@ -113,7 +115,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		return feats;
 	}
 
-	public SyntaxAttributeCalculator(JCas jcas, Markable m1, Markable m2) {
+	public SyntaxAttributeCalculator(JCas jcas, Markable m1, Markable m2){
+		this(jcas,m1,m2,null);
+	}
+	
+	public SyntaxAttributeCalculator(JCas jcas, Markable m1, Markable m2, WikiIndex wiki) {
 		super(jcas,m1,m2);
 		n1 = MarkableTreeUtils.markableNode(jcas, m1.getBegin(), m1.getEnd());
 		n2 = MarkableTreeUtils.markableNode(jcas, m2.getBegin(), m2.getEnd());
@@ -121,13 +127,13 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		while(true){
 			if(n1 == null || lca == null || lca.getBegin() <= n1.getBegin()){
 				break;
-			}else{
-				lca = lca.getParent();
 			}
+			lca = lca.getParent();
 		}
 		ngrams = new HashMap<String,Integer>();
 		calcFullPath();
-
+		this.wiki = wiki;
+		if(this.wiki != null) initWikiSim();
 //		c1 = MarkableDepUtils.markableNode(jcas, m1.getBegin(), m1.getEnd(), n1);
 //		c2 = MarkableDepUtils.markableNode(jcas, m2.getBegin(), m2.getEnd(), n2);
 //		depLca = getDepLCA(c1,c2);
@@ -138,12 +144,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 	public static int getNumDemFeats(){ return numDemFeats; }
 	public static int getNumPronFeats(){ return numPronFeats; }
 	
-	private String calcNPunderPP(TreebankNode n){
+	private static String calcNPunderPP(TreebankNode n){
 		if(n != null && n.getParent() != null && n.getParent().getNodeType().equals("PP")){
 			return "Y";
-		}else{
-			return "N";
 		}
+		return "N";
 	}
 
 	public String calcNPunderPP1(){
@@ -154,12 +159,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		return calcNPunderPP(n2);
 	}
 
-	private String calcNPunderS(TreebankNode n){
+	private static String calcNPunderS(TreebankNode n){
 		if(n != null && n.getParent() != null && n.getParent().getNodeType().equals("S")){
 			return "Y";
-		}else{
-			return "N";
 		}
+		return "N";
 	}
 
 	public String calcNPunderS1(){
@@ -170,12 +174,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		return calcNPunderS(n2);
 	}
 
-	private String calcNPunderVP(TreebankNode n){
+	private static String calcNPunderVP(TreebankNode n){
 		if(n != null && n.getParent() != null && n.getParent().getNodeType().equals("VP")){
 			return "Y";
-		}else{
-			return "N";
 		}
+		return "N";
 	}
 
 	public String calcNPunderVP1(){
@@ -186,31 +189,71 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		return calcNPunderVP(n2);
 	}
 
-	public String calcNPSubj(TreebankNode n){
-		if(n == null) return "N";
+	public boolean calcNPSubj(TreebankNode n){
+		if(n == null) return false;
 		if(n.getNodeType().equals("NP")){
 			StringArray tags = n.getNodeTags();
-			if(tags.size() > 0){
+			if(tags != null && tags.size() > 0){
 				for(int i = 0; i < tags.size(); i++){
 					if(tags.get(i).equals("SBJ")){
-						return "Y";
+						return true;
 					}
 				}
 			}
 		}
-		return "N";
+		return false;
 	}
 
-	public String calcNPSubj1(){
+	public boolean calcNPSubj1(){
 		return calcNPSubj(n1);
 	}
 	
-	public String calcNPSubj2(){
+	public boolean calcNPSubj2(){
 		return calcNPSubj(n2);
 	}
 	
-	public String calcNPSubjBoth(){
-		return ((calcNPSubj1().equals("Y") && calcNPSubj2().equals("Y")) ? "Y" : "N");
+	public boolean calcNPSubjBoth(){
+		return (calcNPSubj1() && calcNPSubj2());
+	}
+
+	public void initWikiSim(){
+		if(wiki == null) sim1 = 0.0;
+		else{
+			try{
+				sim1 = wiki.getCosineSimilarity(ms1, ms2);
+				sim2 = wiki.getCosineSimilarity(es1, es2);
+			}catch(Exception e){
+				sim1 = 0.0;
+				sim2 = 0.0;
+			}
+		}
+	}
+
+	public void initEntityWikiSim(){
+		if(wiki == null) sim2 = 0.0;
+		else{
+			try{
+				sim2 = wiki.getCosineSimilarity(es1, es2);
+			}catch(Exception e){
+				sim2 = 0.0;
+			}
+		}		
+	}
+	
+	public double calcWikiSim(){
+		if(sim1 < 0.0) initWikiSim();
+		return sim1;
+	}
+	
+	public double calcEntityWikiSim(){
+		if(sim2 < 0.0) initEntityWikiSim();
+		return sim2;
+	}
+	
+	public double calcSimSum(){
+		if(sim1 < 0.0) initWikiSim();
+		if(sim2 < 0.0) initEntityWikiSim();
+		return (sim1+sim2)/2.0;
 	}
 
 	public int numNgrams(Markable m) throws UnexpectedException{
@@ -288,12 +331,11 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 	}
 	
 	public int getPathLength(){
-		String path = calcFullPath();
 		String[] nodes = path.split("[<>]");
-		return nodes.length;		
+		return nodes.length;
 	}
 
-	private ConllDependencyNode getDepLCA(ConllDependencyNode c1, ConllDependencyNode c2) {
+	private static ConllDependencyNode getDepLCA(ConllDependencyNode c1, ConllDependencyNode c2) {
 		HashSet<Annotation> ancestors = new HashSet<Annotation>();
 		ConllDependencyNode temp = null;
 		temp = c2.getHead();
@@ -361,7 +403,7 @@ public class SyntaxAttributeCalculator extends PairAttributeCalculator {
 		return depPath;
 	}
 
-	private void initNGrams(HashMap<String,Integer> ngrams, String path, int n) {
+	private static void initNGrams(HashMap<String,Integer> ngrams, String path, int n) {
 		// Find the collection of trigrams in this string and add them to the hash map.
 		// start by finding the endpoint of the first trigram, then iteratively move the endpoint forward one unit
 		// while moving a beginning point forward one gram as well.

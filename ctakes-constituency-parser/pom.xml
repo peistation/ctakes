@@ -26,9 +26,13 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
-	<dependencies>
+	<dependencies> 
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-constituency-parser-res</artifactId>
+		</dependency>	 	    
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
@@ -58,7 +62,7 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
-		<build>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.cleartk</groupId>
@@ -68,5 +72,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build>  	
 </project>

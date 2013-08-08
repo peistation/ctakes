@@ -26,10 +26,14 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
 	
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-smoking-status-res</artifactId>
+		</dependency>	    
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
@@ -69,9 +73,8 @@
        	<dependency>
             <groupId>tw.edu.ntu.csie</groupId>
             <artifactId>libsvm</artifactId>
-		</dependency>		
-	</dependencies>
-	
+		</dependency>
+	</dependencies>	
 	<build>
 		<plugins>
 			<plugin>
@@ -82,6 +85,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
-	
+	</build> 	
 </project>

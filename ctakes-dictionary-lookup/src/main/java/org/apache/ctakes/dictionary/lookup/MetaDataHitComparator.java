@@ -26,7 +26,7 @@ import java.util.Comparator;
  * 
  * @author Mayo Clinic
  */
-public class MetaDataHitComparator implements Comparator, MetaDataHitConst
+public class MetaDataHitComparator implements Comparator<MetaDataHit>, MetaDataHitConst
 {
     private int iv_type;
     private String iv_metaFieldName;
@@ -48,11 +48,8 @@ public class MetaDataHitComparator implements Comparator, MetaDataHitConst
     /**
      * Implementation
      */
-    public int compare(Object o1, Object o2)
+    public int compare(MetaDataHit mdh1, MetaDataHit mdh2)
     {
-        MetaDataHit mdh1 = (MetaDataHit) o1;
-        MetaDataHit mdh2 = (MetaDataHit) o2;
-
         String mdv1 = mdh1.getMetaFieldValue(iv_metaFieldName);
         String mdv2 = mdh2.getMetaFieldValue(iv_metaFieldName);
 
@@ -78,9 +75,6 @@ public class MetaDataHitComparator implements Comparator, MetaDataHitConst
         {
             return comparison;
         }
-        else
-        {
-            return comparison * -1;
-        }
+        return comparison * -1;
     }
 }

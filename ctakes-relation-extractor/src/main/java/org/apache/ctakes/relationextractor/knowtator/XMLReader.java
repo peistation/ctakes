@@ -149,7 +149,13 @@ public class XMLReader {
   	String id2 = hashComplexSlotMentions.get(ids.get(1)).value;          // obtain mention id2                                       
   	String role2 = hashComplexSlotMentions.get(ids.get(1)).role;         // e.g. Related_to     
 
-  	relations.add(new RelationInfo(id1, id2, role1, role2, relationType));
+  	if (role1.equals("Argument") && role2.equals("Related_to")) {
+  	  relations.add(new RelationInfo(id1, id2, role1, role2, relationType));
+  	} else if (role2.equals("Argument") && role1.equals("Related_to")) {
+  	  relations.add(new RelationInfo(id2, id1, role2, role1, relationType));
+  	} else {
+  	  throw new RuntimeException(String.format("Unexpected roles: %s %s", role1, role2));
+  	}
   }
   
   /**

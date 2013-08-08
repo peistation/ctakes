@@ -18,36 +18,44 @@
  */
 package org.apache.ctakes.dictionary.lookup;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * 
  * @author Mayo Clinic
  */
-public class GenericMetaDataHitImpl extends BaseMetaDataHitImpl
-        implements MetaDataHit
-{
-    private Map iv_nameValueMap;
+@Immutable
+public final class GenericMetaDataHitImpl extends AbstractBaseMetaDataHit {
+   private final Map<String, String> _nameValueMap;
 
-    public GenericMetaDataHitImpl(Map metaNameValueMap)
-    {
-        iv_nameValueMap = metaNameValueMap;
-    }
+   public GenericMetaDataHitImpl( final Map<String,String> metaNameValueMap ) {
+      _nameValueMap = Collections.unmodifiableMap( metaNameValueMap );
+   }
 
-    public String getMetaFieldValue(String metaFieldName)
-    {
-        return (String) iv_nameValueMap.get(metaFieldName);
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getMetaFieldValue( final String metaFieldName ) {
+      return _nameValueMap.get( metaFieldName );
+   }
 
-    public Set getMetaFieldNames()
-    {
-        return iv_nameValueMap.keySet();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Set<String> getMetaFieldNames() {
+      return _nameValueMap.keySet();
+   }
 
-    public Collection getMetaFieldValues()
-    {
-        return iv_nameValueMap.values();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<String> getMetaFieldValues() {
+      return _nameValueMap.values();
+   }
 }

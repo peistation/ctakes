@@ -28,7 +28,7 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import org.apache.ctakes.relationextractor.cr.Mapper;
+import org.apache.ctakes.core.util.Mapper;
 import org.apache.ctakes.relationextractor.knowtator.RelationInfo;
 import org.apache.ctakes.relationextractor.knowtator.XMLReader;
 import org.apache.ctakes.typesystem.type.constants.CONST;
@@ -54,7 +54,7 @@ public class Stats {
 		int totalEntityCount = 0;
 
 		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};
@@ -95,7 +95,7 @@ public class Stats {
 	  int totalRelationCount = 0;
 		
 	  FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};

@@ -22,69 +22,56 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.Vector;
 
-import org.apache.log4j.Logger;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.collection.CasConsumer_ImplBase;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSList;
-import org.apache.uima.jcas.cas.NonEmptyFSList;
-import org.apache.uima.jcas.cas.EmptyFSList;
-import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.ResourceProcessException;
-import org.apache.uima.util.ProcessTrace;
-import org.apache.ctakes.coreference.type.BooleanLabeledFS;
-
+import libsvm.svm_node;
 
 import org.apache.ctakes.constituency.parser.treekernel.TreeExtractor;
 import org.apache.ctakes.constituency.parser.util.TreeUtils;
 import org.apache.ctakes.core.resource.FileLocator;
-import org.apache.ctakes.core.resource.FileResource;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
-import org.apache.ctakes.coreference.eval.helpers.Span;
-import org.apache.ctakes.coreference.eval.helpers.SpanAlignment;
-import org.apache.ctakes.coreference.eval.helpers.SpanOffsetComparator;
+import org.apache.ctakes.coreference.type.BooleanLabeledFS;
+import org.apache.ctakes.coreference.type.DemMarkable;
+import org.apache.ctakes.coreference.type.Markable;
+import org.apache.ctakes.coreference.type.MarkablePairSet;
+import org.apache.ctakes.coreference.type.NEMarkable;
 import org.apache.ctakes.coreference.util.CorefConsts;
 import org.apache.ctakes.coreference.util.FSIteratorToList;
 import org.apache.ctakes.coreference.util.GoldStandardLabeler;
 import org.apache.ctakes.coreference.util.MarkableTreeUtils;
 import org.apache.ctakes.coreference.util.PairAttributeCalculator;
-import org.apache.ctakes.coreference.util.ParentPtrTree;
-import org.apache.ctakes.coreference.util.SvmUtils;
 import org.apache.ctakes.coreference.util.SvmVectorCreator;
+import org.apache.ctakes.relationextractor.eval.XMIReader;
 import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.utils.tree.SimpleTree;
-import org.apache.ctakes.coreference.type.MarkablePairSet;
-import org.apache.ctakes.coreference.type.Markable;
-import org.apache.ctakes.coreference.type.DemMarkable;
-import org.apache.ctakes.coreference.type.NEMarkable;
-import org.apache.ctakes.coreference.type.PronounMarkable;
+import org.apache.log4j.Logger;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIterator;
+import org.apache.uima.collection.CollectionReader;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSList;
+import org.apache.uima.jcas.cas.NonEmptyFSList;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.factory.CollectionReaderFactory;
+import org.uimafit.factory.TypeSystemDescriptionFactory;
+import org.uimafit.pipeline.SimplePipeline;
 
-import libsvm.svm;
-import libsvm.svm_model;
-import libsvm.svm_node;
-import libsvm.svm_parameter;
-import libsvm.svm_problem;
-
-public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
+public class ODIEVectorFileWriter extends JCasAnnotator_ImplBase {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private static final Integer NGRAM_THRESHOLD = 0;
+//	private static final Integer NGRAM_THRESHOLD = 0;
 	private String outputDir = null;
 	private String goldStandardDir = null;
-	private PrintWriter anaphOut = null;
+//	private PrintWriter anaphOut = null;
 	private PrintWriter neOut = null;
 	private PrintWriter pronOut = null;
 	private PrintWriter demOut = null;
@@ -102,8 +89,8 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 	private int posAnaphInst = 0;
 	private int negAnaphInst = 0;
 	//	private svm_problem anaphProb = null;
-	private ArrayList<Integer> anaphLabels = new ArrayList<Integer>();
-	private ArrayList<svm_node[]> anaphNodes = new ArrayList<svm_node[]>();
+//	private ArrayList<Integer> anaphLabels = new ArrayList<Integer>();
+//	private ArrayList<svm_node[]> anaphNodes = new ArrayList<svm_node[]>();
 //	private ArrayList<Integer> corefLabels = new ArrayList<Integer>();
 //	private ArrayList<svm_node[]> corefNodes = new ArrayList<svm_node[]>();
 	//	private ArrayList<TopTreebankNode> corefPathTrees = new ArrayList<TopTreebankNode>();
@@ -126,18 +113,26 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 	//	private boolean printModels;
 	private boolean printVectors;
 	private boolean printTrees;
-	private boolean anaphora;
+//	private boolean anaphora;
 	private boolean useFrags = true; 							// make a parameter once development is done...
 
+	public static final String PARAM_OUTPUT_DIR = "outputDir";
+	public static final String PARAM_GOLD_DIR = "goldStandardDir";
+	public static final String PARAM_VECTORS = "writeVectors";
+	public static final String PARAM_TREES = "writeTrees";
+//	public static final String PARAM_ANAPH = "anaphora";
+	public static final String PARAM_FRAGS = "treeFrags";
+	public static final String PARAM_STOPS = "stopWords";
+	
 	@Override
-	public void initialize() throws ResourceInitializationException{
-		outputDir = (String) getConfigParameterValue("outputDir");
-		goldStandardDir = (String) getConfigParameterValue("goldStandardDir");
+	public void initialize(UimaContext aContext){
+		outputDir = (String) aContext.getConfigParameterValue(PARAM_OUTPUT_DIR);
+		goldStandardDir = (String) aContext.getConfigParameterValue(PARAM_GOLD_DIR);
 		//		printModels = (Boolean) getConfigParameterValue("writeModels");
-		printVectors = (Boolean) getConfigParameterValue("writeVectors");
-		printTrees = (Boolean) getConfigParameterValue("writeTrees");
+		printVectors = (Boolean) aContext.getConfigParameterValue(PARAM_VECTORS);
+		printTrees = (Boolean) aContext.getConfigParameterValue(PARAM_TREES);
 //		upSample = (Boolean) getConfigParameterValue("upSample");
-		anaphora = (Boolean) getConfigParameterValue("anaphora");
+//		anaphora = (Boolean) aContext.getConfigParameterValue(PARAM_ANAPH);
 
 		try{
 			// need to initialize parameters to default values (except where noted)
@@ -147,12 +142,12 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 			proDir.mkdirs();
 			File demDir = new File(outputDir + "/" + CorefConsts.DEM + "/vectors/");
 			demDir.mkdirs();
-			if(printVectors){
-				if(anaphora) anaphOut = new PrintWriter(outputDir + "/anaphor.trainingvectors.libsvm");
+//			if(printVectors){
+//				if(anaphora) anaphOut = new PrintWriter(outputDir + "/anaphor.trainingvectors.libsvm");
 //				neOut = new PrintWriter(outputDir + "/" + CorefConsts.NE + "/training.libsvm");
 //				demOut = new PrintWriter(outputDir + "/" + CorefConsts.DEM + "/training.libsvm");
 //				pronOut = new PrintWriter(outputDir + "/" + CorefConsts.PRON + "/training.libsvm");
-			}
+//			}
 			if(printTrees){
 				neTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.NE + "/trees.txt");
 				demTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.DEM + "/trees.txt");
@@ -163,8 +158,9 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 			//				pathTreeOut = new PrintWriter(outputDir + "/" + CorefConsts.NE + "/matrix.out");
 			//			}
 			stopwords = new HashSet<String>();
-			FileResource r = (FileResource) super.getUimaContext().getResourceObject("stopWords");
-			BufferedReader br = new BufferedReader(new FileReader(r.getFile()));
+//			FileResource r = (FileResource) aContext.getResourceObject("stopWords");
+			File stopFile = FileLocator.locateFile(((String)aContext.getConfigParameterValue(PARAM_STOPS)));
+			BufferedReader br = new BufferedReader(new FileReader(stopFile));
 			String l;
 			while ((l = br.readLine())!=null) {
 				l = l.trim();
@@ -175,11 +171,12 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 				else if (i < 0)
 					stopwords.add(l.trim());
 			}
-			File anaphModFile = FileLocator.locateFile("anaphoricity.mayo.rbf.model");
-			svm_model anaphModel = svm.svm_load_model(anaphModFile.getAbsolutePath());
-			vecCreator = new SvmVectorCreator(stopwords, anaphModel);
-			r = (FileResource) super.getUimaContext().getResourceObject("treeFrags");
-			Scanner scanner = new Scanner(r.getFile());
+//			File anaphModFile = FileLocator.locateFile("anaphoricity.mayo.rbf.model");
+//			svm_model anaphModel = svm.svm_load_model(anaphModFile.getAbsolutePath());
+			vecCreator = new SvmVectorCreator(stopwords);
+//			r = (FileResource) aContext.getResourceObject("treeFrags");
+			File fragFile = FileLocator.locateFile(((String)aContext.getConfigParameterValue(PARAM_FRAGS)));
+			Scanner scanner = new Scanner(fragFile);
 			if(useFrags){
 				treeFrags = new ArrayList<String>();
 				while(scanner.hasNextLine()){
@@ -191,22 +188,21 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 			initialized = true;
 		}catch(Exception e){
 			System.err.println("Error initializing file writers.");
-			throw new ResourceInitializationException();
 		}
 	}
 
 	@Override
-	public void processCas(CAS arg0) throws ResourceProcessException {
+	public void process(JCas jcas) {
 		//		System.err.println("processCas-ing");
 		if(!initialized) return;
-		JCas jcas;
-		try {
-			jcas = arg0.getCurrentView().getJCas();
-		} catch (CASException e) {
-			e.printStackTrace();
-			System.err.println("No processing done in ODIEVectoFileWriter!");
-			return;
-		}
+//		JCas jcas;
+//		try {
+//			jcas = arg0.getCurrentView().getJCas();
+//		} catch (CASException e) {
+//			e.printStackTrace();
+//			System.err.println("No processing done in ODIEVectoFileWriter!");
+//			return;
+//		}
 
 		String docId = DocumentIDAnnotationUtil.getDocumentID(jcas);
 		docId = docId.substring(docId.lastIndexOf('/')+1, docId.length());
@@ -214,7 +210,7 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 //		Hashtable<Integer, Integer> goldId2AlignId = new Hashtable<Integer, Integer>();
 //		Hashtable<Integer, Integer> alignId2GoldId = new Hashtable<Integer, Integer>();
 		if (docId==null) docId = "141471681_1";
-		System.out.print("creating vectors for "+docId);
+		System.out.println("creating vectors for "+docId);
 //		Vector<Span> goldSpans = loadGoldStandard(docId, goldSpan2id);
 		int numPos = 0;
 
@@ -277,13 +273,13 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 				NonEmptyFSList node = (NonEmptyFSList) pairList;
 				BooleanLabeledFS labeledProb = (BooleanLabeledFS) node.getHead();
 				int label = labeledProb.getLabel() ? 1 : 0;
-				if(anaphora){
-					if(label == 1) posAnaphInst++;
-					else negAnaphInst++;
-					anaphLabels.add(label);
-					svm_node[] nodes = vecCreator.createAnaphoricityVector(anaphor, jcas);
-					anaphNodes.add(nodes);
-				}
+//				if(anaphora){
+//					if(label == 1) posAnaphInst++;
+//					else negAnaphInst++;
+//					anaphLabels.add(label);
+//					svm_node[] nodes = vecCreator.createAnaphoricityVector(anaphor, jcas);
+//					anaphNodes.add(nodes);
+//				}
 				Markable antecedent = (Markable) labeledProb.getFeature();
 				label = (labeler.isGoldPair(anaphor, antecedent) ? 1 : 0);
 				if(label == 1){
@@ -361,7 +357,11 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 					writer.println(" |ET|");
 				}
 				pairList = node.getTail();
-				if(label == 1) break;
+				// NOTE: If this is in place, then we will only output negative examples backwards until we reach
+				// the actual coreferent entity.  This may have the effect of suggesting that further away markables
+				// are _more_ likely to be coreferent, which is an assumption that probably does not hold up in the
+				// test set configuration.  Try commenting this feature out to see if it makes the feature more useful.
+//				if(label == 1) break;
 			}
 		}
 		if(printVectors){
@@ -378,38 +378,39 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 		return Integer.parseInt(nodeStr.substring(0,1));
 	}
 
+	
 	@Override
-	public void collectionProcessComplete(ProcessTrace arg0)
-	throws ResourceProcessException, IOException {
-		super.collectionProcessComplete(arg0);
+	public void batchProcessComplete() throws AnalysisEngineProcessException {
+		super.batchProcessComplete();
+
 		//		System.err.println("collectionProcessComplete!");
 		if(!initialized) return;
 
 //		int numPos = 1;
 //		int numNeg = 1;
-
-		if(anaphora){
-			double anaphRatio = (double) posAnaphInst / (double) negAnaphInst;
-//			if(anaphRatio > 1.0) numNeg = (int) anaphRatio;
-//			else numPos = (int) (1 / anaphRatio);
-			for(int i = 0; i < anaphNodes.size(); i++){
-				int label = anaphLabels.get(i);
-//				int numIters = (label == 1 ? numPos : numNeg);
-//				for(int j = 0; j < numIters; j++){
-					anaphOut.print(label);
-					for(svm_node node : anaphNodes.get(i)){
-						anaphOut.print(" ");
-						anaphOut.print(node.index);
-						anaphOut.print(":");
-						anaphOut.print(node.value);
-					}
-					anaphOut.println();
-//				}
-			}
-			anaphOut.flush();
-			anaphOut.close();
-			return;
-		}
+//
+//		if(anaphora){
+//			double anaphRatio = (double) posAnaphInst / (double) negAnaphInst;
+////			if(anaphRatio > 1.0) numNeg = (int) anaphRatio;
+////			else numPos = (int) (1 / anaphRatio);
+//			for(int i = 0; i < anaphNodes.size(); i++){
+//				int label = anaphLabels.get(i);
+////				int numIters = (label == 1 ? numPos : numNeg);
+////				for(int j = 0; j < numIters; j++){
+//					anaphOut.print(label);
+//					for(svm_node node : anaphNodes.get(i)){
+//						anaphOut.print(" ");
+//						anaphOut.print(node.index);
+//						anaphOut.print(":");
+//						anaphOut.print(node.value);
+//					}
+//					anaphOut.println();
+////				}
+//			}
+//			anaphOut.flush();
+//			anaphOut.close();
+//			return;
+//		}
 		if(printVectors){
 			neOut.close();
 			demOut.close();
@@ -432,5 +433,49 @@ public class ODIEVectorFileWriter extends CasConsumer_ImplBase {
 			array[i] = (double) list.get(i);
 		}
 		return array;
+	}
+	
+	public static void main(String[] args){
+		if(args.length < 3){
+			System.err.println("Arguments: <training directory> <gold-pairs directory> <output directory>");
+			System.exit(-1);
+		}
+		File xmiDir = new File(args[0]);
+		if(!xmiDir.isDirectory()){
+			System.err.println("Arg1 should be a directory! (full of xmi files)");
+			System.exit(-1);
+		}
+		File[] files = xmiDir.listFiles();
+//		ArrayList<File> fileList = new ArrayList<File>();
+		String[] paths = new String[files.length];
+		for(int i = 0; i < files.length; i++){
+//			fileList.add(files[i]);
+			paths[i] = files[i].getAbsolutePath();
+		}
+//		TypeSystemDescription typeSystem = 
+//			TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("../ctakes-type-system/desc/common_type_system.xml", 
+//																			 "desc/type-system/CorefTypes.xml",
+//																			 "../assertion/desc/medfactsTypeSystem.xml");
+//		TypeSystemDescription corefTypeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath();
+		try {
+			CollectionReader xmiReader = CollectionReaderFactory.createCollectionReader(XMIReader.class, 
+//					typeSystem, 
+					XMIReader.PARAM_FILES, 
+					paths);
+			
+			AnalysisEngine consumer = AnalysisEngineFactory.createPrimitive(ODIEVectorFileWriter.class,
+//					typeSystem,
+					ODIEVectorFileWriter.PARAM_VECTORS, true,
+					ODIEVectorFileWriter.PARAM_TREES, false,
+					ODIEVectorFileWriter.PARAM_STOPS, "org/apache/ctakes/coreference/models/stop.txt",
+					ODIEVectorFileWriter.PARAM_FRAGS, "org/apache/ctakes/coreference/models/frags.txt",
+					ODIEVectorFileWriter.PARAM_GOLD_DIR, args[1],
+					ODIEVectorFileWriter.PARAM_OUTPUT_DIR, args[2]);
+					
+			SimplePipeline.runPipeline(xmiReader, consumer);
+		}catch(Exception e){
+			System.err.println("Exception thrown!");
+			e.printStackTrace();
+		}
 	}
 }

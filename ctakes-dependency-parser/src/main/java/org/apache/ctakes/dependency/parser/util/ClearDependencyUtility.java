@@ -21,17 +21,15 @@ package org.apache.ctakes.dependency.parser.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import clear.dep.DepNode;
-import clear.dep.DepTree;
-import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.textsem.Predicate;
-import org.apache.ctakes.typesystem.type.textsem.SemanticRoleRelation;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import com.googlecode.clearnlp.dependency.DEPNode;
+import com.googlecode.clearnlp.dependency.DEPTree;
 
 /**
  * @author m081914
@@ -72,7 +70,7 @@ public class ClearDependencyUtility extends DependencyUtility {
 //	}
 //
 //
-	public static ArrayList<ConllDependencyNode> convert(JCas jcas, DepTree clearTree, Sentence sentence, List<BaseToken> tokens)  {
+	public static ArrayList<ConllDependencyNode> convert(JCas jcas, DEPTree clearTree, Sentence sentence, List<BaseToken> tokens)  {
         
         ArrayList<ConllDependencyNode> uimaNodes = new ArrayList<ConllDependencyNode>(tokens.size()+1);
         
@@ -93,7 +91,7 @@ public class ClearDependencyUtility extends DependencyUtility {
         for (int i=1; i<clearTree.size(); i++) {
             
 
-            DepNode clearNode = clearTree.get(i);
+            DEPNode clearNode = clearTree.get(i);
             ConllDependencyNode uimaNode = uimaNodes.get(i);
 
             uimaNode.setId(clearNode.id);
@@ -102,8 +100,8 @@ public class ClearDependencyUtility extends DependencyUtility {
             uimaNode.setCpostag(clearNode.pos);
             uimaNode.setPostag(clearNode.pos);
             uimaNode.setFeats("_");
-            uimaNode.setHead(uimaNodes.get(clearNode.headId));
-            uimaNode.setDeprel(clearNode.deprel);
+            uimaNode.setHead(uimaNodes.get(clearNode.getHead().id));
+            uimaNode.setDeprel(clearNode.getLabel());
             uimaNode.setPhead(null);
             uimaNode.setPdeprel("_");
 

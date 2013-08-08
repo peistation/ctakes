@@ -18,237 +18,246 @@
  */
 package org.apache.ctakes.dictionary.lookup.ae;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
-import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
-
-
 import org.apache.ctakes.core.util.JCasUtil;
 import org.apache.ctakes.dictionary.lookup.DictionaryEngine;
 import org.apache.ctakes.dictionary.lookup.algorithms.FirstTokenPermutationImpl;
 import org.apache.ctakes.dictionary.lookup.algorithms.LookupAlgorithm;
 import org.apache.ctakes.dictionary.lookup.phrasebuilder.PhraseBuilder;
 import org.apache.ctakes.dictionary.lookup.phrasebuilder.VariantPhraseBuilderImpl;
+import org.apache.ctakes.dictionary.lookup.vo.LookupAnnotation;
 import org.apache.ctakes.dictionary.lookup.vo.LookupToken;
-import org.apache.ctakes.typesystem.type.syntax.BaseToken;
-import org.apache.ctakes.typesystem.type.syntax.ContractionToken;
-import org.apache.ctakes.typesystem.type.syntax.NewlineToken;
-import org.apache.ctakes.typesystem.type.syntax.PunctuationToken;
-import org.apache.ctakes.typesystem.type.syntax.SymbolToken;
-import org.apache.ctakes.typesystem.type.syntax.WordToken;
+import org.apache.ctakes.typesystem.type.syntax.*;
+import org.apache.log4j.Logger;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.annotator.AnnotatorInitializationException;
+import org.apache.uima.cas.text.AnnotationIndex;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.tcas.Annotation;
+
+import java.util.*;
 
 /**
  * @author Mayo Clinic
  */
-public class FirstTokenPermLookupInitializerImpl implements LookupInitializer
-{
-	// LOG4J logger based on class name
-	private Logger iv_logger = Logger.getLogger(getClass().getName());
+public class FirstTokenPermLookupInitializerImpl implements LookupInitializer {
 
-	// properties for firstWordPermutation algorithm
-	private final String TEXT_MFS_PRP_KEY = "textMetaFields";
-	private final String MAX_P_LEVEL_PRP_KEY = "maxPermutationLevel";
-	private final String WINDOW_ANNOT_PRP_KEY = "windowAnnotations";
-	private final String EXC_TAGS_PRP_KEY = "exclusionTags"; // optional
+   static private final String TRUE_STRING = Boolean.toString( true );
+   static private final String FALSE_STRING = Boolean.toString( false );
 
-	private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
+   // LOG4J logger based on class name
+   final private Logger iv_logger = Logger.getLogger( getClass().getName() );
 
-	Properties iv_props;
+   // properties for firstWordPermutation algorithm
+   static private final String TEXT_MFS_PRP_KEY = "textMetaFields";
+   static private final String MAX_P_LEVEL_PRP_KEY = "maxPermutationLevel";
+   static private final String WINDOW_ANNOT_PRP_KEY = "windowAnnotations";
+   static private final String EXC_TAGS_PRP_KEY = "exclusionTags"; // optional
 
-	// array of JCas window annotation type values
-	private int[] iv_annotTypeArr;
+   static private final String CANONICAL_VARIANT_ATTR = "canonicalATTR";
 
-	// set of exclusion POS tags (lower cased)
-	private Set iv_exclusionTagSet = null;
+   final private Properties iv_props;
 
-	public FirstTokenPermLookupInitializerImpl(UimaContext aCtx,
-			Properties props) throws ClassNotFoundException,
-			IllegalAccessException, NoSuchFieldException
-	{
-		// TODO property validation could be done here
-		iv_props = props;
+   // array of JCas window annotation type values
+   final private int[] iv_annotTypeArr;
 
-		// optional context window annotations
-		String windowAnnots = iv_props.getProperty(WINDOW_ANNOT_PRP_KEY);
-		if (windowAnnots != null)
-		{
-			String[] windowAnnotArr = windowAnnots.split("\\|");
-			iv_annotTypeArr = new int[windowAnnotArr.length];
-			for (int i = 0; i < windowAnnotArr.length; i++)
-			{
-				iv_annotTypeArr[i] = JCasUtil.getType(windowAnnotArr[i]);
-			}
-		}
+   // set of exclusion POS tags (lower cased)
+   final private Set<String> iv_exclusionTagSet;
 
-		// optional exclusion POS tags
-		String tagStr = iv_props.getProperty(EXC_TAGS_PRP_KEY);
-		if (tagStr != null)
-		{
-			iv_exclusionTagSet = new HashSet();
-			String[] tagArr = tagStr.split(",");
-			for (int i = 0; i < tagArr.length; i++)
-			{
-				iv_exclusionTagSet.add(tagArr[i].toLowerCase());
-			}
-			iv_logger.info("Exclusion tagset loaded: " + iv_exclusionTagSet);
-		}
-	}
+   public FirstTokenPermLookupInitializerImpl( final UimaContext uimaContext,
+                                               final Properties props ) throws ClassNotFoundException,
+                                                                               IllegalAccessException,
+                                                                               NoSuchFieldException {
+      // TODO property validation could be done here
+      iv_props = props;
 
-	public LookupAlgorithm getLookupAlgorithm(DictionaryEngine dictEngine)
-			throws AnnotatorInitializationException
-	{
-		// variant support
-		String[] variantArr = { CANONICAL_VARIANT_ATTR };
-		PhraseBuilder pb = new VariantPhraseBuilderImpl(variantArr, true);
+      // optional context window annotations
+      final String windowAnnots = iv_props.getProperty( WINDOW_ANNOT_PRP_KEY );
+      if ( windowAnnots != null ) {
+         String[] windowAnnotArr = windowAnnots.split( "\\|" );
+         iv_annotTypeArr = new int[windowAnnotArr.length];
+         for ( int i = 0; i < windowAnnotArr.length; i++ ) {
+            iv_annotTypeArr[i] = JCasUtil.getType( windowAnnotArr[i] );
+         }
+      } else {
+         iv_annotTypeArr = null;
+      }
 
-		String textMetaFields = iv_props.getProperty(TEXT_MFS_PRP_KEY);
-		String[] textMetaFieldNameArr;
-		if(textMetaFields == null) 
-			textMetaFieldNameArr = new String[]{};
-		else
-			textMetaFieldNameArr = textMetaFields.split("\\|");
-        
-		
-		int maxPermutationLevel = Integer.parseInt(iv_props.getProperty(MAX_P_LEVEL_PRP_KEY));
+      // optional exclusion POS tags
+      final String tagStr = iv_props.getProperty( EXC_TAGS_PRP_KEY );
+      if ( tagStr != null ) {
+         iv_exclusionTagSet = new HashSet<String>();
+         final String[] tagArr = tagStr.split( "," );
+         for ( String tag : tagArr ) {
+            iv_exclusionTagSet.add( tag.toLowerCase() );
+         }
+         iv_logger.info( "Exclusion tagset loaded: " + iv_exclusionTagSet );
+      } else {
+         iv_exclusionTagSet = null;
+      }
+   }
 
-		return new FirstTokenPermutationImpl(dictEngine,
-				pb,
-				textMetaFieldNameArr,
-				maxPermutationLevel);
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LookupAlgorithm getLookupAlgorithm( final DictionaryEngine dictEngine )
+         throws AnnotatorInitializationException {
+      final String textMetaFields = iv_props.getProperty( TEXT_MFS_PRP_KEY );
+      String[] textMetaFieldNameArr;
+      if ( textMetaFields == null ) {
+         textMetaFieldNameArr = new String[0];
+      } else {
+         textMetaFieldNameArr = textMetaFields.split( "\\|" );
+      }
+      // variant support
+      final String[] variantArr = {CANONICAL_VARIANT_ATTR};
+      final PhraseBuilder pb = new VariantPhraseBuilderImpl( variantArr, true );
+      final int maxPermutationLevel = Integer.parseInt( iv_props.getProperty( MAX_P_LEVEL_PRP_KEY ) );
+      return new FirstTokenPermutationImpl( dictEngine, pb, textMetaFieldNameArr, maxPermutationLevel );
+   }
 
-	private boolean isTagExcluded(String tag)
-	{
-		if ((iv_exclusionTagSet == null) || (tag == null))
-		{
-			return false;
-		}
+   private boolean isTagExcluded( final String tag ) {
+      return iv_exclusionTagSet != null && tag != null && iv_exclusionTagSet.contains( tag.toLowerCase() );
+   }
 
-		return iv_exclusionTagSet.contains(tag.toLowerCase());
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Iterator<LookupToken> getLookupTokenIterator( final JCas jcas ) throws AnnotatorInitializationException {
+      final List<LookupToken> ltList = new ArrayList<LookupToken>();
 
-	public Iterator getLookupTokenIterator(JCas jcas)
-			throws AnnotatorInitializationException
-	{
-		List ltList = new ArrayList();
+      final JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+      final AnnotationIndex<Annotation> annotationIndex = indexes.getAnnotationIndex( BaseToken.type );
+      for ( Annotation annotation : annotationIndex ) {
+         if ( !(annotation instanceof BaseToken) ) {
+            iv_logger.warn( getClass().getName() + " getLookupTokenIterator(..) Annotation is not a BaseToken" );
+            continue;
+         }
+         final boolean isNonLookup = annotation instanceof NewlineToken
+               || annotation instanceof PunctuationToken
+               || annotation instanceof ContractionToken
+               || annotation instanceof SymbolToken;
+         if ( isNonLookup ) {
+            continue;
+         }
+         final BaseToken bta = (BaseToken) annotation;
+         final LookupToken lt = new LookupAnnotationToJCasAdapter( bta );
+         // POS exclusion logic for first word lookup
+         if ( isTagExcluded( bta.getPartOfSpeech() ) ) {
+            lt.addStringAttribute( FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, FALSE_STRING );
+         } else {
+            lt.addStringAttribute( FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, TRUE_STRING );
+         }
+         if ( bta instanceof WordToken ) {
+            final WordToken wta = (WordToken) bta;
+            final String canonicalForm = wta.getCanonicalForm();
+            if ( canonicalForm != null ) {
+               lt.addStringAttribute( CANONICAL_VARIANT_ATTR, canonicalForm );
+            }
+         }
+         ltList.add( lt );
+      }
+      return ltList.iterator();
+   }
 
-		JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-		Iterator btaItr = indexes.getAnnotationIndex(BaseToken.type).iterator();
-		while (btaItr.hasNext())
-		{
-			BaseToken bta = (BaseToken) btaItr.next();
-			if (!((bta instanceof NewlineToken)
-					|| (bta instanceof PunctuationToken)
-					|| (bta instanceof ContractionToken)
-					|| (bta instanceof SymbolToken)))
-			{
-				LookupToken lt = new LookupAnnotationToJCasAdapter(bta);
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Iterator<Annotation> getLookupWindowIterator( final JCas jcas ) throws AnnotatorInitializationException {
+      try {
+         final JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+         final String objClassName = iv_props.getProperty( WINDOW_ANNOT_PRP_KEY );
+         int windowType;
+         try {
+            windowType = JCasUtil.getType( objClassName );
+         } catch ( IllegalArgumentException iaE ) {
+            // thrown by JCasUtil.getType()
+            throw new AnnotatorInitializationException( iaE );
+         }
+         return indexes.getAnnotationIndex( windowType ).iterator();
+      } catch ( Exception e ) {
+         // TODO specify exceptions, get rid of the catch for "Exception"
+         throw new AnnotatorInitializationException( e );
+      }
+   }
 
-				// POS exclusion logic for first word lookup
-				if (isTagExcluded(bta.getPartOfSpeech()))
-				{
-					lt.addStringAttribute(
-							FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP,
-							"false");
-				}
-				else
-				{
-					lt.addStringAttribute(
-							FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP,
-							"true");
-				}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Map<String, List<LookupAnnotation>> getContextMap( final JCas jcas,
+                                                             final int windowBegin, final int windowEnd )
+         throws AnnotatorInitializationException {
+      if ( iv_annotTypeArr == null ) {
+         return Collections.emptyMap();
+      }
+      final List<LookupAnnotation> list = new ArrayList<LookupAnnotation>();
+      // algorithm depends on a window for permutations
+      final JFSIndexRepository indexes = jcas.getJFSIndexRepository();
+      for ( int annotationType : iv_annotTypeArr ) {
+         final Iterator<Annotation> itr = indexes.getAnnotationIndex( annotationType ).iterator();
+         list.addAll( constrainToWindow( windowBegin, windowEnd, itr ) );
+      }
+      final Map<String, List<LookupAnnotation>> m = new HashMap<String, List<LookupAnnotation>>( 1 );
+      m.put( FirstTokenPermutationImpl.CTX_KEY_WINDOW_ANNOTATIONS, list );
+      return m;
+   }
 
-				if (bta instanceof WordToken)
-				{
-					WordToken wta = (WordToken) bta;
-					String canonicalForm = wta.getCanonicalForm();
-					if (canonicalForm != null)
-					{
-						lt.addStringAttribute(CANONICAL_VARIANT_ATTR, canonicalForm);
-					}
-				}
+   /**
+    * Gets a list of LookupAnnotation objects within the specified window.
+    *
+    * @param annotItr -
+    * @return list of lookup annotations
+    */
+   private List<LookupAnnotation> constrainToWindow( final int begin, final int end,
+                                                     final Iterator<Annotation> annotItr ) {
+      final List<LookupAnnotation> list = new ArrayList<LookupAnnotation>();
+      while ( annotItr.hasNext() ) {
+         final Annotation annot = annotItr.next();
+         // only consider if it's within the window
+         if ( (annot.getBegin() >= begin) && (annot.getEnd() <= end) ) {
+            list.add( new LookupAnnotationToJCasAdapter( annot ) );
+         }
+      }
+      return list;
+   }
 
-				ltList.add(lt);
-			}
-		}
-		return ltList.iterator();
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public List<LookupToken> getSortedLookupTokens( final JCas jcas,
+                                                   final Annotation covering ) throws AnnotatorInitializationException {
+      final List<LookupToken> ltList = new ArrayList<LookupToken>();
+      final List<BaseToken> inputList = org.uimafit.util.JCasUtil.selectCovered( jcas, BaseToken.class, covering );
+      for ( BaseToken bta : inputList ) {
+         final boolean isNonLookup = bta instanceof NewlineToken
+               || bta instanceof PunctuationToken
+               || bta instanceof ContractionToken
+               || bta instanceof SymbolToken;
+         if ( isNonLookup ) {
+            continue;
+         }
+         final LookupToken lt = new LookupAnnotationToJCasAdapter( bta );
+         // POS exclusion logic for first word lookup
+         if ( isTagExcluded( bta.getPartOfSpeech() ) ) {
+            lt.addStringAttribute( FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, FALSE_STRING );
+         } else {
+            lt.addStringAttribute( FirstTokenPermutationImpl.LT_KEY_USE_FOR_LOOKUP, TRUE_STRING );
+         }
+         if ( bta instanceof WordToken ) {
+            final WordToken wta = (WordToken) bta;
+            final String canonicalForm = wta.getCanonicalForm();
+            if ( canonicalForm != null ) {
+               lt.addStringAttribute( CANONICAL_VARIANT_ATTR, canonicalForm );
+            }
+         }
+         ltList.add( lt );
+      }
+      return ltList;
+   }
 
-	public Iterator getLookupWindowIterator(JCas jcas)
-			throws AnnotatorInitializationException
-	{
-		try
-		{
-			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-			String objClassName = iv_props.getProperty(WINDOW_ANNOT_PRP_KEY);
-			int windowType = JCasUtil.getType(objClassName);
-			return indexes.getAnnotationIndex(windowType).iterator();
-		}
-		catch (Exception e)
-		{
-			throw new AnnotatorInitializationException(e);
-		}
-	}
-
-	public Map getContextMap(JCas jcas, int windowBegin, int windowEnd)
-			throws AnnotatorInitializationException
-	{
-		if (iv_annotTypeArr != null)
-		{
-			List list = new ArrayList();
-
-			// algorithm depends on a window for permutations
-			JFSIndexRepository indexes = jcas.getJFSIndexRepository();
-			for (int i = 0; i < iv_annotTypeArr.length; i++)
-			{
-				Iterator itr = indexes.getAnnotationIndex(iv_annotTypeArr[i])
-						.iterator();
-				list.addAll(constrainToWindow(windowBegin, windowEnd, itr));
-			}
-
-			Map m = new HashMap();
-			m.put(FirstTokenPermutationImpl.CTX_KEY_WINDOW_ANNOTATIONS, list);
-			return m;
-		}
-		else
-		{
-			return new HashMap();
-		}
-	}
-
-	/**
-	 * Gets a list of LookupAnnotation objects within the specified window.
-	 * 
-	 * @param annotItr
-	 * @return
-	 */
-	private List constrainToWindow(int begin, int end, Iterator annotItr)
-	{
-		List list = new ArrayList();
-
-		while (annotItr.hasNext())
-		{
-			Annotation annot = (Annotation) annotItr.next();
-
-			// only consider if it's within the window
-			if ((annot.getBegin() >= begin) && (annot.getEnd() <= end))
-			{
-				list.add(new LookupAnnotationToJCasAdapter(annot));
-			}
-		}
-		return list;
-	}
 }

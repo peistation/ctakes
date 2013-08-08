@@ -77,8 +77,9 @@ public class XMIReader extends JCasCollectionReader_ImplBase {
       XmiCasDeserializer.deserialize(new BufferedInputStream(inputStream), jCas.getCas());
     } catch (SAXException e) {
       throw new CollectionException(e);
+    } finally {
+      inputStream.close();
     }
-    inputStream.close();
     this.completed += 1;
   }
 

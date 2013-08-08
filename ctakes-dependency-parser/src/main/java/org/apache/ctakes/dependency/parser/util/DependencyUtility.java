@@ -50,6 +50,8 @@ public abstract class DependencyUtility {
 	
 	/** Equality expressions to aid in converting between DepNodes and CAS objects */
 	public static boolean equalCoverage(Annotation annot1,Annotation annot2) {
+		if (annot1==null || annot2==null) 
+			return false;
 		return annot1.getBegin()==annot2.getBegin() && 
 			annot1.getEnd()==annot2.getEnd() && 
 			annot1.getCoveredText().equals(annot2.getCoveredText());
@@ -57,6 +59,8 @@ public abstract class DependencyUtility {
 
 	/** Checks if one annotation subsumes another */
 	public static boolean doesSubsume(Annotation annot1,Annotation annot2) {
+		if (annot1==null || annot2==null) 
+			return false;
 		return annot1.getBegin()<=annot2.getBegin() && 
 			annot1.getEnd()>=annot2.getEnd() && 
 			annot1.getCoveredText().contains(annot2.getCoveredText());
@@ -106,6 +110,9 @@ public abstract class DependencyUtility {
 	/** Returns the first ConllDependencyNode in the CAS w/ same begin and end as the given Annotation **/	
 	public static ConllDependencyNode getNominalHeadNode(JCas jCas, Annotation annot) {
 		List<ConllDependencyNode> nodes = getDependencyNodes(jCas, annot);
+		if (nodes==null || nodes.size()==0) {
+			return null;
+		}
 		return getNominalHeadNode( nodes );
 	}
 
@@ -250,8 +257,26 @@ public abstract class DependencyUtility {
 		if (sent1.equals(sent2)) {
 			return getPath( getDependencyNodes(jCas, sent1), node1, node2);
 		} else {
-			logger.debug("Cannot find path between nodes in different sentences. Node1: "
-					+ node1.getCoveredText() + "  Node2: " + node2.getCoveredText());			
+			
+			// 6/28/13 shalgrim
+			// nodes can be null so check before calling getCoveredText
+			String node1txt, node2txt;
+			
+			if (node1 == null) {
+				node1txt = "null";
+			} else {
+				node1txt = node1.getCoveredText();
+			}
+			
+			if (node2 == null)
+			{
+				node2txt = "null";
+			} else {
+				node2txt = node2.getCoveredText();
+			}
+			
+			logger.debug(String.format("Cannot find path between nodes in different sentences. Node1: %s  Node2: %s",
+					node1txt, node2txt));			
 		}
 		return null;
 	}

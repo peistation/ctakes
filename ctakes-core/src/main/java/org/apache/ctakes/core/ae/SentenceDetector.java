@@ -20,15 +20,22 @@ package org.apache.ctakes.core.ae;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-import opennlp.maxent.GISModel;
-import opennlp.maxent.io.SuffixSensitiveGISModelWriter;
 import opennlp.tools.sentdetect.DefaultSDContextGenerator;
-import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
+import opennlp.tools.util.InvalidFormatException;
 
+import org.apache.ctakes.core.resource.FileLocator;
+import org.apache.ctakes.core.sentence.EndOfSentenceScannerImpl;
+import org.apache.ctakes.core.sentence.SentenceDetectorCtakes;
+import org.apache.ctakes.core.sentence.SentenceSpan;
+import org.apache.ctakes.core.util.ParamUtil;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -38,15 +45,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
-
-
-import org.apache.ctakes.core.resource.MaxentModelResource;
-import org.apache.ctakes.core.sentence.EndOfSentenceScannerImpl;
-import org.apache.ctakes.core.sentence.SentenceDetectorCtakes;
-import org.apache.ctakes.core.sentence.SentenceSpan;
-import org.apache.ctakes.core.util.ParamUtil;
-import org.apache.ctakes.typesystem.type.textspan.Segment;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * Wraps the OpenNLP sentence detector in a UIMA annotator
@@ -64,7 +62,9 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 	// LOG4J logger based on class name
 	private Logger logger = Logger.getLogger(getClass().getName());
 
-	private final String MAXENT_MODEL_RESRC_KEY = "MaxentModel";
+	public static final String SD_MODEL_FILE_PARAM = "SentenceModelFile";
+
+	private opennlp.tools.sentdetect.SentenceModel sdmodel;
 
 	private UimaContext context;
 
@@ -84,7 +84,7 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 		context = aContext;
 		try {
 			configInit();
-		} catch (ResourceAccessException ace) {
+		} catch (Exception ace) {
 			throw new ResourceInitializationException(ace);
 		}
 	}
@@ -93,29 +93,26 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 	 * Reads configuration parameters.
 	 * 
 	 * @throws ResourceAccessException
+	 * @throws IOException 
+	 * @throws InvalidFormatException 
 	 */
-	private void configInit() throws ResourceAccessException {
-		MaxentModelResource mmResrc = (MaxentModelResource) context
-				.getResourceObject(MAXENT_MODEL_RESRC_KEY);
-		// <code>SuffixMaxentModelResourceImpl</code> will log the name of the
-		// resource at load() time
-		// logger.info("Sentence detector resource: " +
-		// mmResrc.getModel().toString());
+	private void configInit() throws ResourceAccessException, InvalidFormatException, IOException {
 
-		if (mmResrc == null) {
-			// TODO Consider throwing an exception here
-			logger.warn("Unable to locate resource with key="
-					+ MAXENT_MODEL_RESRC_KEY + ".");
-		} else {
+		String sdModelPath = (String) context
+				.getConfigParameterValue(SD_MODEL_FILE_PARAM);
+			InputStream is = FileLocator.getAsStream(sdModelPath);
+			logger.info("POS tagger model file: " + sdModelPath);
+			sdmodel = new SentenceModel(is);
+			is.close();
 			EndOfSentenceScannerImpl eoss = new EndOfSentenceScannerImpl();
 			char[] eosc = eoss.getEndOfSentenceCharacters();
 			// SentenceDContextGenerator cg = new SentenceDContextGenerator();
 			DefaultSDContextGenerator cg = new DefaultSDContextGenerator(eosc);
-			sentenceDetector = new SentenceDetectorCtakes(mmResrc.getModel(), cg, eoss);
-		}
+			sentenceDetector = new SentenceDetectorCtakes(
+					sdmodel.getMaxentModel(), cg, eoss);
 
-		skipSegmentsSet = ParamUtil.getStringParameterValuesSet(
-				PARAM_SEGMENTS_TO_SKIP, context);
+			skipSegmentsSet = ParamUtil.getStringParameterValuesSet(
+					PARAM_SEGMENTS_TO_SKIP, context);
 	}
 
 	/**
@@ -172,7 +169,9 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 		// The sentence detector returns the offsets of the sentence-endings it
 		// detects
 		// within the string
-		int[] sentenceBreaks = sentenceDetector.sentPosDetect(text.substring(b, e)); // OpenNLP tools 1.5 returns Spans rather than offsets that 1.4 did
+		int[] sentenceBreaks = sentenceDetector.sentPosDetect(text.substring(b,
+				e)); // OpenNLP tools 1.5 returns Spans rather than offsets that
+						// 1.4 did
 		int numSentences = sentenceBreaks.length;
 		// There might be text after the last sentence-ending found by detector,
 		// so +1
@@ -184,7 +183,9 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 		// Will trim leading or trailing whitespace when check for end-of-line
 		// characters
 		for (int i = 0; i < numSentences; i++) {
-			sentEnd = sentenceBreaks[i] + b; // OpenNLP tools 1.5 returns Spans rather than offsets that 1.4 did
+			sentEnd = sentenceBreaks[i] + b; // OpenNLP tools 1.5 returns Spans
+												// rather than offsets that 1.4
+												// did
 			String coveredText = text.substring(sentStart, sentEnd);
 			potentialSentSpans[i] = new SentenceSpan(sentStart, sentEnd,
 					coveredText);
@@ -287,16 +288,17 @@ public class SentenceDetector extends JCasAnnotator_ImplBase {
 
 		logger.info("Training new model from " + inFile.getAbsolutePath());
 		logger.info("Using " + numEosc + " end of sentence characters.");
-		
-		logger.error("----------------------------------------------------------------------------------"); 
-		logger.error("Need to update yet for OpenNLP changes "); // TODO 
-		logger.error("Commented out code that no longer compiles due to OpenNLP API incompatible changes"); // TODO 
-		logger.error("----------------------------------------------------------------------------------"); 
-		//GISModel mod = SentenceDetectorME.train(inFile, iters, cut, scanner);
-		//SuffixSensitiveGISModelWriter ssgmw = new SuffixSensitiveGISModelWriter(
-		//		mod, outFile);
-		//logger.info("Saving the model as: " + outFile.getAbsolutePath());
-		//ssgmw.persist();
+
+		logger.error("----------------------------------------------------------------------------------");
+		logger.error("Need to update yet for OpenNLP changes "); // TODO
+		logger.error("Commented out code that no longer compiles due to OpenNLP API incompatible changes"); // TODO
+		logger.error("----------------------------------------------------------------------------------");
+		// GISModel mod = SentenceDetectorME.train(inFile, iters, cut, scanner);
+		// SuffixSensitiveGISModelWriter ssgmw = new
+		// SuffixSensitiveGISModelWriter(
+		// mod, outFile);
+		// logger.info("Saving the model as: " + outFile.getAbsolutePath());
+		// ssgmw.persist();
 
 	}
 

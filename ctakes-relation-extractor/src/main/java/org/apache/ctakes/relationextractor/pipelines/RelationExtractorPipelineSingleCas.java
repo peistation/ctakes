@@ -61,7 +61,7 @@ public class RelationExtractorPipelineSingleCas {
 
 		public static void main(String[] args) throws UIMAException, IOException {
 
-			String sampleSentence = "Abdomen: Soft, nontender without hepatosplenomegaly or masses";
+			String sampleSentence = "He still is not able to work because of severe pain involving his wrists.";
 			
 			JCas jCas = JCasFactory.createJCas();
 			jCas.setDocumentText(sampleSentence);

@@ -24,30 +24,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
  * @author Mayo Clinic
  */
-public class StringTableRow
-{
-	private Map iv_fieldMap = new HashMap();
+final public class StringTableRow {
 
-    public Set getNames()
-    {
-        return iv_fieldMap.keySet();
-    }
+   final private Map<String, String> iv_fieldMap = new HashMap<String, String>();
 
-    public Collection getValues()
-    {
-        return iv_fieldMap.values();
-    }	
-	
-	public void addField(String fieldName, String fieldValue)
-	{
-		iv_fieldMap.put(fieldName, fieldValue);
-	}
+   public Set<String> getNames() {
+      return iv_fieldMap.keySet();
+   }
 
-	public String getFieldValue(String fieldName)
-	{
-		return (String) iv_fieldMap.get(fieldName);
-	}
+   public Collection<String> getValues() {
+      return iv_fieldMap.values();
+   }
+
+   public void addField( final String fieldName, final String fieldValue ) {
+      iv_fieldMap.put( fieldName, fieldValue );
+   }
+
+   public String getFieldValue( final String fieldName ) {
+      return iv_fieldMap.get( fieldName );
+   }
 }

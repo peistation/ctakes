@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,14 +51,8 @@ public class HyphenTextModifierImpl implements TextModifier {
 	private int iv_windowSize = 3; // default lookahead window
 	private Tokenizer iv_tokenizer = null;
 
-	/**
-	 * Default constructor takes a name of the file containing hyphenated
-	 * phrases, with their frequency.
-	 * Currently the frequency is unused.<br>
-	 * The case of the words in the file is unimportant - we lowercase
-	 * everything when doing compares.<br>
-	 * The file is delimited with "|" and has two fields:<br>
-	 * hyphen-term|frequency
+	/*
+	 * DECPRECATED: Uses InputSteam instead
 	 */
 	public HyphenTextModifierImpl(String hyphenfilename, int windowSize) {
 		iv_windowSize = windowSize;
@@ -87,6 +83,43 @@ public class HyphenTextModifierImpl implements TextModifier {
 		}
 
 	}
+	/**
+	 * Default constructor takes a name of the file containing hyphenated
+	 * phrases, with their frequency.
+	 * Currently the frequency is unused.<br>
+	 * The case of the words in the file is unimportant - we lowercase
+	 * everything when doing compares.<br>
+	 * The file is delimited with "|" and has two fields:<br>
+	 * hyphen-term|frequency
+	 */
+	public HyphenTextModifierImpl(InputStream hyphenfilename, int windowSize) {
+		iv_windowSize = windowSize;
+		iv_tokenizer = new Tokenizer();
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new InputStreamReader(hyphenfilename));
+			String line = "";
+
+			iv_shouldbeHyphenMap = new HashMap<String, Integer>();
+			while ((line = br.readLine()) != null) {
+				String[] toks = line.split("\\|");
+				String[] unh = toks[0].split("\\-");
+				String shouldbehyphen = "";
+				for (int i = 0; i < unh.length; i++) {
+					shouldbehyphen += " " + unh[i];
+				}
+				shouldbehyphen = shouldbehyphen.trim().toLowerCase();
+				iv_shouldbeHyphenMap.put(shouldbehyphen, new Integer(1));
+			}
+		} catch (FileNotFoundException e) {
+			System.err.println("Cannot find the hyphenation file:" + hyphenfilename);
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("IOException accessing the hyphenation file:" + hyphenfilename);
+			e.printStackTrace();
+		}
+
+	}	
 
 	/**
 	 * Filters out unwanted tokens - newlines.

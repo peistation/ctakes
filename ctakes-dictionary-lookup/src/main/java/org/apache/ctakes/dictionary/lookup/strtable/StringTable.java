@@ -18,88 +18,63 @@
  */
 package org.apache.ctakes.dictionary.lookup.strtable;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
- *
  * @author Mayo Clinic
  */
-public class StringTable
-{
-    // key = indexed field name (String), value = VALUE MAP 
-    private Map iv_nameMap = new HashMap();
+final public class StringTable {
+   // key = indexed field name (String), value = VALUE MAP
+   final private Map<String, Map<String, Set<StringTableRow>>> iv_nameMap;
 
-    // ROW MAP	
-    // key = indexed field value (String), value = set of StringTableRows 
+   // ROW MAP
+   // key = indexed field value (String), value = set of StringTableRows
 
-    public StringTable(String[] indexedFieldNames)
-    {
-        for (int i = 0; i < indexedFieldNames.length; i++)
-        {
-            iv_nameMap.put(indexedFieldNames[i], new HashMap());
-        }
-    }
+   public StringTable( final String[] indexedFieldNames ) {
+      iv_nameMap = new HashMap<String, Map<String, Set<StringTableRow>>>();
+      for ( String fieldName : indexedFieldNames ) {
+         iv_nameMap.put( fieldName, new HashMap<String, Set<StringTableRow>>() );
+      }
+   }
 
-    public void addRow(StringTableRow strTableRow)
-    {
-        Iterator indexedFieldNameItr = iv_nameMap.keySet().iterator();
-        while (indexedFieldNameItr.hasNext())
-        {
-            String indexedFieldName = (String) indexedFieldNameItr.next();
-            Map valueMap = (Map) iv_nameMap.get(indexedFieldName);
+   public void addRow( final StringTableRow strTableRow ) {
+      for ( Map.Entry<String,Map<String, Set<StringTableRow>>> stringMapEntry : iv_nameMap.entrySet() ) {
+         final Map<String, Set<StringTableRow>> valueMap = stringMapEntry.getValue();
+         final String indexedFieldValue = strTableRow.getFieldValue( stringMapEntry.getKey() );
 
-            String indexedFieldValue =
-                strTableRow.getFieldValue(indexedFieldName);
-            Set rowSet = (Set) valueMap.get(indexedFieldValue);
-            if (rowSet == null)
-            {
-                rowSet = new HashSet();
+         Set<StringTableRow> rowSet = valueMap.get( indexedFieldValue );
+         if ( rowSet == null ) {
+            rowSet = new HashSet<StringTableRow>();
+         }
+         rowSet.add( strTableRow );
+         valueMap.put( indexedFieldValue, rowSet );
+
+      }
+   }
+
+   public StringTableRow[] getRows( final String indexedFieldName, final String fieldVal ) {
+      final Map<String, Set<StringTableRow>> valueMap = iv_nameMap.get( indexedFieldName );
+      Set<StringTableRow> rowSet = valueMap.get( fieldVal );
+      if ( rowSet != null ) {
+         return rowSet.toArray( new StringTableRow[rowSet.size()] );
+      } else {
+         return new StringTableRow[0];
+      }
+   }
+
+   public StringTableRow[] getAllRows() {
+      final Set<StringTableRow> allRows = new HashSet<StringTableRow>();
+      for ( Map<String, Set<StringTableRow>> valueMap : iv_nameMap.values() ) {
+         for ( Set<StringTableRow> rowSet : valueMap.values() ) {
+            if ( !rowSet.isEmpty() ) {
+               allRows.addAll( rowSet );
             }
-            rowSet.add(strTableRow);
+         }
+      }
+      return allRows.toArray( new StringTableRow[allRows.size()] );
+   }
 
-            valueMap.put(indexedFieldValue, rowSet);
-        }
-    }
-
-    public StringTableRow[] getRows(String indexedFieldName, String fieldVal)
-    {
-        Map valueMap = (Map) iv_nameMap.get(indexedFieldName);
-        Set rowSet = (Set) valueMap.get(fieldVal);
-        if (rowSet != null)
-        {
-			return (StringTableRow[]) rowSet.toArray(
-				new StringTableRow[rowSet.size()]);
-        }
-        else
-        {
-        	return new StringTableRow[0];
-        }
-    }
-    
-    public StringTableRow[] getAllRows()
-    {
-        Collection col = new HashSet();
-        Iterator valueMapItr = iv_nameMap.values().iterator();
-        while (valueMapItr.hasNext())
-        {
-            Map valueMap = (Map)valueMapItr.next();
-            Iterator valueItr = valueMap.values().iterator();
-            while (valueItr.hasNext())
-            {
-                Set rowSet = (Set)valueItr.next();
-                if (rowSet.size() > 0)
-                {
-                    col.addAll(rowSet);                    
-                }
-            }
-        }
-        
-		return (StringTableRow[]) col.toArray(
-				new StringTableRow[col.size()]);
-    }
 }

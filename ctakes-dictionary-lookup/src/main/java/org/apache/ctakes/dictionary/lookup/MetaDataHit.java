@@ -27,11 +27,11 @@ import java.util.Set;
  */
 public interface MetaDataHit
 {
-    public Set getMetaFieldNames();
+    public Set<String> getMetaFieldNames();
     
-    public Collection getMetaFieldValues();
+    public Collection<String> getMetaFieldValues();
 
     public String getMetaFieldValue(String metaFieldName);
 	
-	public boolean equals(MetaDataHit mdh);
+	 public boolean equals(MetaDataHit mdh);
 }

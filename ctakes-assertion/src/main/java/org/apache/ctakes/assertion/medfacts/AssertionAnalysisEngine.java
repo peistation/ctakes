@@ -27,8 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -140,8 +141,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
   @Override
   public void process(JCas jcas) throws AnalysisEngineProcessException
   {
-    logger.info("(logging statement) AssertionAnalysisEngine.process() BEGIN");
-    System.out.println("(stdout) AssertionAnalysisEngine.process() BEGIN");
+    logger.debug("(logging statement) AssertionAnalysisEngine.process() BEGIN");
     String contents = jcas.getDocumentText();
 
     // String tokenizedContents = tokenizeCasDocumentText(jcas);
@@ -205,12 +205,12 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     }
 
     logger
-        .info("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
+        .debug("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
 
     p.processSingleDocument();
 
     logger
-        .info("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
+        .debug("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
 
     Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
     //logger.info(String.format("    - done processing ..\"."));
@@ -279,8 +279,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       //logger.info("    assertionTypeMap loop INSIDE END");
     }
     //logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
-    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
-    logger.info("(logging statement) AssertionAnalysisEngine.process() END");
+    logger.debug("(logging statement) AssertionAnalysisEngine.process() END");
   }
 
   public static void mapI2B2AssertionValueToCtakes(String assertionType,
@@ -290,7 +289,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     {
       String message = "current assertion type is null; this is a problem!!";
       System.err.println(message);
-      logger.severe(message);
+      logger.log(Level.ERROR,message);
       // Exception runtimeException = new RuntimeException(message);
       // throw new AnalysisEngineProcessException(runtimeException);
     
@@ -370,8 +369,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       String message = String.format(
           "unexpected assertion value returned!! \"%s\"",
           assertionType);
-      logger.severe(message);
-      System.err.println(message);
+      logger.log(Level.ERROR,message);
+//      System.err.println(message);
       Exception runtimeException = new RuntimeException(message);
       throw new AnalysisEngineProcessException(runtimeException);
     }
@@ -389,7 +388,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     
     b.append(debugOutput);
     
-    logger.info(b.toString());
+    logger.debug(b.toString());
     
   }
 

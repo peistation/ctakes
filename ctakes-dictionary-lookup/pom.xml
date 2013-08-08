@@ -19,16 +19,20 @@
     under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ctakes-dictionary-lookup</artifactId>
 	<name>Apache cTAKES dictionary lookup</name>
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
-	<dependencies>
+		<dependencies>
+	     <dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup-res</artifactId>
+		</dependency>		    
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
@@ -51,6 +55,18 @@
 			<artifactId>lucene-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+		</dependency>				
+		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
 		</dependency>
@@ -63,7 +79,7 @@
 		<dependency>
 			<groupId>net.sourceforge.ctakesresources</groupId>
 			<artifactId>ctakes-resources-umls2011ab</artifactId>
-			<version>3.0.0</version>
+			<version>3.1.0</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -80,6 +96,7 @@
 						</goals>
 						<configuration>
 							<includeArtifactIds>ctakes-resources-umls2011ab</includeArtifactIds>
+              <!-- <includes>**/*</includes> -->
 							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 						</configuration>
 					</execution>
@@ -87,5 +104,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

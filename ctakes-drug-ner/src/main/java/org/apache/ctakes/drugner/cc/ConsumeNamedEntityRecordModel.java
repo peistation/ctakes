@@ -48,12 +48,26 @@ import org.apache.uima.resource.ResourceProcessException;
 import org.apache.ctakes.core.util.FSUtil;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.refsem.Date;
+import org.apache.ctakes.typesystem.type.refsem.MedicationDosage;
+import org.apache.ctakes.typesystem.type.refsem.MedicationDuration;
+import org.apache.ctakes.typesystem.type.refsem.MedicationForm;
+import org.apache.ctakes.typesystem.type.refsem.MedicationFrequency;
+import org.apache.ctakes.typesystem.type.refsem.MedicationRoute;
+import org.apache.ctakes.typesystem.type.refsem.MedicationStatusChange;
 import org.apache.ctakes.typesystem.type.refsem.MedicationStrength;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.syntax.WordToken;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.drugner.type.ChunkAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.MedicationEventMention;
+import org.apache.ctakes.typesystem.type.textsem.MedicationDosageModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationDurationModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationFormModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationFrequencyModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationMention;
+import org.apache.ctakes.typesystem.type.textsem.MedicationRouteModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationStatusChangeModifier;
+import org.apache.ctakes.typesystem.type.textsem.MedicationStrengthModifier;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.util.Pair;
 import org.apache.ctakes.typesystem.type.util.Pairs;
 //import org.apache.ctakes.drugner.type.DrugMentionAnnotation;
@@ -273,10 +287,10 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 			    //System.err.println("Segment :"+ s.getCoveredText());
 			}
 			
-            Iterator nerItr = indexes.getAnnotationIndex(MedicationEventMention.type).iterator();
+            Iterator nerItr = indexes.getAnnotationIndex(MedicationMention.type).iterator();
 			while (nerItr.hasNext()) 
 			{
-			  MedicationEventMention neAnnot = (MedicationEventMention) nerItr.next();
+			  MedicationMention neAnnot = (MedicationMention) nerItr.next();
 //System.err.println("DrugNE :"+neAnnot.getCoveredText());			  
 			  gotDup = false;
 
@@ -304,8 +318,10 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 								keepTrackOfDupEnd = neAnnot.getEnd();
 
 
-
-								Date localDate = neAnnot.getStartDate();//.getStartDate();
+								TimeMention startTimeMention = neAnnot.getStartDate();
+								
+								Date localDate = null;
+								if (startTimeMention!=null) localDate = startTimeMention.getDate();
 								String chunk = null;
 
 								boolean foundChunk = false;
@@ -383,29 +399,52 @@ public class ConsumeNamedEntityRecordModel extends CasConsumer_ImplBase {
 									}
 								}
 
-								MedicationStrength strengthTerm = neAnnot.getMedicationStrength();//getStrength();
+								MedicationStrengthModifier strength = neAnnot.getMedicationStrength();
+								MedicationStrength strengthTerm = (MedicationStrength) strength.getNormalizedForm();
 								String strengthTermString = "null";
-								if (strengthTerm != null) 
+								if (strengthTerm != null) { 
 									strengthTermString = strengthTerm.getNumber()+ " " +strengthTerm.getUnit();
+								}
+								
 								String medicationDosageString = "null";
-								if (neAnnot.getMedicationDosage() != null && neAnnot.getMedicationDosage().getValue() != null)
-									medicationDosageString = neAnnot.getMedicationDosage().getValue();
+								MedicationDosageModifier dosageModifier = neAnnot.getMedicationDosage();
+								if (dosageModifier != null) {
+									MedicationDosage d = (MedicationDosage) dosageModifier.getNormalizedForm();
+									if (d!=null) medicationDosageString = d.getValue();
+								}
 								String medicationFrequencyNumber = "null";
-								if (neAnnot.getMedicationFrequency() != null && neAnnot.getMedicationFrequency().getNumber() != null)
-									medicationFrequencyNumber = neAnnot.getMedicationFrequency().getNumber()+" "+neAnnot.getMedicationFrequency().getUnit();
+								MedicationFrequencyModifier freqModifier = neAnnot.getMedicationFrequency();
+								if (freqModifier != null) {
+									MedicationFrequency f = (MedicationFrequency) freqModifier.getNormalizedForm();
+									if (f != null) medicationFrequencyNumber = f.getNumber()+" "+f.getUnit();
+								}
 								String duration = "null";
-								if (neAnnot.getMedicationDuration() != null && neAnnot.getMedicationDuration().getValue() != null)
-									duration = neAnnot.getMedicationDuration().getValue();
+								MedicationDurationModifier durationModifier = neAnnot.getMedicationDuration();
+								if (durationModifier != null) {
+									MedicationDuration d = (MedicationDuration) durationModifier.getNormalizedForm();
+									if (d!=null) duration = d.getValue();
+								}
 
 								String route = "null";
-								if (neAnnot.getMedicationRoute() != null && neAnnot.getMedicationRoute().getValue() != null)
-									route = neAnnot.getMedicationRoute().getValue();
+								MedicationRouteModifier routeModifier = neAnnot.getMedicationRoute();
+								if (routeModifier != null) {
+									MedicationRoute r = (MedicationRoute) routeModifier.getNormalizedForm();
+									if (r != null) route = r.getValue();
+								}
 								String form = "null";
-								if (neAnnot.getMedicationForm() != null && neAnnot.getMedicationForm().getValue() != null)
-									form = neAnnot.getMedicationForm().getValue();
+								MedicationFormModifier formModifier = neAnnot.getMedicationForm();
+								if (formModifier != null) {
+									MedicationForm f = (MedicationForm) formModifier.getNormalizedForm();
+									if (f!=null) form = f.getValue();
+								}
+								
 								String changeStatus = "null";
-								if (neAnnot.getMedicationStatusChange() != null && neAnnot.getMedicationStatusChange().getValue() != null )
-									changeStatus = neAnnot.getMedicationStatusChange().getValue();
+								MedicationStatusChangeModifier scModifier = neAnnot.getMedicationStatusChange();
+								if (scModifier != null) {
+									MedicationStatusChange sc = (MedicationStatusChange) scModifier.getNormalizedForm();
+									if (sc!=null) changeStatus = sc.getValue();
+								}
+								
 								medInfo = clinicNumber + "," +neAnnot.getCoveredText()  + "," + rxNormCui 
 								+ ",\"" + neAnnot.getStartDate() + "\","
 								+ globalDate + "," + medicationDosageString + "," +strengthTermString + "," 

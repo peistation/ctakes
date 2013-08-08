@@ -51,12 +51,12 @@ public class Splitter {
 	/**
 	 * Specify percentages of the split.
 	 */
-	public Splitter(double trainProportion, double devProportion, double testProportion) {
+	public Splitter(double trainProportion, double devProportion) {
 
 		File dir = new File(ALLFILELOC);
 		
 		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};
@@ -79,7 +79,7 @@ public class Splitter {
 		File dir = new File(ALLFILELOC);
 		
 		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(File fileDir, String name) {
 				return name.endsWith(".xml");
 			}
 		};

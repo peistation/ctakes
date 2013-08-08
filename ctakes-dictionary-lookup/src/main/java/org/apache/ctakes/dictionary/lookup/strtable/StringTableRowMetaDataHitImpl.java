@@ -18,39 +18,46 @@
  */
 package org.apache.ctakes.dictionary.lookup.strtable;
 
+import org.apache.ctakes.dictionary.lookup.AbstractBaseMetaDataHit;
+import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Set;
 
-import org.apache.ctakes.dictionary.lookup.BaseMetaDataHitImpl;
-import org.apache.ctakes.dictionary.lookup.MetaDataHit;
-
 
 /**
- * 
  * @author Mayo Clinic
  */
-public class StringTableRowMetaDataHitImpl extends BaseMetaDataHitImpl
-        implements MetaDataHit
-{
-    private StringTableRow iv_strTableRow;
+@Immutable
+final public class StringTableRowMetaDataHitImpl extends AbstractBaseMetaDataHit implements MetaDataHit {
+   final private StringTableRow _strTableRow;
 
-    public StringTableRowMetaDataHitImpl(StringTableRow strTableRow)
-    {
-        iv_strTableRow = strTableRow;
-    }
+   public StringTableRowMetaDataHitImpl( final StringTableRow strTableRow ) {
+      _strTableRow = strTableRow;
+   }
 
-    public String getMetaFieldValue(String metaFieldName)
-    {
-        return iv_strTableRow.getFieldValue(metaFieldName);
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getMetaFieldValue( final String metaFieldName ) {
+      return _strTableRow.getFieldValue( metaFieldName );
+   }
 
-    public Set getMetaFieldNames()
-    {
-        return iv_strTableRow.getNames();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Set<String> getMetaFieldNames() {
+      return _strTableRow.getNames();
+   }
 
-    public Collection getMetaFieldValues()
-    {
-        return iv_strTableRow.getValues();
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<String> getMetaFieldValues() {
+      return _strTableRow.getValues();
+   }
 }

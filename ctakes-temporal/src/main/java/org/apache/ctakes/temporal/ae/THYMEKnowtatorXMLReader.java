@@ -20,17 +20,27 @@ package org.apache.ctakes.temporal.ae;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.ctakes.core.ae.SHARPKnowtatorXMLReader;
+import org.apache.ctakes.temporal.eval.CommandLine;
+import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.util.ViewURIUtil;
+import org.cleartk.util.cr.UriCollectionReader;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
+import org.uimafit.pipeline.SimplePipeline;
+
+import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
 
 public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
 
@@ -46,17 +56,22 @@ public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
         THYMEKnowtatorXMLReader.PARAM_KNOWTATOR_XML_DIRECTORY,
         knowtatorXMLDirectory);
   }
+  
+  @Override
+  protected URI getTextURI(JCas jCas) throws AnalysisEngineProcessException {
+    return ViewURIUtil.getURI(jCas);
+  }
 
   @Override
-  protected URI getKnowtatorXML(JCas jCas) throws AnalysisEngineProcessException {
-    URI uri = ViewURIUtil.getURI(jCas);
+  protected URI getKnowtatorURI(JCas jCas) throws AnalysisEngineProcessException {
+    URI uri = this.getTextURI(jCas);
     File file = new File(uri.getPath());
-    String subDir = file.getParentFile().getName();
-    Matcher matcher = Pattern.compile("^doc(\\d+)$").matcher(subDir);
+    String subDir = file.getName().substring(3, 5);
+    Matcher matcher = Pattern.compile("^\\d+$").matcher(subDir);
     if (!matcher.matches()) {
       throw new IllegalArgumentException("Unrecognized subdirectory naming: " + subDir);
     }
-    subDir = String.format("Set%02d", Integer.parseInt(matcher.group(1)));
+    subDir = String.format("gold_revised_xml_docset%s", subDir);
     String fileName = file.getName() + ".knowtator.xml";
     return new File(new File(this.knowtatorXMLDirectory, subDir), fileName).toURI();
   }
@@ -66,4 +81,35 @@ public class THYMEKnowtatorXMLReader extends SHARPKnowtatorXMLReader {
     return new String[] { "consensus set annotator team", "consensus set_rel annotator team" };
   }
 
+  private static interface Options {
+
+    @Option(longName = "text")
+    public File getRawTextDirectory();
+
+    @Option(longName = "xml")
+    public File getKnowtatorXMLDirectory();
+
+    @Option(longName = "patients")
+    public CommandLine.IntegerRanges getPatients();
+  }
+
+  /**
+   * Just runs reader over files. Useful primarily for debugging annotations.
+   */
+  public static void main(String[] args) throws Exception {
+    Options options = CliFactory.parseArguments(Options.class, args);
+    List<File> files = new ArrayList<File>();
+    for (Integer set : options.getPatients().getList()) {
+      File setTextDirectory = new File(options.getRawTextDirectory(), "doc" + set);
+      for (File file : setTextDirectory.listFiles()) {
+        files.add(file);
+      }
+    }
+    CollectionReader reader = UriCollectionReader.getCollectionReaderFromFiles(files);
+    AnalysisEngine engine = AnalysisEngineFactory.createPrimitive(
+        THYMEKnowtatorXMLReader.class,
+        THYMEKnowtatorXMLReader.PARAM_KNOWTATOR_XML_DIRECTORY,
+        options.getKnowtatorXMLDirectory());
+    SimplePipeline.runPipeline(reader, engine);
+  }
 }

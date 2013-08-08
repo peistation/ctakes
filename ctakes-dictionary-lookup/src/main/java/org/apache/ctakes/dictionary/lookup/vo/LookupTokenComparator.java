@@ -18,46 +18,37 @@
  */
 package org.apache.ctakes.dictionary.lookup.vo;
 
+
 import java.util.Comparator;
 
 
 /**
  * Comparator that sorts LookupToken objects by their start and end offsets.
- * 
+ *
  * @author Mayo Clinic
  */
-public class LookupTokenComparator implements Comparator
-{
+public enum LookupTokenComparator implements Comparator<LookupToken> {
+   INSTANCE;
 
-    public int compare(Object o1, Object o2)
-    {
-        LookupToken tok1 = (LookupToken) o1;
-        LookupToken tok2 = (LookupToken) o2;
+   static public LookupTokenComparator getInstance() {
+      return INSTANCE;
+   }
 
-        if (tok1.getStartOffset() < tok2.getStartOffset())
-        {
+   public int compare( final LookupToken token1, final LookupToken token2 ) {
+      if ( token1.getStartOffset() < token2.getStartOffset() ) {
+         return -1;
+      } else if ( token1.getStartOffset() > token2.getStartOffset() ) {
+         return 1;
+      } else {
+         // equal start offsets, now look at end offsets
+         if ( token1.getEndOffset() < token2.getEndOffset() ) {
             return -1;
-        }
-        else if (tok1.getStartOffset() > tok2.getStartOffset())
-        {
+         } else if ( token1.getEndOffset() > token2.getEndOffset() ) {
             return 1;
-        }
-        else
-        {
-            // equal start offsets, now look at end offsets
-            if (tok1.getEndOffset() < tok2.getEndOffset())
-            {
-                return -1;
-            }
-            else if (tok1.getEndOffset() > tok2.getEndOffset())
-            {
-                return 1;
-            }
-            else
-            {
-                // all offsets are equal
-                return 0;
-            }
-        }
-    }
+         } else {
+            // all offsets are equal
+            return 0;
+         }
+      }
+   }
 }

@@ -32,12 +32,18 @@ public class SimpleTree {
 		this(c,null);
 	}
 	
-	public SimpleTree(String c, SimpleTree p){
-		cat = c;
+	public SimpleTree(String c, SimpleTree p){	
+		cat = escapeCat(c);
 		children = new ArrayList<SimpleTree>();
 		parent = p;
 	}
 	
+	private String escapeCat(String c) {
+		c = c.replaceAll("\\(", "LPAREN");
+		c = c.replaceAll("\\)", "RPAREN");
+		return c;
+	}
+
 	public void addChild(SimpleTree t){
 		children.add(t);
 	}
@@ -128,5 +134,11 @@ public class SimpleTree {
 		
 		SimpleTree t2 = SimpleTree.fromString("(S (NP (PRP it)) (VP (VBZ is) (JJ red)))");
 		System.out.println(t2.toString());
+	}
+
+	// abstract away representation of leaf (children == null vs. children.size() == 0) because
+	// i keep forgetting how it's implemented
+	public boolean isLeaf() {
+		return children == null || children.size() == 0;
 	}
 }

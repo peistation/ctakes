@@ -19,110 +19,108 @@
 package org.apache.ctakes.relationextractor.eval;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.apache.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
+import org.apache.ctakes.relationextractor.eval.SHARPXMI.EvaluationOptions;
+import org.apache.ctakes.typesystem.type.textsem.Modifier;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.classifier.jar.JarClassifierBuilder;
-import org.cleartk.classifier.libsvm.LIBSVMStringOutcomeDataWriter;
+import org.cleartk.classifier.liblinear.LIBLINEARStringOutcomeDataWriter;
 import org.cleartk.eval.AnnotationStatistics;
-import org.cleartk.eval.Evaluation_ImplBase;
-import org.cleartk.util.Options_ImplBase;
-import org.kohsuke.args4j.Option;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.factory.AnalysisEngineFactory;
-import org.uimafit.factory.CollectionReaderFactory;
-import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
 
-import org.apache.ctakes.relationextractor.ae.ModifierExtractorAnnotator;
-import org.apache.ctakes.typesystem.type.textsem.Modifier;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.lexicalscope.jewel.cli.CliFactory;
 
-public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, AnnotationStatistics<String>> {
+public class ModifierExtractorEvaluation extends SHARPXMI.Evaluation_ImplBase {
 
-  public static class Options extends Options_ImplBase {
-    @Option(
-        name = "--train-dir",
-        usage = "specify the directory contraining the XMI training files (for example, /NLP/Corpus/Relations/mipacq/xmi/train)",
-        required = true)
-    public File trainDirectory;
-  }
+  public static final ParameterSettings BEST_PARAMETERS = new ParameterSettings(
+      LIBLINEARStringOutcomeDataWriter.class,
+      new String[] { "-s", "1", "-c", "0.5" });
 
   public static void main(String[] args) throws Exception {
-    Options options = new Options();
-    options.parseOptions(args);
-    List<File> trainFiles = Arrays.asList(options.trainDirectory.listFiles());
-    File modelsDir = new File("target/models/modifier");
+    // parse the options, validate them, and generate XMI if necessary
+    final EvaluationOptions options = CliFactory.parseArguments(EvaluationOptions.class, args);
+    SHARPXMI.validate(options);
+    SHARPXMI.generateXMI(options);
 
-    ModifierExtractorEvaluation evaluation = new ModifierExtractorEvaluation(
-        modelsDir,
-        "-t",
-        "0",
-        "-c",
-        "1000");
-
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(trainFiles, 2);
-    AnnotationStatistics<String> overallStats = AnnotationStatistics.addAll(foldStats);
-    System.err.println("Overall:");
-    System.err.println(overallStats);
-  }
-
-  private String[] trainingArguments;
-
-  public ModifierExtractorEvaluation(File directory, String... trainingArguments) {
-    super(directory);
-    this.trainingArguments = trainingArguments;
-  }
-
-  @Override
-  public CollectionReader getCollectionReader(List<File> items)
-      throws ResourceInitializationException {
-    String[] paths = new String[items.size()];
-    for (int i = 0; i < paths.length; ++i) {
-      paths[i] = items.get(i).getPath();
+    // determine the grid of parameters to search through
+    // for the full set of LIBLINEAR parameters, see:
+    // https://github.com/bwaldvogel/liblinear-java/blob/master/src/main/java/de/bwaldvogel/liblinear/Train.java
+    List<ParameterSettings> gridOfSettings = Lists.newArrayList();
+    for (int solver : new int[] { 0 /* logistic regression */, 1 /* SVM */}) {
+      for (double svmCost : new double[] { 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100 }) {
+        gridOfSettings.add(new ParameterSettings(
+            LIBLINEARStringOutcomeDataWriter.class,
+            new String[] { "-s", String.valueOf(solver), "-c", String.valueOf(svmCost) }));
+      }
     }
-    return CollectionReaderFactory.createCollectionReader(
-        XMIReader.class,
-        TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(),
-        XMIReader.PARAM_FILES,
-        paths);
+
+    // run the evaluation
+    SHARPXMI.evaluate(
+        options,
+        BEST_PARAMETERS,
+        gridOfSettings,
+        new Function<ParameterSettings, ModifierExtractorEvaluation>() {
+          @Override
+          public ModifierExtractorEvaluation apply(@Nullable ParameterSettings params) {
+            return new ModifierExtractorEvaluation(new File("target/models/modifier"), params);
+          }
+        });
+  }
+
+  private ParameterSettings parameterSettings;
+
+  public ModifierExtractorEvaluation(File directory, ParameterSettings parameterSettings) {
+    super(directory);
+    this.parameterSettings = parameterSettings;
   }
 
   @Override
   public void train(CollectionReader collectionReader, File directory) throws Exception {
+    System.err.printf("%s: %s:\n", this.getClass().getSimpleName(), directory.getName());
+    System.err.println(this.parameterSettings);
+
     SimplePipeline.runPipeline(
         collectionReader,
         AnalysisEngineFactory.createPrimitiveDescription(OnlyGoldModifiers.class),
         ModifierExtractorAnnotator.getDescription(
             DefaultDataWriterFactory.PARAM_DATA_WRITER_CLASS_NAME,
-            LIBSVMStringOutcomeDataWriter.class,
+            this.parameterSettings.dataWriterClass,
             DirectoryDataWriterFactory.PARAM_OUTPUT_DIRECTORY,
             directory.getPath()));
-    JarClassifierBuilder.trainAndPackage(directory, this.trainingArguments);
+    JarClassifierBuilder.trainAndPackage(directory, this.parameterSettings.trainingArguments);
   }
 
   @Override
   protected AnnotationStatistics<String> test(CollectionReader collectionReader, File directory)
       throws Exception {
-    AnalysisEngine classifierAnnotator = AnalysisEngineFactory.createPrimitive(ModifierExtractorAnnotator.getDescription(
-        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
-        new File(directory, "model.jar").getPath()));
+    AnalysisEngine classifierAnnotator =
+        AnalysisEngineFactory.createPrimitive(ModifierExtractorAnnotator.getDescription(
+            GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+            JarClassifierBuilder.getModelJarFile(directory)));
 
     AnnotationStatistics<String> stats = new AnnotationStatistics<String>();
     for (JCas jCas : new JCasIterable(collectionReader, classifierAnnotator)) {
       JCas goldView;
       try {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
+        goldView = jCas.getView(SHARPXMI.GOLD_VIEW_NAME);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }
@@ -130,15 +128,14 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
       Collection<Modifier> systemModifiers = JCasUtil.select(jCas, Modifier.class);
       stats.add(goldModifiers, systemModifiers);
     }
-    System.err.println(directory.getName() + ":");
-    System.err.println(stats);
+    System.err.print(stats);
+    System.err.println();
     return stats;
   }
 
-  private static final String GOLD_VIEW_NAME = "GoldView";
-
   /**
-   * Class that copies the manual {@link Modifier} annotations to the default CAS.
+   * Class that copies the manual {@link Modifier} annotations to the default
+   * CAS.
    */
   public static class OnlyGoldModifiers extends JCasAnnotator_ImplBase {
 
@@ -146,7 +143,7 @@ public class ModifierExtractorEvaluation extends Evaluation_ImplBase<File, Annot
     public void process(JCas jCas) throws AnalysisEngineProcessException {
       JCas goldView;
       try {
-        goldView = jCas.getView(GOLD_VIEW_NAME);
+        goldView = jCas.getView(SHARPXMI.GOLD_VIEW_NAME);
       } catch (CASException e) {
         throw new AnalysisEngineProcessException(e);
       }

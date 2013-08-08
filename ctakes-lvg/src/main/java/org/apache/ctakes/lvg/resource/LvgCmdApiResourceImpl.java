@@ -94,11 +94,6 @@ public class LvgCmdApiResourceImpl
 	        lvgLexItem = new LvgLexItemApi("-f:i -SC", configFileName);
 
     	}
-    	catch (Exception e) {
-    		
-    		e.printStackTrace();
-
-    	}
     	finally {
     		// try to change the current working directory back to what it was
 			if (cwd!=null) {

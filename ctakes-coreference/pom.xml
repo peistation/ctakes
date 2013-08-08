@@ -26,10 +26,13 @@
 	<parent>
 		<groupId>org.apache.ctakes</groupId>
 		<artifactId>ctakes</artifactId>
-		<version>3.1.0-incubating-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
-	
 	<dependencies>
+	     <dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-coreference-res</artifactId>
+		</dependency>		    
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-type-system</artifactId>
@@ -61,6 +64,31 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-relation-extractor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.ctakesresources</groupId>
+			<artifactId>ctakes-resources</artifactId>
+			<version>3.1.0</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.ctakesresources</groupId>
+			<artifactId>ctakes-resources-umls2011ab</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.ctakesresources</groupId>
+			<artifactId>ctakes-resources-distribution</artifactId>
+			<version>3.1.0</version>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 	

@@ -20,11 +20,12 @@ package org.apache.ctakes.temporal.eval;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -47,31 +48,28 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
 
   public static void main(String[] args) throws Exception {
     Options options = CliFactory.parseArguments(Options.class, args);
+    List<Integer> patientSets = options.getPatients().getList();
+    List<Integer> trainItems = THYMEData.getTrainPatientSets(patientSets);
+    List<Integer> devItems = THYMEData.getDevPatientSets(patientSets);
     EvaluationOfClearTKTimeSpans evaluation = new EvaluationOfClearTKTimeSpans(
-        new File("target/eval"),
+        new File("target/eval/cleartk-time-spans"),
         options.getRawTextDirectory(),
-        options.getKnowtatorXMLDirectory(),
-        options.getPatients().getList());
+        options.getXMLDirectory(),
+        options.getXMLFormat(),
+        options.getXMIDirectory());
+    evaluation.prepareXMIsFor(patientSets);
     evaluation.setLogging(Level.FINE, new File("target/eval/cleartk-time-errors.log"));
-    List<AnnotationStatistics<String>> foldStats = evaluation.crossValidation(4);
-    for (AnnotationStatistics<String> stats : foldStats) {
-      System.err.println(stats);
-    }
-    System.err.println("OVERALL");
-    System.err.println(AnnotationStatistics.addAll(foldStats));
+    AnnotationStatistics<String> stats = evaluation.trainAndTest(trainItems, devItems);
+    System.err.println(stats);
   }
 
   public EvaluationOfClearTKTimeSpans(
       File baseDirectory,
       File rawTextDirectory,
-      File knowtatorXMLDirectory,
-      List<Integer> patientSets) {
-    super(
-        baseDirectory,
-        rawTextDirectory,
-        knowtatorXMLDirectory,
-        patientSets,
-        EnumSet.noneOf(AnnotatorType.class));
+      File xmlDirectory,
+      XMLFormat xmlFormat,
+      File xmiDirectory) {
+    super(baseDirectory, rawTextDirectory, xmlDirectory, xmlFormat, xmiDirectory, EventMention.class);
   }
 
   @Override
@@ -99,12 +97,12 @@ public class EvaluationOfClearTKTimeSpans extends EvaluationOfAnnotationSpans_Im
   }
 
   @Override
-  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, TimeMention.class);
+  protected Collection<? extends Annotation> getGoldAnnotations(JCas jCas, Segment segment) {
+    return JCasUtil.selectCovered(jCas, TimeMention.class, segment);
   }
 
   @Override
-  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas) {
-    return JCasUtil.select(jCas, Time.class);
+  protected Collection<? extends Annotation> getSystemAnnotations(JCas jCas, Segment segment) {
+    return JCasUtil.selectCovered(jCas, Time.class, segment);
   }
 }

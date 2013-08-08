@@ -18,156 +18,125 @@
  */
 package org.apache.ctakes.dictionary.lookup.jdbc;
 
+import org.apache.ctakes.dictionary.lookup.*;
+import org.apache.ctakes.dictionary.lookup.Dictionary;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.ctakes.dictionary.lookup.BaseDictionaryImpl;
-import org.apache.ctakes.dictionary.lookup.Dictionary;
-import org.apache.ctakes.dictionary.lookup.DictionaryException;
-import org.apache.ctakes.dictionary.lookup.GenericMetaDataHitImpl;
-import org.apache.ctakes.dictionary.lookup.MetaDataHit;
+import java.util.*;
 
 
 /**
- *
  * @author Mayo Clinic
  */
-public class JdbcDictionaryImpl extends BaseDictionaryImpl implements Dictionary
-{
-    private Connection iv_dbConn;
-    private String iv_tableName;
-    private String iv_lookupFieldName;
-    private PreparedStatement iv_mdPrepStmt;
-    private PreparedStatement iv_cntPrepStmt;
+public class JdbcDictionaryImpl extends AbstractBaseDictionary implements Dictionary {
+   final private Connection iv_dbConn;
+   final private String iv_tableName;
+   final private String iv_lookupFieldName;
+   private PreparedStatement iv_mdPrepStmt;
+   private PreparedStatement iv_cntPrepStmt;
 
-    public JdbcDictionaryImpl(
-        Connection conn,
-        String tableName,
-        String lookupFieldName)
-    {
-        iv_dbConn = conn;
-        iv_tableName = tableName;
-        iv_lookupFieldName = lookupFieldName;
-    }
+   public JdbcDictionaryImpl( final Connection conn, final String tableName, final String lookupFieldName ) {
+      iv_dbConn = conn;
+      iv_tableName = tableName;
+      iv_lookupFieldName = lookupFieldName;
+   }
 
-    private PreparedStatement initCountPrepStmt(String text)
-        throws SQLException
-    {
-        if (iv_cntPrepStmt == null)
-        {
-            StringBuffer sb = new StringBuffer();
-            sb.append("SELECT COUNT(*) ");
+   private PreparedStatement initCountPrepStmt( final String text ) throws SQLException {
+      if ( iv_cntPrepStmt == null ) {
+         final StringBuilder sb = new StringBuilder();
+         sb.append( "SELECT COUNT(*) " );
 
-            sb.append(" FROM ");
-            sb.append(iv_tableName);
+         sb.append( " FROM " );
+         sb.append( iv_tableName );
 
-            sb.append(" WHERE ");
-            sb.append(iv_lookupFieldName);
-            sb.append(" = ?");
+         sb.append( " WHERE " );
+         sb.append( iv_lookupFieldName );
+         sb.append( " = ?" );
 
-            iv_cntPrepStmt = iv_dbConn.prepareStatement(sb.toString());
-        }
+         iv_cntPrepStmt = iv_dbConn.prepareStatement( sb.toString() );
+      }
 
-        iv_cntPrepStmt.clearParameters();
-        iv_cntPrepStmt.setString(1, text);
+      iv_cntPrepStmt.clearParameters();
+      iv_cntPrepStmt.setString( 1, text );
 
-        return iv_cntPrepStmt;
-    }
+      return iv_cntPrepStmt;
+   }
 
-    private PreparedStatement initMetaDataPrepStmt(String text)
-        throws SQLException
-    {
-        if (iv_mdPrepStmt == null)
-        {
-            StringBuffer sb = new StringBuffer();
-            sb.append("SELECT ");
+   private PreparedStatement initMetaDataPrepStmt( final String text ) throws SQLException {
+      if ( iv_mdPrepStmt == null ) {
+         final StringBuilder sb = new StringBuilder();
+         sb.append( "SELECT " );
 
-            // translate meta data field names into columns
-            // to be returned in the result set
-            Iterator metaFieldNameItr = getMetaFieldNames();
-            while (metaFieldNameItr.hasNext())
-            {
-                String mdFieldName = (String) metaFieldNameItr.next();
-                sb.append(mdFieldName);
-                sb.append(',');
+         // translate meta data field names into columns
+         // to be returned in the result set
+         final Iterator metaFieldNameItr = getMetaFieldNames();
+         while ( metaFieldNameItr.hasNext() ) {
+            String mdFieldName = (String) metaFieldNameItr.next();
+            sb.append( mdFieldName );
+            sb.append( ',' );
+         }
+         // chomp off the last comma
+         sb.deleteCharAt( sb.length() - 1 );
+
+         sb.append( " FROM " );
+         sb.append( iv_tableName );
+
+         sb.append( " WHERE " );
+         sb.append( iv_lookupFieldName );
+         sb.append( " = ?" );
+
+         iv_mdPrepStmt = iv_dbConn.prepareStatement( sb.toString() );
+      }
+
+      iv_mdPrepStmt.clearParameters();
+      iv_mdPrepStmt.setString( 1, text );
+
+      return iv_mdPrepStmt;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean contains( final String text ) throws DictionaryException {
+      try {
+         final PreparedStatement prepStmt = initCountPrepStmt( text );
+         final ResultSet rs = prepStmt.executeQuery();
+         rs.next();
+         final int count = rs.getInt( 1 );
+         return count > 0;
+      } catch ( SQLException e ) {
+         throw new DictionaryException( e );
+      }
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Collection<MetaDataHit> getEntries( final String text ) throws DictionaryException {
+      final Set<MetaDataHit> metaDataHitSet = new HashSet<MetaDataHit>();
+      try {
+         final PreparedStatement prepStmt = initMetaDataPrepStmt( text );
+         final ResultSet rs = prepStmt.executeQuery();
+
+         while ( rs.next() ) {
+            final Map<String, String> nameValMap = new HashMap<String, String>();
+            final Iterator metaFieldNameItr = getMetaFieldNames();
+            while ( metaFieldNameItr.hasNext() ) {
+               final String metaFieldName = (String) metaFieldNameItr.next();
+               final String metaFieldValue = rs.getString( metaFieldName );
+               nameValMap.put( metaFieldName, metaFieldValue );
             }
-            // chomp off the last comma
-            sb.deleteCharAt(sb.length() - 1);
-
-            sb.append(" FROM ");
-            sb.append(iv_tableName);
-
-            sb.append(" WHERE ");
-            sb.append(iv_lookupFieldName);
-            sb.append(" = ?");
-
-            iv_mdPrepStmt = iv_dbConn.prepareStatement(sb.toString());
-        }
-
-        iv_mdPrepStmt.clearParameters();
-        iv_mdPrepStmt.setString(1, text);
-
-        return iv_mdPrepStmt;
-    }
-
-    public boolean contains(String text) throws DictionaryException
-    {
-        try
-        {
-            PreparedStatement prepStmt = initCountPrepStmt(text);
-            ResultSet rs = prepStmt.executeQuery();
-
-            rs.next();
-            int count = rs.getInt(1);
-            if (count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        catch (SQLException e)
-        {
-            throw new DictionaryException(e);
-        }
-    }
-
-    public Collection getEntries(String str) throws DictionaryException
-    {
-        Set metaDataHitSet = new HashSet();
-        try
-        {
-            PreparedStatement prepStmt = initMetaDataPrepStmt(str);
-            ResultSet rs = prepStmt.executeQuery();
-
-            while (rs.next())
-            {
-                Map nameValMap = new HashMap();
-                Iterator metaFieldNameItr = getMetaFieldNames();
-                while (metaFieldNameItr.hasNext())
-                {
-                    String metaFieldName = (String) metaFieldNameItr.next();
-                    String metaFieldValue = rs.getString(metaFieldName);
-                    nameValMap.put(metaFieldName, metaFieldValue);
-                }
-                MetaDataHit mdh = new GenericMetaDataHitImpl(nameValMap);
-                metaDataHitSet.add(mdh);
-            }
-            return metaDataHitSet;
-        }
-        catch (SQLException e)
-        {
-            throw new DictionaryException(e);
-        }
-    }
+            final MetaDataHit mdh = new GenericMetaDataHitImpl( nameValMap );
+            metaDataHitSet.add( mdh );
+         }
+         return metaDataHitSet;
+      } catch ( SQLException e ) {
+         throw new DictionaryException( e );
+      }
+   }
 }
