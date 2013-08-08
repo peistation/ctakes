@@ -35,6 +35,7 @@
 		<dependencySet>
 			<includes>
 				<include>org.apache.ctakes:ctakes-assertion</include>
+				<include>org.apache.ctakes:ctakes-assertion-zoner</include>
 				<include>org.apache.ctakes:ctakes-chunker</include>
 				<include>org.apache.ctakes:ctakes-clinical-pipeline</include>
 				<include>org.apache.ctakes:ctakes-constituency-parser</include>
@@ -52,6 +53,7 @@
 				<include>org.apache.ctakes:ctakes-relation-extractor</include>
 				<include>org.apache.ctakes:ctakes-side-effect</include>
 				<include>org.apache.ctakes:ctakes-smoking-status</include>
+				<include>org.apache.ctakes:ctakes-template-filler</include>
 				<!-- <include>org.apache.ctakes:ctakes-temporal</include> -->
 				<include>org.apache.ctakes:ctakes-type-system</include>
 				<include>org.apache.ctakes:ctakes-utils</include>
@@ -116,7 +118,7 @@
 			<outputDirectory>config</outputDirectory>
 		</fileSet>
 
-		<!-- Copy a default log4j config that could be overrided during runtime -->
+		<!-- Copy a default log4j config that could be overridden during runtime -->
 		<fileSet>
 			<directory>../ctakes-core/src/main/resources</directory>
 			<fileMode>644</fileMode>
