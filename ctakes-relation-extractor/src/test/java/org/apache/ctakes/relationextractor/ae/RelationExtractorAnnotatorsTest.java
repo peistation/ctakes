@@ -51,65 +51,65 @@ public class RelationExtractorAnnotatorsTest {
   @Test
   public void test() throws Exception {
     // create the pipeline
-//    AggregateBuilder builder = new AggregateBuilder();
-//    builder.add(findDescription(ModifierExtractorAnnotator.class));
-//    builder.add(findDescription(DegreeOfRelationExtractorAnnotator.class));
-//    builder.add(findDescription(LocationOfRelationExtractorAnnotator.class));
-//    AnalysisEngine engine = builder.createAggregate();
-//    JCas jCas = engine.newJCas();
-//
-//    // populate the CAS with an example sentence
-//    // TODO: add annotations to support phrase chunk and dependency features
-//    TokenBuilder<BaseToken, Sentence> tokenBuilder =
-//        new TokenBuilder<BaseToken, Sentence>(BaseToken.class, Sentence.class, "partOfSpeech", null);
-//    tokenBuilder.buildTokens(
-//        jCas,
-//        "He had a slight fracture in the proximal right fibula.",
-//        "He had a slight fracture in the proximal right fibula .",
-//        "PRP VBD DT JJ NN IN DT JJ JJ NN .");
-//    DiseaseDisorderMention fracture = new DiseaseDisorderMention(jCas, 16, 24);
-//    fracture.setTypeID(CONST.NE_TYPE_ID_DISORDER);
-//    fracture.addToIndexes();
-//    assertEquals("fracture", fracture.getCoveredText());
-//    AnatomicalSiteMention fibula = new AnatomicalSiteMention(jCas, 32, 53);
-//    fibula.setTypeID(CONST.NE_TYPE_ID_ANATOMICAL_SITE);
-//    fibula.addToIndexes();
-//    assertEquals("proximal right fibula", fibula.getCoveredText());
-//
-//    // run the analysis engine
-//    engine.process(jCas);
-//
-//    // test the modifier annotator
-//    Collection<Modifier> modifiers = JCasUtil.select(jCas, Modifier.class);
-//    assertEquals(3, modifiers.size());
-//    Iterator<Modifier> modifierIterator = modifiers.iterator();
-//    Modifier slight = modifierIterator.next();
-//    assertEquals("slight", slight.getCoveredText());
-//    assertEquals(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS, slight.getTypeID());
-//    //assertTrue(slight instanceof SeverityModifier);
-//    Modifier proximal = modifierIterator.next();
-//    assertEquals("proximal", proximal.getCoveredText());
-//    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, proximal.getTypeID());
-//    //assertTrue(proximal instanceof BodyLateralityModifier);
-//    Modifier right = modifierIterator.next();
-//    assertEquals("right", right.getCoveredText());
-//    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, right.getTypeID());
-//    //assertTrue(right instanceof BodySideModifier);
-//
-//    // test the relation annotators
-//    Collection<BinaryTextRelation> relations = JCasUtil.select(jCas, BinaryTextRelation.class);
-//    assertEquals(2, relations.size());
-//    Iterator<BinaryTextRelation> iterator = relations.iterator();
-//    BinaryTextRelation slightFracture = iterator.next();
-//    assertTrue(slightFracture instanceof DegreeOfTextRelation);
-//    assertEquals("degree_of", slightFracture.getCategory());
-//    assertEquals(fracture, slightFracture.getArg1().getArgument());
-//    assertEquals(slight, slightFracture.getArg2().getArgument());
-//    BinaryTextRelation fractureFibula = iterator.next();
-//    assertEquals("location_of", fractureFibula.getCategory());
-//    assertTrue(fractureFibula instanceof LocationOfTextRelation);
-//    assertEquals(fracture, fractureFibula.getArg1().getArgument());
-//    assertEquals(fibula, fractureFibula.getArg2().getArgument());
+    AggregateBuilder builder = new AggregateBuilder();
+    builder.add(findDescription(ModifierExtractorAnnotator.class));
+    builder.add(findDescription(DegreeOfRelationExtractorAnnotator.class));
+    builder.add(findDescription(LocationOfRelationExtractorAnnotator.class));
+    AnalysisEngine engine = builder.createAggregate();
+    JCas jCas = engine.newJCas();
+
+    // populate the CAS with an example sentence
+    // TODO: add annotations to support phrase chunk and dependency features
+    TokenBuilder<BaseToken, Sentence> tokenBuilder =
+        new TokenBuilder<BaseToken, Sentence>(BaseToken.class, Sentence.class, "partOfSpeech", null);
+    tokenBuilder.buildTokens(
+        jCas,
+        "He had a slight fracture in the proximal right fibula.",
+        "He had a slight fracture in the proximal right fibula .",
+        "PRP VBD DT JJ NN IN DT JJ JJ NN .");
+    DiseaseDisorderMention fracture = new DiseaseDisorderMention(jCas, 16, 24);
+    fracture.setTypeID(CONST.NE_TYPE_ID_DISORDER);
+    fracture.addToIndexes();
+    assertEquals("fracture", fracture.getCoveredText());
+    AnatomicalSiteMention fibula = new AnatomicalSiteMention(jCas, 32, 53);
+    fibula.setTypeID(CONST.NE_TYPE_ID_ANATOMICAL_SITE);
+    fibula.addToIndexes();
+    assertEquals("proximal right fibula", fibula.getCoveredText());
+
+    // run the analysis engine
+    engine.process(jCas);
+
+    // test the modifier annotator
+    Collection<Modifier> modifiers = JCasUtil.select(jCas, Modifier.class);
+    assertEquals(3, modifiers.size());
+    Iterator<Modifier> modifierIterator = modifiers.iterator();
+    Modifier slight = modifierIterator.next();
+    assertEquals("slight", slight.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS, slight.getTypeID());
+    //assertTrue(slight instanceof SeverityModifier);
+    Modifier proximal = modifierIterator.next();
+    assertEquals("proximal", proximal.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, proximal.getTypeID());
+    //assertTrue(proximal instanceof BodyLateralityModifier);
+    Modifier right = modifierIterator.next();
+    assertEquals("right", right.getCoveredText());
+    assertEquals(CONST.MODIFIER_TYPE_ID_UNKNOWN, right.getTypeID());
+    //assertTrue(right instanceof BodySideModifier);
+
+    // test the relation annotators
+    Collection<BinaryTextRelation> relations = JCasUtil.select(jCas, BinaryTextRelation.class);
+    assertEquals(2, relations.size());
+    Iterator<BinaryTextRelation> iterator = relations.iterator();
+    BinaryTextRelation slightFracture = iterator.next();
+    assertTrue(slightFracture instanceof DegreeOfTextRelation);
+    assertEquals("degree_of", slightFracture.getCategory());
+    assertEquals(fracture, slightFracture.getArg1().getArgument());
+    assertEquals(slight, slightFracture.getArg2().getArgument());
+    BinaryTextRelation fractureFibula = iterator.next();
+    assertEquals("location_of", fractureFibula.getCategory());
+    assertTrue(fractureFibula instanceof LocationOfTextRelation);
+    assertEquals(fracture, fractureFibula.getArg1().getArgument());
+    assertEquals(fibula, fractureFibula.getArg2().getArgument());
   }
 
   private static AnalysisEngineDescription findDescription(
