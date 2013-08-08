@@ -35,6 +35,7 @@ import org.apache.ctakes.temporal.ae.ClearTKDocumentCreationTimeAnnotator;
 import org.apache.ctakes.temporal.ae.ClearTKDocTimeRelAnnotator;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -119,14 +120,13 @@ public class EvaluationOfClearTKEventProperties extends
 		  CollectionReader collectionReader,
 		  File directory) throws Exception {
 	  AggregateBuilder aggregateBuilder = this.getPreprocessorAggregateBuilder();
-//	  aggregateBuilder.add(UriToDocumentTextAnnotator.getDescription()); 
+	  aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
+	  aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
 	  aggregateBuilder.add(SentenceAnnotator.getDescription());
 	  aggregateBuilder.add(TokenAnnotator.getDescription());
 	  aggregateBuilder.add(PosTaggerAnnotator.getDescription());
 	  aggregateBuilder.add(DefaultSnowballStemmer.getDescription("English"));
 	  aggregateBuilder.add(ParserAnnotator.getDescription());
-//	  aggregateBuilder.add(CopyFromGold.getDescription(EventMention.class));
-//	  aggregateBuilder.add(CopyFromGold.getDescription(TimeMention.class));
 	  aggregateBuilder.add(EventToClearTKEventAnnotator.getAnnotatorDescription());//for every cTakes eventMention, create a cleartk event
 	  aggregateBuilder.add(ClearTKDocumentCreationTimeAnnotator.getAnnotatorDescription());//for every jCAS create an empty DCT, and add it to index
 	  aggregateBuilder.add(EventTenseAnnotator.FACTORY.getAnnotatorDescription("/org/cleartk/timeml/event/eventtenseannotator/model.jar"));
