@@ -371,6 +371,13 @@
 			<dependency>
 				<groupId>org.apache.ctakes</groupId>
 				<artifactId>
+					ctakes-template-filler
+				</artifactId>
+				<version>${ctakes.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ctakes</groupId>
+				<artifactId>
 					ctakes-temporal
 				</artifactId>
 				<version>${ctakes.version}</version>
