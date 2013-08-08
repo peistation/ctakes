@@ -1,2 +1,0 @@
-1 -NONE-
-2 degree_of
