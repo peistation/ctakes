@@ -75,46 +75,46 @@ public class RegressionPipelineTest extends XMLTestCase {
 
 	@Test
 	public void testCPE() throws Exception {
-//		long started = System.currentTimeMillis();
-//		File[] listOfFiles = CPEDIR.listFiles();
-//		for (File file : listOfFiles) {
-//
-//			if (file.isFile()) {
-//				num_cpe++;
-//				File generated = new File("testdata/generatedoutput/"
-//						+ file.getName().substring(0,
-//								file.getName().indexOf(".")));
-//				File expected = new File("testdata/expectedoutput/"
-//						+ file.getName().substring(0,
-//								file.getName().indexOf(".")));
-//
-//				logger.info("Creating directory: " + generated);
-//
-//				Assert.assertTrue(
-//						"Unable to create " + generated.getAbsolutePath(),
-//						generated.exists() || generated.mkdirs());
-//
-//				// Run all of the CPE's in the Dir
-//				logger.info("Parsing CPE Descriptor:" + file.getName());
-//				CpeDescription cpeDesc = UIMAFramework.getXMLParser()
-//						.parseCpeDescription(new XMLInputSource(file));
-//				CollectionProcessingEngine mCPE = UIMAFramework
-//						.produceCollectionProcessingEngine(cpeDesc);
-//				// Create and register a Status Callback Listener
-//				mCPE.addStatusCallbackListener(new StatusCallbackListenerImpl(
-//						expected, generated));
-//				mCPE.process();
-//			}
-//		}
-//		// Wait until all of the CPE's have been completed
-//		// Before comparing.
-//		while (num_cpe > 0) {
-//			if (System.currentTimeMillis() - started >= MAX_TIMEOUT_MS) {
-//				Assert.assertEquals("Timed out:", "Regression CPE test timed out after "
-//						+ MAX_TIMEOUT_MS + " ms");
-//			}
-//			Thread.sleep(1000);
-//		}
+		long started = System.currentTimeMillis();
+		File[] listOfFiles = CPEDIR.listFiles();
+		for (File file : listOfFiles) {
+
+			if (file.isFile()) {
+				num_cpe++;
+				File generated = new File("testdata/generatedoutput/"
+						+ file.getName().substring(0,
+								file.getName().indexOf(".")));
+				File expected = new File("testdata/expectedoutput/"
+						+ file.getName().substring(0,
+								file.getName().indexOf(".")));
+
+				logger.info("Creating directory: " + generated);
+
+				Assert.assertTrue(
+						"Unable to create " + generated.getAbsolutePath(),
+						generated.exists() || generated.mkdirs());
+
+				// Run all of the CPE's in the Dir
+				logger.info("Parsing CPE Descriptor:" + file.getName());
+				CpeDescription cpeDesc = UIMAFramework.getXMLParser()
+						.parseCpeDescription(new XMLInputSource(file));
+				CollectionProcessingEngine mCPE = UIMAFramework
+						.produceCollectionProcessingEngine(cpeDesc);
+				// Create and register a Status Callback Listener
+				mCPE.addStatusCallbackListener(new StatusCallbackListenerImpl(
+						expected, generated));
+				mCPE.process();
+			}
+		}
+		// Wait until all of the CPE's have been completed
+		// Before comparing.
+		while (num_cpe > 0) {
+			if (System.currentTimeMillis() - started >= MAX_TIMEOUT_MS) {
+				Assert.assertEquals("Timed out:", "Regression CPE test timed out after "
+						+ MAX_TIMEOUT_MS + " ms");
+			}
+			Thread.sleep(1000);
+		}
 	}
 
 	public void compareXMLOutput(File expected_, File generated_)
