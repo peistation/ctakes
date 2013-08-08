@@ -1,0 +1,48 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+LVG
+~~~
+This annotator wraps the National Library of Medicine (NLM)
+link:{lvg-home}[SPECIALIST lexical tools]. It generates a canonical
+form for words and also generates a list of lemma entries with Penn
+Treebank tags. These tags could be useful for a part of speech (POS)
+tagger. However, for the OpenNLP POS tagger, we use a tag dictionary
+rather than lemma information.
+
+See the <<cd_pos_tagger,documentation>> for the POS tagger annotator.
+
+Analysis engines (annotator)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- *LvgAnnotator.xml*
++
+*Parameters*::
+  UseSegments;; controls whether only certain sections will be annotated by this annotator
+  SegmentsToSkip;; list of sections not to be processed by this annotator
+  UseCmdCache;; controls whether to look up information in a cache before using norm
+  CmdCacheFileLocation;; location of norm cache file
+  CmdCacheFrequencyCutoff;; (cutoff value)
+  ExclusionSet;; words for which canonicalForm is never set and Lemma entries are never posted
+  XeroxTreebankMap;; mapping of part of speech tags used by LVG to POS tags from lexical tools to Penn Treebank tags
+  PostLemmas;; controls whether any lemma entries are posted to the CAS
+  UseLemmaCache;; controls whether to look up lemma information in a cache before using lvg
+  LemmaCacheFileLocation;; the location of the cache file
+  LemmaCacheFileFrequencyCutoff;; (cutoff value)
+
+////////////////////////
+NOTE: As distributed, PostLemmas is set to false. This is done to reduce the size of the CAS.
+Set PostLemmas to true to have edu.mayo.bmi.uima.core.type.Lemma annotations added to the CAS.
+////////////////////////
+
+Resources
+^^^^^^^^^
+- *lvg.properties*
++
+The LVG config file +resources/lvg/data/config/lvg.properties+ defines the location
+and attributes of the LVG database and the jdbc driver used.
++
+- *LVG database*
++
+The database engine used is hsqldb. The database file included is a
+sample. See <<boost_performance>> for details on how to replace the sample.
+

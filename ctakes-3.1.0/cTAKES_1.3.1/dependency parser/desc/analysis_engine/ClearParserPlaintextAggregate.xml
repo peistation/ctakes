@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="ClearParserAE">
+      <import location="ClearParserAE.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="TokenizerAnnotator">
+      <import location="../../../core/desc/analysis_engine/TokenizerAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LvgBaseTokenAnnotator">
+      <import location="LvgBaseTokenAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SentenceDetectorAnnotator">
+      <import location="../../../core/desc/analysis_engine/SentenceDetectorAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="SimpleSegmentAnnotator">
+      <import location="../../../core/desc/analysis_engine/SimpleSegmentAnnotator.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="POSTagger">
+      <import location="../../../POS tagger/desc/POSTagger.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>ClearParserPlaintextAggregate</name>
+    <description/>
+    <version>1.0</version>
+    <vendor/>
+    <configurationParameters searchStrategy="language_fallback">
+      <configurationParameter>
+        <name>DependencyModelFile</name>
+        <description>Grammar, lexicon, etc for the Clear Parser</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>ClearParserAE/DependencyModelFile</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>LexiconDirectory</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>ClearParserAE/LexiconDirectory</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>FeatureTemplateFile</name>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+        <overrides>
+          <parameter>ClearParserAE/FeatureTemplateFile</parameter>
+        </overrides>
+      </configurationParameter>
+      <configurationParameter>
+        <name>PostLemmas</name>
+        <description>This parameter determines whether the feature lemmaEntries will be populated for word annotations.</description>
+        <type>Boolean</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>LvgBaseTokenAnnotator/PostLemmas</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>DependencyModelFile</name>
+        <value>
+          <string>clinques.mod</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>LexiconDirectory</name>
+        <value>
+          <string>lexiconClinQues</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>FeatureTemplateFile</name>
+        <value>
+          <string>feature.xml</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>PostLemmas</name>
+        <value>
+          <boolean>false</boolean>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
+    <flowConstraints>
+      <fixedFlow>
+        <node>SimpleSegmentAnnotator</node>
+        <node>TokenizerAnnotator</node>
+        <node>SentenceDetectorAnnotator</node>
+        <node>LvgBaseTokenAnnotator</node>
+        <node>POSTagger</node>
+        <node>ClearParserAE</node>
+      </fixedFlow>
+    </flowConstraints>
+    <typePriorities/>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>

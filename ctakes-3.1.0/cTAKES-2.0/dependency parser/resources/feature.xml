@@ -1,0 +1,88 @@
+<!--Default English feature set -->
+<feature_template>
+	<unigram field="f" token0="l"/>
+	<unigram field="m" token0="l"/>
+	<unigram field="p" token0="l"/>
+	<unigram field="d" token0="l"/>
+	
+	<unigram field="f" token0="b"/>
+	<unigram field="m" token0="b"/>
+	<unigram field="p" token0="b"/>
+	<unigram field="d" token0="b"/>
+	
+	<unigram field="pm" token0="l"/>
+	<unigram field="pm" token0="b"/>
+		
+	<bigram field="pp" token0="l" token1="b"/>
+	<bigram field="mp" token0="l" token1="b"/>
+	<bigram field="pm" token0="l" token1="b"/>
+	<bigram field="mm" token0="l" token1="b"/>
+	
+	<bigram field="pp" token0="l_hd" token1="l"   note="83.13 -> 83.19"/>
+	<bigram field="pp" token0="l-1"  token1="l"   note="88.23 -> 88.28"/>
+	<bigram field="pp" token0="l"    token1="l+1" note="88.28 -> 88.35"/>
+	<bigram field="pp" token0="l"    token1="b+1" note="88.55 -> 88.62"/>
+	<bigram field="pp" token0="l-1"  token1="b"   note="88.35 -> 88.41"/>
+	<bigram field="pp" token0="l+1"  token1="b"   note="88.41 -> 88.48"/>
+	<bigram field="pp" token0="b_hd" token1="b"   note="83.19 -> 83.21"/>
+	<bigram field="pp" token0="b"    token1="b+1" note="88.48 -> 88.55"/>
+	
+	<bigram field="pm" token0="l-1"  token1="b" note="88.12 -> 88.16"/>
+	<bigram field="pm" token0="b-1"  token1="b" note="88.16 -> 88.23"/>
+	
+	<bigram field="mp" token0="l" token1="l+1"  note="87.45 -> 87.52"/>
+	<bigram field="mp" token0="l" token1="l_rm" note="87.52 -> 87.60"/>
+	<bigram field="mp" token0="l" token1="b+1"  note="87.60 -> 87.83"/>
+	<bigram field="mp" token0="b" token1="b+1"  note="87.83 -> 88.04"/>
+	<bigram field="mp" token0="b" token1="b+2"  note="88.04 -> 88.12"/>
+	
+	<trigram field="ppp" token0="l"    token1="b_hd" token2="b"   note="87.45 -> 87.40"/>
+	<trigram field="ppp" token0="l-2"  token1="l-1"  token2="l"   note="87.45 -> 87.31"/>
+	<trigram field="ppp" token0="l_lm" token1="l"    token2="b"   note="87.45 -> 87.26"/>
+	<trigram field="ppp" token0="l-3"  token1="l"    token2="b"   note="87.45 -> 87.21"/>
+	<trigram field="ppp" token0="l-2"  token1="l"    token2="b"   note="87.45 -> 87.17"/>
+	<trigram field="ppp" token0="l-1"  token1="l"    token2="b"   note="87.45 -> 86.95"/>
+	<trigram field="ppp" token0="l"    token1="l+1"  token2="b"   note="87.45 -> 86.89"/>
+	<trigram field="ppp" token0="l"    token1="b_lm" token2="b"   note="87.45 -> 86.97"/>
+	<trigram field="ppp" token0="l"    token1="b-1"  token2="b"   note="87.45 -> 87.00"/>
+	<trigram field="ppp" token0="l"    token1="b"    token2="b+1" note="87.45 -> 86.23"/>
+	<trigram field="ppp" token0="l"    token1="b"    token2="b+2" note="87.45 -> 87.30"/>
+	<trigram field="ppp" token0="l"    token1="b"    token2="b+3" note="87.45 -> 87.37"/>
+	<trigram field="ppp" token0="b"    token1="b+1"  token2="b+2" note="87.45 -> 86.82"/>
+	
+	<unigram field="f" token0="l-1" visible="false" note="88.62 -> 88.54"/>
+	<unigram field="f" token0="l+1" visible="false" note="88.62 -> 88.43"/>
+	<unigram field="f" token0="b-1" visible="false" note="88.62 -> 88.55"/>	
+	<unigram field="f" token0="b+1" visible="false" note="88.62 -> 88.57"/>
+	
+	<unigram field="d" token0="l_lm" visible="false" note="88.62 -> 88.52"/>
+	<unigram field="d" token0="l_rm" visible="false" note="88.62 -> 88.03"/>
+	<unigram field="d" token0="b_lm" visible="false" note="88.62 -> 88.51"/>
+	
+	<bigram field="pp" token0="l_lm" token1="l"    visible="false" note="88.23 -> 88.17"/>
+	<bigram field="pp" token0="l-2"  token1="l"    visible="false" note="88.28 -> 88.27"/>
+	<bigram field="pp" token0="l"    token1="l_rm" visible="false" note="88.35 -> 88.31"/>
+	<bigram field="pp" token0="l"    token1="b_lm" visible="false" note="88.55 -> 88.52"/>
+	<bigram field="pp" token0="l"    token1="b-1"  visible="false" note="88.55 -> 88.51"/>
+	<bigram field="pp" token0="l"    token1="b+2"  visible="false" note="88.62 -> 88.60"/>
+	<bigram field="pp" token0="l_lm" token1="b"    visible="false" note="88.35 -> 88.35-"/>
+	<bigram field="pp" token0="l_rm" token1="b"    visible="false" note="88.48 -> 88.43"/>
+	<bigram field="pp" token0="b_lm" token1="b"    visible="false" note="88.48 -> 88.42"/>
+	<bigram field="pp" token0="b-1"  token1="b"    visible="false" note="88.48 -> 88.44"/>
+	<bigram field="pp" token0="b"    token1="b+2"  visible="false" note="88.55 -> 88.55-"/>
+	
+	<bigram field="pm" token0="l_lm" token1="l" visible="false" note="83.21 -> 88.22"/>
+	<bigram field="pm" token0="l-1"  token1="l" visible="false" note="88.12 -> 88.10"/>
+	<bigram field="pm" token0="l_lm" token1="b" visible="false" note="88.12 -> 88.04"/>
+	<bigram field="pm" token0="l+1"  token1="b" visible="false" note="88.16 -> 88.17+"/>
+	<bigram field="pm" token0="l_rm" token1="b" visible="false" note="88.55 -> 89.38"/>
+	<bigram field="pm" token0="b_lm" token1="b" visible="false" note="88.16 -> 88.18+"/>
+	
+	<bigram field="mp" token0="l" token1="b_lm" visible="false" note="87.60 -> 87.56"/>
+	<bigram field="mp" token0="l" token1="b-1"  visible="false" note="87.60 -> 87.57"/>
+	<bigram field="mp" token0="l" token1="b+2"  visible="false" note="87.83 -> 87.81"/>
+	<bigram field="mp" token0="b" token1="b+3"  visible="false" note="88.12 -> 88.00"/>
+
+	<trigram field="ppp" token0="l_hd" token1="l"    token2="b" visible="false" note="83.21 -> 83.22"/>
+	<trigram field="ppp" token0="l"    token1="l_rm" token2="b" visible="false" note="87.37 -> 87.45"/>
+</feature_template>
