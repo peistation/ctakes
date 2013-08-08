@@ -1,1 +1,0 @@
-classpath*:edu/mayo/bmi/uima/core/type/**/*.xml
