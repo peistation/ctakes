@@ -708,7 +708,25 @@
 							<include>**/*TestCase.java</include>
 						</includes>
 						<argLine>-Xmx1536m</argLine>
-						<forkedProcessTimeoutInSeconds>900</forkedProcessTimeoutInSeconds>						
+						<forkedProcessTimeoutInSeconds>900</forkedProcessTimeoutInSeconds>
+						<additionalClasspathElements>
+						    <additionalClasspathElement>ctakes-assertion-res/src/main/resources</additionalClasspathElement>						    
+						    <additionalClasspathElement>ctakes-assertion-zoner-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-chunker-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-constituency-parser-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-core-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-coreference-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-dependency-parser-res/src/main/resources</additionalClasspathElement>	
+						    <additionalClasspathElement>ctakes-dictionary-lookup-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-drug-ner-res/src/main/resources</additionalClasspathElement>						    						    					    						    						    						    						    
+						    <additionalClasspathElement>ctakes-lvg-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-ne-contexts-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-pad-term-spotter-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-relation-extractor-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-side-effect-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-smoking-status-res/src/main/resources</additionalClasspathElement>
+						    <additionalClasspathElement>ctakes-temporal-res/src/main/resources</additionalClasspathElement>						    						    						    						    						    						    						    
+						</additionalClasspathElements>						
 					</configuration>
 				</plugin>
 				<plugin>
