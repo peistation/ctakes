@@ -730,6 +730,7 @@
 							<additionalClasspathElement>ctakes-lvg-res/src/main/resources</additionalClasspathElement>
 							<additionalClasspathElement>ctakes-ne-contexts-res/src/main/resources</additionalClasspathElement>
 							<additionalClasspathElement>ctakes-pad-term-spotter-res/src/main/resources</additionalClasspathElement>
+							<additionalClasspathElement>ctakes-pos-tagger-res/src/main/resources</additionalClasspathElement>
 							<additionalClasspathElement>ctakes-relation-extractor-res/src/main/resources</additionalClasspathElement>
 							<additionalClasspathElement>ctakes-side-effect-res/src/main/resources</additionalClasspathElement>
 							<additionalClasspathElement>ctakes-smoking-status-res/src/main/resources</additionalClasspathElement>
