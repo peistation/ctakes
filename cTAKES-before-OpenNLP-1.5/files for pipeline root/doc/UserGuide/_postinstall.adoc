@@ -1,0 +1,12 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+Next steps
+~~~~~~~~~~
+
+- Some of the dictionaries in the release are small samples. To
+replace them with full versions, please read <<boost_performance>>.
+- To read more on the {osp-short} architecture, go to
+<<component_description>> for details on individual components
+(and in some casees, how to improve them).
+

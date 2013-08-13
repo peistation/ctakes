@@ -1,0 +1,46 @@
+Apache cTAKES
+Copyright 2012 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+Portions of cTAKES were originally developed by
+Mayo Clinic and are licensed to the Apache Software
+Foundation under the "Software Grant License Agreement".
+Copyright (c) 2009 Mayo Foundation for Medical Education 
+and Research (MFMER) 
+
+Portions of cTAKES were originally developed by
+Boston Children's Hospital and are licensed to the Apache Software
+Foundation under the "Software Grant License Agreement".
+Copyright (c) 2012 Boston Children's Hospital.
+
+Portions of cTAKES were originally developed by
+University of Colorado and are licensed to the Apache Software
+Foundation under the "Software Grant License Agreement".
+Copyright (c) 2012 University of Colorado.
+
+Portions of cTAKES were originally developed by
+The MITRE corporation. 
+Copyright (c) 2012 The MITRE Corporation.
+
+Some material in the UMLS Metathesaurus is from copyrighted sources of
+the respective copyright holders. Users of the UMLS Metathesaurus are 
+solely responsible for compliance with any copyright, patent or 
+trademark restrictions and are referred to the copyright, patent or 
+trademark notices appearing in the original sources, all of which are 
+hereby incorporated by reference.
+
+This material includes SNOMED Clinical Terms� (SNOMED CT�) which is 
+used by permission of the International Health Terminology Standards 
+Development Organisation (IHTSDO). All rights reserved. SNOMED CT�, 
+was originally created by The College of American Pathologists. 
+"SNOMED" and "SNOMED CT" are registered trademarks of the IHTSDO.
+
+cTAKES includes the following vocabularies from the UMLS Metathesaurus:
+ - SNOMED CT
+ - NCI Thesaurus http://ncit.nci.nih.gov/
+ - Medical Subject Headings http://www.nlm.nih.gov/mesh/
+ - RxNorm http://www.nlm.nih.gov/research/umls/rxnorm/
+ 
+Please see the NOTICE file within each PEAR file for the other notices.

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <collectionReader>
+        <collectionIterator>
+            <descriptor>
+                <import location="../collection_reader/DependencyFileCollectionReader.xml"/>
+            </descriptor>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>DependencyFile</name>
+                    <value>
+                        <string>data/genia401-500.tok</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>InputFormat</name>
+                    <value>
+                        <string>tok</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </collectionIterator>
+    </collectionReader>
+    <casProcessors casPoolSize="3" processingUnitThreadCount="1">
+        <casProcessor deployment="integrated" name="ClearParserTokenizedInfPosAggregate">
+            <descriptor>
+                <import location="../analysis_engine/ClearParserTokenizedInfPosAggregate.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>DependencyModelFile</name>
+                    <value>
+                        <string>resources/genia1-400-STM.mod</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>LexiconDirectory</name>
+                    <value>
+                        <string>lexiconGeniaSTM</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>MorphDictionaryDirectory</name>
+                    <value>
+                        <string>resources/en_dict</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>PosModelFile</name>
+                    <value>
+                        <string>models/genia.bin.gz</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>TagDictionary</name>
+                    <value>
+                        <string>models/genia-tagdict.bin.gz</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+        <casProcessor deployment="integrated" name="DependencyNodeWriter">
+            <descriptor>
+                <import location="../cas_consumer/DependencyNodeWriter.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>outputDir</name>
+                    <value>
+                        <string>data/outputGeniaSTMSTM</string>
+                    </value>
+                </nameValuePair>
+                <nameValuePair>
+                    <name>outputFormat</name>
+                    <value>
+                        <string>dep</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+        <casProcessor deployment="integrated" name="Write CAS to XML file">
+            <descriptor>
+                <import location="../../../core/desc/cas_consumer/FileWriterCasConsumer.xml"/>
+            </descriptor>
+            <deploymentParameters/>
+            <errorHandling>
+                <errorRateThreshold action="terminate" value="0/1000"/>
+                <maxConsecutiveRestarts action="terminate" value="30"/>
+                <timeout max="100000" default="-1"/>
+            </errorHandling>
+            <checkpoint batch="10000" time="1000ms"/>
+            <configurationParameterSettings>
+                <nameValuePair>
+                    <name>outputDir</name>
+                    <value>
+                        <string>data/outputGeniaSTMSTM</string>
+                    </value>
+                </nameValuePair>
+            </configurationParameterSettings>
+        </casProcessor>
+    </casProcessors>
+    <cpeConfig>
+        <numToProcess>-1</numToProcess>
+        <deployAs>immediate</deployAs>
+        <checkpoint batch="0" time="300000ms"/>
+        <timerImpl/>
+    </cpeConfig>
+</cpeDescription>

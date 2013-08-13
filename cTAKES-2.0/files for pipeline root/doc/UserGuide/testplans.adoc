@@ -1,0 +1,4 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+include::_cd_drugner_functional_test_plan.adoc[]  

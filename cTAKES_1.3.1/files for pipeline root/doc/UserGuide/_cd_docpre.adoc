@@ -1,0 +1,46 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+Document preprocessor
+~~~~~~~~~~~~~~~~~~~~~
+Introduction
+^^^^^^^^^^^^
+This component provides a <<cda_cas_initializer,CdaCasInitializer>>
+annotator that transforms a Clinical Document Architecture (CDA)
+document into plain text, provided the CDA document conforms to the
+DTD resource.
+
+As part of the conversion to plain text, section (segment) markers are
+inserted into the text and hyphens are inserted into words that should
+be hyphenated. The resulting text is stored in a new View, which has
+its own Sofa.
+
+Sections are detected and Segment (aka section) annotations are added
+to the CAS. Document level data is extracted and stored in the CAS as
+Property annotations.
+
+NOTE: This does not handle all CDA documents -- the CDA document must
+conform to the DTD `resources/cda/NotesIIST_RTF.DTD`.
+
+
+Analysis engines (annotators)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- *AggregateAE.xml*
++
+The file +desc/AggregateAE.xml+ defines a ``pipeline'' for
+preprocessing documents. The ``pipeline'' is a simple pipeline with
+only one delegate analysis engine (one annotator), the
+CdaCasInitializer, and is included for testing. Typically the
++CdaCasInitializer.xml+ descriptor is included in a more complete
+pipeline rather than using the AggregateAE.xml descriptor that is in
+this project.
++
+- [[cda_cas_initializer]] *CdaCasInitializer.xml*
++
+The CdaCasInitializer descriptor defines the analysis engine
+(annotator) for preprocessing documents. It creates a plain text view
+from a CDA view. The plain text view can then be annotated for tokens,
+parts of speech, chunks, etc.
++
+*Parameters*::
+  (none)

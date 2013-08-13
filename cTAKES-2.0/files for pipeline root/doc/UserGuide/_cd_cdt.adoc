@@ -1,0 +1,46 @@
+// Define some global attributes
+include::_globattr.adoc[]
+
+Context dependent tokenizer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This annotator creates annotations from one or more tokens, using
+surrounding tokens as clues. An example of an annotation created from
+multiple tokens is a range that includes 2 numbers and a dash
+(e.g. 2-3).
+
+// This annotator depends on finite state machine (FSM) code in the project named core.
+
+
+Analysis engines (annotators)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- *ContextDependentTokenizerAnnotator.xml*
++
+--
+Include this analysis engine in your pipeline if you wish to have the
+following annotations created:
+
+anchor:cdt_annot[]
+
+  * DateAnnotation
+  * FractionAnnotation
+  * MeasurementAnnotation
+  * PersonTitleAnnotation
+  * RangeAnnotation
+  * RomanNumeralAnnotation
+  * TimeAnnotation
+--
++
+*Parameters*::
+    (none)
++
+- *TestTAE.xml*
++
+--
+This is an aggregate analysis engine that can be used to run a short
+pipeline that takes plain text as input and annotates for tokens,
+sentences, and for the <<cdt_annot,annotations>> created by the
+context dependent tokenizer annotator.
+
+NOTE: This aggregate does not override any parameters or resource
+bindings.
+--
