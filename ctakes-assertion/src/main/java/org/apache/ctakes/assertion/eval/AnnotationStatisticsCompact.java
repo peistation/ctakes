@@ -438,7 +438,7 @@ public class AnnotationStatisticsCompact<OUTCOME_TYPE extends Comparable<? super
   public String toTsv() {
 	StringBuilder result = new StringBuilder();
 	result.append(String.format(
-			"%s:%.3f\t%s:%.3f\t%s:%.3f\t",
+			"%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t",
 			"All",this.precision(),
 			"All",this.recall(),
 			"All",this.f1()));
@@ -447,7 +447,7 @@ public class AnnotationStatisticsCompact<OUTCOME_TYPE extends Comparable<? super
 		Collections.sort(outcomes);
 		for (OUTCOME_TYPE outcome : outcomes) {
 			result.append(String.format(
-					"%s:%.3f\t%s:%.3f\t%s:%.3f\t",
+					"%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t",
 					outcome,this.precision(outcome),
 					outcome,this.recall(outcome),
 					outcome,this.f1(outcome)));

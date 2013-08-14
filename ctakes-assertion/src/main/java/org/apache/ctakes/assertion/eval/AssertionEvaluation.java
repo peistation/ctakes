@@ -116,7 +116,7 @@ public class AssertionEvaluation extends Evaluation_ImplBase<File, Map<String, A
   
 private static Logger logger = Logger.getLogger(AssertionEvaluation.class); 
 
-  private static final String YTEX_NEGATION_DESCRIPTOR = "ytex/uima/NegexAnnotator.xml";
+  private static final String YTEX_NEGATION_DESCRIPTOR = "ytex.uima.NegexAnnotator";
 
   public static class Options extends Options_ImplBase {
     @Option(
@@ -256,18 +256,15 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
 
   private String sharpCorpusDirectory;
 
-  static public File evaluationLogFile;
-  static public BufferedWriter evaluationLogFileOut;
+  static public String evaluationLogFilePath;
+  static private File evaluationLogFile;
+  static private BufferedWriter evaluationLogFileOut;
   static {
-	  try {
-		evaluationLogFile = new File("eval_"+new Date().toString().replaceAll(" ","_") + ".txt");
-		evaluationLogFileOut = new BufferedWriter(new FileWriter(evaluationLogFile), 32768);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	  evaluationLogFilePath = "eval_"+new Date().toString().replaceAll(" ","_") + ".txt";
   }
+
   static public boolean useEvaluationLogFile = false;
+  private boolean ignoreAnatomicalSites = false;
 
   protected static Options options = new Options();
   
@@ -278,7 +275,12 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     //Options options = new Options();
 	  resetOptions();
 	  options.parseOptions(args);
-    
+
+	  if (useEvaluationLogFile) {
+		  evaluationLogFile = new File(evaluationLogFilePath);
+		  evaluationLogFileOut = new BufferedWriter(new FileWriter(evaluationLogFile), 32768);
+	  }
+	  
 //    System.err.println("forcing skipping of subject processing!!!");
 //    options.runSubject = false;
 //    System.err.println("forcing skipping of generic processing!!!");
@@ -399,7 +401,7 @@ private static Logger logger = Logger.getLogger(AssertionEvaluation.class);
     	  CollectionReader testCollectionReader = evaluation.getCollectionReader(testFiles);
     	  Map<String, AnnotationStatisticsCompact> stats = evaluation.test(testCollectionReader, modelsDir);
 
-    	  AssertionEvaluation.printScore(stats,  modelsDir.getAbsolutePath());
+    	  AssertionEvaluation.printScore(stats,  modelsDir!=null? modelsDir.getAbsolutePath() : "no_model");
       }
     }
     
@@ -895,8 +897,10 @@ public static void printScore(Map<String, AnnotationStatisticsCompact> map, Stri
       System.out.format("document id: %s%n", documentId);
       
       Collection<IdentifiedAnnotation> goldEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>(); 
-      Collection<EntityMention> goldEntities = JCasUtil.select(goldView, EntityMention.class);
-      goldEntitiesAndEvents.addAll(goldEntities);
+      if ( !ignoreAnatomicalSites ) {
+    	  Collection<EntityMention> goldEntities = JCasUtil.select(goldView, EntityMention.class);
+    	  goldEntitiesAndEvents.addAll(goldEntities);
+      }
       Collection<EventMention> goldEvents = JCasUtil.select(goldView, EventMention.class);
       goldEntitiesAndEvents.addAll(goldEvents);
       // System.out.format("gold entities: %d%ngold events: %d%n%n", goldEntities.size(), goldEvents.size());
@@ -912,8 +916,10 @@ public static void printScore(Map<String, AnnotationStatisticsCompact> map, Stri
       }
       
       Collection<IdentifiedAnnotation> systemEntitiesAndEvents = new ArrayList<IdentifiedAnnotation>();
-      Collection<EntityMention> systemEntities = JCasUtil.select(jCas, EntityMention.class);
-      systemEntitiesAndEvents.addAll(systemEntities);
+      if ( !ignoreAnatomicalSites ) {
+    	  Collection<EntityMention> systemEntities = JCasUtil.select(jCas, EntityMention.class);
+    	  systemEntitiesAndEvents.addAll(systemEntities);
+      }
       Collection<EventMention> systemEvents = JCasUtil.select(jCas, EventMention.class);
       systemEntitiesAndEvents.addAll(systemEvents);
 //      System.out.format("system entities: %d%nsystem events: %d%n%n", systemEntities.size(), systemEvents.size());
