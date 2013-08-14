@@ -34,10 +34,14 @@ public class AssertionConst {
 	// expects subdirectories called exported-xml and text
 	public static final String MiPACQ_CORPUS = DATA_DIR + "gold_standard/copies-of-just-clinical-knowtator-xml-and-text/";
 
+	public static final String NEGEX_CORPUS = DATA_DIR + "gold_standard/negex/Annotations-1-120-random.txt"; 
+	public static final String NEGEX_CORPUS_PREPROCESSED = DATA_DIR + "preprocessed_data/negex/"; 
+	
 	// Just plaintext files, which will be run through cTAKES, to generate XMI - attributes will then be judged
 	// This in input for cTAKES; the output (evalOutputDir) can then be the input of the judge step.
-	public static final String CORPUS_WO_GOLD_STD_TO_RUN_THROUGH_CTAKES = DATA_DIR + "ActiveLearning/plaintext"; 
-	
+	public static final String CORPUS_WO_GOLD_STD_TO_RUN_THROUGH_CTAKES = DATA_DIR + "ActiveLearning/plaintext";
+
+
 	// specify the model to write (train/crossvalidate) or read (test/crossvalidate).
 	//  please rename for different configurations of training data 
 	public static String modelDirectory = "../ctakes-assertion-res/resources/model/sharp-sprint-train";
