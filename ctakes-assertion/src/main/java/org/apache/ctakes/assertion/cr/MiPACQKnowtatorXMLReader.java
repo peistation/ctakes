@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.ctakes.assertion.util.AssertionConst;
 import org.apache.ctakes.core.knowtator.KnowtatorAnnotation;
 import org.apache.ctakes.core.knowtator.KnowtatorXMLParser;
 import org.apache.ctakes.core.util.CtakesFileNamer;
@@ -1386,7 +1387,7 @@ public class MiPACQKnowtatorXMLReader extends JCasAnnotator_ImplBase {
 		  Exception e = new RuntimeException("Going to continue with default values");
 		  e.printStackTrace();
 		  dirs = new String[1];
-		  dirs[0] = "/usr/data/MiPACQ/copies-of-just-clinical-knowtator-xml-and-text/";
+		  dirs[0] = AssertionConst.MiPACQ_CORPUS;
 	  }
 
 	  AnalysisEngine mipacqReader = AnalysisEngineFactory.createPrimitive(MiPACQKnowtatorXMLReader.class);

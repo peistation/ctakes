@@ -31,6 +31,9 @@ public class AssertionConst {
 	// expects subdirectories: ast, txt
 	public static final String I2B2_2010_TEST_CORPUS = DATA_DIR + "gold_standard/i2b2Challenge2010/Data/Test/reports/";
 
+	// expects subdirectories called exported-xml and text
+	public static final String MiPACQ_CORPUS = DATA_DIR + "gold_standard/copies-of-just-clinical-knowtator-xml-and-text/";
+
 	// Just plaintext files, which will be run through cTAKES, to generate XMI - attributes will then be judged
 	// This in input for cTAKES; the output (evalOutputDir) can then be the input of the judge step.
 	public static final String CORPUS_WO_GOLD_STD_TO_RUN_THROUGH_CTAKES = DATA_DIR + "ActiveLearning/plaintext"; 
