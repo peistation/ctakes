@@ -69,16 +69,20 @@ public class TemporalPETExtractor implements RelationFeaturesExtractor {
 		if(t1.getBegin() <= t2.getBegin() && t1.getEnd() >= t2.getEnd()){
 			// t1 encloses t2
 			tree = TreeExtractor.getSimpleClone(t1);
+			tree.setGernalizeLeaf(true);
 		}else if(t2.getBegin() <= t1.getBegin() && t2.getEnd() >= t1.getEnd()){
 			// t2 encloses t1
 			tree = TreeExtractor.getSimpleClone(t2);
+			tree.setGernalizeLeaf(true);
 		}else{
 			tree = TreeExtractor.extractPathEnclosedTree(t1, t2, jcas);
+			tree.setGernalizeLeaf(true);
 		}
 
 		moveTimexDownToNP(tree);
 		
 		features.add(new TreeFeature("TK_PET", tree.toString()));
+		tree.setGernalizeLeaf(false);
 		return features;
 	}
 
