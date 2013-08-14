@@ -26,6 +26,7 @@ public class SimpleTree {
 	public String cat;
 	public ArrayList<SimpleTree> children;
 	public SimpleTree parent = null;
+	static boolean generalizeLeaf = false;
 	static Pattern ptPatt = Pattern.compile("\\(([^ (]+) +([^ )]+)\\)");
 	
 	public SimpleTree(String c){
@@ -36,6 +37,13 @@ public class SimpleTree {
 		cat = escapeCat(c);
 		children = new ArrayList<SimpleTree>();
 		parent = p;
+	}
+	
+	public SimpleTree(String c, SimpleTree p, boolean g){	
+		cat = escapeCat(c);
+		children = new ArrayList<SimpleTree>();
+		parent = p;
+		generalizeLeaf = g;
 	}
 	
 	private String escapeCat(String c) {
@@ -64,7 +72,11 @@ public class SimpleTree {
 		buff.append(cat);
 		buff.append(" ");
 		if(children.size() == 1 && children.get(0).children.size() == 0){
-			buff.append(children.get(0).cat);
+			if(generalizeLeaf){
+				buff.append("LEAF");
+			}else{
+				buff.append(children.get(0).cat);
+			}
 		}else{
 			for(int i = 0; i < children.size(); i++){
 				if(i != 0){
@@ -140,5 +152,10 @@ public class SimpleTree {
 	// i keep forgetting how it's implemented
 	public boolean isLeaf() {
 		return children == null || children.size() == 0;
+	}
+
+	public void setGernalizeLeaf(boolean b) {
+		generalizeLeaf=b;
+		
 	}
 }
