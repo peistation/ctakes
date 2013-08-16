@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.ctakes</groupId>
     <artifactId>ctakes</artifactId>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>ctakes-assertion-zoner-res</artifactId>
   <name>Apache cTAKES Resources assertion-zoner</name>
