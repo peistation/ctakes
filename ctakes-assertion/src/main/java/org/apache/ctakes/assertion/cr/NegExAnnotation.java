@@ -108,8 +108,8 @@ public class NegExAnnotation {
 			possible = "0";
 		}
 		
-		if (fields.length > 4 && fields[4]!=null && fields[4].length()>0) throw new RuntimeException("Does not support temporality yet");
-		if (fields.length > 5 && fields[5]!=null && fields[5].length()>0) throw new RuntimeException("Does not support experiencer yet");
+//		if (fields.length > 4 && fields[4]!=null && fields[4].length()>0) throw new RuntimeException("Does not support temporality yet");
+//		if (fields.length > 5 && fields[5]!=null && fields[5].length()>0) throw new RuntimeException("Does not support experiencer yet");
 
 	}
 	

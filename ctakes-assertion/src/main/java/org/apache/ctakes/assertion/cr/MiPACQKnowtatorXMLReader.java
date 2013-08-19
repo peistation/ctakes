@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.ctakes.core.ae;
+package org.apache.ctakes.assertion.cr;
 
 import java.io.File;
 import java.io.IOException;

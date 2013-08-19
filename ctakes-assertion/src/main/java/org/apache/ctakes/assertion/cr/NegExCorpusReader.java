@@ -28,6 +28,7 @@ import org.apache.ctakes.assertion.medfacts.cleartk.AssertionComponents;
 import org.apache.ctakes.assertion.util.AssertionConst;
 import org.apache.ctakes.core.util.CtakesFileNamer;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.textsem.EventMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -55,7 +56,7 @@ import org.uimafit.pipeline.SimplePipeline;
 public class NegExCorpusReader extends CollectionReader_ImplBase {
   static Logger LOGGER = Logger.getLogger(NegExCorpusReader.class);
   
-  private boolean skipReadingValuesJustReadText;
+  private boolean skipReadingValuesJustReadText = false;
   
   private static TypeSystemDescription typeSystemDescription = AssertionComponents.CTAKES_CTS_TYPE_SYSTEM_DESCRIPTION; // TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath();//.createTypeSystemDescription();
 
@@ -200,7 +201,7 @@ public void getNext(CAS aCAS) throws IOException, CollectionException {
 	DocumentID documentID = new DocumentID(jCas);
 	documentID.setDocumentID("doc" + a.lineNumber);
 	documentID.addToIndexes();
-	IdentifiedAnnotation ia = new IdentifiedAnnotation(jCas);
+	EventMention ia = new EventMention(jCas);
 	ia.setBegin(Integer.parseInt(a.begin));
 	ia.setEnd(Integer.parseInt(a.end));
 	if (!skipReadingValuesJustReadText) ia.setPolarity(Integer.parseInt(a.polarity));
