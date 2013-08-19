@@ -544,20 +544,26 @@ public static void printScore(Map<String, AnnotationStatisticsCompact> map, Stri
         paths);
   }
 
-  public static void preprocess(File preprocessDir ) throws ResourceInitializationException, UIMAException, IOException {
+  public static void preprocess(File rawDir ) throws ResourceInitializationException, UIMAException, IOException {
 //	  File devDirectory = new File(options.trainDirectory.getParentFile() + File.separator + "dev");
-	  File trainDir = null;
+	  File preprocessedDir = null;
 	  if (options.trainDirectory.split("[;:]").length>1) {
 		  throw new IOException("Assertion preprocess wants to write to one train directory, but you've supplied multiple: " + options.trainDirectory);
 	  } else {
-		  trainDir = new File(options.trainDirectory);
+		  preprocessedDir = new File(options.trainDirectory);
 	  }
-	  if (preprocessDir.getAbsolutePath().contains("i2b2")) {
-		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readI2B2Challenge2010(preprocessDir, trainDir);
+	  if (rawDir.getAbsolutePath().contains("i2b2")) {
+		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readI2B2Challenge2010(rawDir, preprocessedDir);
 		  
-	  } else {
+	  } else if (rawDir.getAbsolutePath().contains("mipacq")) {
+		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readMiPACQ(rawDir, preprocessedDir);
+		  
+	  } else if (rawDir.getAbsolutePath().contains("negex")) {
+		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readNegexTestSet(rawDir, preprocessedDir);
+		  
+	  } else{
 		  GoldEntityAndAttributeReaderPipelineForSeedCorpus.readSharpUmlsCem(
-				  preprocessDir, trainDir, options.testDirectory, options.devDirectory);
+				  rawDir, preprocessedDir, options.testDirectory, options.devDirectory);
 	  }
   }
   
@@ -1182,8 +1188,8 @@ private static void printErrors(JCas jCas,
 		  } else  {
 			  if(!goldLabel.equals(systemLabel)){
 				  if(trueCategory == null){
-					  // used for multi-class case:
-					  System.out.println(classifierType+" Incorrectly labeled as " + systemLabel + " when the example was " + goldLabel + ": " + formatError(jCas, goldAnnotation));
+					  // used for multi-class case.  Incorrect_system_label(Correct_label):
+					  System.out.println(classifierType+ " "+ systemLabel + "(" + goldLabel + "): " + formatError(jCas, systemAnnotation));
 				  }else if(systemLabel.equals(trueCategory)){
 					  System.out.println(classifierType+" FP: " + typeId  + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
@@ -1192,6 +1198,7 @@ private static void printErrors(JCas jCas,
 			  }else{
 			    if(trueCategory == null){
 			      // multi-class case -- probably don't want to print anything?
+			    	System.out.println(classifierType+ " "+ systemLabel + "(" + goldLabel + "): " + formatError(jCas, systemAnnotation));
 			    }else if(systemLabel.equals(trueCategory)){
 					  System.out.println(classifierType+" TP: " + typeId + " " + formatError(jCas, systemAnnotation) + "| gold:|" + formatError(jCas, goldAnnotation) + " " + documentId);
 				  }else{
