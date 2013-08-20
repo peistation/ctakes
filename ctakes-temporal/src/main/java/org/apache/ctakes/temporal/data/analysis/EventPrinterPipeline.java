@@ -64,7 +64,7 @@ public class EventPrinterPipeline {
 
     @Option(
         name = "--input-dir",
-        usage = "specify the path to the directory containing the clinical notes to be processed",
+        usage = "specify the path to the directory containing the xmi files",
         required = true)
     public File inputDirectory;
 
@@ -76,7 +76,7 @@ public class EventPrinterPipeline {
 
     @Option(
         name = "--event-output-file",
-        usage = "specify the path to the directory containing the clinical notes to be processed",
+        usage = "specify the path to the output file",
         required = true)
     public File eventOutputFile;
   }
@@ -90,7 +90,7 @@ public class EventPrinterPipeline {
     CollectionReader collectionReader = getCollectionReader(trainFiles);
 		
     AnalysisEngine annotationConsumer = AnalysisEngineFactory.createPrimitive(
-    		EventAndTokenContextWriter.class,
+    		EventWriter.class,
     		"UmlsSemanticType",
     		options.umlsSemanticType,
     		"EventOutputFile",
@@ -102,18 +102,18 @@ public class EventPrinterPipeline {
 	/**
 	 * Print events with a given UMLS semantic type.
 	 */
-	public static class EventAndTokenContextWriter extends JCasAnnotator_ImplBase {
+	public static class EventWriter extends JCasAnnotator_ImplBase {
 
 	  @ConfigurationParameter(
 	      name = "EventOutputFile",
 	      mandatory = true,
-	      description = "path to the file that stores the events")
+	      description = "path to the output file that will store the events")
 	  private String eventOutputFile;
 
 	  @ConfigurationParameter(
 	      name = "UmlsSemanticType",
 	      mandatory = true,
-	      description = "umls semantic type")
+	      description = "umls semantic type of interest")
 	  private int umlsSemanticType;
 	  
 	  @Override
@@ -136,7 +136,6 @@ public class EventPrinterPipeline {
 	    BufferedWriter eventWriter = getWriter(eventOutputFile, true);
 	    try {
 	      for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
-	        
 	        List<EntityMention> coveringEntityMentions = JCasUtil.selectCovered(
 	            systemView, 
 	            EntityMention.class, 
