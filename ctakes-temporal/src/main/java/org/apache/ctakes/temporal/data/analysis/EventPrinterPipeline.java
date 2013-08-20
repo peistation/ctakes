@@ -136,17 +136,17 @@ public class EventPrinterPipeline {
 	    BufferedWriter eventWriter = getWriter(eventOutputFile, true);
 	    try {
 	      for(EventMention eventMention : JCasUtil.select(goldView, EventMention.class)) {
-	        List<EntityMention> coveringEntityMentions = JCasUtil.selectCovered(
+	        List<EventMention> coveringSystemEventMentions = JCasUtil.selectCovered(
 	            systemView, 
-	            EntityMention.class, 
+	            EventMention.class, 
 	            eventMention.getBegin(), 
 	            eventMention.getEnd());
 	        
-	        for(EntityMention entityMention : coveringEntityMentions) {
-	          if(entityMention.getTypeID() == umlsSemanticType) { 
+	        for(EventMention systemEventMention : coveringSystemEventMentions) {
+	          if(systemEventMention.getTypeID() == umlsSemanticType) { 
 	            String output = String.format(
 	                "%s|%s\n", 
-	                entityMention.getCoveredText().toLowerCase(),
+	                systemEventMention.getCoveredText().toLowerCase(),
 	                expandToNP(systemView, eventMention).toLowerCase());
 	            try {
 	              eventWriter.write(output);
