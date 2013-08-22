@@ -45,18 +45,19 @@ public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ViewCreatorAnnotator.class, ViewCreatorAnnotator.PARAM_VIEW_NAME, component.getSimpleName()));
     }
     
-    builder.add(TimeAnnotator.createAnnotatorDescription(
-                      new File(directory, TimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, TimeAnnotator.class.getSimpleName());
-    builder.add(BackwardsTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, BackwardsTimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, BackwardsTimeAnnotator.class.getSimpleName());
-    builder.add(ConstituencyBasedTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, ConstituencyBasedTimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, ConstituencyBasedTimeAnnotator.class.getSimpleName());
-    builder.add(CRFTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, CRFTimeAnnotator.class.getSimpleName())), 
-                      TimeAnnotator.TIMEX_VIEW, CRFTimeAnnotator.class.getSimpleName());
+    builder.add(TimeAnnotator.createEnsembleDescription(
+                      new File(directory, TimeAnnotator.class.getSimpleName()), 
+                      TimeAnnotator.class.getSimpleName()));
+    builder.add(BackwardsTimeAnnotator.createEnsembleDescription(
+                      new File(directory, BackwardsTimeAnnotator.class.getSimpleName()),
+                      BackwardsTimeAnnotator.class.getSimpleName()));
+    builder.add(ConstituencyBasedTimeAnnotator.createEnsembleDescription(
+        new File(directory, ConstituencyBasedTimeAnnotator.class.getSimpleName()),
+        ConstituencyBasedTimeAnnotator.class.getSimpleName()));
+    builder.add(CRFTimeAnnotator.createEnsembleDescription(
+        new File(directory, CRFTimeAnnotator.class.getSimpleName()), 
+        CRFTimeAnnotator.class.getSimpleName()));
+    
 //    builder.add(AnalysisEngineFactory.createPrimitiveDescription(MetaTimeAnnotator.class, 
 //        CleartkAnnotator.PARAM_IS_TRAINING,
 //        true,
@@ -80,18 +81,18 @@ public class MetaTimeAnnotator extends TemporalSequenceAnnotator_ImplBase {
     for(Class<?> component : components){
       builder.add(AnalysisEngineFactory.createPrimitiveDescription(ViewCreatorAnnotator.class, ViewCreatorAnnotator.PARAM_VIEW_NAME, component.getSimpleName()));
     }
-    builder.add(TimeAnnotator.createAnnotatorDescription(
-                      new File(directory, TimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, TimeAnnotator.class.getSimpleName());
-    builder.add(BackwardsTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, BackwardsTimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, BackwardsTimeAnnotator.class.getSimpleName());
-    builder.add(ConstituencyBasedTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, ConstituencyBasedTimeAnnotator.class.getSimpleName())),
-                      TimeAnnotator.TIMEX_VIEW, ConstituencyBasedTimeAnnotator.class.getSimpleName());
-    builder.add(CRFTimeAnnotator.createAnnotatorDescription(
-                      new File(directory, CRFTimeAnnotator.class.getSimpleName())), 
-                      TimeAnnotator.TIMEX_VIEW, CRFTimeAnnotator.class.getSimpleName());
+    builder.add(TimeAnnotator.createEnsembleDescription(
+                      new File(directory, TimeAnnotator.class.getSimpleName()),
+                      TimeAnnotator.class.getSimpleName()));
+    builder.add(BackwardsTimeAnnotator.createEnsembleDescription(
+                      new File(directory, BackwardsTimeAnnotator.class.getSimpleName()),
+                      BackwardsTimeAnnotator.class.getSimpleName()));
+    builder.add(ConstituencyBasedTimeAnnotator.createEnsembleDescription(
+                      new File(directory, ConstituencyBasedTimeAnnotator.class.getSimpleName()),
+                      ConstituencyBasedTimeAnnotator.class.getSimpleName()));
+    builder.add(CRFTimeAnnotator.createEnsembleDescription(
+                      new File(directory, CRFTimeAnnotator.class.getSimpleName()), 
+                      CRFTimeAnnotator.class.getSimpleName()));
     builder.add(AnalysisEngineFactory.createPrimitiveDescription(
         MetaTimeAnnotator.class,
         CleartkSequenceAnnotator.PARAM_IS_TRAINING,

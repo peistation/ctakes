@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -39,6 +40,7 @@ import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
 import org.cleartk.timeml.util.TimeWordsExtractor;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
@@ -53,6 +55,13 @@ TemporalEntityAnnotator_ImplBase {
   private static final String MENTION = "TIME_MENTION";
   private static Logger logger = Logger.getLogger(ConstituencyBasedTimeAnnotator.class);
   private static final int	SPAN_LIMIT = 12;
+
+  public static final String PARAM_TIMEX_VIEW = "TimexView";
+  @ConfigurationParameter(
+      name = PARAM_TIMEX_VIEW,
+      mandatory = false,
+      description = "View to write timexes to (used for ensemble methods)")
+  protected String timexView = CAS.NAME_DEFAULT_SOFA;
 
   public static AnalysisEngineDescription createDataWriterDescription(
       Class<? extends DataWriter<String>> dataWriterClass,
@@ -73,6 +82,18 @@ TemporalEntityAnnotator_ImplBase {
         ConstituencyBasedTimeAnnotator.class,
         CleartkAnnotator.PARAM_IS_TRAINING,
         false,
+        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+        new File(modelDirectory, "model.jar"));
+  }
+
+  public static AnalysisEngineDescription createEnsembleDescription(File modelDirectory,
+      String viewName) throws ResourceInitializationException {
+    return AnalysisEngineFactory.createPrimitiveDescription(
+        ConstituencyBasedTimeAnnotator.class,
+        CleartkAnnotator.PARAM_IS_TRAINING,
+        false,
+        ConstituencyBasedTimeAnnotator.PARAM_TIMEX_VIEW,
+        viewName,
         GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
         new File(modelDirectory, "model.jar"));
   }
@@ -205,7 +226,7 @@ TemporalEntityAnnotator_ImplBase {
         // add to cas
         JCas timexCas;
         try {
-          timexCas = jCas.getView(TimeAnnotator.TIMEX_VIEW);
+          timexCas = jCas.getView(timexView);
         } catch (CASException e) {
           throw new AnalysisEngineProcessException(e);
         }

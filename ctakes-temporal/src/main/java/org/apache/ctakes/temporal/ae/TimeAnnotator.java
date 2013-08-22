@@ -36,11 +36,12 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.classifier.CleartkAnnotator;
-//import org.cleartk.classifier.DataWriter;
 import org.cleartk.classifier.Feature;
 import org.cleartk.classifier.Instance;
 import org.cleartk.classifier.chunking.BIOChunking;
@@ -65,9 +66,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 	public static final String PARAM_FEATURE_SELECTION_THRESHOLD = "WhetherToDoFeatureSelection";
 
 	@ConfigurationParameter(
-			name = PARAM_FEATURE_SELECTION_THRESHOLD,
-			mandatory = false,
-			description = "the Chi-squared threshold at which features should be removed")
+	    name = PARAM_FEATURE_SELECTION_THRESHOLD,
+	    mandatory = false,
+	    description = "the Chi-squared threshold at which features should be removed")
 	protected Float featureSelectionThreshold = 1f;
 	
 	public static final String PARAM_FEATURE_SELECTION_URI = "FeatureSelectionURI";
@@ -80,13 +81,18 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 	
 	public static final String PARAM_SMOTE_NUM_NEIGHBORS = "NumOfNeighborForSMOTE";
 
-	  @ConfigurationParameter(
-			  name = PARAM_SMOTE_NUM_NEIGHBORS,
-			  mandatory = false,
-			  description = "the number of neighbors used for minority instances for SMOTE algorithm")
-	  protected Float smoteNumOfNeighbors = 0f;
+	@ConfigurationParameter(
+	    name = PARAM_SMOTE_NUM_NEIGHBORS,
+	    mandatory = false,
+	    description = "the number of neighbors used for minority instances for SMOTE algorithm")
+	protected Float smoteNumOfNeighbors = 0f;
 
-	public static final String TIMEX_VIEW = "TimexView";
+	public static final String PARAM_TIMEX_VIEW = "TimexView";
+	@ConfigurationParameter(
+	    name = PARAM_TIMEX_VIEW,
+	    mandatory = false,
+	    description = "View to write timexes to (used for ensemble methods)")
+	protected String timexView = CAS.NAME_DEFAULT_SOFA;
 
 	public static AnalysisEngineDescription createDataWriterDescription(
 			Class<?> dataWriterClass,
@@ -119,6 +125,20 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 				TimeAnnotator.createFeatureSelectionURI(modelDirectory));
 	}
 
+	public static AnalysisEngineDescription createEnsembleDescription(File modelDirectory, String mappedView)
+	    throws ResourceInitializationException {
+    return AnalysisEngineFactory.createPrimitiveDescription(
+        TimeAnnotator.class,
+        CleartkAnnotator.PARAM_IS_TRAINING,
+        false,
+        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+        new File(modelDirectory, "model.jar"),
+        TimeAnnotator.PARAM_TIMEX_VIEW,
+        mappedView,
+        TimeAnnotator.PARAM_FEATURE_SELECTION_URI,
+        TimeAnnotator.createFeatureSelectionURI(modelDirectory));	  
+	}
+	
 	protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
 
 	protected List<CleartkExtractor> contextFeatureExtractors;
@@ -269,9 +289,9 @@ public class TimeAnnotator extends TemporalEntityAnnotator_ImplBase {
 			if (!this.isTraining()) {
 				JCas timexCas;
 				try {
-					timexCas = jCas.getView(TIMEX_VIEW);
+				  timexCas = jCas.getView(timexView);
 				} catch (CASException e) {
-					throw new AnalysisEngineProcessException(e);
+				  throw new AnalysisEngineProcessException(e);
 				}
 				this.timeChunking.createChunks(timexCas, tokens, outcomes);
 			}

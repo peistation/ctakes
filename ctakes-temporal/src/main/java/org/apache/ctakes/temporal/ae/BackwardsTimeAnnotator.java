@@ -13,6 +13,7 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -33,6 +34,7 @@ import org.cleartk.classifier.feature.extractor.simple.TypePathExtractor;
 import org.cleartk.classifier.jar.DefaultDataWriterFactory;
 import org.cleartk.classifier.jar.DirectoryDataWriterFactory;
 import org.cleartk.classifier.jar.GenericJarClassifierFactory;
+import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
@@ -40,6 +42,13 @@ import com.google.common.collect.Lists;
 
 
 public class BackwardsTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
+
+  public static final String PARAM_TIMEX_VIEW = "TimexView";
+  @ConfigurationParameter(
+      name = PARAM_TIMEX_VIEW,
+      mandatory = false,
+      description = "View to write timexes to (used for ensemble methods)")
+  protected String timexView = CAS.NAME_DEFAULT_SOFA;
 
   public static AnalysisEngineDescription createDataWriterDescription(
       Class<? extends DataWriter<String>> dataWriterClass, File outputDirectory)
@@ -64,6 +73,17 @@ public class BackwardsTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         new File(modelDirectory, "model.jar"));
   }
 
+  public static AnalysisEngineDescription createEnsembleDescription(File modelDirectory,
+      String viewName) throws ResourceInitializationException {
+    return AnalysisEngineFactory.createPrimitiveDescription(
+        BackwardsTimeAnnotator.class,
+        CleartkAnnotator.PARAM_IS_TRAINING,
+        false,
+        BackwardsTimeAnnotator.PARAM_TIMEX_VIEW,
+        viewName,
+        GenericJarClassifierFactory.PARAM_CLASSIFIER_JAR_PATH,
+        new File(modelDirectory, "model.jar"));
+  }
 
   protected List<SimpleFeatureExtractor> tokenFeatureExtractors;
 
@@ -176,7 +196,7 @@ public class BackwardsTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
         outcomes = Lists.reverse(outcomes);
         JCas timexCas;
         try{
-          timexCas = jCas.getView(TimeAnnotator.TIMEX_VIEW);
+          timexCas = jCas.getView(timexView);
         }catch(CASException e){
           throw new AnalysisEngineProcessException(e);
         }
@@ -184,4 +204,5 @@ public class BackwardsTimeAnnotator extends TemporalEntityAnnotator_ImplBase {
       }
     }
   }
+
 }
