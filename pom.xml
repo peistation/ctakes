@@ -131,6 +131,7 @@
 		<module>ctakes-drug-ner-res</module>
 		<module>ctakes-ne-contexts-res</module>
 		<module>ctakes-template-filler</module>
+		<module>ctakes-examples</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
