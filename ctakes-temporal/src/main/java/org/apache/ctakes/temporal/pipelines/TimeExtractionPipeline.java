@@ -40,7 +40,7 @@ import org.apache.ctakes.dictionary.lookup.ae.UmlsDictionaryLookupAnnotator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
 import org.apache.ctakes.postagger.POSTagger;
-import org.apache.ctakes.temporal.ae.TimeAnnotator;
+import org.apache.ctakes.temporal.ae.BackwardsTimeAnnotator;
 import org.apache.ctakes.temporal.eval.Evaluation_ImplBase.CopyNPChunksToLookupWindowAnnotations;
 import org.apache.ctakes.typesystem.type.syntax.BaseToken;
 import org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation;
@@ -100,7 +100,7 @@ public class TimeExtractionPipeline {
 				options.inputDirectory);
 
 		AggregateBuilder aggregateBuilder = getPreprocessorAggregateBuilder();
-		aggregateBuilder.add(TimeAnnotator.createAnnotatorDescription(new File(options.timeModelDirectory)));
+		aggregateBuilder.add(BackwardsTimeAnnotator.createAnnotatorDescription(new File(options.timeModelDirectory)));
 		
     AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(
         XWriter.class,
