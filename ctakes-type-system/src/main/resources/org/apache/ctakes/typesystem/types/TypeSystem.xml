@@ -163,6 +163,11 @@ Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.Segment</description>
           <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>preferredText</name>
+          <description>preferredText is the normalized/resolved section name.  Normally, this is populated by the Sectionizer and would contain the HL7/CCDA section name.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -1566,6 +1571,11 @@ More qualifying information on how the procedure was done.</description>
           <name>historyOf</name>
           <description/>
           <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>preferredText</name>
+          <description>preferredText is the preferred name. normally his is the UMLS preferred name.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
