@@ -19,12 +19,18 @@
 package org.apache.ctakes.temporal.data.analysis;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ctakes.relationextractor.eval.XMIReader;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.ctakes.typesystem.type.syntax.BaseToken;
+import org.apache.ctakes.typesystem.type.syntax.TreebankNode;
 import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
 import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -40,6 +46,10 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
+
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
 
 /**
  * ...
@@ -73,6 +83,9 @@ public class SignSymptomDurations {
   
   public static class DurationPrinter extends JCasAnnotator_ImplBase {
 
+    // max distance between a time and an evenet
+    final int maxDistance = 2;
+    
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
 
@@ -86,11 +99,24 @@ public class SignSymptomDurations {
       Collection<DocumentID> ids = JCasUtil.select(systemView, DocumentID.class);
       String fileName = ids.iterator().next().getDocumentID();
       String signSymptomText = fileName.split("\\.")[0]; // e.g. "smoker.txt"
-      
+
       for(SignSymptomMention signSymptomMention : JCasUtil.select(systemView, SignSymptomMention.class)) {
+
         if(signSymptomMention.getCoveredText().equals(signSymptomText)) {
+          Map<TimeMention, Integer> distances = new HashMap<TimeMention, Integer>();
+
           for(TimeMention timeMention : JCasUtil.selectFollowing(systemView, TimeMention.class, signSymptomMention, 1)) {
-            System.out.println(signSymptomMention.getCoveredText() + ": " + timeMention.getCoveredText());
+            int distance = JCasUtil.selectBetween(systemView, BaseToken.class, signSymptomMention, timeMention).size();
+            distances.put(timeMention, distance);
+          }
+
+          // find closest time to this sign/symptom
+          List<TimeMention> sortedTimeMentions = new ArrayList<TimeMention>(distances.keySet());
+          Function<TimeMention, Integer> getValue = Functions.forMap(distances);
+          Collections.sort(sortedTimeMentions, Ordering.natural().onResultOf(getValue));
+
+          if(sortedTimeMentions.size() > 0 && distances.get(sortedTimeMentions.get(0)) <= maxDistance) {
+            System.out.println(signSymptomMention.getCoveredText() + ": " + sortedTimeMentions.get(0).getCoveredText());
           }
         }
       }
