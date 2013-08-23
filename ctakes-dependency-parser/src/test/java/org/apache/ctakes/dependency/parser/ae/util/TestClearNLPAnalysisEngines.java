@@ -18,11 +18,11 @@
  */
 package org.apache.ctakes.dependency.parser.ae.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-
-import org.apache.uima.UIMAException;
+import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
+import org.apache.ctakes.dependency.parser.ae.ClearNLPSemanticRoleLabelerAE;
+import org.apache.ctakes.dependency.parser.util.DependencyUtility;
+import org.apache.ctakes.dependency.parser.util.SRLUtility;
+import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.collection.CollectionReader;
@@ -38,13 +38,6 @@ import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.util.JCasUtil;
-import org.xml.sax.SAXException;
-
-import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
-import org.apache.ctakes.dependency.parser.ae.ClearNLPSemanticRoleLabelerAE;
-import org.apache.ctakes.dependency.parser.util.DependencyUtility;
-import org.apache.ctakes.dependency.parser.util.SRLUtility;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 
 /**
  * This class illustrates the pipeline needed to run the ClearNLP dependency parser and SRL systems
@@ -118,7 +111,7 @@ public class TestClearNLPAnalysisEngines{
 				);
 		
 		// Load preprocessing pipeline (consists of 
-		//AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
+		AnalysisEngine preprocessingAE = WriteClearNLPDescriptors.getPlaintextAggregateBuilder().createAggregate();
 		
 		// Create dependency parsers analysis engine with the default models
 		// The dummy models from ClearParser haven't been updated to work with ClearNLP.
@@ -138,7 +131,7 @@ public class TestClearNLPAnalysisEngines{
 				DumpClearNLPOutputAE.class,
 				typeSystem);
 		
-		SimplePipeline.runPipeline(reader1, /* preprocessingAE, */ ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
+		SimplePipeline.runPipeline(reader1, preprocessingAE, ClearNLPDepParser, ClearNLPSRL, dumpClearNLPOutput);	
 	}
 	
 }
